@@ -1,5 +1,7 @@
 # A modern, community-driven jukebox built for the YouTube era.
 
+<p align="center"><img src="DemoImages/demo2.png" width="400" alt="Appdemo Top menu"></p>
+
 ## 1. Core Idea
 
 A **social, democratic music experience** built on top of YouTube.
