@@ -74,7 +74,7 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest }) {
         setSubmissionSuccess(false);
         onShowSuggest(false);
       }, 2000);
-    } catch (error) {
+    } catch {
       setSuggestionError("Unable to load that video. Please try a different link.");
     } finally {
       setIsSubmittingSuggestion(false);

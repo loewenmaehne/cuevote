@@ -97,7 +97,6 @@ function App() {
           },
           onError: (event) => {
             console.error("YouTube Player Error:", event.data);
-            sendMessage({ type: "NEXT_TRACK" });
           },
         },
       });
