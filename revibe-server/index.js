@@ -106,8 +106,9 @@ setInterval(() => {
   const state = store.getState();
   if (state.isPlaying && state.currentTrack) {
     const newProgress = state.progress + 1;
-    const duration = 200; // dummy duration
+    const duration = state.currentTrack.duration || 200;
     if (newProgress > duration) {
+      console.log("Track finished, auto-advancing to next track");
       const newQueue = [...state.queue];
       newQueue.shift();
       const newCurrentTrack = newQueue[0] || null;

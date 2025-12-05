@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { Play } from "lucide-react";
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
@@ -88,6 +89,7 @@ function App() {
           onStateChange: (event) => {
             console.log("Player state changed:", event.data);
             if (event.data === YouTubeState.PLAYING) {
+              setAutoplayBlocked(false);
               sendMessage({ type: "PLAY_PAUSE", payload: true });
             } else if (event.data === YouTubeState.PAUSED) {
               sendMessage({ type: "PLAY_PAUSE", payload: false });
@@ -205,10 +207,17 @@ function App() {
         </div>
         {!currentTrack && <div className="flex h-full w-full items-center justify-center text-neutral-500">Queue empty</div>}
         {autoplayBlocked && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/80">
-                <p>Autoplay blocked</p>
-                <button onClick={handlePlayPause}>Tap to play</button>
-            </div>
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
+            <button
+              onClick={() => playerRef.current?.playVideo()}
+              className="group flex flex-col items-center gap-4 transition-transform active:scale-95"
+            >
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/10 shadow-2xl ring-1 ring-white/20 backdrop-blur-md transition-all group-hover:bg-white/20 group-hover:scale-110">
+                <Play size={40} className="fill-white text-white ml-2" />
+              </div>
+              <span className="text-lg font-medium text-white/90">Tap to Join Session</span>
+            </button>
+          </div>
         )}
       </div>
 
