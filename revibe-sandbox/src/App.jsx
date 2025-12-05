@@ -89,11 +89,10 @@ function App() {
             console.log("Player state changed:", event.data);
             if (event.data === YouTubeState.PLAYING) {
               setAutoplayBlocked(false);
-              sendMessage({ type: "PLAY_PAUSE", payload: true });
-            } else if (event.data === YouTubeState.PAUSED) {
-              sendMessage({ type: "PLAY_PAUSE", payload: false });
-            } else if (event.data === YouTubeState.ENDED) {
-              sendMessage({ type: "NEXT_TRACK" });
+              const duration = event.target.getDuration();
+              if (duration && duration > 0) {
+                 sendMessage({ type: "UPDATE_DURATION", payload: duration });
+              }
             }
           },
           onError: (event) => {
@@ -107,14 +106,14 @@ function App() {
   // Main playback logic
   useEffect(() => {
     if (isPlayerReady && playerRef.current && currentTrack) {
-      const currentVideoIdInPlayer = playerRef.current.getVideoData().video_id;
+      const currentVideoIdInPlayer = playerRef.current.getVideoData()?.video_id;
       if (currentTrack.videoId !== currentVideoIdInPlayer) {
         playerRef.current.loadVideoById(currentTrack.videoId, serverProgress);
       }
     } else if (isPlayerReady && playerRef.current && !currentTrack) {
       playerRef.current.stopVideo();
     }
-  }, [isPlayerReady, currentTrack]);
+  }, [isPlayerReady, currentTrack, serverProgress]);
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
@@ -124,30 +123,37 @@ function App() {
         playerRef.current.pauseVideo();
       }
     }
-  }, [isPlayerReady, isPlaying]);
+  }, [isPlayerReady, isPlaying, currentTrack]);
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current && isPlaying) {
+      // Don't sync if the video has ended locally
+      if (playerRef.current.getPlayerState() === YouTubeState.ENDED) return;
+      
       const localProgress = playerRef.current.getCurrentTime();
       if (Math.abs(localProgress - serverProgress) > 2) {
         playerRef.current.seekTo(serverProgress);
       }
     }
-  }, [isPlayerReady, serverProgress]);
+  }, [isPlayerReady, serverProgress, isPlaying]);
   
   // Autoplay detection
   useEffect(() => {
     if (isPlaying && isPlayerReady && playerRef.current) {
       const check = setTimeout(() => {
-        if (playerRef.current.getPlayerState() !== YouTubeState.PLAYING) {
+        const state = playerRef.current.getPlayerState();
+        if (
+            state !== YouTubeState.PLAYING &&
+            state !== YouTubeState.BUFFERING
+        ) {
           setAutoplayBlocked(true);
         } else {
           setAutoplayBlocked(false);
         }
-      }, 1500);
+      }, 2000);
       return () => clearTimeout(check);
     }
-  }, [isPlaying, isPlayerReady]);
+  }, [isPlaying, isPlayerReady, currentTrack]);
 
   // Progress bar update
   useEffect(() => {

@@ -78,6 +78,13 @@ wss.on("connection", (ws) => {
           store.updateState(newState);
           break;
         }
+        case "UPDATE_DURATION":
+          if (state.currentTrack) {
+            store.updateState({
+              currentTrack: { ...state.currentTrack, duration: parsedMessage.payload },
+            });
+          }
+          break;
         default:
           console.log("Unknown message type:", parsedMessage.type);
       }
