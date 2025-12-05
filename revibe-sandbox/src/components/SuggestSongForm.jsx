@@ -99,7 +99,7 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest }) {
   }
 
   return (
-    <div className="keep-open w-full max-w-5xl mt-3 animate-fadeIn space-y-2">
+    <div className="keep-open w-full max-w-5xl mx-auto mt-3 animate-fadeIn space-y-2">
       <div className="keep-open flex items-center gap-2">
         <input
           type="text"

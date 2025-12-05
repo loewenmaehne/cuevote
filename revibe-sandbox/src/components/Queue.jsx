@@ -13,10 +13,10 @@ export function Queue({
 }) {
   return (
     <div
-      className={`transition-all duration-700 ease-in-out flex-shrink-0 ${
+      className={`transition-all duration-700 ease-in-out ${
         isMinimized
           ? "max-h-0 opacity-0 translate-y-10"
-          : "flex-1 overflow-y-auto p-6 space-y-4 opacity-100 translate-y-0"
+          : "p-6 space-y-4 opacity-100 translate-y-0"
       }`}
       style={{
         maskImage: isMinimized
