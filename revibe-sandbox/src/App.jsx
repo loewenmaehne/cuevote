@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { Play } from "lucide-react";
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
@@ -210,12 +209,9 @@ function App() {
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
             <button
               onClick={() => playerRef.current?.playVideo()}
-              className="group flex flex-col items-center gap-4 transition-transform active:scale-95"
+              className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-lg shadow-lg hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all active:scale-95"
             >
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/10 shadow-2xl ring-1 ring-white/20 backdrop-blur-md transition-all group-hover:bg-white/20 group-hover:scale-110">
-                <Play size={40} className="fill-white text-white ml-2" />
-              </div>
-              <span className="text-lg font-medium text-white/90">Tap to Join Session</span>
+              Tap to Join Session
             </button>
           </div>
         )}
