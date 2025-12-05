@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
@@ -295,12 +296,35 @@ function App() {
                     <p className="text-green-200 text-sm">{previewTrack.artist}</p>
                 </div>
             </div>
-            <button 
-                onClick={handleStopPreview}
-                className="bg-white text-green-900 px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition-colors"
-            >
-                Back to Radio
-            </button>
+            <div className="flex items-center gap-6">
+                <button 
+                    onClick={handleStopPreview}
+                    className="bg-white text-green-900 px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition-colors"
+                >
+                    Back to Radio
+                </button>
+                <div className="flex items-center gap-2 text-green-200">
+                    <button
+                        onClick={(event) => {
+                        event.stopPropagation();
+                        handleMuteToggle();
+                        }}
+                        className="hover:text-white transition-colors"
+                    >
+                        {isMuted ? <VolumeX /> : <Volume2 />}
+                    </button>
+                    <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value={volume}
+                        onChange={handleVolumeChange}
+                        className={`accent-green-500 w-24 ${isMuted ? "opacity-50" : ""}`}
+                        onClick={(event) => event.stopPropagation()}
+                    />
+                </div>
+            </div>
         </div>
       ) : (
         <PlaybackControls
