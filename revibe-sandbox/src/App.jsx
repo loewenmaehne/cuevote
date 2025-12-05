@@ -43,6 +43,7 @@ function App() {
   const [isMinimized, setIsMinimized] = useState(false);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
+  const [previewTrack, setPreviewTrack] = useState(null);
   const [progress, setProgress] = useState(0);
 
   // YouTube Player state
@@ -112,28 +113,34 @@ function App() {
 
   // Main playback logic
   useEffect(() => {
-    if (isPlayerReady && playerRef.current && currentTrack) {
+    const targetTrack = previewTrack || currentTrack;
+    if (isPlayerReady && playerRef.current && targetTrack) {
       const currentVideoIdInPlayer = playerRef.current.getVideoData()?.video_id;
-      if (currentTrack.videoId !== currentVideoIdInPlayer) {
-        playerRef.current.loadVideoById(currentTrack.videoId, serverProgress);
+      if (targetTrack.videoId !== currentVideoIdInPlayer) {
+        // If previewing, start from beginning. If radio, start from server progress.
+        const startTime = previewTrack ? 0 : serverProgress;
+        playerRef.current.loadVideoById(targetTrack.videoId, startTime);
       }
-    } else if (isPlayerReady && playerRef.current && !currentTrack) {
+    } else if (isPlayerReady && playerRef.current && !targetTrack) {
       playerRef.current.stopVideo();
     }
-  }, [isPlayerReady, currentTrack, serverProgress]);
+  }, [isPlayerReady, currentTrack, previewTrack, serverProgress]);
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
-      if (isPlaying && !isLocallyPaused) {
+      if (previewTrack) {
+        playerRef.current.playVideo();
+      } else if (isPlaying && !isLocallyPaused) {
         playerRef.current.playVideo();
       } else {
         playerRef.current.pauseVideo();
       }
     }
-  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused]);
+  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, previewTrack]);
 
   useEffect(() => {
-    if (isPlayerReady && playerRef.current && isPlaying) {
+    // Only sync with server if NOT previewing
+    if (isPlayerReady && playerRef.current && isPlaying && !previewTrack) {
       // Don't sync if the video has ended locally
       if (playerRef.current.getPlayerState() === YouTubeState.ENDED) return;
       
@@ -142,7 +149,7 @@ function App() {
         playerRef.current.seekTo(serverProgress);
       }
     }
-  }, [isPlayerReady, serverProgress, isPlaying]);
+  }, [isPlayerReady, serverProgress, isPlaying, previewTrack]);
   
   // Autoplay detection
   useEffect(() => {
@@ -209,6 +216,19 @@ function App() {
   const handleSongSuggested = (newTrack) => {
     sendMessage({ type: "SUGGEST_SONG", payload: newTrack });
   };
+
+  const handlePreviewTrack = (track) => {
+    setIsLocallyPaused(true); // Pause the "radio" logic
+    setPreviewTrack(track);
+  };
+
+  const handleStopPreview = () => {
+    setPreviewTrack(null);
+    setIsLocallyPaused(false); // Resume radio logic
+    if (playerRef.current) {
+        playerRef.current.seekTo(serverProgress);
+    }
+  };
   
   if (!serverState) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Connecting to server...</div>;
@@ -231,11 +251,12 @@ function App() {
       </div>
       
       <div className={`w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"}`}>
+        <div className={`absolute inset-0 border-4 ${previewTrack ? "border-green-500" : "border-transparent"} transition-colors duration-300 box-border pointer-events-none z-20`}></div>
         <div className="absolute inset-0">
-           <div style={{ display: currentTrack ? 'block' : 'none', width: '100%', height: '100%' }}>
+           <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
                 <Player playerContainerRef={playerContainerRef} />
             </div>
-            {!currentTrack && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
+            {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
         </div>
 
         {autoplayBlocked && (
@@ -259,21 +280,42 @@ function App() {
             onVote={(trackId, type) => setVotes(prev => ({...prev, [trackId]: prev[trackId] === type ? null : type}))}
             onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
             isMinimized={isMinimized}
+            onPreview={handlePreviewTrack}
         />
       </div>
 
-      <PlaybackControls
-        isPlaying={isPlaying && !isLocallyPaused}
-        onPlayPause={handlePlayPause}
-        progress={progress}
-        currentTrack={currentTrack}
-        activeChannel={activeChannel}
-        isMuted={isMuted}
-        onMuteToggle={handleMuteToggle}
-        volume={volume}
-        onVolumeChange={handleVolumeChange}
-        onMinimizeToggle={() => setIsMinimized(!isMinimized)}
-      />
+      {previewTrack ? (
+        <div className="fixed bottom-0 left-0 w-full bg-green-900/95 backdrop-blur-md border-t border-green-700 px-6 py-4 flex items-center justify-between z-50">
+            <div className="flex items-center gap-4">
+                <div className="bg-green-500 text-black px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                    PREVIEWING
+                </div>
+                <div>
+                    <h3 className="font-bold text-white">{previewTrack.title}</h3>
+                    <p className="text-green-200 text-sm">{previewTrack.artist}</p>
+                </div>
+            </div>
+            <button 
+                onClick={handleStopPreview}
+                className="bg-white text-green-900 px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition-colors"
+            >
+                Back to Radio
+            </button>
+        </div>
+      ) : (
+        <PlaybackControls
+            isPlaying={isPlaying && !isLocallyPaused}
+            onPlayPause={handlePlayPause}
+            progress={progress}
+            currentTrack={currentTrack}
+            activeChannel={activeChannel}
+            isMuted={isMuted}
+            onMuteToggle={handleMuteToggle}
+            volume={volume}
+            onVolumeChange={handleVolumeChange}
+            onMinimizeToggle={() => setIsMinimized(!isMinimized)}
+        />
+      )}
     </div>
   );
 }
