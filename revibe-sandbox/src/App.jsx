@@ -42,6 +42,7 @@ function App() {
   const [volume, setVolume] = useState(80);
   const [isMinimized, setIsMinimized] = useState(false);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
+  const [isLocallyPaused, setIsLocallyPaused] = useState(false);
   const [progress, setProgress] = useState(0);
 
   // YouTube Player state
@@ -81,9 +82,15 @@ function App() {
           origin: 'http://localhost:5173',
         },
         events: {
-          onReady: () => {
+          onReady: (event) => {
             console.log("Player is ready");
             setIsPlayerReady(true);
+            event.target.setVolume(volume);
+            if (isMuted) {
+              event.target.mute();
+            } else {
+              event.target.unMute();
+            }
           },
           onStateChange: (event) => {
             console.log("Player state changed:", event.data);
@@ -117,13 +124,13 @@ function App() {
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
-      if (isPlaying) {
+      if (isPlaying && !isLocallyPaused) {
         playerRef.current.playVideo();
       } else {
         playerRef.current.pauseVideo();
       }
     }
-  }, [isPlayerReady, isPlaying, currentTrack]);
+  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused]);
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current && isPlaying) {
@@ -169,8 +176,16 @@ function App() {
 
   // Event Handlers
   const handlePlayPause = () => {
-    if (isPlaying) playerRef.current.pauseVideo();
-    else playerRef.current.playVideo();
+    if (isLocallyPaused) {
+      // Resume
+      setIsLocallyPaused(false);
+      playerRef.current.seekTo(serverProgress);
+      playerRef.current.playVideo();
+    } else {
+      // Pause
+      setIsLocallyPaused(true);
+      playerRef.current.pauseVideo();
+    }
   };
 
   const handleMuteToggle = () => {
@@ -182,7 +197,13 @@ function App() {
   const handleVolumeChange = (e) => {
     const newVolume = Number(e.target.value);
     setVolume(newVolume);
-    playerRef.current.setVolume(newVolume);
+    if (playerRef.current) {
+      playerRef.current.setVolume(newVolume);
+      if (isMuted) {
+        playerRef.current.unMute();
+        setIsMuted(false);
+      }
+    }
   };
 
   const handleSongSuggested = (newTrack) => {
@@ -233,7 +254,7 @@ function App() {
         isMinimized={isMinimized}
       />
       <PlaybackControls
-        isPlaying={isPlaying}
+        isPlaying={isPlaying && !isLocallyPaused}
         onPlayPause={handlePlayPause}
         progress={progress}
         currentTrack={currentTrack}
