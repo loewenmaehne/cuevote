@@ -10,6 +10,7 @@ export function Queue({
   onVote,
   onToggleExpand,
   isMinimized,
+  onPreview,
 }) {
   return (
     <div
@@ -33,6 +34,7 @@ export function Queue({
           vote={votes[track.id]}
           onVote={onVote}
           onToggleExpand={onToggleExpand}
+          onPreview={onPreview}
         />
       ))}
     </div>
@@ -47,4 +49,5 @@ Queue.propTypes = {
   onVote: PropTypes.func.isRequired,
   onToggleExpand: PropTypes.func.isRequired,
   isMinimized: PropTypes.bool.isRequired,
+  onPreview: PropTypes.func,
 };

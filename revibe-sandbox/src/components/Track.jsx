@@ -1,8 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Headphones } from "lucide-react";
 
-const buildEmbedUrl = (videoId) => `https://www.youtube.com/embed/${videoId}`;
 const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;
 const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
@@ -13,6 +12,7 @@ export function Track({
   vote,
   onVote,
   onToggleExpand,
+  onPreview,
 }) {
   return (
     <div
@@ -74,16 +74,17 @@ export function Track({
 
       {isExpanded && (
         <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-neutral-800 text-neutral-300 mt-4 space-y-3">
-          <div className="aspect-video overflow-hidden rounded-xl">
-            <iframe
-              className="w-full h-full rounded-xl"
-              src={`${buildEmbedUrl(track.videoId)}?autoplay=0&modestbranding=1&rel=0`}
-              title={track.title}
-              loading="lazy"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
+          <div className="flex gap-3">
+             <button 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onPreview(track);
+                }}
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-colors"
+             >
+                <Headphones size={20} className="text-green-400" />
+                Preview Song
+             </button>
           </div>
           <p className="text-sm italic break-words overflow-hidden text-ellipsis">
             {track.lyrics}
@@ -110,4 +111,5 @@ Track.propTypes = {
   vote: PropTypes.string,
   onVote: PropTypes.func.isRequired,
   onToggleExpand: PropTypes.func.isRequired,
+  onPreview: PropTypes.func,
 };
