@@ -215,7 +215,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col pb-24">
+    <div className="h-screen bg-black text-white flex flex-col overflow-hidden">
       <Header
         activeChannel={activeChannel}
         onChannelChange={() => {}}
@@ -225,13 +225,19 @@ function App() {
         onJoinChannel={() => alert("Joined channel")}
         onShowSuggest={setShowSuggest}
       />
-      {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} />}
       
-      <div className={`w-full aspect-video bg-black ${isMinimized ? "h-[100vh]" : "aspect-video"}`}>
-        <div style={{ display: currentTrack ? 'block' : 'none', width: '100%', height: '100%' }}>
-            <Player playerContainerRef={playerContainerRef} />
+      <div className="relative z-10 px-6 py-4">
+        {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} />}
+      </div>
+      
+      <div className={`w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"}`}>
+        <div className="absolute inset-0">
+           <div style={{ display: currentTrack ? 'block' : 'none', width: '100%', height: '100%' }}>
+                <Player playerContainerRef={playerContainerRef} />
+            </div>
+            {!currentTrack && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
         </div>
-        {!currentTrack && <div className="flex h-full w-full items-center justify-center text-neutral-500">Queue empty</div>}
+
         {autoplayBlocked && (
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
             <button
@@ -244,15 +250,18 @@ function App() {
         )}
       </div>
 
-      <Queue
-        tracks={queue}
-        currentTrack={currentTrack}
-        expandedTrackId={expandedTrackId}
-        votes={votes}
-        onVote={(trackId, type) => setVotes(prev => ({...prev, [trackId]: prev[trackId] === type ? null : type}))}
-        onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
-        isMinimized={isMinimized}
-      />
+      <div className="flex-1 overflow-y-auto pb-24">
+        <Queue
+            tracks={queue}
+            currentTrack={currentTrack}
+            expandedTrackId={expandedTrackId}
+            votes={votes}
+            onVote={(trackId, type) => setVotes(prev => ({...prev, [trackId]: prev[trackId] === type ? null : type}))}
+            onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
+            isMinimized={isMinimized}
+        />
+      </div>
+
       <PlaybackControls
         isPlaying={isPlaying && !isLocallyPaused}
         onPlayPause={handlePlayPause}
