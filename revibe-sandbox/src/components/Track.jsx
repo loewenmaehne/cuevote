@@ -18,12 +18,18 @@ export function Track({
     <div
       onClick={() => onToggleExpand(track.id)}
       className={`transition-all duration-500 ease-in-out p-4 rounded-3xl shadow-lg backdrop-blur-sm cursor-pointer overflow-hidden border ${
-        isActive 
-          ? "border-green-500 bg-green-900/20 shadow-[0_0_15px_rgba(34,197,94,0.3)]"
+        isActive
+          ? "border-green-500 bg-[#0a0a0a] shadow-[0_0_15px_rgba(34,197,94,0.3)]"
           : vote === "up"
-            ? "border-transparent bg-gradient-to-br from-orange-500/70 to-orange-600/60 shadow-[0_0_15px_#fb923c]/60"
-            : "border-transparent bg-[#1e1e1e]/80 hover:bg-[#222]"
-      } ${isExpanded ? "scale-[1.02] ring-2 ring-orange-500/60" : ""}`}
+          ? "border-transparent bg-gradient-to-br from-orange-500/70 to-orange-600/60 shadow-[0_0_15px_#fb923c]/60"
+          : "border-transparent bg-[#1e1e1e]/80 hover:bg-[#222]"
+      } ${
+        isExpanded
+          ? isActive
+            ? "scale-[1.02] ring-2 ring-green-500/60"
+            : "scale-[1.02] ring-2 ring-orange-500/60"
+          : ""
+      }`}
     >
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
