@@ -35,37 +35,40 @@ export function Header({
       ref={headerRef}
       className="p-4 border-b border-neutral-900 bg-[#050505]/95 backdrop-blur-md z-40 transition-all duration-700 ease-in-out flex flex-col items-center gap-3"
     >
-      <div className="flex items-center justify-between w-full max-w-5xl relative">
-        <div className="absolute left-0 flex items-center gap-6">
-            {user ? (
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                         {user.picture && (
-                            <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full border border-neutral-700" />
-                         )}
-                         <span className="text-sm font-medium text-neutral-300 hidden sm:block">{user.name}</span>
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full gap-4">
+        <div className="flex items-center gap-3 justify-start min-w-0">
+            {/* Fixed width container for User Slot to prevent layout shift of subsequent items */}
+            <div className="w-[40px] lg:w-[180px] flex items-center flex-shrink-0 transition-all duration-300">
+                {user ? (
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                            {user.picture && (
+                                <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full border border-neutral-700" />
+                            )}
+                            <span className="text-sm font-medium text-neutral-300 hidden lg:block truncate max-w-[120px]">{user.name}</span>
+                        </div>
+                        <button 
+                            onClick={onLogout} 
+                            className="text-neutral-500 hover:text-red-400 transition-colors"
+                            title="Logout"
+                        >
+                            <LogOut size={18} />
+                        </button>
                     </div>
-                    <button 
-                        onClick={onLogout} 
-                        className="text-neutral-500 hover:text-red-400 transition-colors"
-                        title="Logout"
-                    >
-                        <LogOut size={18} />
-                    </button>
-                </div>
-            ) : (
-                <div>
-                    <GoogleLogin
-                        onSuccess={onLoginSuccess}
-                        onError={() => {
-                        console.log('Login Failed');
-                        }}
-                        type="icon"
-                        theme="filled_black"
-                        shape="circle"
-                    />
-                </div>
-            )}
+                ) : (
+                    <div>
+                        <GoogleLogin
+                            onSuccess={onLoginSuccess}
+                            onError={() => {
+                            console.log('Login Failed');
+                            }}
+                            type="icon"
+                            theme="filled_black"
+                            shape="circle"
+                        />
+                    </div>
+                )}
+            </div>
 
             <button
             onClick={(event) => {
@@ -73,26 +76,29 @@ export function Header({
                 onShowChannels((prev) => !prev);
                 onShowSuggest(false);
             }}
-            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
+            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors flex-shrink-0"
             >
-            <Radio size={22} /> {activeChannel}
+            <Radio size={22} /> 
+            <span className="hidden md:inline truncate">{activeChannel}</span>
             </button>
         </div>
 
-        <h1 className="text-2xl font-bold text-orange-500 tracking-tight mx-auto">
+        <h1 className="text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap">
           ReVibe Music
         </h1>
 
-        <button
-          onClick={(event) => {
-            event.stopPropagation();
-            onShowSuggest((prev) => !prev);
-            onShowChannels(false);
-          }}
-          className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors absolute right-0"
-        >
-          <Send size={18} /> Suggest Song
-        </button>
+        <div className="flex justify-end min-w-0">
+            <button
+            onClick={(event) => {
+                event.stopPropagation();
+                onShowSuggest((prev) => !prev);
+                onShowChannels(false);
+            }}
+            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors truncate"
+            >
+            <Send size={18} /> <span className="hidden sm:inline">Suggest Song</span>
+            </button>
+        </div>
       </div>
 
       {showChannels && (
