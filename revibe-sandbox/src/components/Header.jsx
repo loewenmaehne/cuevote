@@ -103,7 +103,7 @@ export function Header({
             }}
             className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors truncate"
             >
-            <Send size={18} /> <span className="hidden sm:inline">Suggest Song</span>
+            <Send size={18} /> <span className="hidden sm:inline">Suggest</span>
             </button>
         </div>
       </div>
