@@ -4,6 +4,7 @@ export function useWebSocket(url) {
   const [state, setState] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [lastError, setLastError] = useState(null);
+  const [lastMessage, setLastMessage] = useState(null);
   
   // Persistent Client ID
   const [clientId] = useState(() => {
@@ -53,6 +54,8 @@ export function useWebSocket(url) {
       ws.current.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
+          setLastMessage(message); // Expose all messages for event handling
+
           if (message.type === "state") {
             setState(message.payload);
           } else if (message.type === "error") {
@@ -84,5 +87,5 @@ export function useWebSocket(url) {
     }
   };
 
-  return { state, isConnected, sendMessage, lastError, clientId };
+  return { state, isConnected, sendMessage, lastError, clientId, lastMessage };
 }

@@ -23,7 +23,7 @@ function App() {
   console.log("App render");
 
   // WebSocket connection
-  const { state: serverState, sendMessage, lastError, clientId } = useWebSocket(WEBSOCKET_URL);
+  const { state: serverState, sendMessage, lastError, clientId, lastMessage } = useWebSocket(WEBSOCKET_URL);
 
   // Destructure server state
   const {
@@ -44,27 +44,35 @@ function App() {
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
   const [previewTrack, setPreviewTrack] = useState(null);
-  const [user, setUser] = useState(() => {
-    const savedSession = localStorage.getItem("revibe_session");
-    if (savedSession) {
-        try {
-            const { user, expiresAt } = JSON.parse(savedSession);
-            console.log("Checking session:", { now: Date.now(), expiresAt });
-            if (Date.now() < expiresAt) {
-                console.log("Session valid, restoring user:", user);
-                return user;
-            } else {
-                console.log("Session expired");
-                localStorage.removeItem("revibe_session");
+  const [user, setUser] = useState(null);
+  const [progress, setProgress] = useState(0);
+
+  // Auth: Resume Session on Connect
+  useEffect(() => {
+    const token = localStorage.getItem("revibe_auth_token");
+    if (serverState && token && !user) {
+        // Only try to resume if we are connected (serverState exists) and not already logged in
+        console.log("Resuming session...");
+        sendMessage({ type: "RESUME_SESSION", payload: { token } });
+    }
+  }, [serverState, sendMessage, user]);
+
+  // Auth: Handle Login Events
+  useEffect(() => {
+    if (lastMessage) {
+        if (lastMessage.type === "LOGIN_SUCCESS") {
+            console.log("Backend Login Success:", lastMessage.payload.user);
+            setUser(lastMessage.payload.user);
+            if (lastMessage.payload.sessionToken) {
+                localStorage.setItem("revibe_auth_token", lastMessage.payload.sessionToken);
             }
-        } catch (e) {
-            console.error("Session parse error:", e);
-            localStorage.removeItem("revibe_session");
+        } else if (lastMessage.type === "SESSION_INVALID") {
+            console.warn("Session Invalid/Expired");
+            localStorage.removeItem("revibe_auth_token");
+            setUser(null);
         }
     }
-    return null;
-  });
-  const [progress, setProgress] = useState(0);
+  }, [lastMessage]);
 
   // YouTube Player state
   const playerRef = useRef(null);
@@ -255,33 +263,17 @@ function App() {
     }
   };
 
-  const handleLoginSuccess = async (tokenResponse) => {
-    console.log("Google Token Response:", tokenResponse);
-    try {
-        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-            headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        });
-        const userData = await userInfoResponse.json();
-        
-        console.log("Logged in user:", userData);
-        
-        const sessionData = {
-            user: userData,
-            token: tokenResponse.access_token,
-            // Default to 1 hour (3600s) if expires_in is missing
-            expiresAt: Date.now() + ((tokenResponse.expires_in || 3600) * 1000),
-        };
-        
-        console.log("Saving session:", sessionData);
-        localStorage.setItem("revibe_session", JSON.stringify(sessionData));
-        setUser(userData);
-    } catch (error) {
-        console.error("Failed to fetch user info:", error);
-    }
+  const handleLoginSuccess = (tokenResponse) => {
+    console.log("Sending Access Token to Backend...", tokenResponse);
+    sendMessage({ type: "LOGIN", payload: { token: tokenResponse.access_token } });
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("revibe_session");
+    const token = localStorage.getItem("revibe_auth_token");
+    if (token) {
+        sendMessage({ type: "LOGOUT", payload: { token } });
+        localStorage.removeItem("revibe_auth_token");
+    }
     setUser(null);
   };
   
