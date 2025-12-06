@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX, ArrowLeft } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
@@ -45,6 +46,7 @@ function App() {
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
   const [previewTrack, setPreviewTrack] = useState(null);
+  const [user, setUser] = useState(null);
   const [progress, setProgress] = useState(0);
 
   // YouTube Player state
@@ -78,6 +80,7 @@ function App() {
     loadYouTubeAPI().then((YT) => {
       console.log("YouTube API loaded, creating player");
       playerRef.current = new YT.Player(container, {
+        host: 'https://www.youtube-nocookie.com',
         playerVars: {
           autoplay: 0,
           controls: 0,
@@ -230,6 +233,26 @@ function App() {
         playerRef.current.seekTo(serverProgress);
     }
   };
+
+  const handleLoginSuccess = (credentialResponse) => {
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      console.log("Logged in user:", decoded);
+      setUser({
+        name: decoded.name,
+        email: decoded.email,
+        picture: decoded.picture,
+        sub: decoded.sub, // Google unique ID
+      });
+    } catch (error) {
+      console.error("Login Failed:", error);
+    }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    // optionally revoke token here if needed
+  };
   
   if (!serverState) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Connecting to server...</div>;
@@ -245,6 +268,9 @@ function App() {
         channels={CHANNEL_TAGS}
         onJoinChannel={() => alert("Joined channel")}
         onShowSuggest={setShowSuggest}
+        user={user}
+        onLoginSuccess={handleLoginSuccess}
+        onLogout={handleLogout}
       />
       
       <div className="relative z-10 px-6 py-4">
@@ -286,24 +312,25 @@ function App() {
       </div>
 
       {previewTrack ? (
-        <div className="fixed bottom-0 left-0 w-full bg-green-900/95 backdrop-blur-md border-t border-green-700 px-6 py-4 flex items-center justify-between z-50">
+        <div className="fixed bottom-0 left-0 w-full bg-green-900/95 backdrop-blur-md border-t border-green-700 px-6 py-3 flex items-center justify-between z-50 select-none">
             <div className="flex items-center gap-4">
-                <div className="bg-green-500 text-black px-3 py-1 rounded-full text-sm font-bold animate-pulse">
-                    PREVIEWING
-                </div>
+                <button 
+                    onClick={handleStopPreview}
+                    className="bg-white text-green-900 hover:bg-gray-100 transition-colors rounded-full p-3 shadow-lg flex items-center gap-2"
+                    title="Back to Radio"
+                >
+                    <ArrowLeft size={24} />
+                    <span className="font-bold pr-2">Back to Radio</span>
+                </button>
                 <div>
-                    <h3 className="font-bold text-white">{previewTrack.title}</h3>
+                    <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-white text-base leading-tight">{previewTrack.title}</h3>
+                        <span className="bg-green-500 text-black px-2 py-0.5 rounded text-xs font-bold animate-pulse">PREVIEW</span>
+                    </div>
                     <p className="text-green-200 text-sm">{previewTrack.artist}</p>
                 </div>
             </div>
-            <div className="flex items-center gap-6">
-                <button 
-                    onClick={handleStopPreview}
-                    className="bg-white text-green-900 px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition-colors"
-                >
-                    Back to Radio
-                </button>
-                <div className="flex items-center gap-2 text-green-200">
+            <div className="flex items-center gap-2 text-green-200">
                     <button
                         onClick={(event) => {
                         event.stopPropagation();
@@ -323,7 +350,6 @@ function App() {
                         className={`accent-green-500 w-24 ${isMuted ? "opacity-50" : ""}`}
                         onClick={(event) => event.stopPropagation()}
                     />
-                </div>
             </div>
         </div>
       ) : (
