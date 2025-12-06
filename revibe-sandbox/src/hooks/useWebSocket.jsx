@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 export function useWebSocket(url) {
   const [state, setState] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [lastError, setLastError] = useState(null);
   const ws = useRef(null);
 
   useEffect(() => {
@@ -39,6 +40,10 @@ export function useWebSocket(url) {
           const message = JSON.parse(event.data);
           if (message.type === "state") {
             setState(message.payload);
+          } else if (message.type === "error") {
+            setLastError(message.message);
+            // Clear error after 5 seconds
+            setTimeout(() => setLastError(null), 5000);
           }
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
@@ -65,5 +70,5 @@ export function useWebSocket(url) {
     }
   };
 
-  return { state, isConnected, sendMessage };
+  return { state, isConnected, sendMessage, lastError };
 }

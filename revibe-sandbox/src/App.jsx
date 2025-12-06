@@ -23,7 +23,7 @@ function App() {
   console.log("App render");
 
   // WebSocket connection
-  const { state: serverState, sendMessage } = useWebSocket(WEBSOCKET_URL);
+  const { state: serverState, sendMessage, lastError } = useWebSocket(WEBSOCKET_URL);
 
   // Destructure server state
   const {
@@ -261,9 +261,9 @@ function App() {
         onLoginSuccess={handleLoginSuccess}
         onLogout={handleLogout}
       />
-      
+
       <div className="relative z-10 px-6 py-4">
-        {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} />}
+        {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} />}
       </div>
       
       <div className={`w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"}`}>
