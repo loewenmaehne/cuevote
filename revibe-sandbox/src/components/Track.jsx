@@ -17,10 +17,12 @@ export function Track({
   return (
     <div
       onClick={() => onToggleExpand(track.id)}
-      className={`transition-all duration-500 ease-in-out p-4 rounded-3xl shadow-lg backdrop-blur-sm cursor-pointer overflow-hidden ${
-        vote === "up"
-          ? "bg-gradient-to-br from-orange-500/70 to-orange-600/60 shadow-[0_0_15px_#fb923c]/60"
-          : "bg-[#1e1e1e]/80 hover:bg-[#222]"
+      className={`transition-all duration-500 ease-in-out p-4 rounded-3xl shadow-lg backdrop-blur-sm cursor-pointer overflow-hidden border ${
+        isActive 
+          ? "border-green-500 bg-green-900/20 shadow-[0_0_15px_rgba(34,197,94,0.3)]"
+          : vote === "up"
+            ? "border-transparent bg-gradient-to-br from-orange-500/70 to-orange-600/60 shadow-[0_0_15px_#fb923c]/60"
+            : "border-transparent bg-[#1e1e1e]/80 hover:bg-[#222]"
       } ${isExpanded ? "scale-[1.02] ring-2 ring-orange-500/60" : ""}`}
     >
       <div className="flex justify-between items-center">
