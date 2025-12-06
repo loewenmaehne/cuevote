@@ -2,42 +2,6 @@ import React, { useCallback, useState } from "react";
 import PropTypes from "prop-types";
 import { CheckCircle, Send } from "lucide-react";
 
-const parseYouTubeId = (input) => {
-  if (!input) return null;
-  const trimmed = input.trim();
-  try {
-    const url = new URL(trimmed);
-    if (url.hostname === "youtu.be") {
-      return url.pathname.replace("/", "") || null;
-    }
-    if (url.hostname.includes("youtube.com")) {
-      return url.searchParams.get("v") || null;
-    }
-  } catch {
-    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
-      return trimmed;
-    }
-  }
-  return null;
-};
-
-const fetchVideoMetadata = async (videoId) => {
-  const endpoint = `https://www.youtube.com/oembed?format=json&url=https://www.youtube.com/watch?v=${videoId}`;
-  const response = await fetch(endpoint, { mode: "cors" });
-  if (!response.ok) {
-    const error = new Error(`YouTube video ${videoId} unavailable`);
-    error.status = response.status;
-    throw error;
-  }
-  const data = await response.json();
-  return {
-    title: data.title,
-    artist: data.author_name,
-    thumbnail: data.thumbnail_url,
-    metaLoaded: true,
-  };
-};
-
 export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError }) {
   const [songSuggestion, setSongSuggestion] = useState("");
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
@@ -53,39 +17,27 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError })
   const handleSubmitSuggestion = useCallback(async () => {
     const input = songSuggestion.trim();
     if (!input) {
-      setSuggestionError("Paste a full YouTube link before submitting.");
+      setSuggestionError("Please enter a YouTube link or song name.");
       return;
     }
-    const videoId = parseYouTubeId(input);
-    if (!videoId) {
-      setSuggestionError("That doesn't look like a valid YouTube URL.");
-      return;
-    }
+    
     setSuggestionError("");
     setIsSubmittingSuggestion(true);
-    try {
-      const meta = await fetchVideoMetadata(videoId);
-      onSongSuggested({
-        id: crypto.randomUUID ? crypto.randomUUID() : `suggest-${Date.now()}`,
-        videoId,
-        title: meta.title,
-        artist: meta.artist,
-        thumbnail: meta.thumbnail,
-        lyrics: "",
-        metaLoaded: true,
-      });
-            setSubmissionSuccess(true);
-            setSongSuggestion("");
-            // Revert button state after 2 seconds
-            setTimeout(() => {
-              setSubmissionSuccess(false);
-            }, 2000);
-          } catch {
-            setSuggestionError("Unable to load that video. Please try a different link.");
-          } finally {
-            setIsSubmittingSuggestion(false);
-          }
-        }, [songSuggestion, onSongSuggested]);
+    
+    // Delegate everything to server (Validation, Search, Metadata)
+    onSongSuggested(input);
+    
+    // Optimistic Success UI
+    setSubmissionSuccess(true);
+    setSongSuggestion("");
+    
+    // Reset UI after delay
+    setTimeout(() => {
+        setSubmissionSuccess(false);
+        setIsSubmittingSuggestion(false);
+    }, 2000);
+
+  }, [songSuggestion, onSongSuggested]);
       
         const handleKeyPress = useCallback(
           (event) => {
