@@ -23,7 +23,7 @@ function App() {
   console.log("App render");
 
   // WebSocket connection
-  const { state: serverState, sendMessage, lastError } = useWebSocket(WEBSOCKET_URL);
+  const { state: serverState, sendMessage, lastError, clientId } = useWebSocket(WEBSOCKET_URL);
 
   // Destructure server state
   const {
@@ -36,7 +36,6 @@ function App() {
 
   // Local UI state
   const [expandedTrackId, setExpandedTrackId] = useState(null);
-  const [votes, setVotes] = useState({});
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
   const [showChannels, setShowChannels] = useState(false);
@@ -220,6 +219,10 @@ function App() {
     sendMessage({ type: "SUGGEST_SONG", payload: newTrack });
   };
 
+  const handleVote = (trackId, type) => {
+    sendMessage({ type: "VOTE", payload: { trackId, voteType: type } });
+  };
+
   const handlePreviewTrack = (track) => {
     setIsLocallyPaused(true); // Pause the "radio" logic
     setPreviewTrack(track);
@@ -245,6 +248,16 @@ function App() {
   
   if (!serverState) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Connecting to server...</div>;
+  }
+
+  // Compute user's votes from the queue data
+  const userVotes = {};
+  if (clientId) {
+    queue.forEach(track => {
+        if (track.voters && track.voters[clientId]) {
+            userVotes[track.id] = track.voters[clientId];
+        }
+    });
   }
 
   return (
@@ -292,8 +305,8 @@ function App() {
             tracks={queue}
             currentTrack={currentTrack}
             expandedTrackId={expandedTrackId}
-            votes={votes}
-            onVote={(trackId, type) => setVotes(prev => ({...prev, [trackId]: prev[trackId] === type ? null : type}))}
+            votes={userVotes}
+            onVote={handleVote}
             onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
             isMinimized={isMinimized}
             onPreview={handlePreviewTrack}
