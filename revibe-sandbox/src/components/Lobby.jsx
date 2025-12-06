@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Radio, Users, Sparkles, AlertCircle } from "lucide-react";
 import { useWebSocket } from "../hooks/useWebSocket";
 
@@ -87,10 +87,10 @@ export function Lobby() {
         ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rooms.map((channel) => (
-                <button
+                <Link
                 key={channel.id}
-                onClick={() => navigate(`/room/${channel.id}`)}
-                className="group relative overflow-hidden rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-orange-500/50 transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end"
+                to={`/room/${channel.id}`}
+                className="group relative overflow-hidden rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-orange-500/50 transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block"
                 >
                 <div className={`absolute inset-0 bg-gradient-to-br ${channel.color} opacity-10 group-hover:opacity-20 transition-opacity`} />
                 
@@ -107,12 +107,12 @@ export function Lobby() {
                         <Users size={14} /> <span>{channel.listeners || 0} Live</span>
                     </div>
                 </div>
-                </button>
+                </Link>
             ))}
             
             <button
                 onClick={handleCreateRoom}
-                className={`rounded-2xl border-2 border-dashed p-6 flex flex-col items-center justify-center gap-4 transition-colors ${
+                className={`rounded-2xl border-2 border-dashed p-6 flex flex-col items-center justify-center gap-4 transition-colors w-full aspect-[4/3] ${
                     user 
                     ? "border-neutral-800 hover:border-neutral-600 text-neutral-500 hover:text-neutral-300 cursor-pointer" 
                     : "border-neutral-900 text-neutral-700 cursor-not-allowed"
