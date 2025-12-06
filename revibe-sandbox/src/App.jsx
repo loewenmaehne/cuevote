@@ -282,7 +282,7 @@ function App() {
   };
   
   if (!serverState) {
-    return <div className="min-h-screen bg-red-500 text-white text-2xl font-bold flex items-center justify-center">DEBUG: Connecting to server... (State is null)</div>;
+    return <div className="min-h-screen bg-black text-white flex items-center justify-center">Connecting to server...</div>;
   }
 
   // Compute user's votes from the queue data

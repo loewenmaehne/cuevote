@@ -13,8 +13,8 @@ createRoot(document.getElementById('root')).render(
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Lobby />} />
             <Route path="/room/:roomId" element={<App />} />
+            <Route path="/" element={<Lobby />} />
           </Routes>
         </BrowserRouter>
       </GoogleOAuthProvider>
