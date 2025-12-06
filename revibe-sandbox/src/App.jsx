@@ -295,11 +295,7 @@ function App() {
     <div className="min-h-screen bg-black text-white flex flex-col pb-32">
       <Header
         activeChannel={activeChannel}
-        onChannelChange={() => {}}
-        showChannels={showChannels}
-        onShowChannels={() => { navigate("/"); }}
-        channels={[]}
-        onJoinChannel={() => {}}
+        onGoHome={() => navigate("/")}
         onShowSuggest={setShowSuggest}
         user={user}
         onLoginSuccess={handleLoginSuccess}
