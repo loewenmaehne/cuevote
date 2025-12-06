@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Volume2, VolumeX, ArrowLeft } from "lucide-react";
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
@@ -20,10 +21,20 @@ const YouTubeState = {
 };
 
 function App() {
-  console.log("App render");
+  const { roomId } = useParams();
+  const navigate = useNavigate();
+  const activeRoomId = roomId || "synthwave";
 
   // WebSocket connection
-  const { state: serverState, sendMessage, lastError, clientId, lastMessage } = useWebSocket(WEBSOCKET_URL);
+  const { state: serverState, sendMessage, lastError, clientId, lastMessage, isConnected } = useWebSocket(WEBSOCKET_URL);
+
+  // Join Room on Connect or Room Change
+  useEffect(() => {
+      if (isConnected) {
+          console.log(`Joining room: ${activeRoomId}`);
+          sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
+      }
+  }, [isConnected, activeRoomId, sendMessage]);
 
   // Destructure server state
   const {
@@ -31,7 +42,7 @@ function App() {
     currentTrack = null,
     isPlaying = false,
     progress: serverProgress = 0,
-    activeChannel = "Synthwave",
+    activeChannel = "Synthwave", 
   } = serverState || {};
 
   // Local UI state
@@ -51,7 +62,6 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("revibe_auth_token");
     if (serverState && token && !user) {
-        // Only try to resume if we are connected (serverState exists) and not already logged in
         console.log("Resuming session...");
         sendMessage({ type: "RESUME_SESSION", payload: { token } });
     }
@@ -79,7 +89,6 @@ function App() {
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const playerContainerRef = useCallback(node => {
     if (node !== null) {
-      console.log("Player container is in the DOM");
       initializePlayer(node);
     }
   }, []);
@@ -103,7 +112,6 @@ function App() {
   // Player Initialization
   const initializePlayer = useCallback((container) => {
     loadYouTubeAPI().then((YT) => {
-      console.log("YouTube API loaded, creating player");
       playerRef.current = new YT.Player(container, {
         host: 'https://www.youtube-nocookie.com',
         playerVars: {
@@ -113,7 +121,6 @@ function App() {
         },
         events: {
           onReady: (event) => {
-            console.log("Player is ready");
             setIsPlayerReady(true);
             event.target.setVolume(volume);
             if (isMuted) {
@@ -123,7 +130,6 @@ function App() {
             }
           },
           onStateChange: (event) => {
-            console.log("Player state changed:", event.data);
             if (event.data === YouTubeState.PLAYING) {
               setAutoplayBlocked(false);
               const duration = event.target.getDuration();
@@ -144,38 +150,34 @@ function App() {
   useEffect(() => {
     const targetTrack = previewTrack || currentTrack;
     if (isPlayerReady && playerRef.current && targetTrack) {
-      const currentVideoIdInPlayer = playerRef.current.getVideoData()?.video_id;
+      const currentVideoIdInPlayer = playerRef.current.getVideoData?.()?.video_id;
       if (targetTrack.videoId !== currentVideoIdInPlayer) {
-        // If previewing, start from beginning. If radio, start from server progress.
         const startTime = previewTrack ? 0 : serverProgress;
-        playerRef.current.loadVideoById(targetTrack.videoId, startTime);
+        playerRef.current.loadVideoById?.(targetTrack.videoId, startTime);
       }
     } else if (isPlayerReady && playerRef.current && !targetTrack) {
-      playerRef.current.stopVideo();
+      playerRef.current.stopVideo?.();
     }
   }, [isPlayerReady, currentTrack, previewTrack, serverProgress]);
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
       if (previewTrack) {
-        playerRef.current.playVideo();
+        playerRef.current.playVideo?.();
       } else if (isPlaying && !isLocallyPaused) {
-        playerRef.current.playVideo();
+        playerRef.current.playVideo?.();
       } else {
-        playerRef.current.pauseVideo();
+        playerRef.current.pauseVideo?.();
       }
     }
   }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, previewTrack]);
 
   useEffect(() => {
-    // Only sync with server if NOT previewing
     if (isPlayerReady && playerRef.current && isPlaying && !previewTrack) {
-      // Don't sync if the video has ended locally
-      if (playerRef.current.getPlayerState() === YouTubeState.ENDED) return;
-      
-      const localProgress = playerRef.current.getCurrentTime();
-      if (Math.abs(localProgress - serverProgress) > 2) {
-        playerRef.current.seekTo(serverProgress);
+      if (playerRef.current.getPlayerState?.() === YouTubeState.ENDED) return;
+      const localProgress = playerRef.current.getCurrentTime?.();
+      if (localProgress && Math.abs(localProgress - serverProgress) > 2) {
+        playerRef.current.seekTo?.(serverProgress);
       }
     }
   }, [isPlayerReady, serverProgress, isPlaying, previewTrack]);
@@ -184,8 +186,9 @@ function App() {
   useEffect(() => {
     if (isPlaying && isPlayerReady && playerRef.current) {
       const check = setTimeout(() => {
-        const state = playerRef.current.getPlayerState();
+        const state = playerRef.current.getPlayerState?.();
         if (
+            state !== undefined &&
             state !== YouTubeState.PLAYING &&
             state !== YouTubeState.BUFFERING
         ) {
@@ -201,32 +204,31 @@ function App() {
   // Progress bar update
   useEffect(() => {
     if (playerRef.current && playerRef.current.getDuration) {
-        const duration = playerRef.current.getDuration();
+        const duration = playerRef.current.getDuration?.();
         if (duration > 0) {
             setProgress((serverProgress / duration) * 100);
-        } else {
+        }
+    } else {
             setProgress(0);
         }
-    }
   }, [serverProgress]);
 
   // Event Handlers
   const handlePlayPause = () => {
     if (isLocallyPaused) {
-      // Resume
       setIsLocallyPaused(false);
-      playerRef.current.seekTo(serverProgress);
-      playerRef.current.playVideo();
-    } else {
-      // Pause
+      playerRef.current?.seekTo?.(serverProgress);
+      playerRef.current?.playVideo?.();
+    }
+    else {
       setIsLocallyPaused(true);
-      playerRef.current.pauseVideo();
+      playerRef.current?.pauseVideo?.();
     }
   };
 
   const handleMuteToggle = () => {
-    if (isMuted) playerRef.current.unMute();
-    else playerRef.current.mute();
+    if (isMuted) playerRef.current?.unMute?.();
+    else playerRef.current?.mute?.();
     setIsMuted(!isMuted);
   };
 
@@ -234,9 +236,9 @@ function App() {
     const newVolume = Number(e.target.value);
     setVolume(newVolume);
     if (playerRef.current) {
-      playerRef.current.setVolume(newVolume);
+      playerRef.current.setVolume?.(newVolume);
       if (isMuted) {
-        playerRef.current.unMute();
+        playerRef.current.unMute?.();
         setIsMuted(false);
       }
     }
@@ -251,16 +253,14 @@ function App() {
   };
 
   const handlePreviewTrack = (track) => {
-    setIsLocallyPaused(true); // Pause the "radio" logic
+    setIsLocallyPaused(true);
     setPreviewTrack(track);
   };
 
   const handleStopPreview = () => {
     setPreviewTrack(null);
-    setIsLocallyPaused(false); // Resume radio logic
-    if (playerRef.current) {
-        playerRef.current.seekTo(serverProgress);
-    }
+    setIsLocallyPaused(false);
+    playerRef.current?.seekTo?.(serverProgress);
   };
 
   const handleLoginSuccess = (tokenResponse) => {
@@ -297,9 +297,9 @@ function App() {
         activeChannel={activeChannel}
         onChannelChange={() => {}}
         showChannels={showChannels}
-        onShowChannels={setShowChannels}
-        channels={CHANNEL_TAGS}
-        onJoinChannel={() => alert("Joined channel")}
+        onShowChannels={() => { navigate("/"); }}
+        channels={[]}
+        onJoinChannel={() => {}}
         onShowSuggest={setShowSuggest}
         user={user}
         onLoginSuccess={handleLoginSuccess}
@@ -322,7 +322,7 @@ function App() {
         {autoplayBlocked && (
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
             <button
-              onClick={() => playerRef.current?.playVideo()}
+              onClick={() => playerRef.current?.playVideo?.()}
               className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-lg shadow-lg hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all active:scale-95"
             >
               Tap to Join Session
