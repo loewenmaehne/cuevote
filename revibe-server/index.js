@@ -81,58 +81,90 @@ wss.on("connection", (ws, req) => {
 
       switch (parsedMessage.type) {
         case "SUGGEST_SONG": {
-          const track = parsedMessage.payload;
+          const { query, userId } = parsedMessage.payload;
+          let videoId = null;
+
+          // 1. Resolve Video ID (URL or Search)
+          const urlMatch = query.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+          if (urlMatch) {
+             videoId = urlMatch[1];
+          } else if (YOUTUBE_API_KEY) {
+             // Search via API
+             try {
+                 const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${YOUTUBE_API_KEY}`;
+                 const searchRes = await fetch(searchUrl);
+                 const searchData = await searchRes.json();
+                 if (searchData.items && searchData.items.length > 0) {
+                     videoId = searchData.items[0].id.videoId;
+                 }
+             } catch (err) {
+                 console.error("Search failed:", err);
+             }
+          }
+
+          if (!videoId) {
+              ws.send(JSON.stringify({ type: "error", message: "Could not find video." }));
+              return;
+          }
           
-          // 1. Verify with YouTube Data API if API Key is present
+          // 2. Fetch Details & Validate (Livestream/Duration)
+          let track = null;
           if (YOUTUBE_API_KEY) {
             try {
-                const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${track.videoId}&part=contentDetails,snippet&key=${YOUTUBE_API_KEY}`;
+                const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,snippet&key=${YOUTUBE_API_KEY}`;
                 const response = await fetch(apiUrl);
                 const data = await response.json();
 
                 if (data.items && data.items.length > 0) {
                     const videoData = data.items[0];
                     
-                    // Check for Livestream
                     const broadcastContent = videoData.snippet.liveBroadcastContent;
                     if (broadcastContent === 'live') {
-                        console.log(`Blocked Livestream suggestion: ${track.videoId}`);
                         ws.send(JSON.stringify({ type: "error", message: "Livestreams are not allowed." }));
-                        return; // Stop execution
+                        return;
                     }
 
-                    // Use official duration
                     const durationInSeconds = parseISO8601Duration(videoData.contentDetails.duration);
                     if (durationInSeconds === 0 && broadcastContent !== 'none') {
-                         // Sometimes liveBroadcastContent is 'upcoming' or 'none' but duration is 0 for streams
-                         console.log(`Blocked 0-duration video (likely stream): ${track.videoId}`);
                          ws.send(JSON.stringify({ type: "error", message: "Livestreams are not allowed." }));
                          return;
                     }
 
-                    track.duration = durationInSeconds;
-                    // Optional: Overwrite title/artist with official data for consistency
-                    // track.title = videoData.snippet.title;
+                    // Construct Track Object on Server
+                    track = {
+                        id: crypto.randomUUID(),
+                        videoId: videoId,
+                        title: videoData.snippet.title,
+                        artist: videoData.snippet.channelTitle,
+                        thumbnail: videoData.snippet.thumbnails.high?.url || videoData.snippet.thumbnails.default?.url,
+                        duration: durationInSeconds,
+                        score: 0,
+                        voters: {},
+                        suggestedBy: userId // store who added it
+                    };
                 }
             } catch (apiError) {
                 console.error("YouTube API Check failed:", apiError);
-                // Decide: Fail open (allow) or closed (block)?
-                // Currently failing open to keep app usable if API fails
             }
           }
 
-          // Initialize Voting Data
-          track.score = 0;
-          track.voters = {}; // userId -> 'up' | 'down'
-
-          const newQueue = [...state.queue, track];
-          const newState = { queue: newQueue };
-          if (newQueue.length === 1) {
-            newState.currentTrack = newQueue[0];
-            newState.isPlaying = true;
-            newState.progress = 0;
+          // Fallback if API failed but we have ID (e.g. regex worked but API quota dead)
+          // We shouldn't really allow this if we strictly block livestreams, but for now fail-safe:
+          if (!track && videoId) {
+             ws.send(JSON.stringify({ type: "error", message: "Server could not verify video details." }));
+             return;
           }
-          store.updateState(newState);
+
+          if (track) {
+            const newQueue = [...state.queue, track];
+            const newState = { queue: newQueue };
+            if (newQueue.length === 1) {
+                newState.currentTrack = newQueue[0];
+                newState.isPlaying = true;
+                newState.progress = 0;
+            }
+            store.updateState(newState);
+          }
           break;
         }
         case "VOTE": {

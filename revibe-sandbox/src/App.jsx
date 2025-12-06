@@ -242,8 +242,8 @@ function App() {
     }
   };
 
-  const handleSongSuggested = (newTrack) => {
-    sendMessage({ type: "SUGGEST_SONG", payload: newTrack });
+  const handleSongSuggested = (query) => {
+    sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
   };
 
   const handleVote = (trackId, type) => {
