@@ -19,24 +19,46 @@ const Room = require('./Room');
 // Room Manager
 const rooms = new Map();
 
-// Initialize Default Rooms
-const defaultRooms = [
-    "Synthwave", 
-    "Lofi", 
-    "Pop", 
-    "Hip Hop",
-    "R&B",
-    "Techno",
-    "Trap",
-    "House",
-    "Indie"
-];
+// Initialize Rooms from DB
+function loadRooms() {
+    const publicRooms = db.listPublicRooms();
+    publicRooms.forEach(roomData => {
+        if (!rooms.has(roomData.id)) {
+            rooms.set(roomData.id, new Room(roomData.id, roomData.name, YOUTUBE_API_KEY));
+            console.log(`Loaded room: ${roomData.name} (${roomData.id})`);
+        }
+    });
 
-defaultRooms.forEach(name => {
-    const id = name.toLowerCase().replace(/\s+/g, '-');
-    rooms.set(id, new Room(id, name, YOUTUBE_API_KEY));
-    console.log(`Created room: ${name} (${id})`);
-});
+    // Ensure Default Rooms exist
+    const defaultRooms = ["Synthwave", "Lofi", "Pop", "Hip Hop", "R&B", "Techno", "Trap", "House", "Indie"];
+    defaultRooms.forEach(name => {
+        const id = name.toLowerCase().replace(/\s+/g, '-');
+        if (!rooms.has(id)) {
+            // Check if it exists in DB but fell out of cache?
+            // Ideally, we upsert them into DB as 'system' owned.
+            // For simplicity, we just create them in memory if missing, and maybe persist them later.
+            // Let's insert them into DB if missing so they appear in the listPublicRooms query next time.
+            try {
+                const existing = db.getRoom(id);
+                if (!existing) {
+                    db.createRoom({
+                        id, 
+                        name, 
+                        description: `Official ${name} Channel`, 
+                        owner_id: 'system', 
+                        color: 'from-gray-700 to-black' // Default color, lobby handles specifics
+                    });
+                }
+                rooms.set(id, new Room(id, name, YOUTUBE_API_KEY));
+                console.log(`Created System Room: ${name}`);
+            } catch (err) {
+                console.error(`Failed to init room ${name}:`, err);
+            }
+        }
+    });
+}
+
+loadRooms();
 
 const clients = new Set();
 
@@ -140,8 +162,38 @@ wss.on("connection", (ws, req) => {
             if (rooms.has(roomId)) {
                 ws.roomId = roomId;
                 rooms.get(roomId).addClient(ws);
+                // Update activity timestamp in DB so it doesn't rot
+                db.updateRoomActivity(roomId);
             } else {
                 ws.send(JSON.stringify({ type: "error", message: "Room not found" }));
+            }
+            return;
+        }
+        case "CREATE_ROOM": {
+            const { name, description, color } = parsedMessage.payload;
+            if (!ws.user) {
+                ws.send(JSON.stringify({ type: "error", message: "You must be logged in to create a room." }));
+                return;
+            }
+            
+            const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + crypto.randomBytes(2).toString('hex');
+            
+            try {
+                const roomData = {
+                    id,
+                    name,
+                    description: description || "Community Station",
+                    owner_id: ws.user.id,
+                    color: color || "from-gray-700 to-black"
+                };
+                
+                db.createRoom(roomData);
+                rooms.set(id, new Room(id, name, YOUTUBE_API_KEY));
+                
+                ws.send(JSON.stringify({ type: "ROOM_CREATED", payload: roomData }));
+            } catch (err) {
+                console.error("Create Room Error:", err);
+                ws.send(JSON.stringify({ type: "error", message: "Failed to create room." }));
             }
             return;
         }
