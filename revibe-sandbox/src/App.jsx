@@ -261,7 +261,7 @@ function App() {
   }
 
   return (
-    <div className="h-screen bg-black text-white flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-black text-white flex flex-col pb-32">
       <Header
         activeChannel={activeChannel}
         onChannelChange={() => {}}
@@ -300,7 +300,7 @@ function App() {
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-24">
+      <div className="pb-4">
         <Queue
             tracks={queue}
             currentTrack={currentTrack}
