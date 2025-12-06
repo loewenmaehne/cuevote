@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Volume2, VolumeX, ArrowLeft } from "lucide-react";
-import { jwtDecode } from "jwt-decode";
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
@@ -234,19 +233,9 @@ function App() {
     }
   };
 
-  const handleLoginSuccess = (credentialResponse) => {
-    try {
-      const decoded = jwtDecode(credentialResponse.credential);
-      console.log("Logged in user:", decoded);
-      setUser({
-        name: decoded.name,
-        email: decoded.email,
-        picture: decoded.picture,
-        sub: decoded.sub, // Google unique ID
-      });
-    } catch (error) {
-      console.error("Login Failed:", error);
-    }
+  const handleLoginSuccess = (userData) => {
+    console.log("Logged in user:", userData);
+    setUser(userData);
   };
 
   const handleLogout = () => {
