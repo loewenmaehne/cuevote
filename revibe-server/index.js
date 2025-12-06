@@ -24,7 +24,12 @@ const defaultRooms = [
     "Synthwave", 
     "Lofi", 
     "Pop", 
-    "The Super Long Synthwave Station for Testing Marquee Effect"
+    "Hip Hop",
+    "R&B",
+    "Techno",
+    "Trap",
+    "House",
+    "Indie"
 ];
 
 defaultRooms.forEach(name => {

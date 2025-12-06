@@ -6,7 +6,12 @@ const DEFAULT_CHANNELS = [
   { id: "synthwave", name: "Synthwave", description: "Retro beats and neon lights", color: "from-purple-500 to-pink-600" },
   { id: "lofi", name: "Lofi", description: "Chill beats to study/relax to", color: "from-green-400 to-cyan-500" },
   { id: "pop", name: "Pop", description: "Top 40 and popular hits", color: "from-yellow-400 to-orange-500" },
-  { id: "the-super-long-synthwave-station-for-testing-marquee-effect", name: "The Super Long Synthwave Station for Testing Marquee Effect", description: "Testing long text scrolling", color: "from-blue-500 to-indigo-600" },
+  { id: "hip-hop", name: "Hip Hop", description: "Fresh bars and heavy beats", color: "from-red-500 to-rose-600" },
+  { id: "r-b", name: "R&B", description: "Smooth vibes and soul", color: "from-indigo-500 to-purple-700" },
+  { id: "techno", name: "Techno", description: "Underground industrial beats", color: "from-slate-700 to-black" },
+  { id: "trap", name: "Trap", description: "Heavy bass and rapid hi-hats", color: "from-orange-600 to-red-700" },
+  { id: "house", name: "House", description: "Club bangers and grooves", color: "from-blue-500 to-indigo-500" },
+  { id: "indie", name: "Indie", description: "Alternative and underground", color: "from-teal-500 to-emerald-600" },
 ];
 
 export function Lobby() {
