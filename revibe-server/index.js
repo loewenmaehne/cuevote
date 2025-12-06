@@ -6,9 +6,15 @@ process.on('uncaughtException', (error) => {
 
 const WebSocket = require("ws");
 const crypto = require("crypto");
+const { OAuth2Client } = require('google-auth-library');
+const jwt = require('jsonwebtoken');
+const db = require('./db');
 
 const wss = new WebSocket.Server({ port: process.env.PORT || 8080 });
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID; // We need this in .env too!
+
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // Helper to parse ISO 8601 duration (PT1H2M10S) into seconds
 function parseISO8601Duration(duration) {
@@ -194,6 +200,73 @@ wss.on("connection", (ws, req) => {
             });
           }
           break;
+        case "LOGIN": {
+            const { token } = parsedMessage.payload;
+            try {
+                // Verify Access Token by fetching User Profile from Google
+                const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                
+                if (!userInfoResponse.ok) {
+                    throw new Error("Invalid Google Token");
+                }
+
+                const userData = await userInfoResponse.json();
+                
+                // Create/Update User in DB
+                const user = db.upsertUser({
+                    id: userData.sub,
+                    email: userData.email,
+                    name: userData.name,
+                    picture: userData.picture
+                });
+
+                // Create Long-Lived Session (30 Days)
+                const sessionToken = crypto.randomUUID();
+                const expiresAt = Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60);
+                db.createSession(sessionToken, user.id, expiresAt);
+
+                ws.user = user; // Attach user to socket
+                ws.send(JSON.stringify({ 
+                    type: "LOGIN_SUCCESS", 
+                    payload: { user, sessionToken } 
+                }));
+
+            } catch (err) {
+                console.error("Login Error:", err);
+                ws.send(JSON.stringify({ type: "error", message: "Login Failed" }));
+            }
+            break;
+        }
+        case "RESUME_SESSION": {
+            const { token } = parsedMessage.payload;
+            const session = db.getSession(token);
+            
+            if (session) {
+                const user = {
+                    id: session.user_id,
+                    name: session.name,
+                    email: session.email,
+                    picture: session.picture,
+                    role: session.role
+                };
+                ws.user = user;
+                ws.send(JSON.stringify({ 
+                    type: "LOGIN_SUCCESS", 
+                    payload: { user, sessionToken: token } 
+                }));
+            } else {
+                ws.send(JSON.stringify({ type: "SESSION_INVALID" }));
+            }
+            break;
+        }
+        case "LOGOUT": {
+            const { token } = parsedMessage.payload;
+            if (token) db.deleteSession(token);
+            ws.user = null;
+            break;
+        }
         default:
           console.log("Unknown message type:", parsedMessage.type);
       }
