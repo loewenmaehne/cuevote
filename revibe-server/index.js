@@ -21,10 +21,20 @@ const rooms = new Map();
 
 // Initialize Rooms from DB
 function loadRooms() {
+    // Ensure System User
+    try {
+        db.upsertUser({
+            id: 'system',
+            email: 'system@revibe.music',
+            name: 'System',
+            picture: ''
+        });
+    } catch (e) { console.error("System user init failed", e); }
+
     const publicRooms = db.listPublicRooms();
     publicRooms.forEach(roomData => {
         if (!rooms.has(roomData.id)) {
-            rooms.set(roomData.id, new Room(roomData.id, roomData.name, YOUTUBE_API_KEY));
+            rooms.set(roomData.id, new Room(roomData.id, roomData.name, YOUTUBE_API_KEY, roomData));
             console.log(`Loaded room: ${roomData.name} (${roomData.id})`);
         }
     });
@@ -34,22 +44,20 @@ function loadRooms() {
     defaultRooms.forEach(name => {
         const id = name.toLowerCase().replace(/\s+/g, '-');
         if (!rooms.has(id)) {
-            // Check if it exists in DB but fell out of cache?
-            // Ideally, we upsert them into DB as 'system' owned.
-            // For simplicity, we just create them in memory if missing, and maybe persist them later.
-            // Let's insert them into DB if missing so they appear in the listPublicRooms query next time.
             try {
-                const existing = db.getRoom(id);
+                let existing = db.getRoom(id);
                 if (!existing) {
-                    db.createRoom({
+                    existing = {
                         id, 
                         name, 
                         description: `Official ${name} Channel`, 
                         owner_id: 'system', 
-                        color: 'from-gray-700 to-black' // Default color, lobby handles specifics
-                    });
+                        color: 'from-gray-700 to-black',
+                        is_public: 1
+                    };
+                    db.createRoom(existing);
                 }
-                rooms.set(id, new Room(id, name, YOUTUBE_API_KEY));
+                rooms.set(id, new Room(id, name, YOUTUBE_API_KEY, existing));
                 console.log(`Created System Room: ${name}`);
             } catch (err) {
                 console.error(`Failed to init room ${name}:`, err);
@@ -184,17 +192,28 @@ wss.on("connection", (ws, req) => {
                     name,
                     description: description || "Community Station",
                     owner_id: ws.user.id,
-                    color: color || "from-gray-700 to-black"
+                    color: color || "from-gray-700 to-black",
+                    is_public: 1
                 };
                 
                 db.createRoom(roomData);
-                rooms.set(id, new Room(id, name, YOUTUBE_API_KEY));
+                rooms.set(id, new Room(id, name, YOUTUBE_API_KEY, roomData));
                 
                 ws.send(JSON.stringify({ type: "ROOM_CREATED", payload: roomData }));
             } catch (err) {
                 console.error("Create Room Error:", err);
                 ws.send(JSON.stringify({ type: "error", message: "Failed to create room." }));
             }
+            return;
+        }
+        case "LIST_ROOMS": {
+            const roomList = [];
+            for (const room of rooms.values()) {
+                if (room.metadata.is_public) {
+                    roomList.push(room.getSummary());
+                }
+            }
+            ws.send(JSON.stringify({ type: "ROOM_LIST", payload: roomList }));
             return;
         }
       }
