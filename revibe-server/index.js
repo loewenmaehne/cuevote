@@ -20,7 +20,14 @@ const Room = require('./Room');
 const rooms = new Map();
 
 // Initialize Default Rooms
-["Synthwave", "Lofi", "Pop"].forEach(name => {
+const defaultRooms = [
+    "Synthwave", 
+    "Lofi", 
+    "Pop", 
+    "The Super Long Synthwave Station for Testing Marquee Effect"
+];
+
+defaultRooms.forEach(name => {
     const id = name.toLowerCase().replace(/\s+/g, '-');
     rooms.set(id, new Room(id, name, YOUTUBE_API_KEY));
     console.log(`Created room: ${name} (${id})`);

@@ -6,6 +6,7 @@ const DEFAULT_CHANNELS = [
   { id: "synthwave", name: "Synthwave", description: "Retro beats and neon lights", color: "from-purple-500 to-pink-600" },
   { id: "lofi", name: "Lofi", description: "Chill beats to study/relax to", color: "from-green-400 to-cyan-500" },
   { id: "pop", name: "Pop", description: "Top 40 and popular hits", color: "from-yellow-400 to-orange-500" },
+  { id: "the-super-long-synthwave-station-for-testing-marquee-effect", name: "The Super Long Synthwave Station for Testing Marquee Effect", description: "Testing long text scrolling", color: "from-blue-500 to-indigo-600" },
 ];
 
 export function Lobby() {
