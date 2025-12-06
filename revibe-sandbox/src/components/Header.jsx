@@ -83,10 +83,19 @@ export function Header({
                 onGoHome();
                 onShowSuggest(false);
             }}
-            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors flex-shrink-0"
+            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors flex-shrink-0 max-w-[160px] overflow-hidden"
+            title={activeChannel}
             >
-            <Radio size={22} /> 
-            <span className="hidden md:inline truncate">{activeChannel}</span>
+            <Radio size={22} className="flex-shrink-0" /> 
+            {activeChannel.length > 15 ? (
+                <div className="overflow-hidden whitespace-nowrap w-full mask-linear-fade">
+                    <span className="animate-marquee inline-block pl-0">
+                        {activeChannel}&nbsp;&nbsp;&nbsp;&nbsp;{activeChannel}&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
+                </div>
+            ) : (
+                <span className="hidden md:inline truncate">{activeChannel}</span>
+            )}
             </button>
 
             <button
