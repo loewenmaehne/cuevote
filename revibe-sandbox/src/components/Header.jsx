@@ -18,22 +18,8 @@ export function Header({
   const headerRef = React.useRef(null);
 
   const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-        try {
-            const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-            });
-            const data = await userInfo.json();
-            // Map Google API response to our user format
-            onLoginSuccess({
-                name: data.name,
-                email: data.email,
-                picture: data.picture,
-                sub: data.sub
-            });
-        } catch (error) {
-            console.error("Failed to fetch user info:", error);
-        }
+    onSuccess: (tokenResponse) => {
+        onLoginSuccess(tokenResponse);
     },
     onError: () => console.log('Login Failed'),
   });
@@ -66,7 +52,7 @@ export function Header({
                             {user.picture && (
                                 <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full border border-neutral-700" />
                             )}
-                            <span className="text-sm font-medium text-neutral-300 hidden lg:block truncate max-w-[120px]">{user.name}</span>
+                            <span className="text-sm font-medium text-neutral-300 truncate max-w-[120px]">{user.name}</span>
                         </div>
                         <button 
                             onClick={onLogout} 

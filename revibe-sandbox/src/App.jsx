@@ -44,7 +44,26 @@ function App() {
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
   const [previewTrack, setPreviewTrack] = useState(null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedSession = localStorage.getItem("revibe_session");
+    if (savedSession) {
+        try {
+            const { user, expiresAt } = JSON.parse(savedSession);
+            console.log("Checking session:", { now: Date.now(), expiresAt });
+            if (Date.now() < expiresAt) {
+                console.log("Session valid, restoring user:", user);
+                return user;
+            } else {
+                console.log("Session expired");
+                localStorage.removeItem("revibe_session");
+            }
+        } catch (e) {
+            console.error("Session parse error:", e);
+            localStorage.removeItem("revibe_session");
+        }
+    }
+    return null;
+  });
   const [progress, setProgress] = useState(0);
 
   // YouTube Player state
@@ -236,14 +255,34 @@ function App() {
     }
   };
 
-  const handleLoginSuccess = (userData) => {
-    console.log("Logged in user:", userData);
-    setUser(userData);
+  const handleLoginSuccess = async (tokenResponse) => {
+    console.log("Google Token Response:", tokenResponse);
+    try {
+        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        });
+        const userData = await userInfoResponse.json();
+        
+        console.log("Logged in user:", userData);
+        
+        const sessionData = {
+            user: userData,
+            token: tokenResponse.access_token,
+            // Default to 1 hour (3600s) if expires_in is missing
+            expiresAt: Date.now() + ((tokenResponse.expires_in || 3600) * 1000),
+        };
+        
+        console.log("Saving session:", sessionData);
+        localStorage.setItem("revibe_session", JSON.stringify(sessionData));
+        setUser(userData);
+    } catch (error) {
+        console.error("Failed to fetch user info:", error);
+    }
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("revibe_session");
     setUser(null);
-    // optionally revoke token here if needed
   };
   
   if (!serverState) {
