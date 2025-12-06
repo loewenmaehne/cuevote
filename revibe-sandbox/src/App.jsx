@@ -25,8 +25,12 @@ function App() {
   const navigate = useNavigate();
   const activeRoomId = roomId || "synthwave";
 
+  console.log("App Component MOUNTED, Room:", activeRoomId);
+
   // WebSocket connection
   const { state: serverState, sendMessage, lastError, clientId, lastMessage, isConnected } = useWebSocket(WEBSOCKET_URL);
+
+  console.log("Server State:", serverState);
 
   // Join Room on Connect or Room Change
   useEffect(() => {
@@ -278,7 +282,7 @@ function App() {
   };
   
   if (!serverState) {
-    return <div className="min-h-screen bg-black text-white flex items-center justify-center">Connecting to server...</div>;
+    return <div className="min-h-screen bg-red-500 text-white text-2xl font-bold flex items-center justify-center">DEBUG: Connecting to server... (State is null)</div>;
   }
 
   // Compute user's votes from the queue data
