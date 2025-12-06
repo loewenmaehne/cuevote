@@ -11,10 +11,16 @@ function parseISO8601Duration(duration) {
 }
 
 class Room {
-    constructor(id, name, apiKey) {
+    constructor(id, name, apiKey, metadata = {}) {
         this.id = id;
         this.name = name;
         this.apiKey = apiKey;
+        this.metadata = {
+            description: metadata.description || "",
+            color: metadata.color || "from-gray-700 to-black",
+            owner_id: metadata.owner_id,
+            is_public: metadata.is_public !== undefined ? metadata.is_public : 1
+        };
         this.clients = new Set();
         
         this.state = {
@@ -27,6 +33,17 @@ class Room {
 
         // Start the Room Timer
         this.interval = setInterval(() => this.tick(), 1000);
+    }
+
+    getSummary() {
+        return {
+            id: this.id,
+            name: this.name,
+            description: this.metadata.description,
+            color: this.metadata.color,
+            listeners: this.clients.size,
+            currentTrack: this.state.currentTrack
+        };
     }
 
     addClient(ws) {
