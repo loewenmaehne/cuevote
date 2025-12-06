@@ -70,7 +70,13 @@ export function Header({
                     </div>
                 )}
             </div>
+        </div>
 
+        <h1 className="text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap text-center">
+          ReVibe Music
+        </h1>
+
+        <div className="flex items-center justify-end gap-4 min-w-0">
             <button
             onClick={(event) => {
                 event.stopPropagation();
@@ -82,13 +88,7 @@ export function Header({
             <Radio size={22} /> 
             <span className="hidden md:inline truncate">{activeChannel}</span>
             </button>
-        </div>
 
-        <h1 className="text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap">
-          ReVibe Music
-        </h1>
-
-        <div className="flex justify-end min-w-0">
             <button
             onClick={(event) => {
                 event.stopPropagation();
