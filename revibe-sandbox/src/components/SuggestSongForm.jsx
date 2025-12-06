@@ -61,16 +61,15 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError })
         return (
           <div className="keep-open w-full max-w-5xl mx-auto mt-3 animate-fadeIn space-y-2">
             <div className="keep-open flex items-center gap-2">
-              <input
-                type="text"
-                value={songSuggestion}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyPress}
-                placeholder="Paste a full YouTube link..."
-                disabled={isSubmittingSuggestion}
-                className="keep-open flex-1 px-5 py-2 rounded-full bg-[#121212] text-white border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base disabled:opacity-60"
-              />
-              <button
+                              <input
+                                type="text"
+                                value={songSuggestion}
+                                onChange={handleInputChange}
+                                onKeyDown={handleKeyPress}
+                                placeholder="Type a song name..."
+                                disabled={isSubmittingSuggestion}
+                                className="keep-open flex-1 px-5 py-2 rounded-full bg-[#121212] text-white border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base disabled:opacity-60"
+                              />              <button
                 onClick={(event) => {
                   event.stopPropagation();
                   handleSubmitSuggestion();
