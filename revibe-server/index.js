@@ -140,7 +140,7 @@ wss.on("connection", (ws, req) => {
                         duration: durationInSeconds,
                         score: 0,
                         voters: {},
-                        suggestedBy: userId // store who added it
+                        suggestedBy: ws.user?.id || userId // Prefer authenticated ID
                     };
                 }
             } catch (apiError) {
@@ -171,10 +171,11 @@ wss.on("connection", (ws, req) => {
           const { trackId, voteType } = parsedMessage.payload;
           const queue = [...state.queue];
           const trackIndex = queue.findIndex((t) => t.id === trackId);
+          const voterId = ws.user?.id || ws.id; // Use User ID if logged in, else Session ID
 
           if (trackIndex !== -1) {
             const track = { ...queue[trackIndex] };
-            const previousVote = track.voters[ws.id];
+            const previousVote = track.voters[voterId];
 
             // Calculate Score Change
             let scoreChange = 0;
@@ -182,7 +183,7 @@ wss.on("connection", (ws, req) => {
             if (previousVote === voteType) {
               // Toggle OFF (Remove vote)
               scoreChange = voteType === 'up' ? -1 : 1;
-              delete track.voters[ws.id];
+              delete track.voters[voterId];
             } else {
               // New Vote or Swap
               if (voteType === 'up') {
@@ -190,7 +191,7 @@ wss.on("connection", (ws, req) => {
               } else {
                 scoreChange = previousVote === 'up' ? -2 : -1;
               }
-              track.voters[ws.id] = voteType;
+              track.voters[voterId] = voteType;
             }
 
             track.score = (track.score || 0) + scoreChange;
