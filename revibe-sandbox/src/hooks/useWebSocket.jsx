@@ -4,6 +4,7 @@ export function useWebSocket(url) {
   const [state, setState] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [lastError, setLastError] = useState(null);
+  const [clientId, setClientId] = useState(null);
   const ws = useRef(null);
 
   useEffect(() => {
@@ -42,8 +43,9 @@ export function useWebSocket(url) {
             setState(message.payload);
           } else if (message.type === "error") {
             setLastError(message.message);
-            // Clear error after 5 seconds
             setTimeout(() => setLastError(null), 5000);
+          } else if (message.type === "init") {
+            setClientId(message.payload.clientId);
           }
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
@@ -70,5 +72,5 @@ export function useWebSocket(url) {
     }
   };
 
-  return { state, isConnected, sendMessage, lastError };
+  return { state, isConnected, sendMessage, lastError, clientId };
 }

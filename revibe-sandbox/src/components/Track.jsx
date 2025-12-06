@@ -56,6 +56,14 @@ export function Track({
           >
             <ThumbsUp size={20} />
           </button>
+          
+          <span className={`text-sm font-bold w-6 text-center ${
+            (track.score || 0) > 0 ? "text-orange-400" : 
+            (track.score || 0) < 0 ? "text-neutral-500" : "text-neutral-600"
+          }`}>
+            {track.score || 0}
+          </span>
+
           <button
             onClick={(event) => {
               event.stopPropagation();

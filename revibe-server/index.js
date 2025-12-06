@@ -5,6 +5,7 @@ process.on('uncaughtException', (error) => {
 });
 
 const WebSocket = require("ws");
+const crypto = require("crypto");
 
 const wss = new WebSocket.Server({ port: process.env.PORT || 8080 });
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -44,10 +45,13 @@ console.log("WebSocket server started on port", process.env.PORT || 8080);
 
 wss.on("connection", (ws) => {
   console.log("Client connected");
+  ws.id = crypto.randomUUID();
   clients.add(ws);
 
-  // Send the current state to the newly connected client
+  // Send initialization message with Client ID
   try {
+    ws.send(JSON.stringify({ type: "init", payload: { clientId: ws.id } }));
+    // Send the current state
     ws.send(JSON.stringify({ type: "state", payload: store.getState() }));
   } catch (error) {
     console.error("Failed to send initial state to client:", error);
@@ -101,6 +105,10 @@ wss.on("connection", (ws) => {
             }
           }
 
+          // Initialize Voting Data
+          track.score = 0;
+          track.voters = {}; // userId -> 'up' | 'down'
+
           const newQueue = [...state.queue, track];
           const newState = { queue: newQueue };
           if (newQueue.length === 1) {
@@ -109,6 +117,45 @@ wss.on("connection", (ws) => {
             newState.progress = 0;
           }
           store.updateState(newState);
+          break;
+        }
+        case "VOTE": {
+          const { trackId, voteType } = parsedMessage.payload;
+          const queue = [...state.queue];
+          const trackIndex = queue.findIndex((t) => t.id === trackId);
+
+          if (trackIndex !== -1) {
+            const track = { ...queue[trackIndex] };
+            const previousVote = track.voters[ws.id];
+
+            // Calculate Score Change
+            let scoreChange = 0;
+            
+            if (previousVote === voteType) {
+              // Toggle OFF (Remove vote)
+              scoreChange = voteType === 'up' ? -1 : 1;
+              delete track.voters[ws.id];
+            } else {
+              // New Vote or Swap
+              if (voteType === 'up') {
+                scoreChange = previousVote === 'down' ? 2 : 1;
+              } else {
+                scoreChange = previousVote === 'up' ? -2 : -1;
+              }
+              track.voters[ws.id] = voteType;
+            }
+
+            track.score = (track.score || 0) + scoreChange;
+            queue[trackIndex] = track;
+
+            // Re-sort Queue: Score Descending, then Time Added (FIFO)
+            queue.sort((a, b) => {
+                const scoreDiff = b.score - a.score;
+                return scoreDiff !== 0 ? scoreDiff : 0; // Keep original order if scores tied
+            });
+
+            store.updateState({ queue });
+          }
           break;
         }
         case "PLAY_PAUSE":
