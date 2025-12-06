@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Radio, Send, Sparkles } from "lucide-react";
+import { GoogleLogin } from '@react-oauth/google';
+import { Radio, Send, Sparkles, LogOut } from "lucide-react";
 
 export function Header({
   activeChannel,
@@ -10,6 +11,9 @@ export function Header({
   onShowChannels,
   channels,
   onJoinChannel,
+  user,
+  onLoginSuccess,
+  onLogout,
 }) {
   const headerRef = React.useRef(null);
 
@@ -32,16 +36,48 @@ export function Header({
       className="p-4 border-b border-neutral-900 bg-[#050505]/95 backdrop-blur-md z-40 transition-all duration-700 ease-in-out flex flex-col items-center gap-3"
     >
       <div className="flex items-center justify-between w-full max-w-5xl relative">
-        <button
-          onClick={(event) => {
-            event.stopPropagation();
-            onShowChannels((prev) => !prev);
-            onShowSuggest(false);
-          }}
-          className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors absolute left-0"
-        >
-          <Radio size={22} /> {activeChannel}
-        </button>
+        <div className="absolute left-0 flex items-center gap-6">
+            {user ? (
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                         {user.picture && (
+                            <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full border border-neutral-700" />
+                         )}
+                         <span className="text-sm font-medium text-neutral-300 hidden sm:block">{user.name}</span>
+                    </div>
+                    <button 
+                        onClick={onLogout} 
+                        className="text-neutral-500 hover:text-red-400 transition-colors"
+                        title="Logout"
+                    >
+                        <LogOut size={18} />
+                    </button>
+                </div>
+            ) : (
+                <div>
+                    <GoogleLogin
+                        onSuccess={onLoginSuccess}
+                        onError={() => {
+                        console.log('Login Failed');
+                        }}
+                        type="icon"
+                        theme="filled_black"
+                        shape="circle"
+                    />
+                </div>
+            )}
+
+            <button
+            onClick={(event) => {
+                event.stopPropagation();
+                onShowChannels((prev) => !prev);
+                onShowSuggest(false);
+            }}
+            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
+            >
+            <Radio size={22} /> {activeChannel}
+            </button>
+        </div>
 
         <h1 className="text-2xl font-bold text-orange-500 tracking-tight mx-auto">
           ReVibe Music
@@ -100,4 +136,7 @@ Header.propTypes = {
   onShowChannels: PropTypes.func.isRequired,
   channels: PropTypes.arrayOf(PropTypes.string).isRequired,
   onJoinChannel: PropTypes.func.isRequired,
+  user: PropTypes.object,
+  onLoginSuccess: PropTypes.func,
+  onLogout: PropTypes.func,
 };
