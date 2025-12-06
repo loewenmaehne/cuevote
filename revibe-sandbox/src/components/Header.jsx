@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { GoogleLogin } from '@react-oauth/google';
-import { Radio, Send, Sparkles, LogOut } from "lucide-react";
+import { useGoogleLogin } from '@react-oauth/google';
+import { Radio, Send, Sparkles, LogOut, LogIn } from "lucide-react";
 
 export function Header({
   activeChannel,
@@ -16,6 +16,27 @@ export function Header({
   onLogout,
 }) {
   const headerRef = React.useRef(null);
+
+  const login = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+        try {
+            const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+            });
+            const data = await userInfo.json();
+            // Map Google API response to our user format
+            onLoginSuccess({
+                name: data.name,
+                email: data.email,
+                picture: data.picture,
+                sub: data.sub
+            });
+        } catch (error) {
+            console.error("Failed to fetch user info:", error);
+        }
+    },
+    onError: () => console.log('Login Failed'),
+  });
 
   React.useEffect(() => {
     const handleClickOutside = (event) => {
@@ -57,15 +78,15 @@ export function Header({
                     </div>
                 ) : (
                     <div>
-                        <GoogleLogin
-                            onSuccess={onLoginSuccess}
-                            onError={() => {
-                            console.log('Login Failed');
-                            }}
-                            type="icon"
-                            theme="filled_black"
-                            shape="circle"
-                        />
+                        <button
+                            onClick={() => login()}
+                            className="group flex items-center justify-center w-9 h-9 rounded-full border border-neutral-700 bg-neutral-800/50 hover:bg-neutral-700 hover:border-neutral-500 transition-all active:scale-95 shadow-sm"
+                            title="Sign in with Google"
+                        >
+                            <svg className="w-5 h-5 text-neutral-400 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
+                            </svg>
+                        </button>
                     </div>
                 )}
             </div>
