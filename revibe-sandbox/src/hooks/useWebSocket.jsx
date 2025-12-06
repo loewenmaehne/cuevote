@@ -4,7 +4,17 @@ export function useWebSocket(url) {
   const [state, setState] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [lastError, setLastError] = useState(null);
-  const [clientId, setClientId] = useState(null);
+  
+  // Persistent Client ID
+  const [clientId] = useState(() => {
+    let id = localStorage.getItem("revibe_client_id");
+    if (!id) {
+      id = crypto.randomUUID ? crypto.randomUUID() : `user-${Date.now()}-${Math.random()}`;
+      localStorage.setItem("revibe_client_id", id);
+    }
+    return id;
+  });
+
   const ws = useRef(null);
 
   useEffect(() => {
@@ -13,7 +23,11 @@ export function useWebSocket(url) {
     let reconnectTimeout = null;
 
     const connect = () => {
-      ws.current = new WebSocket(url);
+      // Append Client ID to URL
+      const wsUrl = new URL(url);
+      wsUrl.searchParams.append("clientId", clientId);
+      
+      ws.current = new WebSocket(wsUrl.toString());
 
       ws.current.onopen = () => {
         console.log("WebSocket connected");
@@ -44,8 +58,6 @@ export function useWebSocket(url) {
           } else if (message.type === "error") {
             setLastError(message.message);
             setTimeout(() => setLastError(null), 5000);
-          } else if (message.type === "init") {
-            setClientId(message.payload.clientId);
           }
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
@@ -64,7 +76,7 @@ export function useWebSocket(url) {
         ws.current.close();
       }
     };
-  }, [url]);
+  }, [url, clientId]);
 
   const sendMessage = (message) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {

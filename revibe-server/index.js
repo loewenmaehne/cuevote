@@ -43,15 +43,25 @@ const clients = new Set();
 
 console.log("WebSocket server started on port", process.env.PORT || 8080);
 
-wss.on("connection", (ws) => {
+wss.on("connection", (ws, req) => {
   console.log("Client connected");
-  ws.id = crypto.randomUUID();
+  
+  // Parse Client ID from URL query params
+  const urlParams = new URLSearchParams(req.url.split('?')[1]);
+  const clientId = urlParams.get('clientId');
+
+  if (clientId) {
+    ws.id = clientId;
+    console.log(`Resumed session for client: ${ws.id}`);
+  } else {
+    ws.id = crypto.randomUUID();
+    console.log(`New client assigned ID: ${ws.id}`);
+  }
+
   clients.add(ws);
 
-  // Send initialization message with Client ID
+  // Send the current state to the newly connected client
   try {
-    ws.send(JSON.stringify({ type: "init", payload: { clientId: ws.id } }));
-    // Send the current state
     ws.send(JSON.stringify({ type: "state", payload: store.getState() }));
   } catch (error) {
     console.error("Failed to send initial state to client:", error);
