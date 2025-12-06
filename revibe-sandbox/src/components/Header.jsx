@@ -39,7 +39,7 @@ export function Header({
     >
       <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full gap-4">
         <div className="flex items-center gap-3 justify-start min-w-0">
-            <div className="w-[40px] lg:w-[180px] flex items-center flex-shrink-0 transition-all duration-300">
+            <div className="flex items-center flex-shrink-0 transition-all duration-300">
                 {user ? (
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
