@@ -1,16 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Radio, Users, Sparkles, AlertCircle } from "lucide-react";
-import { useWebSocket } from "../hooks/useWebSocket";
+// import { useWebSocket } from "../hooks/useWebSocket";
 
 const WEBSOCKET_URL = "ws://localhost:8080";
 
+const DEFAULT_CHANNELS = [
+  { id: "synthwave", name: "Synthwave", description: "Retro beats and neon lights", color: "from-purple-500 to-pink-600" },
+  { id: "lofi", name: "Lofi", description: "Chill beats to study/relax to", color: "from-green-400 to-cyan-500" },
+  { id: "pop", name: "Pop", description: "Top 40 and popular hits", color: "from-yellow-400 to-orange-500" },
+  { id: "hip-hop", name: "Hip Hop", description: "Fresh bars and heavy beats", color: "from-red-500 to-rose-600" },
+  { id: "r-b", name: "R&B", description: "Smooth vibes and soul", color: "from-indigo-500 to-purple-700" },
+  { id: "techno", name: "Techno", description: "Underground industrial beats", color: "from-slate-700 to-black" },
+  { id: "trap", name: "Trap", description: "Heavy bass and rapid hi-hats", color: "from-orange-600 to-red-700" },
+  { id: "house", name: "House", description: "Club bangers and grooves", color: "from-blue-500 to-indigo-500" },
+  { id: "indie", name: "Indie", description: "Alternative and underground", color: "from-teal-500 to-emerald-600" },
+];
+
 export function Lobby() {
   const navigate = useNavigate();
-  const { sendMessage, lastMessage, isConnected, lastError } = useWebSocket(WEBSOCKET_URL);
-  const [rooms, setRooms] = useState([]);
+  // const { sendMessage, lastMessage, isConnected, lastError } = useWebSocket(WEBSOCKET_URL);
+  const [rooms, setRooms] = useState(DEFAULT_CHANNELS);
   const [user, setUser] = useState(null);
+  const lastError = null;
 
+  /*
   // Resume Session
   useEffect(() => {
     const token = localStorage.getItem("revibe_auth_token");
@@ -37,8 +51,11 @@ export function Lobby() {
         }
     }
   }, [lastMessage, navigate]);
+  */
 
   const handleCreateRoom = () => {
+      alert("Please sign in (top right corner of a room) to create a channel!");
+      /*
       if (!user) {
           alert("Please sign in (top right corner of a room) to create a channel!");
           return;
@@ -54,6 +71,7 @@ export function Lobby() {
               } 
           });
       }
+      */
   };
 
   return (
