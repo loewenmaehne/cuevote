@@ -46,6 +46,21 @@ function App() {
     activeChannel = "Synthwave", 
   } = serverState || {};
 
+  // Stale State Guard: If we switched rooms but serverState is still from the old room, show loading.
+  const normalizedActiveChannel = activeChannel?.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  const normalizedRoomId = activeRoomId?.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  
+  const isStaleState = serverState && normalizedActiveChannel !== normalizedRoomId;
+
+  if (!serverState || isStaleState) {
+    return <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+            <span>{isStaleState ? "Switching Channels..." : "Connecting to Server..."}</span>
+        </div>
+    </div>;
+  }
+
   // Local UI state
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
@@ -244,10 +259,16 @@ function App() {
     playerRef.current?.seekTo?.(serverProgress);
   };
   
-  if (!serverState) {
-    return <div className="min-h-screen bg-black text-white flex items-center justify-center">Connecting to server...</div>;
-  }
-
+  const handleLogout = () => {
+    const token = localStorage.getItem("revibe_auth_token");
+    if (token) {
+        sendMessage({ type: "LOGOUT", payload: { token } });
+        localStorage.removeItem("revibe_auth_token");
+    }
+    setUser(null);
+  };
+  
+  // Render Main UI
   // Compute user's votes from the queue data
   const userVotes = {};
   if (clientId) {
