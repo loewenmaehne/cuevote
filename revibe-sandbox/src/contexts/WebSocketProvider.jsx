@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 
 const WebSocketContext = createContext(null);
 
@@ -21,25 +21,25 @@ export function WebSocketProvider({ children }) {
 
   const ws = useRef(null);
 
-  const sendMessage = (message) => {
+  const sendMessage = useCallback((message) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify(message));
     }
-  };
+  }, []);
 
-  const handleLoginSuccess = (tokenResponse) => {
+  const handleLoginSuccess = useCallback((tokenResponse) => {
     console.log("Sending Access Token to Backend...", tokenResponse);
     sendMessage({ type: "LOGIN", payload: { token: tokenResponse.access_token } });
-  };
+  }, [sendMessage]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     const token = localStorage.getItem("revibe_auth_token");
     if (token) {
         sendMessage({ type: "LOGOUT", payload: { token } });
         localStorage.removeItem("revibe_auth_token");
     }
     setUser(null);
-  };
+  }, [sendMessage]);
 
   // Handle Messages (Auth)
   useEffect(() => {
