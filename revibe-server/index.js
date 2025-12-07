@@ -170,7 +170,17 @@ wss.on("connection", (ws, req) => {
                 rooms.get(ws.roomId).removeClient(ws);
             }
             
-            // Join new room
+            // Join new room (Check Memory -> Check DB)
+            if (!rooms.has(roomId)) {
+                try {
+                    const roomData = db.getRoom(roomId);
+                    if (roomData) {
+                        console.log(`Waking up idle room: ${roomData.name} (${roomId})`);
+                        rooms.set(roomId, new Room(roomId, roomData.name, YOUTUBE_API_KEY, roomData));
+                    }
+                } catch (e) { console.error("DB Lookup failed", e); }
+            }
+
             if (rooms.has(roomId)) {
                 ws.roomId = roomId;
                 rooms.get(roomId).addClient(ws);
@@ -242,3 +252,15 @@ wss.on("connection", (ws, req) => {
     }
   });
 });
+
+// Cleanup Idle Rooms (Every 5 minutes)
+setInterval(() => {
+    console.log("Running cleanup task...");
+    for (const [id, room] of rooms.entries()) {
+        if (room.clients.size === 0) {
+            console.log(`Unloading idle room: ${room.name} (${id})`);
+            room.destroy(); // Stop the timer
+            rooms.delete(id);
+        }
+    }
+}, 5 * 60 * 1000);
