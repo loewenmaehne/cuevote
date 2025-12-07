@@ -6,10 +6,7 @@ import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
 import { PlaybackControls } from "./components/PlaybackControls";
-import { useWebSocket } from "./hooks/useWebSocket";
-
-const CHANNEL_TAGS = ["Synthwave", "Chillhop", "Lo-fi", "Indie", "Funk", "Jazz Fusion"];
-const WEBSOCKET_URL = "ws://localhost:8080";
+import { useWebSocketContext } from "./contexts/WebSocketProvider";
 
 const YouTubeState = {
   UNSTARTED: -1,
@@ -27,8 +24,8 @@ function App() {
 
   console.log("App Component MOUNTED, Room:", activeRoomId);
 
-  // WebSocket connection
-  const { state: serverState, sendMessage, lastError, clientId, lastMessage, isConnected } = useWebSocket(WEBSOCKET_URL);
+  // WebSocket connection (Shared)
+  const { state: serverState, sendMessage, lastError, clientId, user, handleLogout, handleLoginSuccess, isConnected } = useWebSocketContext();
 
   console.log("Server State:", serverState);
 
@@ -59,34 +56,14 @@ function App() {
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
   const [previewTrack, setPreviewTrack] = useState(null);
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null); // Now from Context
   const [progress, setProgress] = useState(0);
 
-  // Auth: Resume Session on Connect
-  useEffect(() => {
-    const token = localStorage.getItem("revibe_auth_token");
-    if (serverState && token && !user) {
-        console.log("Resuming session...");
-        sendMessage({ type: "RESUME_SESSION", payload: { token } });
-    }
-  }, [serverState, sendMessage, user]);
+  // Auth: Resume Session logic moved to Provider
 
-  // Auth: Handle Login Events
-  useEffect(() => {
-    if (lastMessage) {
-        if (lastMessage.type === "LOGIN_SUCCESS") {
-            console.log("Backend Login Success:", lastMessage.payload.user);
-            setUser(lastMessage.payload.user);
-            if (lastMessage.payload.sessionToken) {
-                localStorage.setItem("revibe_auth_token", lastMessage.payload.sessionToken);
-            }
-        } else if (lastMessage.type === "SESSION_INVALID") {
-            console.warn("Session Invalid/Expired");
-            localStorage.removeItem("revibe_auth_token");
-            setUser(null);
-        }
-    }
-  }, [lastMessage]);
+  // Auth: Handle Login Events logic moved to Provider? 
+  // We still need to trigger the context update if we want.
+  // Actually, let's update the Provider to handle user state.
 
   // YouTube Player state
   const playerRef = useRef(null);
