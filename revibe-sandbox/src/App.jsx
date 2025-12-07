@@ -50,6 +50,18 @@ function App() {
   // Stale State Guard: If we switched rooms but serverState is still from the old room, show loading.
   const isStaleState = serverState && serverRoomId && (serverRoomId.toLowerCase() !== activeRoomId.toLowerCase());
 
+  // Retry joining if state is stale (Fix for "Switching channels" overlay stuck)
+  useEffect(() => {
+    let timeout;
+    if (isConnected && isStaleState) {
+        console.warn(`Stale state detected (Wanted: ${activeRoomId}, Got: ${serverRoomId}). Retrying join...`);
+        timeout = setTimeout(() => {
+            sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
+        }, 1000);
+    }
+    return () => clearTimeout(timeout);
+  }, [isConnected, isStaleState, activeRoomId, serverRoomId, sendMessage]);
+
   // Local UI state
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
