@@ -39,6 +39,7 @@ function App() {
 
   // Destructure server state
   const {
+    roomId: serverRoomId,
     queue = [],
     currentTrack = null,
     isPlaying = false,
@@ -47,10 +48,11 @@ function App() {
   } = serverState || {};
 
   // Stale State Guard: If we switched rooms but serverState is still from the old room, show loading.
-  const normalizedActiveChannel = activeChannel?.toLowerCase().replace(/[^a-z0-9]/g, '-');
-  const normalizedRoomId = activeRoomId?.toLowerCase().replace(/[^a-z0-9]/g, '-');
-  
-  const isStaleState = serverState && normalizedActiveChannel !== normalizedRoomId;
+  // Compare IDs directly. If server doesn't send ID (legacy), fall back to name check? 
+  // No, server updated.
+  const isStaleState = serverState && serverRoomId && serverRoomId !== activeRoomId;
+
+  if (!serverState || isStaleState) {
 
   // Local UI state
   const [expandedTrackId, setExpandedTrackId] = useState(null);

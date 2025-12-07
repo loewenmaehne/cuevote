@@ -24,6 +24,7 @@ class Room {
         this.clients = new Set();
         
         this.state = {
+            roomId: id, // Send ID to client for validation
             queue: [],
             currentTrack: null,
             isPlaying: false,
