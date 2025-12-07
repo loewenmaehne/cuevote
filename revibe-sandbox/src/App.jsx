@@ -50,17 +50,31 @@ function App() {
   // Stale State Guard: If we switched rooms but serverState is still from the old room, show loading.
   const isStaleState = serverState && serverRoomId && (serverRoomId.toLowerCase() !== activeRoomId.toLowerCase());
 
+  // Local UI state for Retry Logic
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Reset retry count when switching rooms (via navigation)
+  useEffect(() => {
+    setRetryCount(0);
+  }, [activeRoomId]);
+
   // Retry joining if state is stale (Fix for "Switching channels" overlay stuck)
   useEffect(() => {
     let timeout;
     if (isConnected && isStaleState) {
-        console.warn(`Stale state detected (Wanted: ${activeRoomId}, Got: ${serverRoomId}). Retrying join...`);
+        if (retryCount >= 5) {
+             console.error("Max retries reached for joining room.");
+             return; // Stop retrying
+        }
+
+        console.warn(`Stale state detected (Wanted: ${activeRoomId}, Got: ${serverRoomId}). Retrying join... Attempt ${retryCount + 1}`);
         timeout = setTimeout(() => {
             sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
+            setRetryCount(prev => prev + 1);
         }, 1000);
     }
     return () => clearTimeout(timeout);
-  }, [isConnected, isStaleState, activeRoomId, serverRoomId, sendMessage]);
+  }, [isConnected, isStaleState, activeRoomId, serverRoomId, sendMessage, retryCount]);
 
   // Local UI state
   const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -305,6 +319,29 @@ function App() {
   };
 
   if (!serverState || isStaleState) {
+    if (retryCount >= 5) {
+        return <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 p-8 bg-neutral-900 rounded-2xl border border-red-500/50">
+            <span className="text-xl font-bold text-red-500">Connection Failed</span>
+            <p className="text-neutral-400 text-center">Could not join {activeRoomId}.</p>
+            <div className="flex gap-4">
+                <button
+                    onClick={() => setRetryCount(0)}
+                    className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-full transition-colors font-medium"
+                >
+                    Try Again
+                </button>
+                <button
+                    onClick={() => navigate("/")}
+                    className="px-6 py-2 border border-neutral-700 hover:bg-neutral-800 rounded-full transition-colors text-neutral-400 hover:text-white"
+                >
+                    Back to Lobby
+                </button>
+            </div>
+        </div>
+    </div>;
+    }
+
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>

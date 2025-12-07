@@ -94,13 +94,14 @@ export function WebSocketProvider({ children }) {
           setLastMessage(message); // Broadcast all messages
 
           if (message.type === "state") {
+            console.log("WebSocket State Update:", message.payload.roomId);
             setState(message.payload);
           } else if (message.type === "error") {
             setLastError(message.message);
             setTimeout(() => setLastError(null), 5000);
           }
         } catch (error) {
-          console.error("Failed to parse WebSocket message:", error);
+          console.error("Failed to parse WebSocket message:", error, event.data);
         }
       };
     };
