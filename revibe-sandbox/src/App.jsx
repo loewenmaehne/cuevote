@@ -243,20 +243,6 @@ function App() {
     setIsLocallyPaused(false);
     playerRef.current?.seekTo?.(serverProgress);
   };
-
-  const handleLoginSuccess = (tokenResponse) => {
-    console.log("Sending Access Token to Backend...", tokenResponse);
-    sendMessage({ type: "LOGIN", payload: { token: tokenResponse.access_token } });
-  };
-
-  const handleLogout = () => {
-    const token = localStorage.getItem("revibe_auth_token");
-    if (token) {
-        sendMessage({ type: "LOGOUT", payload: { token } });
-        localStorage.removeItem("revibe_auth_token");
-    }
-    setUser(null);
-  };
   
   if (!serverState) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Connecting to server...</div>;
