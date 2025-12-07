@@ -286,37 +286,22 @@ function App() {
 
   
 
-    const handleStopPreview = () => {
+  const handleStopPreview = () => {
+    setPreviewTrack(null);
+    setIsLocallyPaused(false);
+    playerRef.current?.seekTo?.(serverProgress);
+  };
 
-      setPreviewTrack(null);
+  if (!serverState || isStaleState) {
+    return <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+            <span>{isStaleState ? "Switching Channels..." : "Connecting to Server..."}</span>
+        </div>
+    </div>;
+  }
 
-      setIsLocallyPaused(false);
-
-      playerRef.current?.seekTo?.(serverProgress);
-
-    };
-
-    
-
-    if (!serverState || isStaleState) {
-
-      return <div className="min-h-screen bg-black text-white flex items-center justify-center">
-
-          <div className="flex flex-col items-center gap-4">
-
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
-
-              <span>{isStaleState ? "Switching Channels..." : "Connecting to Server..."}</span>
-
-          </div>
-
-      </div>;
-
-    }
-
-  
-
-    // Compute user's votes from the queue data  // Compute user's votes from the queue data
+  // Compute user's votes from the queue data
   const userVotes = {};
   if (clientId) {
     queue.forEach(track => {
