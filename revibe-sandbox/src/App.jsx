@@ -253,23 +253,13 @@ function App() {
     setPreviewTrack(track);
   };
 
-  const handleStopPreview = () => {
-    setPreviewTrack(null);
-    setIsLocallyPaused(false);
-    playerRef.current?.seekTo?.(serverProgress);
-  };
-  
-  const handleLogout = () => {
-    const token = localStorage.getItem("revibe_auth_token");
-    if (token) {
-        sendMessage({ type: "LOGOUT", payload: { token } });
-        localStorage.removeItem("revibe_auth_token");
-    }
-    setUser(null);
-  };
-  
-  // Render Main UI
-  // Compute user's votes from the queue data
+    const handleStopPreview = () => {
+      setPreviewTrack(null);
+      setIsLocallyPaused(false);
+      playerRef.current?.seekTo?.(serverProgress);
+    };
+    
+    // Render Main UI  // Compute user's votes from the queue data
   const userVotes = {};
   if (clientId) {
     queue.forEach(track => {
