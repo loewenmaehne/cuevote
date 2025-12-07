@@ -47,6 +47,7 @@ class Room {
     }
 
     addClient(ws) {
+        console.log(`Adding client to room ${this.name}. Clients: ${this.clients.size + 1}`);
         this.clients.add(ws);
         ws.send(JSON.stringify({ type: "state", payload: this.state }));
     }

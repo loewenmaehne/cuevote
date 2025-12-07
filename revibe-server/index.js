@@ -162,17 +162,23 @@ wss.on("connection", (ws, req) => {
         }
         case "JOIN_ROOM": {
             const { roomId } = parsedMessage.payload;
+            console.log(`Client ${ws.id} requesting to join room: ${roomId}`);
+            
             // Leave current room
             if (ws.roomId && rooms.has(ws.roomId)) {
+                console.log(`Client ${ws.id} leaving room: ${ws.roomId}`);
                 rooms.get(ws.roomId).removeClient(ws);
             }
+            
             // Join new room
             if (rooms.has(roomId)) {
                 ws.roomId = roomId;
                 rooms.get(roomId).addClient(ws);
+                console.log(`Client ${ws.id} joined room: ${roomId}`);
                 // Update activity timestamp in DB so it doesn't rot
                 db.updateRoomActivity(roomId);
             } else {
+                console.warn(`Room not found: ${roomId}`);
                 ws.send(JSON.stringify({ type: "error", message: "Room not found" }));
             }
             return;
