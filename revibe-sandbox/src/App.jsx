@@ -52,15 +52,6 @@ function App() {
   
   const isStaleState = serverState && normalizedActiveChannel !== normalizedRoomId;
 
-  if (!serverState || isStaleState) {
-    return <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
-            <span>{isStaleState ? "Switching Channels..." : "Connecting to Server..."}</span>
-        </div>
-    </div>;
-  }
-
   // Local UI state
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
@@ -209,57 +200,125 @@ function App() {
         }
   }, [serverProgress]);
 
-  // Event Handlers
-  const handlePlayPause = () => {
-    if (isLocallyPaused) {
-      setIsLocallyPaused(false);
-      playerRef.current?.seekTo?.(serverProgress);
-      playerRef.current?.playVideo?.();
-    }
-    else {
-      setIsLocallyPaused(true);
-      playerRef.current?.pauseVideo?.();
-    }
-  };
+    // Event Handlers
 
-  const handleMuteToggle = () => {
-    if (isMuted) playerRef.current?.unMute?.();
-    else playerRef.current?.mute?.();
-    setIsMuted(!isMuted);
-  };
+    const handlePlayPause = () => {
 
-  const handleVolumeChange = (e) => {
-    const newVolume = Number(e.target.value);
-    setVolume(newVolume);
-    if (playerRef.current) {
-      playerRef.current.setVolume?.(newVolume);
-      if (isMuted) {
-        playerRef.current.unMute?.();
-        setIsMuted(false);
+      if (isLocallyPaused) {
+
+        setIsLocallyPaused(false);
+
+        playerRef.current?.seekTo?.(serverProgress);
+
+        playerRef.current?.playVideo?.();
+
       }
-    }
-  };
 
-  const handleSongSuggested = (query) => {
-    sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
-  };
+      else {
 
-  const handleVote = (trackId, type) => {
-    sendMessage({ type: "VOTE", payload: { trackId, voteType: type } });
-  };
+        setIsLocallyPaused(true);
 
-  const handlePreviewTrack = (track) => {
-    setIsLocallyPaused(true);
-    setPreviewTrack(track);
-  };
+        playerRef.current?.pauseVideo?.();
+
+      }
+
+    };
+
+  
+
+    const handleMuteToggle = () => {
+
+      if (isMuted) playerRef.current?.unMute?.();
+
+      else playerRef.current?.mute?.();
+
+      setIsMuted(!isMuted);
+
+    };
+
+  
+
+    const handleVolumeChange = (e) => {
+
+      const newVolume = Number(e.target.value);
+
+      setVolume(newVolume);
+
+      if (playerRef.current) {
+
+        playerRef.current.setVolume?.(newVolume);
+
+        if (isMuted) {
+
+          playerRef.current.unMute?.();
+
+          setIsMuted(false);
+
+        }
+
+      }
+
+    };
+
+  
+
+    const handleSongSuggested = (query) => {
+
+      sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
+
+    };
+
+  
+
+    const handleVote = (trackId, type) => {
+
+      sendMessage({ type: "VOTE", payload: { trackId, voteType: type } });
+
+    };
+
+  
+
+    const handlePreviewTrack = (track) => {
+
+      setIsLocallyPaused(true);
+
+      setPreviewTrack(track);
+
+    };
+
+  
 
     const handleStopPreview = () => {
+
       setPreviewTrack(null);
+
       setIsLocallyPaused(false);
+
       playerRef.current?.seekTo?.(serverProgress);
+
     };
+
     
-    // Render Main UI  // Compute user's votes from the queue data
+
+    if (!serverState || isStaleState) {
+
+      return <div className="min-h-screen bg-black text-white flex items-center justify-center">
+
+          <div className="flex flex-col items-center gap-4">
+
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+
+              <span>{isStaleState ? "Switching Channels..." : "Connecting to Server..."}</span>
+
+          </div>
+
+      </div>;
+
+    }
+
+  
+
+    // Compute user's votes from the queue data  // Compute user's votes from the queue data
   const userVotes = {};
   if (clientId) {
     queue.forEach(track => {
