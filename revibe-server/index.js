@@ -164,10 +164,13 @@ wss.on("connection", (ws, req) => {
             const { roomId } = parsedMessage.payload;
             console.log(`Client ${ws.id} requesting to join room: ${roomId}`);
             
-            // Leave current room
-            if (ws.roomId && rooms.has(ws.roomId)) {
-                console.log(`Client ${ws.id} leaving room: ${ws.roomId}`);
-                rooms.get(ws.roomId).removeClient(ws);
+            // Leave ALL rooms to ensure no duplicate subscriptions
+            // This prevents the bug where a client gets stuck in an old room if ws.roomId desyncs
+            for (const [id, room] of rooms.entries()) {
+                if (room.clients.has(ws)) {
+                    console.log(`Client ${ws.id} leaving room (forced cleanup): ${id}`);
+                    room.removeClient(ws);
+                }
             }
             
             // Join new room (Check Memory -> Check DB)
