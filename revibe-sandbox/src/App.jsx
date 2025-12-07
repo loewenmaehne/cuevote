@@ -52,8 +52,6 @@ function App() {
   // No, server updated.
   const isStaleState = serverState && serverRoomId && serverRoomId !== activeRoomId;
 
-  if (!serverState || isStaleState) {
-
   // Local UI state
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
