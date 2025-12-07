@@ -48,9 +48,7 @@ function App() {
   } = serverState || {};
 
   // Stale State Guard: If we switched rooms but serverState is still from the old room, show loading.
-  // Compare IDs directly. If server doesn't send ID (legacy), fall back to name check? 
-  // No, server updated.
-  const isStaleState = serverState && serverRoomId && serverRoomId !== activeRoomId;
+  const isStaleState = serverState && serverRoomId && (serverRoomId.toLowerCase() !== activeRoomId.toLowerCase());
 
   // Local UI state
   const [expandedTrackId, setExpandedTrackId] = useState(null);
