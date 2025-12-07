@@ -10,14 +10,14 @@ import ErrorBoundary from './ErrorBoundary.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <BrowserRouter>
+      <BrowserRouter>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
           <Routes>
             <Route path="/room/:roomId" element={<App />} />
             <Route path="/" element={<Lobby />} />
           </Routes>
-        </BrowserRouter>
-      </GoogleOAuthProvider>
+        </GoogleOAuthProvider>
+      </BrowserRouter>
     </ErrorBoundary>
   </StrictMode>,
 )
