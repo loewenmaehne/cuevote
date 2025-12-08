@@ -14,6 +14,7 @@ export function Header({
   suggestionsEnabled,
   musicOnly,
   maxDuration,
+  maxQueueSize,
   allowPrelisten,
   ownerBypass,
   onUpdateSettings,
@@ -187,6 +188,21 @@ export function Header({
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
+                    <label className="text-sm font-medium text-white">Max Queue Size</label>
+                    <select
+                      value={maxQueueSize}
+                      onChange={(e) => onUpdateSettings({ maxQueueSize: Number(e.target.value) })}
+                      onClick={(e) => e.stopPropagation()}
+                      className="bg-neutral-800 text-white text-sm rounded-lg px-2 py-1 border border-neutral-700 focus:outline-none focus:border-orange-500"
+                    >
+                      <option value={0}>No Limit</option>
+                      <option value={10}>10 Songs</option>
+                      <option value={25}>25 Songs</option>
+                      <option value={50}>50 Songs</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-3">
                     <label className="text-sm font-medium text-white">Allow Prelisten</label>
                     <button
                       onClick={(e) => {
@@ -241,5 +257,8 @@ Header.propTypes = {
   suggestionsEnabled: PropTypes.bool,
   musicOnly: PropTypes.bool,
   maxDuration: PropTypes.number,
+  maxQueueSize: PropTypes.number,
+  allowPrelisten: PropTypes.bool,
+  ownerBypass: PropTypes.bool,
   onUpdateSettings: PropTypes.func,
 };
