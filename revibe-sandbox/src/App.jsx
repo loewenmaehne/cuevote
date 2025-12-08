@@ -53,6 +53,7 @@ function App() {
     musicOnly = false,
     maxDuration = 600,
     allowPrelisten = true,
+    ownerBypass = true,
   } = serverState || {};
 
   const isOwner = user && ownerId && user.id === ownerId;
@@ -401,6 +402,7 @@ function App() {
         musicOnly={musicOnly}
         maxDuration={maxDuration}
         allowPrelisten={allowPrelisten}
+        ownerBypass={ownerBypass}
         onUpdateSettings={handleUpdateSettings}
       />
 
