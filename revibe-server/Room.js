@@ -43,6 +43,7 @@ class Room {
             musicOnly: false,
             maxDuration: 600, // Default 10 minutes
             allowPrelisten: true,
+            ownerBypass: true,
         };
 
         // Start the Room Timer
@@ -164,15 +165,18 @@ class Room {
             return;
         }
 
+        const isUserOwner = isOwner(this, ws);
+        const canBypass = isUserOwner && this.state.ownerBypass;
+
         // Check Suggestions Enabled (Owner bypass)
-        if (!this.state.suggestionsEnabled && !isOwner(this, ws)) {
+        if (!this.state.suggestionsEnabled && !canBypass) {
             ws.send(JSON.stringify({ type: "error", message: "Suggestions are currently disabled by the room owner." }));
             return;
         }
 
-        // Rate Limiting (5 seconds)
+        // Rate Limiting (5 seconds) - Bypass for owner
         const now = Date.now();
-        if (ws.lastSuggestionTime && (now - ws.lastSuggestionTime < 5000)) {
+        if (!canBypass && ws.lastSuggestionTime && (now - ws.lastSuggestionTime < 5000)) {
             ws.send(JSON.stringify({ type: "error", message: "Please wait before suggesting another song." }));
             return;
         }
@@ -244,7 +248,7 @@ class Room {
                     }
 
                     // Max Duration Check
-                    if (this.state.maxDuration > 0 && durationInSeconds > this.state.maxDuration) {
+                    if (this.state.maxDuration > 0 && !canBypass && durationInSeconds > this.state.maxDuration) {
                         const maxMinutes = Math.floor(this.state.maxDuration / 60);
                         ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
                         return;
@@ -364,12 +368,13 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
         if (typeof maxDuration === 'number') updates.maxDuration = maxDuration;
         if (typeof allowPrelisten === 'boolean') updates.allowPrelisten = allowPrelisten;
+        if (typeof ownerBypass === 'boolean') updates.ownerBypass = ownerBypass;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
