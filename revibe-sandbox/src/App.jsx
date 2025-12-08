@@ -423,7 +423,7 @@ function App() {
         {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} isOwner={isOwner} suggestionsEnabled={suggestionsEnabled} />}
       </div>
 
-      <div className={playlistViewMode && !isOwner && !localPlayerOverride
+      <div className={playlistViewMode && !isOwner
         ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
         : `w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"}`
       }>
@@ -477,7 +477,7 @@ function App() {
       </div>
 
       <div className="pb-4">
-        {playlistViewMode && !isOwner && !localPlayerOverride ? null : ( // Hide queue if playlistViewMode is active and not owner (and not overridden)
+        {playlistViewMode && !isOwner ? null : ( // Hide queue if playlistViewMode is active and not owner
           <Queue
             tracks={queue}
             currentTrack={currentTrack}
