@@ -110,12 +110,8 @@ export function PlaylistView({
                         </div>
                     ) : (
                         !currentTrack && (
-                            <div className="text-center py-20 opacity-50">
-                                <div className="w-16 h-16 bg-neutral-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Play size={24} className="text-neutral-700 ml-1" />
-                                </div>
-                                <h3 className="text-lg font-medium text-neutral-400">Queue is empty</h3>
-                                <p className="text-sm text-neutral-600 mt-1">Suggest a song to get started!</p>
+                            <div className="flex h-64 w-full items-center justify-center text-neutral-500 bg-[#0a0a0a]">
+                                <span className="text-lg">Queue empty</span>
                             </div>
                         )
                     )}
