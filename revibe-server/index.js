@@ -220,7 +220,7 @@ wss.on("connection", (ws, req) => {
                         room.addClient(ws);
                         db.updateRoomActivity(room.id);
                     } else {
-                        ws.send(JSON.stringify({ type: "error", message: "Room not found" }));
+                        ws.send(JSON.stringify({ type: "error", code: "ROOM_NOT_FOUND", message: "Room not found" }));
                     }
                     return;
                 }
