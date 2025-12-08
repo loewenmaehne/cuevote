@@ -94,6 +94,7 @@ function App() {
   const [previewTrack, setPreviewTrack] = useState(null);
   // const [user, setUser] = useState(null); // Now from Context
   const [progress, setProgress] = useState(0);
+  const [roomNotFound, setRoomNotFound] = useState(false);
 
   // Auth: Resume Session logic moved to Provider
 
@@ -339,11 +340,36 @@ function App() {
     playerRef.current?.seekTo?.(serverProgress);
   };
 
+  // Watch for Room Not Found Error
+  useEffect(() => {
+    if (lastMessage && lastMessage.type === "error" && lastMessage.code === "ROOM_NOT_FOUND") {
+      setRoomNotFound(true);
+    }
+  }, [lastMessage]);
+
+  // Reset error when changing rooms
+  useEffect(() => {
+    setRoomNotFound(false);
+  }, [activeRoomId]);
+
+  if (roomNotFound) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+        <h2 className="text-3xl font-bold text-red-500 mb-4">Channel does not exist</h2>
+        <p className="text-neutral-400 mb-8">The channel you are looking for ({activeRoomId}) could not be found.</p>
+        <button
+          onClick={() => navigate("/")}
+          className="px-6 py-3 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white font-semibold transition-colors flex items-center gap-2"
+        >
+          <ArrowLeft size={20} /> Go to Lobby
+        </button>
+      </div>
+    );
+  }
+
   if (!serverState || isStaleState) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">
       <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
-        <h2 className="text-2xl font-bold mb-4">Switching Channels...</h2>
-        <p>Connecting to {activeRoomId}...</p>
         <h2 className="text-2xl font-bold mb-4">Switching Channels...</h2>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
       </div>
