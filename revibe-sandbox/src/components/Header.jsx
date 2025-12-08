@@ -209,8 +209,11 @@ export function Header({
                   <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-white">Smart Queue</label>
-                      <div className="group relative flex items-center" title="Replace downvoted songs when full">
+                      <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+                          Replace downvoted songs when full
+                        </div>
                       </div>
                     </div>
                     <button
@@ -245,8 +248,11 @@ export function Header({
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-700">
                     <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-white">Owner Bypass Rules</label>
-                      <div className="group relative flex items-center" title="Ignore filters/limits">
+                      <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+                          Ignore filters/limits
+                        </div>
                       </div>
                     </div>
                     <button
