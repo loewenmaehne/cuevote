@@ -34,6 +34,7 @@ class Room {
         this.state = {
             roomId: id, // Send ID to client for validation
             queue: [],
+            history: [],
             currentTrack: null,
             isPlaying: false,
             progress: 0,
@@ -47,6 +48,7 @@ class Room {
             ownerBypass: true,
             ownerBypass: true,
             smartQueue: true, // Auto-replace bad songs if full
+            playlistViewMode: false, // Venue Mode: Only show playlist view for guests
             maxQueueSize: 50, // Default 50
         };
 
@@ -114,10 +116,18 @@ class Room {
             if (newProgress > duration) {
                 // Auto-Advance
                 const newQueue = [...this.state.queue];
+
+                // Move current track to history if it exists
+                let newHistory = [...this.state.history];
+                if (this.state.currentTrack) {
+                    newHistory.push({ ...this.state.currentTrack, playedAt: Date.now() });
+                }
+
                 newQueue.shift();
                 const newCurrentTrack = newQueue[0] || null;
                 const newState = {
                     queue: newQueue,
+                    history: newHistory,
                     currentTrack: newCurrentTrack,
                     progress: 0,
                 };
@@ -400,10 +410,18 @@ class Room {
 
     handleNextTrack() {
         const newQueue = [...this.state.queue];
+
+        // Move current track to history
+        let newHistory = [...this.state.history];
+        if (this.state.currentTrack) {
+            newHistory.push({ ...this.state.currentTrack, playedAt: Date.now() });
+        }
+
         newQueue.shift();
         const newCurrentTrack = newQueue[0] || null;
         const newState = {
             queue: newQueue,
+            history: newHistory,
             currentTrack: newCurrentTrack,
             progress: 0,
             isPlaying: true,
@@ -414,7 +432,7 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
@@ -423,6 +441,7 @@ class Room {
         if (typeof allowPrelisten === 'boolean') updates.allowPrelisten = allowPrelisten;
         if (typeof ownerBypass === 'boolean') updates.ownerBypass = ownerBypass;
         if (typeof smartQueue === 'boolean') updates.smartQueue = smartQueue;
+        if (typeof playlistViewMode === 'boolean') updates.playlistViewMode = playlistViewMode;
         if (typeof maxQueueSize === 'number') updates.maxQueueSize = maxQueueSize;
 
         if (Object.keys(updates).length > 0) {

@@ -17,6 +17,7 @@ export function Header({
   maxQueueSize,
   allowPrelisten,
   smartQueue,
+  playlistViewMode,
   ownerBypass,
   onUpdateSettings,
 }) {
@@ -230,6 +231,29 @@ export function Header({
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-white">Venue Mode</label>
+                      <div className="group relative flex items-center">
+                        <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+                          Guests see playlist only (No Video)
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateSettings({ playlistViewMode: !playlistViewMode });
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${playlistViewMode ? 'bg-orange-500' : 'bg-neutral-600'}`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${playlistViewMode ? 'translate-x-6' : 'translate-x-1'}`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-3">
                     <label className="text-sm font-medium text-white">Allow Prelisten</label>
                     <button
                       onClick={(e) => {
@@ -292,6 +316,7 @@ Header.propTypes = {
   maxQueueSize: PropTypes.number,
   allowPrelisten: PropTypes.bool,
   smartQueue: PropTypes.bool,
+  playlistViewMode: PropTypes.bool,
   ownerBypass: PropTypes.bool,
   onUpdateSettings: PropTypes.func,
 };
