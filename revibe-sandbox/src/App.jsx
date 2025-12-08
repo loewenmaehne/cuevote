@@ -54,6 +54,7 @@ function App() {
     maxDuration = 600,
     allowPrelisten = true,
     ownerBypass = true,
+    maxQueueSize = 0,
   } = serverState || {};
 
   const isOwner = user && ownerId && user.id === ownerId;
@@ -403,6 +404,7 @@ function App() {
         maxDuration={maxDuration}
         allowPrelisten={allowPrelisten}
         ownerBypass={ownerBypass}
+        maxQueueSize={maxQueueSize}
         onUpdateSettings={handleUpdateSettings}
       />
 

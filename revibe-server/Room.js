@@ -43,7 +43,9 @@ class Room {
             musicOnly: false,
             maxDuration: 600, // Default 10 minutes
             allowPrelisten: true,
+            allowPrelisten: true,
             ownerBypass: true,
+            maxQueueSize: 0, // 0 = Unlimited
         };
 
         // Start the Room Timer
@@ -171,6 +173,12 @@ class Room {
         // Check Suggestions Enabled (Owner bypass)
         if (!this.state.suggestionsEnabled && !canBypass) {
             ws.send(JSON.stringify({ type: "error", message: "Suggestions are currently disabled by the room owner." }));
+            return;
+        }
+
+        // Check Max Queue Size
+        if (this.state.maxQueueSize > 0 && !canBypass && this.state.queue.length >= this.state.maxQueueSize) {
+            ws.send(JSON.stringify({ type: "error", message: `Queue is full. Max size is ${this.state.maxQueueSize}.` }));
             return;
         }
 
@@ -368,13 +376,15 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
         if (typeof maxDuration === 'number') updates.maxDuration = maxDuration;
+        if (typeof maxDuration === 'number') updates.maxDuration = maxDuration;
         if (typeof allowPrelisten === 'boolean') updates.allowPrelisten = allowPrelisten;
         if (typeof ownerBypass === 'boolean') updates.ownerBypass = ownerBypass;
+        if (typeof maxQueueSize === 'number') updates.maxQueueSize = maxQueueSize;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
