@@ -13,6 +13,7 @@ export function Track({
   onVote,
   onToggleExpand,
   onPreview,
+  readOnly = false,
 }) {
   return (
     <div
@@ -27,7 +28,7 @@ export function Track({
             ? "scale-[1.02] ring-2 ring-green-500/60"
             : "scale-[1.02] ring-2 ring-orange-500/60"
           : ""
-        }`}
+        } ${readOnly ? "opacity-90" : ""}`}
     >
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
@@ -54,44 +55,56 @@ export function Track({
               {track.suggestedByUsername}
             </span>
           )}
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
-              onVote(track.id, "up");
-            }}
-            className={`transition-transform duration-300 ease-out drop-shadow-md transform relative rounded-full p-1.5 ${vote === "up"
-              ? "scale-125 bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg"
-              : "text-orange-400 hover:scale-125 hover:bg-orange-500/20"
-              }`}
-          >
-            <ThumbsUp size={20} />
-          </button>
 
-          <span className={`text-sm font-bold w-6 text-center ${(track.score || 0) > 0 ? "text-orange-400" :
-            (track.score || 0) < 0 ? "text-neutral-500" : "text-neutral-600"
-            }`}>
-            {track.score || 0}
-          </span>
+          {!readOnly && (
+            <>
+              <button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onVote(track.id, "up");
+                }}
+                className={`transition-transform duration-300 ease-out drop-shadow-md transform relative rounded-full p-1.5 ${vote === "up"
+                  ? "scale-125 bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg"
+                  : "text-orange-400 hover:scale-125 hover:bg-orange-500/20"
+                  }`}
+              >
+                <ThumbsUp size={20} />
+              </button>
 
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
-              onVote(track.id, "down");
-            }}
-            className={`transition-transform duration-300 ease-out transform relative rounded-full p-1.5 ${vote === "down"
-              ? "scale-125 bg-gradient-to-br from-neutral-600 to-neutral-800 text-white shadow-lg"
-              : "text-neutral-500 hover:scale-125 hover:bg-neutral-700/20"
-              }`}
-          >
-            <ThumbsDown size={20} />
-          </button>
+              <span className={`text-sm font-bold w-6 text-center ${(track.score || 0) > 0 ? "text-orange-400" :
+                (track.score || 0) < 0 ? "text-neutral-500" : "text-neutral-600"
+                }`}>
+                {track.score || 0}
+              </span>
+
+              <button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onVote(track.id, "down");
+                }}
+                className={`transition-transform duration-300 ease-out transform relative rounded-full p-1.5 ${vote === "down"
+                  ? "scale-125 bg-gradient-to-br from-neutral-600 to-neutral-800 text-white shadow-lg"
+                  : "text-neutral-500 hover:scale-125 hover:bg-neutral-700/20"
+                  }`}
+              >
+                <ThumbsDown size={20} />
+              </button>
+            </>
+          )}
+
+          {readOnly && isActive && (
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-xs font-bold text-green-500 uppercase tracking-wider">Now</span>
+            </div>
+          )}
         </div>
       </div>
 
       {isExpanded && (
         <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-neutral-800 text-neutral-300 mt-4 space-y-3">
           <div className="flex gap-3">
-            {onPreview && (
+            {onPreview && !readOnly && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -130,4 +143,5 @@ Track.propTypes = {
   onVote: PropTypes.func.isRequired,
   onToggleExpand: PropTypes.func.isRequired,
   onPreview: PropTypes.func,
+  readOnly: PropTypes.bool,
 };
