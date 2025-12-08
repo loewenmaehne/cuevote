@@ -133,7 +133,9 @@ function App() {
 
   // Player Initialization
   const initializePlayer = useCallback((container) => {
+    console.log("[Player] Initializing...", container);
     loadYouTubeAPI().then((YT) => {
+      console.log("[Player] YT loaded, creating player instance");
       playerRef.current = new YT.Player(container, {
         host: 'https://www.youtube-nocookie.com',
         playerVars: {
@@ -143,6 +145,7 @@ function App() {
         },
         events: {
           onReady: (event) => {
+            console.log("[Player] YouTube Player onReady fired");
             setIsPlayerReady(true);
             event.target.setVolume(volume);
             if (isMuted) {
@@ -169,9 +172,11 @@ function App() {
   }, [loadYouTubeAPI, sendMessage]);
 
   const playerContainerRef = useCallback(node => {
+    console.log("[Player] Container ref called", node);
     if (node !== null) {
       initializePlayer(node);
     } else {
+      console.log("[Player] Container ref null (unmount)");
       // Cleanup on unmount
       if (playerRef.current && typeof playerRef.current.destroy === 'function') {
         try {
@@ -398,6 +403,11 @@ function App() {
     }
   }
 
+
+  // FORCE DEBUG: Guest + Venue Mode
+  // const debugIsOwner = false;
+  // const debugPlaylistViewMode = true;
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col pb-32">
       <Header
@@ -426,7 +436,7 @@ function App() {
 
       <div className={playlistViewMode && !isOwner
         ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
-        : `w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"}`
+        : `w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"} `
       }>
         <div className={`absolute inset - 0 border - 4 ${previewTrack ? "border-green-500" : "border-transparent"} transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
         {playlistViewMode && !isOwner && !localPlayerOverride ? (
