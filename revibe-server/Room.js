@@ -45,6 +45,8 @@ class Room {
             allowPrelisten: true,
             allowPrelisten: true,
             ownerBypass: true,
+            ownerBypass: true,
+            smartQueue: true, // Auto-replace bad songs if full
             maxQueueSize: 50, // Default 50
         };
 
@@ -180,25 +182,30 @@ class Room {
 
         // Check Max Queue Size
         if (this.state.maxQueueSize > 0 && !canBypass && this.state.queue.length >= this.state.maxQueueSize) {
-            // Smart Replacement: Look for worst song (score < 0) to replace
-            // Skip index 0 (current track)
-            const upcomingQueue = this.state.queue.slice(1);
-            let worstTrackIndex = -1;
-            let minScore = 0; // Must be strictly less than 0 to be considered
+            // Smart Replacement: Look for worst song (score < 0) to replace ONLY IF ENABLED
+            if (this.state.smartQueue) {
+                // Skip index 0 (current track)
+                const upcomingQueue = this.state.queue.slice(1);
+                let worstTrackIndex = -1;
+                let minScore = 0; // Must be strictly less than 0 to be considered
 
-            upcomingQueue.forEach((track, index) => {
-                const score = track.score || 0;
-                if (score < 0) {
-                    if (worstTrackIndex === -1 || score < minScore) {
-                        minScore = score;
-                        worstTrackIndex = index + 1; // Adjust for slice offset
+                upcomingQueue.forEach((track, index) => {
+                    const score = track.score || 0;
+                    if (score < 0) {
+                        if (worstTrackIndex === -1 || score < minScore) {
+                            minScore = score;
+                            worstTrackIndex = index + 1; // Adjust for slice offset
+                        }
                     }
-                }
-            });
+                });
 
-            if (worstTrackIndex !== -1) {
-                // Found a bad song to replace, mark its index for potential removal later
-                indexToRemove = worstTrackIndex;
+                if (worstTrackIndex !== -1) {
+                    // Found a bad song to replace, mark its index for potential removal later
+                    indexToRemove = worstTrackIndex;
+                } else {
+                    ws.send(JSON.stringify({ type: "error", message: `Queue is full. Max size is ${this.state.maxQueueSize}.` }));
+                    return;
+                }
             } else {
                 ws.send(JSON.stringify({ type: "error", message: `Queue is full. Max size is ${this.state.maxQueueSize}.` }));
                 return;
@@ -407,7 +414,7 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
@@ -415,6 +422,7 @@ class Room {
         if (typeof maxDuration === 'number') updates.maxDuration = maxDuration;
         if (typeof allowPrelisten === 'boolean') updates.allowPrelisten = allowPrelisten;
         if (typeof ownerBypass === 'boolean') updates.ownerBypass = ownerBypass;
+        if (typeof smartQueue === 'boolean') updates.smartQueue = smartQueue;
         if (typeof maxQueueSize === 'number') updates.maxQueueSize = maxQueueSize;
 
         if (Object.keys(updates).length > 0) {
