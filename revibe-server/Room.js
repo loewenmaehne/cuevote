@@ -56,9 +56,17 @@ class Room {
     }
 
     addClient(ws) {
-        console.log(`Adding client to room ${this.name}. Clients: ${this.clients.size + 1}`);
+        console.log(`[SERVER TRACE] Room ${this.id}: Adding client. Total clients: ${this.clients.size + 1}`);
         this.clients.add(ws);
-        ws.send(JSON.stringify({ type: "state", payload: this.state }));
+
+        try {
+            const payload = JSON.stringify({ type: "state", payload: this.state });
+            if (ws.readyState === 1) {
+                ws.send(payload);
+            }
+        } catch (e) {
+            console.error(`ERROR sending state to client ${ws.id}:`, e);
+        }
     }
 
     removeClient(ws) {
