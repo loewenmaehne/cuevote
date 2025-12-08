@@ -69,7 +69,7 @@ export function Lobby() {
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
                             {user.picture && <img src={user.picture} className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />}
-                            <span className="text-neutral-400 font-medium">{user.name}</span>
+                            <span className="text-neutral-400 font-medium">Welcome, {user.name}</span>
                         </div>
                         <button
                             onClick={handleLogout}
