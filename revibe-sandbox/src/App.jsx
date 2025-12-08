@@ -51,6 +51,7 @@ function App() {
     ownerId = null,
     suggestionsEnabled = true,
     musicOnly = false,
+    maxDuration = 600,
   } = serverState || {};
 
   const isOwner = user && ownerId && user.id === ownerId;
@@ -371,6 +372,7 @@ function App() {
         isOwner={isOwner}
         suggestionsEnabled={suggestionsEnabled}
         musicOnly={musicOnly}
+        maxDuration={maxDuration}
         onUpdateSettings={handleUpdateSettings}
       />
 

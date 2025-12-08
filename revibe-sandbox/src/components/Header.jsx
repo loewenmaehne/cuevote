@@ -13,6 +13,7 @@ export function Header({
   isOwner,
   suggestionsEnabled,
   musicOnly,
+  maxDuration,
   onUpdateSettings,
 }) {
   const headerRef = React.useRef(null);
@@ -166,6 +167,25 @@ export function Header({
                       />
                     </button>
                   </div>
+
+                  <div className="flex items-center justify-between mt-3">
+                    <label className="text-sm font-medium text-white">Max Length</label>
+                    <select
+                      value={maxDuration}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        onUpdateSettings({ maxDuration: Number(e.target.value) });
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="bg-neutral-900 text-white text-xs rounded px-2 py-1 border border-neutral-700 focus:outline-none focus:border-orange-500"
+                    >
+                      <option value={0}>No Limit</option>
+                      <option value={300}>5 Mins</option>
+                      <option value={600}>10 Mins</option>
+                      <option value={900}>15 Mins</option>
+                      <option value={1800}>30 Mins</option>
+                    </select>
+                  </div>
                 </div>
               )}
             </div>
@@ -186,5 +206,6 @@ Header.propTypes = {
   isOwner: PropTypes.bool,
   suggestionsEnabled: PropTypes.bool,
   musicOnly: PropTypes.bool,
+  maxDuration: PropTypes.number,
   onUpdateSettings: PropTypes.func,
 };

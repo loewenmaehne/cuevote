@@ -41,6 +41,7 @@ class Room {
             ownerId: metadata.owner_id,
             suggestionsEnabled: true,
             musicOnly: false,
+            maxDuration: 600, // Default 10 minutes
         };
 
         // Start the Room Timer
@@ -241,6 +242,13 @@ class Room {
                         return;
                     }
 
+                    // Max Duration Check
+                    if (this.state.maxDuration > 0 && durationInSeconds > this.state.maxDuration) {
+                        const maxMinutes = Math.floor(this.state.maxDuration / 60);
+                        ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
+                        return;
+                    }
+
                     track = {
                         id: crypto.randomUUID(),
                         videoId: videoId,
@@ -355,10 +363,11 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
+        if (typeof maxDuration === 'number') updates.maxDuration = maxDuration;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
