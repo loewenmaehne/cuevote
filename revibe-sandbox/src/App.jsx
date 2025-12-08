@@ -50,6 +50,7 @@ function App() {
     activeChannel = "Synthwave",
     ownerId = null,
     suggestionsEnabled = true,
+    musicOnly = false,
   } = serverState || {};
 
   const isOwner = user && ownerId && user.id === ownerId;
@@ -369,6 +370,7 @@ function App() {
         onLogout={handleLogout}
         isOwner={isOwner}
         suggestionsEnabled={suggestionsEnabled}
+        musicOnly={musicOnly}
         onUpdateSettings={handleUpdateSettings}
       />
 
