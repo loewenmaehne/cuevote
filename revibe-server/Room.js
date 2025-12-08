@@ -45,7 +45,7 @@ class Room {
             allowPrelisten: true,
             allowPrelisten: true,
             ownerBypass: true,
-            maxQueueSize: 0, // 0 = Unlimited
+            maxQueueSize: 50, // Default 50
         };
 
         // Start the Room Timer
