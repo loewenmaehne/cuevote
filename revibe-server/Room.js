@@ -228,7 +228,8 @@ class Room {
                         duration: durationInSeconds,
                         score: 0,
                         voters: {},
-                        suggestedBy: userId
+                        suggestedBy: userId,
+                        suggestedByUsername: ws.user.name
                     };
                 }
             } catch (apiError) {
