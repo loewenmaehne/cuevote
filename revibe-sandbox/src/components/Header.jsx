@@ -16,6 +16,7 @@ export function Header({
   maxDuration,
   maxQueueSize,
   allowPrelisten,
+  smartQueue,
   ownerBypass,
   onUpdateSettings,
 }) {
@@ -206,6 +207,24 @@ export function Header({
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
+                    <div className="flex flex-col">
+                      <label className="text-sm font-medium text-white">Smart Queue</label>
+                      <span className="text-xs text-neutral-500">Replace downvoted songs when full</span>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateSettings({ smartQueue: !smartQueue });
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${smartQueue ? 'bg-orange-500' : 'bg-neutral-600'}`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${smartQueue ? 'translate-x-6' : 'translate-x-1'}`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-3">
                     <label className="text-sm font-medium text-white">Allow Prelisten</label>
                     <button
                       onClick={(e) => {
@@ -262,6 +281,7 @@ Header.propTypes = {
   maxDuration: PropTypes.number,
   maxQueueSize: PropTypes.number,
   allowPrelisten: PropTypes.bool,
+  smartQueue: PropTypes.bool,
   ownerBypass: PropTypes.bool,
   onUpdateSettings: PropTypes.func,
 };
