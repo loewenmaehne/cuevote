@@ -12,6 +12,7 @@ export function Header({
   onLogout,
   isOwner,
   suggestionsEnabled,
+  musicOnly,
   onUpdateSettings,
 }) {
   const headerRef = React.useRef(null);
@@ -150,13 +151,28 @@ export function Header({
                       />
                     </button>
                   </div>
+
+                  <div className="flex items-center justify-between mt-3">
+                    <label className="text-sm font-medium text-white">Music Only</label>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateSettings({ musicOnly: !musicOnly });
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${musicOnly ? 'bg-orange-500' : 'bg-neutral-600'}`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${musicOnly ? 'translate-x-6' : 'translate-x-1'}`}
+                      />
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
           )}
         </div>
       </div>
-    </header>
+    </header >
   );
 }
 
@@ -169,5 +185,6 @@ Header.propTypes = {
   onLogout: PropTypes.func,
   isOwner: PropTypes.bool,
   suggestionsEnabled: PropTypes.bool,
+  musicOnly: PropTypes.bool,
   onUpdateSettings: PropTypes.func,
 };

@@ -40,6 +40,7 @@ class Room {
             activeChannel: name,
             ownerId: metadata.owner_id,
             suggestionsEnabled: true,
+            musicOnly: false,
         };
 
         // Start the Room Timer
@@ -252,6 +253,15 @@ class Room {
                         suggestedBy: userId,
                         suggestedByUsername: ws.user.name
                     };
+
+                    // Music Only Check
+                    if (this.state.musicOnly) {
+                        const categoryId = videoData.snippet.categoryId;
+                        if (categoryId !== '10') { // 10 is Music
+                            ws.send(JSON.stringify({ type: "error", message: "Only music videos are allowed in this channel." }));
+                            return;
+                        }
+                    }
                 }
             } catch (apiError) {
                 console.error("YouTube API Check failed:", apiError);
@@ -345,9 +355,13 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled }) {
-        if (typeof suggestionsEnabled === 'boolean') {
-            this.updateState({ suggestionsEnabled });
+    handleUpdateSettings({ suggestionsEnabled, musicOnly }) {
+        const updates = {};
+        if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
+        if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
+
+        if (Object.keys(updates).length > 0) {
+            this.updateState(updates);
         }
     }
 
