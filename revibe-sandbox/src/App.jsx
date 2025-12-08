@@ -435,6 +435,13 @@ function App() {
               onVote={handleVote}
               votes={userVotes} // Pass userVotes map
               isOwner={isOwner}
+              // Playback Props
+              progress={progress}
+              volume={volume}
+              isMuted={isMuted}
+              activeChannel={activeChannel}
+              onMuteToggle={handleMuteToggle}
+              onVolumeChange={handleVolumeChange}
             />
           </div>
         ) : (
