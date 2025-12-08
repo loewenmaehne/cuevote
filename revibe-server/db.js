@@ -63,7 +63,7 @@ module.exports = {
   deleteSession: (token) => {
     db.prepare('DELETE FROM sessions WHERE token = ?').run(token);
   },
-  
+
   // Room Management
   createRoom: (room) => {
     const stmt = db.prepare(`
@@ -75,8 +75,9 @@ module.exports = {
   },
   getRoom: (id) => db.prepare('SELECT * FROM rooms WHERE id = ?').get(id),
   listPublicRooms: () => {
-    // 60 days = 60 * 24 * 60 * 60 seconds
-    const threshold = Math.floor(Date.now() / 1000) - (60 * 24 * 60 * 60);
+    // Default 60 days, configurable via env
+    const activeDays = parseInt(process.env.ACTIVE_CHANNEL_DAYS || '60', 10);
+    const threshold = Math.floor(Date.now() / 1000) - (activeDays * 24 * 60 * 60);
     return db.prepare('SELECT * FROM rooms WHERE is_public = 1 AND last_active_at > ? ORDER BY last_active_at DESC').all(threshold);
   },
   updateRoomActivity: (id) => {

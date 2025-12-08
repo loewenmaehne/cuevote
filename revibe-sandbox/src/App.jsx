@@ -26,7 +26,17 @@ function App() {
   console.log("App Component MOUNTED, Room:", activeRoomId);
 
   // WebSocket connection (Shared)
-  const { state: serverState, sendMessage, lastError, clientId, user, handleLogout, handleLoginSuccess, isConnected } = useWebSocketContext();
+  const {
+    state: serverState,
+    isConnected,
+    sendMessage,
+    lastError,
+    lastMessage, // <--- Added this
+    clientId,
+    user,
+    handleLogout,
+    handleLoginSuccess,
+  } = useWebSocketContext();
 
   console.log("Server State:", serverState);
 
@@ -39,6 +49,9 @@ function App() {
     progress: serverProgress = 0,
     activeChannel = "Synthwave",
   } = serverState || {};
+
+  // Trace Render Cycle
+  console.log(`[CLIENT TRACE] App Render. Active: ${activeRoomId}, Server: ${serverRoomId}, Stale? ${serverState && serverRoomId && (serverRoomId.toString().trim().toLowerCase() !== activeRoomId.toString().trim().toLowerCase())}`);
 
   // Join Room on Connect or Room Change
   useEffect(() => {
@@ -54,9 +67,9 @@ function App() {
   useEffect(() => {
     let timeout;
     if (isConnected && isStaleState) {
-      console.warn(`Stale state detected (Wanted: ${activeRoomId}, Got: ${serverRoomId}). Retrying join...`);
-      // Increased timeout to 3000ms to allow large state payloads (e.g. big queues) to arrive/parse
+      console.warn(`[STALE DEBUG] Wanted: ${activeRoomId}, Got: ${serverRoomId}. Retrying in 3s...`);
       timeout = setTimeout(() => {
+        console.warn(`[STALE DEBUG] Sending JOIN_ROOM for ${activeRoomId}`);
         sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
       }, 3000);
     }
@@ -317,9 +330,11 @@ function App() {
 
   if (!serverState || isStaleState) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
-        <span>{isStaleState ? "Switching Channels..." : "Connecting to Server..."}</span>
+      <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
+        <h2 className="text-2xl font-bold mb-4">Switching Channels...</h2>
+        <p>Connecting to {activeRoomId}...</p>
+        <h2 className="text-2xl font-bold mb-4">Switching Channels...</h2>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
       </div>
     </div>;
   }
