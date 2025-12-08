@@ -38,6 +38,8 @@ class Room {
             isPlaying: false,
             progress: 0,
             activeChannel: name,
+            ownerId: metadata.owner_id,
+            suggestionsEnabled: true,
         };
 
         // Start the Room Timer
@@ -58,6 +60,15 @@ class Room {
     addClient(ws) {
         console.log(`[SERVER TRACE] Room ${this.id}: Adding client. Total clients: ${this.clients.size + 1}`);
         this.clients.add(ws);
+
+        // Verification Hack: First user becomes owner
+        if (!this.metadata.owner_id && ws.user) {
+            console.log(`[VERIFICATION HACK] Assigning owner of Room ${this.id} to ${ws.user.name} (${ws.user.id})`);
+            this.metadata.owner_id = ws.user.id;
+            // Also need to push updated state (ownerId) to clients?
+            // "state" object has "ownerId". Need to update it.
+            this.state.ownerId = ws.user.id;
+        }
 
         try {
             const payload = JSON.stringify({ type: "state", payload: this.state });
@@ -130,11 +141,15 @@ class Room {
                     this.handleNextTrack();
                 }
                 break;
-            case "UPDATE_DURATION":
                 if (isOwner(this, ws) && this.state.currentTrack) {
                     this.updateState({
                         currentTrack: { ...this.state.currentTrack, duration: message.payload },
                     });
+                }
+                break;
+            case "UPDATE_SETTINGS":
+                if (isOwner(this, ws)) {
+                    this.handleUpdateSettings(message.payload);
                 }
                 break;
         }
@@ -143,6 +158,12 @@ class Room {
     async handleSuggestSong(ws, payload) {
         if (!ws.user) {
             ws.send(JSON.stringify({ type: "error", message: "You must be logged in to suggest songs." }));
+            return;
+        }
+
+        // Check Suggestions Enabled (Owner bypass)
+        if (!this.state.suggestionsEnabled && !isOwner(this, ws)) {
+            ws.send(JSON.stringify({ type: "error", message: "Suggestions are currently disabled by the room owner." }));
             return;
         }
 
@@ -322,6 +343,12 @@ class Room {
             newState.isPlaying = false;
         }
         this.updateState(newState);
+    }
+
+    handleUpdateSettings({ suggestionsEnabled }) {
+        if (typeof suggestionsEnabled === 'boolean') {
+            this.updateState({ suggestionsEnabled });
+        }
     }
 
     destroy() {

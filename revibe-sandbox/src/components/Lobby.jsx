@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Radio, Users, Sparkles, AlertCircle } from "lucide-react";
+import { Radio, Users, Sparkles, AlertCircle, X } from "lucide-react";
 import { useWebSocketContext } from "../contexts/WebSocketProvider";
 
 export function Lobby() {
     const navigate = useNavigate();
     const { sendMessage, lastMessage, isConnected, lastError, user } = useWebSocketContext();
     const [rooms, setRooms] = useState([]);
+    const [isCreatingRoom, setIsCreatingRoom] = useState(false);
+    const [newRoomName, setNewRoomName] = useState("");
 
     // Handle Messages
     useEffect(() => {
@@ -25,22 +27,28 @@ export function Lobby() {
         }
     }, [lastMessage, navigate]);
 
-    const handleCreateRoom = () => {
+    const handleCreateRoomClick = () => {
         if (!user) {
             alert("Please sign in (top right corner of a room) to create a channel!");
             return;
         }
-        const name = prompt("Enter channel name:");
-        if (name) {
-            sendMessage({
-                type: "CREATE_ROOM",
-                payload: {
-                    name,
-                    description: `Hosted by ${user.name}`,
-                    color: "from-gray-700 to-black"
-                }
-            });
-        }
+        setIsCreatingRoom(true);
+    };
+
+    const submitCreateRoom = (e) => {
+        e.preventDefault();
+        if (!newRoomName.trim()) return;
+
+        sendMessage({
+            type: "CREATE_ROOM",
+            payload: {
+                name: newRoomName,
+                description: `Hosted by ${user.name}`,
+                color: "from-gray-700 to-black"
+            }
+        });
+        setIsCreatingRoom(false);
+        setNewRoomName("");
     };
 
     return (
@@ -103,10 +111,10 @@ export function Lobby() {
                         ))}
 
                         <button
-                            onClick={handleCreateRoom}
+                            onClick={handleCreateRoomClick}
                             className={`rounded-2xl border-2 border-dashed p-6 flex flex-col items-center justify-center gap-4 transition-colors w-full aspect-[4/3] ${user
-                                    ? "border-neutral-800 hover:border-neutral-600 text-neutral-500 hover:text-neutral-300 cursor-pointer"
-                                    : "border-neutral-900 text-neutral-700 cursor-not-allowed"
+                                ? "border-neutral-800 hover:border-neutral-600 text-neutral-500 hover:text-neutral-300 cursor-pointer"
+                                : "border-neutral-900 text-neutral-700 cursor-not-allowed"
                                 }`}
                             title={user ? "Create a new channel" : "Log in to create a channel"}
                         >
@@ -118,6 +126,53 @@ export function Lobby() {
                     </div>
                 )}
             </main>
-        </div>
+
+            {/* Create Room Modal */}
+            {
+                isCreatingRoom && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-md p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-xl font-bold text-white">Create New Channel</h3>
+                                <button onClick={() => setIsCreatingRoom(false)} className="text-neutral-500 hover:text-white transition-colors">
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <form onSubmit={submitCreateRoom} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-neutral-400 mb-1">Channel Name</label>
+                                    <input
+                                        type="text"
+                                        value={newRoomName}
+                                        onChange={(e) => setNewRoomName(e.target.value)}
+                                        placeholder="e.g. Late Night Vibes"
+                                        className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
+                                        autoFocus
+                                    />
+                                </div>
+
+                                <div className="flex justify-end gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsCreatingRoom(false)}
+                                        className="px-4 py-2 rounded-xl text-neutral-400 hover:text-white transition-colors font-medium"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={!newRoomName.trim()}
+                                        className="px-6 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-400 hover:to-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                    >
+                                        Create Channel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 }

@@ -48,7 +48,11 @@ function App() {
     isPlaying = false,
     progress: serverProgress = 0,
     activeChannel = "Synthwave",
+    ownerId = null,
+    suggestionsEnabled = true,
   } = serverState || {};
+
+  const isOwner = user && ownerId && user.id === ownerId;
 
   // Trace Render Cycle
   console.log(`[CLIENT TRACE] App Render. Active: ${activeRoomId}, Server: ${serverRoomId}, Stale? ${serverState && serverRoomId && (serverRoomId.toString().trim().toLowerCase() !== activeRoomId.toString().trim().toLowerCase())}`);
@@ -312,6 +316,7 @@ function App() {
 
 
 
+
   const handlePreviewTrack = (track) => {
 
     setIsLocallyPaused(true);
@@ -321,6 +326,10 @@ function App() {
   };
 
 
+
+  const handleUpdateSettings = (settings) => {
+    sendMessage({ type: "UPDATE_SETTINGS", payload: settings });
+  };
 
   const handleStopPreview = () => {
     setPreviewTrack(null);
@@ -358,10 +367,13 @@ function App() {
         user={user}
         onLoginSuccess={handleLoginSuccess}
         onLogout={handleLogout}
+        isOwner={isOwner}
+        suggestionsEnabled={suggestionsEnabled}
+        onUpdateSettings={handleUpdateSettings}
       />
 
       <div className="relative z-10 px-6 py-4">
-        {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} />}
+        {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} isOwner={isOwner} suggestionsEnabled={suggestionsEnabled} />}
       </div>
 
       <div className={`w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"}`}>
