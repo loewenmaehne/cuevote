@@ -40,19 +40,6 @@ export function PlaylistView({
 
     return (
         <div className="flex flex-col h-full bg-[#0a0a0a] text-white relative">
-            {/* Header */}
-            <div className="p-4 border-b border-neutral-800 bg-[#0a0a0a]/95 backdrop-blur z-10 sticky top-0 flex items-center justify-between">
-                <div>
-                    <h2 className="text-xl font-bold text-orange-500 flex items-center gap-2">
-                        <span>Playlist</span>
-                        <span className="text-xs font-normal text-neutral-500 uppercase tracking-widest px-2 py-0.5 border border-neutral-800 rounded-full">Venue Mode</span>
-                    </h2>
-                    <p className="text-xs text-neutral-500 mt-1">
-                        Now Playing: {currentTrack?.title || "Nothing"}
-                    </p>
-                </div>
-            </div>
-
             {/* Scrollable List */}
             <div className="flex-1 overflow-y-auto px-4 pb-24 custom-scrollbar scroll-smooth" ref={scrollRef}>
                 <div className="max-w-3xl mx-auto space-y-4 py-6">
