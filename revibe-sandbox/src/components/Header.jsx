@@ -199,6 +199,9 @@ export function Header({
                       <option value={10}>10 Songs</option>
                       <option value={25}>25 Songs</option>
                       <option value={50}>50 Songs</option>
+                      <option value={100}>100 Songs</option>
+                      <option value={250}>250 Songs</option>
+                      <option value={500}>500 Songs</option>
                     </select>
                   </div>
 
