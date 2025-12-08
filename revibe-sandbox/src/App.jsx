@@ -1,3 +1,4 @@
+```javascript
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Volume2, VolumeX, ArrowLeft } from "lucide-react";
@@ -5,6 +6,7 @@ import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
+import { PlaylistView } from "./components/PlaylistView"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./contexts/WebSocketProvider";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
@@ -56,17 +58,19 @@ function App() {
     ownerBypass = true,
     maxQueueSize = 50,
     smartQueue = true,
+    playlistViewMode = false,
+    history = [],
   } = serverState || {};
 
   const isOwner = user && ownerId && user.id === ownerId;
 
   // Trace Render Cycle
-  console.log(`[CLIENT TRACE] App Render. Active: ${activeRoomId}, Server: ${serverRoomId}, Stale? ${serverState && serverRoomId && (serverRoomId.toString().trim().toLowerCase() !== activeRoomId.toString().trim().toLowerCase())}`);
+  console.log(`[CLIENT TRACE] App Render.Active: ${ activeRoomId }, Server: ${ serverRoomId }, Stale ? ${ serverState && serverRoomId && (serverRoomId.toString().trim().toLowerCase() !== activeRoomId.toString().trim().toLowerCase()) } `);
 
   // Join Room on Connect or Room Change
   useEffect(() => {
     if (isConnected) {
-      // console.log(`Joining room: ${activeRoomId}`);
+      // console.log(`Joining room: ${ activeRoomId } `);
       sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
     }
   }, [isConnected, activeRoomId, sendMessage]);
@@ -77,9 +81,9 @@ function App() {
   useEffect(() => {
     let timeout;
     if (isConnected && isStaleState) {
-      console.warn(`[STALE DEBUG] Wanted: ${activeRoomId}, Got: ${serverRoomId}. Retrying in 3s...`);
+      console.warn(`[STALE DEBUG]Wanted: ${ activeRoomId }, Got: ${ serverRoomId }.Retrying in 3s...`);
       timeout = setTimeout(() => {
-        console.warn(`[STALE DEBUG] Sending JOIN_ROOM for ${activeRoomId}`);
+        console.warn(`[STALE DEBUG] Sending JOIN_ROOM for ${ activeRoomId }`);
         sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
       }, 3000);
     }
@@ -407,6 +411,8 @@ function App() {
         ownerBypass={ownerBypass}
         maxQueueSize={maxQueueSize}
         smartQueue={smartQueue}
+        playlistViewMode={playlistViewMode}
+        history={history} // Passed history to Header
         onUpdateSettings={handleUpdateSettings}
       />
 
@@ -414,41 +420,60 @@ function App() {
         {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} isOwner={isOwner} suggestionsEnabled={suggestionsEnabled} />}
       </div>
 
-      <div className={`w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"}`}>
-        <div className={`absolute inset-0 border-4 ${previewTrack ? "border-green-500" : "border-transparent"} transition-colors duration-300 box-border pointer-events-none z-20`}></div>
-        <div className="absolute inset-0">
-          <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
-            <PlayerErrorBoundary>
-              <Player playerContainerRef={playerContainerRef} />
-            </PlayerErrorBoundary>
-            {/* <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Player Disabled for Debug</div> */}
-          </div>
-          {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
-        </div>
+      <div className={`w - full relative group transition - all duration - 500 ease -in -out ${ isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]" } `}>
+        <div className={`absolute inset - 0 border - 4 ${ previewTrack ? "border-green-500" : "border-transparent" } transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
+        {playlistViewMode && !isOwner ? (
+             /* Venue Mode: Only Playlist View */
+             <div className="w-full h-full flex flex-col overflow-hidden">
+                <PlaylistView
+                    history={history}
+                    currentTrack={currentTrack}
+                    queue={queue.slice(1)} // Queue excluding current track
+                    user={user}
+                    onVote={handleVote}
+                    isOwner={isOwner}
+                />
+             </div>
+        ) : (
+            /* Standard Mode */
+            <>
+                <div className="absolute inset-0">
+                  <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
+                    <PlayerErrorBoundary>
+                      <Player playerContainerRef={playerContainerRef} />
+                    </PlayerErrorBoundary>
+                    {/* <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Player Disabled for Debug</div> */}
+                  </div>
+                  {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
+                </div>
 
-        {autoplayBlocked && (
-          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
-            <button
-              onClick={() => playerRef.current?.playVideo?.()}
-              className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-lg shadow-lg hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all active:scale-95"
-            >
-              Tap to Join Session
-            </button>
-          </div>
+                {autoplayBlocked && (
+                  <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
+                    <button
+                      onClick={() => playerRef.current?.playVideo?.()}
+                      className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-lg shadow-lg hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all active:scale-95"
+                    >
+                      Tap to Join Session
+                    </button>
+                  </div>
+                )}
+            </>
         )}
       </div>
 
       <div className="pb-4">
-        <Queue
-          tracks={queue}
-          currentTrack={currentTrack}
-          expandedTrackId={expandedTrackId}
-          votes={userVotes}
-          onVote={handleVote}
-          onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
-          isMinimized={isMinimized}
-          onPreview={allowPrelisten ? handlePreviewTrack : null}
-        />
+        {playlistViewMode && !isOwner ? null : ( // Hide queue if playlistViewMode is active and not owner
+          <Queue
+            tracks={queue}
+            currentTrack={currentTrack}
+            expandedTrackId={expandedTrackId}
+            votes={userVotes}
+            onVote={handleVote}
+            onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
+            isMinimized={isMinimized}
+            onPreview={allowPrelisten ? handlePreviewTrack : null}
+          />
+        )}
       </div>
 
       {previewTrack ? (
@@ -487,7 +512,7 @@ function App() {
               step="1"
               value={volume}
               onChange={handleVolumeChange}
-              className={`accent-green-500 w-24 ${isMuted ? "opacity-50" : ""}`}
+              className={`accent - green - 500 w - 24 ${ isMuted ? "opacity-50" : "" } `}
               onClick={(event) => event.stopPropagation()}
             />
           </div>
