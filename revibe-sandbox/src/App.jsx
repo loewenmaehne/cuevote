@@ -52,6 +52,7 @@ function App() {
     suggestionsEnabled = true,
     musicOnly = false,
     maxDuration = 600,
+    allowPrelisten = true,
   } = serverState || {};
 
   const isOwner = user && ownerId && user.id === ownerId;
@@ -399,6 +400,7 @@ function App() {
         suggestionsEnabled={suggestionsEnabled}
         musicOnly={musicOnly}
         maxDuration={maxDuration}
+        allowPrelisten={allowPrelisten}
         onUpdateSettings={handleUpdateSettings}
       />
 
@@ -439,7 +441,7 @@ function App() {
           onVote={handleVote}
           onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
           isMinimized={isMinimized}
-          onPreview={handlePreviewTrack}
+          onPreview={allowPrelisten ? handlePreviewTrack : null}
         />
       </div>
 

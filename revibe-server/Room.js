@@ -42,6 +42,7 @@ class Room {
             suggestionsEnabled: true,
             musicOnly: false,
             maxDuration: 600, // Default 10 minutes
+            allowPrelisten: true,
         };
 
         // Start the Room Timer
@@ -363,11 +364,12 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
         if (typeof maxDuration === 'number') updates.maxDuration = maxDuration;
+        if (typeof allowPrelisten === 'boolean') updates.allowPrelisten = allowPrelisten;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
