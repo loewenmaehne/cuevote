@@ -176,10 +176,33 @@ class Room {
             return;
         }
 
+        let indexToRemove = -1; // Declare here to be accessible after video verification
+
         // Check Max Queue Size
         if (this.state.maxQueueSize > 0 && !canBypass && this.state.queue.length >= this.state.maxQueueSize) {
-            ws.send(JSON.stringify({ type: "error", message: `Queue is full. Max size is ${this.state.maxQueueSize}.` }));
-            return;
+            // Smart Replacement: Look for worst song (score < 0) to replace
+            // Skip index 0 (current track)
+            const upcomingQueue = this.state.queue.slice(1);
+            let worstTrackIndex = -1;
+            let minScore = 0; // Must be strictly less than 0 to be considered
+
+            upcomingQueue.forEach((track, index) => {
+                const score = track.score || 0;
+                if (score < 0) {
+                    if (worstTrackIndex === -1 || score < minScore) {
+                        minScore = score;
+                        worstTrackIndex = index + 1; // Adjust for slice offset
+                    }
+                }
+            });
+
+            if (worstTrackIndex !== -1) {
+                // Found a bad song to replace, mark its index for potential removal later
+                indexToRemove = worstTrackIndex;
+            } else {
+                ws.send(JSON.stringify({ type: "error", message: `Queue is full. Max size is ${this.state.maxQueueSize}.` }));
+                return;
+            }
         }
 
         // Rate Limiting (5 seconds) - Bypass for owner
@@ -298,6 +321,14 @@ class Room {
         }
 
         if (track) {
+            // Apply Smart Replacement if needed
+            if (indexToRemove !== -1) {
+                // Ensure index is still valid (it should be, synchronous flow)
+                if (indexToRemove < this.state.queue.length) {
+                    this.state.queue.splice(indexToRemove, 1);
+                }
+            }
+
             const newQueue = [...this.state.queue, track];
             const newState = { queue: newQueue };
             if (newQueue.length === 1) {
