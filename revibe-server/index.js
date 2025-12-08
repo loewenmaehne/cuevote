@@ -111,13 +111,15 @@ wss.on("connection", (ws, req) => {
     clients.add(ws);
 
     // Default Join (Lobby or specific room)
-    // For now, we put them in "synthwave" to maintain existing behavior until Client Routing is ready
+    // REMOVED: Do not auto-join "synthwave". Wait for explicit JOIN_ROOM.
+    /*
     const defaultRoomId = "synthwave";
     const room = rooms.get(defaultRoomId);
     if (room) {
         ws.roomId = defaultRoomId;
         room.addClient(ws);
     }
+    */
 
     ws.on("message", async (message) => {
         try {
