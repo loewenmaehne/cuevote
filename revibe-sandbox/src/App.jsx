@@ -422,7 +422,10 @@ function App() {
         {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} isOwner={isOwner} suggestionsEnabled={suggestionsEnabled} />}
       </div>
 
-      <div className={`w - full relative group transition - all duration - 500 ease -in -out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"} `}>
+      <div className={playlistViewMode && !isOwner
+        ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
+        : `w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"}`
+      }>
         <div className={`absolute inset - 0 border - 4 ${previewTrack ? "border-green-500" : "border-transparent"} transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
         {playlistViewMode && !isOwner ? (
           /* Venue Mode: Only Playlist View */
