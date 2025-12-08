@@ -14,6 +14,26 @@ const wss = new WebSocket.Server({ port: process.env.PORT || 8080 });
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
+const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+
+async function verifyGoogleToken(token) {
+    try {
+        const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch user info');
+        }
+
+        const data = await response.json();
+        return data; // Returns object with sub, name, email, picture
+    } catch (error) {
+        console.error("Token verification failed:", error);
+        throw error;
+    }
+}
+
 const Room = require('./Room');
 
 // Room Manager
@@ -123,7 +143,8 @@ wss.on("connection", (ws, req) => {
 
                         // Generate Session Token
                         const sessionToken = crypto.randomBytes(32).toString('hex');
-                        db.createSession(sessionToken, user.id);
+                        const expiresAt = Math.floor(Date.now() / 1000) + (24 * 60 * 60); // 24 hours
+                        db.createSession(sessionToken, user.id, expiresAt);
 
                         ws.send(JSON.stringify({
                             type: "LOGIN_SUCCESS",
