@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useGoogleLogin } from '@react-oauth/google';
-import { Radio, Send, LogOut, Settings } from "lucide-react";
+import { Radio, Send, LogOut, Settings, HelpCircle } from "lucide-react";
 
 export function Header({
   activeChannel,
@@ -207,9 +207,11 @@ export function Header({
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
-                    <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-white">Smart Queue</label>
-                      <span className="text-xs text-neutral-500">Replace downvoted songs when full</span>
+                      <div className="group relative flex items-center" title="Replace downvoted songs when full">
+                        <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
+                      </div>
                     </div>
                     <button
                       onClick={(e) => {
@@ -241,9 +243,11 @@ export function Header({
 
                   {/* Owner Bypass Rules */}
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-700">
-                    <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-white">Owner Bypass Rules</label>
-                      <span className="text-xs text-neutral-500">Ignore filters/limits</span>
+                      <div className="group relative flex items-center" title="Ignore filters/limits">
+                        <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
+                      </div>
                     </div>
                     <button
                       onClick={(e) => {
