@@ -14,6 +14,7 @@ export function Header({
   suggestionsEnabled,
   musicOnly,
   maxDuration,
+  allowPrelisten,
   onUpdateSettings,
 }) {
   const headerRef = React.useRef(null);
@@ -164,6 +165,21 @@ export function Header({
                     >
                       <span
                         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${musicOnly ? 'translate-x-6' : 'translate-x-1'}`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-3">
+                    <label className="text-sm font-medium text-white">Allow Prelisten</label>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateSettings({ allowPrelisten: !allowPrelisten });
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${allowPrelisten ? 'bg-orange-500' : 'bg-neutral-600'}`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${allowPrelisten ? 'translate-x-6' : 'translate-x-1'}`}
                       />
                     </button>
                   </div>
