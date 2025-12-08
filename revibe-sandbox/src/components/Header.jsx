@@ -109,7 +109,11 @@ export function Header({
               onShowSuggest((prev) => !prev);
               setShowSettings(false);
             }}
-            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors truncate"
+            className={`keep-open flex items-center gap-2 transition-colors truncate ${(!suggestionsEnabled && !isOwner)
+              ? "text-neutral-600 hover:text-neutral-500"
+              : "text-orange-500 hover:text-orange-400"
+              }`}
+            title={(!suggestionsEnabled && !isOwner) ? "Suggestions disabled by owner (View Only)" : "Suggest a Song"}
           >
             <Send size={18} /> <span className="hidden sm:inline">Suggest</span>
           </button>
