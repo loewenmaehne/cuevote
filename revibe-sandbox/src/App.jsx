@@ -7,6 +7,7 @@ import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
 import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./contexts/WebSocketProvider";
+import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
 
 const YouTubeState = {
   UNSTARTED: -1,
@@ -29,36 +30,35 @@ function App() {
 
   console.log("Server State:", serverState);
 
-  // Join Room on Connect or Room Change
-  useEffect(() => {
-      if (isConnected) {
-          console.log(`Joining room: ${activeRoomId}`);
-          sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
-      }
-  }, [isConnected, activeRoomId, sendMessage]);
-
-  // Destructure server state
+  // Destructure server state (Moved up for useEffect access)
   const {
     roomId: serverRoomId,
     queue = [],
     currentTrack = null,
     isPlaying = false,
     progress: serverProgress = 0,
-    activeChannel = "Synthwave", 
+    activeChannel = "Synthwave",
   } = serverState || {};
+
+  // Join Room on Connect or Room Change
+  useEffect(() => {
+    if (isConnected) {
+      // console.log(`Joining room: ${activeRoomId}`);
+      sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
+    }
+  }, [isConnected, activeRoomId, sendMessage]);
 
   // Stale State Guard: If we switched rooms but serverState is still from the old room, show loading.
   const isStaleState = serverState && serverRoomId && (serverRoomId.toString().trim().toLowerCase() !== activeRoomId.toString().trim().toLowerCase());
 
-  // Retry joining if state is stale (Fix for "Switching channels" overlay stuck)
   useEffect(() => {
     let timeout;
     if (isConnected && isStaleState) {
-        console.warn(`Stale state detected (Wanted: ${activeRoomId}, Got: ${serverRoomId}). Retrying join...`);
-        // Increased timeout to 3000ms to allow large state payloads (e.g. big queues) to arrive/parse
-        timeout = setTimeout(() => {
-            sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
-        }, 3000);
+      console.warn(`Stale state detected (Wanted: ${activeRoomId}, Got: ${serverRoomId}). Retrying join...`);
+      // Increased timeout to 3000ms to allow large state payloads (e.g. big queues) to arrive/parse
+      timeout = setTimeout(() => {
+        sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
+      }, 3000);
     }
     return () => clearTimeout(timeout);
   }, [isConnected, isStaleState, activeRoomId, serverRoomId, sendMessage]);
@@ -85,11 +85,7 @@ function App() {
   // YouTube Player state
   const playerRef = useRef(null);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
-  const playerContainerRef = useCallback(node => {
-    if (node !== null) {
-      initializePlayer(node);
-    }
-  }, []);
+
 
   // YouTube API Loading
   const loadYouTubeAPI = useCallback(() => {
@@ -132,7 +128,7 @@ function App() {
               setAutoplayBlocked(false);
               const duration = event.target.getDuration();
               if (duration && duration > 0) {
-                 sendMessage({ type: "UPDATE_DURATION", payload: duration });
+                sendMessage({ type: "UPDATE_DURATION", payload: duration });
               }
             }
           },
@@ -143,6 +139,20 @@ function App() {
       });
     });
   }, [loadYouTubeAPI, sendMessage]);
+
+  const playerContainerRef = useCallback(node => {
+    if (node !== null) {
+      initializePlayer(node);
+    } else {
+      // Cleanup on unmount
+      if (playerRef.current && typeof playerRef.current.destroy === 'function') {
+        try {
+          playerRef.current.destroy();
+        } catch (e) { console.error("Player cleanup error", e); }
+        playerRef.current = null;
+      }
+    }
+  }, [initializePlayer]);
 
   // Main playback logic
   useEffect(() => {
@@ -179,16 +189,16 @@ function App() {
       }
     }
   }, [isPlayerReady, serverProgress, isPlaying, previewTrack]);
-  
+
   // Autoplay detection
   useEffect(() => {
     if (isPlaying && isPlayerReady && playerRef.current) {
       const check = setTimeout(() => {
         const state = playerRef.current.getPlayerState?.();
         if (
-            state !== undefined &&
-            state !== YouTubeState.PLAYING &&
-            state !== YouTubeState.BUFFERING
+          state !== undefined &&
+          state !== YouTubeState.PLAYING &&
+          state !== YouTubeState.BUFFERING
         ) {
           setAutoplayBlocked(true);
         } else {
@@ -202,102 +212,102 @@ function App() {
   // Progress bar update
   useEffect(() => {
     if (playerRef.current && playerRef.current.getDuration) {
-        const duration = playerRef.current.getDuration?.();
-        if (duration > 0) {
-            setProgress((serverProgress / duration) * 100);
-        }
+      const duration = playerRef.current.getDuration?.();
+      if (duration > 0) {
+        setProgress((serverProgress / duration) * 100);
+      }
     } else {
-            setProgress(0);
-        }
+      setProgress(0);
+    }
   }, [serverProgress]);
 
-    // Event Handlers
+  // Event Handlers
 
-    const handlePlayPause = () => {
+  const handlePlayPause = () => {
 
-      if (isLocallyPaused) {
+    if (isLocallyPaused) {
 
-        setIsLocallyPaused(false);
+      setIsLocallyPaused(false);
 
-        playerRef.current?.seekTo?.(serverProgress);
+      playerRef.current?.seekTo?.(serverProgress);
 
-        playerRef.current?.playVideo?.();
+      playerRef.current?.playVideo?.();
 
-      }
+    }
 
-      else {
-
-        setIsLocallyPaused(true);
-
-        playerRef.current?.pauseVideo?.();
-
-      }
-
-    };
-
-  
-
-    const handleMuteToggle = () => {
-
-      if (isMuted) playerRef.current?.unMute?.();
-
-      else playerRef.current?.mute?.();
-
-      setIsMuted(!isMuted);
-
-    };
-
-  
-
-    const handleVolumeChange = (e) => {
-
-      const newVolume = Number(e.target.value);
-
-      setVolume(newVolume);
-
-      if (playerRef.current) {
-
-        playerRef.current.setVolume?.(newVolume);
-
-        if (isMuted) {
-
-          playerRef.current.unMute?.();
-
-          setIsMuted(false);
-
-        }
-
-      }
-
-    };
-
-  
-
-    const handleSongSuggested = (query) => {
-
-      sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
-
-    };
-
-  
-
-    const handleVote = (trackId, type) => {
-
-      sendMessage({ type: "VOTE", payload: { trackId, voteType: type } });
-
-    };
-
-  
-
-    const handlePreviewTrack = (track) => {
+    else {
 
       setIsLocallyPaused(true);
 
-      setPreviewTrack(track);
+      playerRef.current?.pauseVideo?.();
 
-    };
+    }
 
-  
+  };
+
+
+
+  const handleMuteToggle = () => {
+
+    if (isMuted) playerRef.current?.unMute?.();
+
+    else playerRef.current?.mute?.();
+
+    setIsMuted(!isMuted);
+
+  };
+
+
+
+  const handleVolumeChange = (e) => {
+
+    const newVolume = Number(e.target.value);
+
+    setVolume(newVolume);
+
+    if (playerRef.current) {
+
+      playerRef.current.setVolume?.(newVolume);
+
+      if (isMuted) {
+
+        playerRef.current.unMute?.();
+
+        setIsMuted(false);
+
+      }
+
+    }
+
+  };
+
+
+
+  const handleSongSuggested = (query) => {
+
+    sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
+
+  };
+
+
+
+  const handleVote = (trackId, type) => {
+
+    sendMessage({ type: "VOTE", payload: { trackId, voteType: type } });
+
+  };
+
+
+
+  const handlePreviewTrack = (track) => {
+
+    setIsLocallyPaused(true);
+
+    setPreviewTrack(track);
+
+  };
+
+
 
   const handleStopPreview = () => {
     setPreviewTrack(null);
@@ -307,10 +317,10 @@ function App() {
 
   if (!serverState || isStaleState) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
-            <span>{isStaleState ? "Switching Channels..." : "Connecting to Server..."}</span>
-        </div>
+      <div className="flex flex-col items-center gap-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+        <span>{isStaleState ? "Switching Channels..." : "Connecting to Server..."}</span>
+      </div>
     </div>;
   }
 
@@ -318,9 +328,9 @@ function App() {
   const userVotes = {};
   if (clientId) {
     queue.forEach(track => {
-        if (track.voters && track.voters[clientId]) {
-            userVotes[track.id] = track.voters[clientId];
-        }
+      if (track.voters && track.voters[clientId]) {
+        userVotes[track.id] = track.voters[clientId];
+      }
     });
   }
 
@@ -338,14 +348,17 @@ function App() {
       <div className="relative z-10 px-6 py-4">
         {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} />}
       </div>
-      
+
       <div className={`w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"}`}>
         <div className={`absolute inset-0 border-4 ${previewTrack ? "border-green-500" : "border-transparent"} transition-colors duration-300 box-border pointer-events-none z-20`}></div>
         <div className="absolute inset-0">
-           <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
-                <Player playerContainerRef={playerContainerRef} />
-            </div>
-            {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
+          <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
+            <PlayerErrorBoundary>
+              <Player playerContainerRef={playerContainerRef} />
+            </PlayerErrorBoundary>
+            {/* <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Player Disabled for Debug</div> */}
+          </div>
+          {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
         </div>
 
         {autoplayBlocked && (
@@ -362,70 +375,70 @@ function App() {
 
       <div className="pb-4">
         <Queue
-            tracks={queue}
-            currentTrack={currentTrack}
-            expandedTrackId={expandedTrackId}
-            votes={userVotes}
-            onVote={handleVote}
-            onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
-            isMinimized={isMinimized}
-            onPreview={handlePreviewTrack}
+          tracks={queue}
+          currentTrack={currentTrack}
+          expandedTrackId={expandedTrackId}
+          votes={userVotes}
+          onVote={handleVote}
+          onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
+          isMinimized={isMinimized}
+          onPreview={handlePreviewTrack}
         />
       </div>
 
       {previewTrack ? (
         <div className="fixed bottom-0 left-0 w-full bg-green-900/95 backdrop-blur-md border-t border-green-700 px-6 py-3 flex items-center justify-between z-50 select-none">
-            <div className="flex items-center gap-4">
-                <button 
-                    onClick={handleStopPreview}
-                    className="bg-white text-green-900 hover:bg-gray-100 transition-colors rounded-full p-3 shadow-lg flex items-center gap-2"
-                    title="Back to Radio"
-                >
-                    <ArrowLeft size={24} />
-                    <span className="font-bold pr-2">Back to Radio</span>
-                </button>
-                <div>
-                    <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-white text-base leading-tight">{previewTrack.title}</h3>
-                        <span className="bg-green-500 text-black px-2 py-0.5 rounded text-xs font-bold animate-pulse">PREVIEW</span>
-                    </div>
-                    <p className="text-green-200 text-sm">{previewTrack.artist}</p>
-                </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleStopPreview}
+              className="bg-white text-green-900 hover:bg-gray-100 transition-colors rounded-full p-3 shadow-lg flex items-center gap-2"
+              title="Back to Radio"
+            >
+              <ArrowLeft size={24} />
+              <span className="font-bold pr-2">Back to Radio</span>
+            </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-white text-base leading-tight">{previewTrack.title}</h3>
+                <span className="bg-green-500 text-black px-2 py-0.5 rounded text-xs font-bold animate-pulse">PREVIEW</span>
+              </div>
+              <p className="text-green-200 text-sm">{previewTrack.artist}</p>
             </div>
-            <div className="flex items-center gap-2 text-green-200">
-                    <button
-                        onClick={(event) => {
-                        event.stopPropagation();
-                        handleMuteToggle();
-                        }}
-                        className="hover:text-white transition-colors"
-                    >
-                        {isMuted ? <VolumeX /> : <Volume2 />}
-                    </button>
-                    <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        step="1"
-                        value={volume}
-                        onChange={handleVolumeChange}
-                        className={`accent-green-500 w-24 ${isMuted ? "opacity-50" : ""}`}
-                        onClick={(event) => event.stopPropagation()}
-                    />
-            </div>
+          </div>
+          <div className="flex items-center gap-2 text-green-200">
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                handleMuteToggle();
+              }}
+              className="hover:text-white transition-colors"
+            >
+              {isMuted ? <VolumeX /> : <Volume2 />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={volume}
+              onChange={handleVolumeChange}
+              className={`accent-green-500 w-24 ${isMuted ? "opacity-50" : ""}`}
+              onClick={(event) => event.stopPropagation()}
+            />
+          </div>
         </div>
       ) : (
         <PlaybackControls
-            isPlaying={isPlaying && !isLocallyPaused}
-            onPlayPause={handlePlayPause}
-            progress={progress}
-            currentTrack={currentTrack}
-            activeChannel={activeChannel}
-            isMuted={isMuted}
-            onMuteToggle={handleMuteToggle}
-            volume={volume}
-            onVolumeChange={handleVolumeChange}
-            onMinimizeToggle={() => setIsMinimized(!isMinimized)}
+          isPlaying={isPlaying && !isLocallyPaused}
+          onPlayPause={handlePlayPause}
+          progress={progress}
+          currentTrack={currentTrack}
+          activeChannel={activeChannel}
+          isMuted={isMuted}
+          onMuteToggle={handleMuteToggle}
+          volume={volume}
+          onVolumeChange={handleVolumeChange}
+          onMinimizeToggle={() => setIsMinimized(!isMinimized)}
         />
       )}
     </div>

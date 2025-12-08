@@ -157,11 +157,26 @@ class Room {
         } else if (this.apiKey) {
             // Search via API
             try {
-                const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${this.apiKey}`;
+                // Fetch up to 5 results to find a non-livestream
+                const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=5&key=${this.apiKey}`;
                 const searchRes = await fetch(searchUrl);
                 const searchData = await searchRes.json();
+
                 if (searchData.items && searchData.items.length > 0) {
-                    videoId = searchData.items[0].id.videoId;
+                    // Find first non-livestream
+                    const validVideo = searchData.items.find(item => item.snippet && item.snippet.liveBroadcastContent === 'none');
+
+                    if (validVideo) {
+                        videoId = validVideo.id.videoId;
+                    } else {
+                        // All results were livestreams? Fallback to first regular one even if live, handled by validation later?
+                        // Or just let validation fail. Let's pick the first one if we can't find a filtered one, 
+                        // so validation allows the user to see the specific error if needed, OR we just fail here.
+                        // Better UX: Pick the first one and let validation reject it with the message, 
+                        // OR (preferred) pick the first one and hope it's valid, but we already know we want to skip live.
+                        // If ALL 5 are live, we probably can't help much.
+                        videoId = searchData.items[0].id.videoId;
+                    }
                 }
             } catch (err) {
                 console.error("Search failed:", err);
