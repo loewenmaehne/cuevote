@@ -178,6 +178,7 @@ function App() {
           playerRef.current.destroy();
         } catch (e) { console.error("Player cleanup error", e); }
         playerRef.current = null;
+        setIsPlayerReady(false); // Reset player ready state so it triggers updates when re-initialized
       }
     }
   }, [initializePlayer]);
