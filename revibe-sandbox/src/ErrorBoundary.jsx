@@ -26,7 +26,7 @@ class ErrorBoundary extends React.Component {
           <details className="whitespace-pre-wrap text-sm text-neutral-500">
             {this.state.errorInfo && this.state.errorInfo.componentStack}
           </details>
-          <button 
+          <button
             onClick={() => window.location.href = "/"}
             className="mt-6 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
           >
