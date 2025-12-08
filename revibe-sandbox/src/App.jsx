@@ -55,6 +55,7 @@ function App() {
     allowPrelisten = true,
     ownerBypass = true,
     maxQueueSize = 50,
+    smartQueue = true,
   } = serverState || {};
 
   const isOwner = user && ownerId && user.id === ownerId;
@@ -405,6 +406,7 @@ function App() {
         allowPrelisten={allowPrelisten}
         ownerBypass={ownerBypass}
         maxQueueSize={maxQueueSize}
+        smartQueue={smartQueue}
         onUpdateSettings={handleUpdateSettings}
       />
 
