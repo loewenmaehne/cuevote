@@ -391,6 +391,9 @@ function App() {
         userVotes[track.id] = track.voters[clientId];
       }
     });
+    if (currentTrack && currentTrack.voters && currentTrack.voters[clientId]) {
+      userVotes[currentTrack.id] = currentTrack.voters[clientId];
+    }
   }
 
   return (
@@ -430,6 +433,7 @@ function App() {
               queue={queue} // Pass full queue
               user={user}
               onVote={handleVote}
+              votes={userVotes} // Pass userVotes map
               isOwner={isOwner}
             />
           </div>
