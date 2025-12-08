@@ -18,10 +18,10 @@ export function Track({
     <div
       onClick={() => onToggleExpand(track.id)}
       className={`transition-all duration-500 ease-in-out p-4 rounded-3xl shadow-lg backdrop-blur-sm cursor-pointer overflow-hidden border ${isActive
-          ? "border-green-500 bg-[#0a0a0a] shadow-[0_0_15px_rgba(34,197,94,0.3)]"
-          : vote === "up"
-            ? "border-transparent bg-gradient-to-br from-orange-500/70 to-orange-600/60 shadow-[0_0_15px_#fb923c]/60"
-            : "border-transparent bg-[#1e1e1e]/80 hover:bg-[#222]"
+        ? "border-green-500 bg-[#0a0a0a] shadow-[0_0_15px_rgba(34,197,94,0.3)]"
+        : vote === "up"
+          ? "border-transparent bg-gradient-to-br from-orange-500/70 to-orange-600/60 shadow-[0_0_15px_#fb923c]/60"
+          : "border-transparent bg-[#1e1e1e]/80 hover:bg-[#222]"
         } ${isExpanded
           ? isActive
             ? "scale-[1.02] ring-2 ring-green-500/60"
@@ -60,15 +60,15 @@ export function Track({
               onVote(track.id, "up");
             }}
             className={`transition-transform duration-300 ease-out drop-shadow-md transform relative rounded-full p-1.5 ${vote === "up"
-                ? "scale-125 bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg"
-                : "text-orange-400 hover:scale-125 hover:bg-orange-500/20"
+              ? "scale-125 bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg"
+              : "text-orange-400 hover:scale-125 hover:bg-orange-500/20"
               }`}
           >
             <ThumbsUp size={20} />
           </button>
 
           <span className={`text-sm font-bold w-6 text-center ${(track.score || 0) > 0 ? "text-orange-400" :
-              (track.score || 0) < 0 ? "text-neutral-500" : "text-neutral-600"
+            (track.score || 0) < 0 ? "text-neutral-500" : "text-neutral-600"
             }`}>
             {track.score || 0}
           </span>
@@ -79,8 +79,8 @@ export function Track({
               onVote(track.id, "down");
             }}
             className={`transition-transform duration-300 ease-out transform relative rounded-full p-1.5 ${vote === "down"
-                ? "scale-125 bg-gradient-to-br from-neutral-600 to-neutral-800 text-white shadow-lg"
-                : "text-neutral-500 hover:scale-125 hover:bg-neutral-700/20"
+              ? "scale-125 bg-gradient-to-br from-neutral-600 to-neutral-800 text-white shadow-lg"
+              : "text-neutral-500 hover:scale-125 hover:bg-neutral-700/20"
               }`}
           >
             <ThumbsDown size={20} />
@@ -91,16 +91,18 @@ export function Track({
       {isExpanded && (
         <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-neutral-800 text-neutral-300 mt-4 space-y-3">
           <div className="flex gap-3">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onPreview(track);
-              }}
-              className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-colors"
-            >
-              <Headphones size={20} className="text-green-400" />
-              Preview Song
-            </button>
+            {onPreview && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPreview(track);
+                }}
+                className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-colors"
+              >
+                <Headphones size={20} className="text-green-400" />
+                Preview Song
+              </button>
+            )}
           </div>
           <p className="text-sm italic break-words overflow-hidden text-ellipsis">
             {track.lyrics}
