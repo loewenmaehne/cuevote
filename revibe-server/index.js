@@ -19,6 +19,8 @@ const Room = require('./Room');
 // Room Manager
 const rooms = new Map();
 
+const defaultRooms = ["Synthwave", "Lofi", "Pop", "Hip Hop", "R&B", "Techno", "Trap", "House", "Indie"];
+
 // Initialize Rooms from DB
 function loadRooms() {
     // Ensure System User
@@ -42,7 +44,6 @@ function loadRooms() {
     }
 
     // Ensure Default Rooms exist
-    const defaultRooms = ["Synthwave", "Lofi", "Pop", "Hip Hop", "R&B", "Techno", "Trap", "House", "Indie"];
     defaultRooms.forEach(name => {
         const id = name.toLowerCase().replace(/\s+/g, '-');
         if (!rooms.has(id)) {
@@ -107,32 +108,30 @@ wss.on("connection", (ws, req) => {
                 case "LOGIN": {
                     const { token } = parsedMessage.payload;
                     try {
-                        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                            headers: { Authorization: `Bearer ${token}` },
-                        });
-
-                        if (!userInfoResponse.ok) throw new Error("Invalid Google Token");
-                        const userData = await userInfoResponse.json();
-
-                        const user = db.upsertUser({
-                            id: userData.sub,
-                            email: userData.email,
-                            name: userData.name,
-                            picture: userData.picture
-                        });
-
-                        const sessionToken = crypto.randomUUID();
-                        const expiresAt = Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60);
-                        db.createSession(sessionToken, user.id, expiresAt);
-
+                        const payload = await verifyGoogleToken(token);
+                        let user = db.getUser(payload.sub);
+                        if (!user) {
+                            user = {
+                                id: payload.sub,
+                                email: payload.email,
+                                name: payload.name,
+                                picture: payload.picture
+                            };
+                            db.upsertUser(user);
+                        }
                         ws.user = user;
+
+                        // Generate Session Token
+                        const sessionToken = crypto.randomBytes(32).toString('hex');
+                        db.createSession(sessionToken, user.id);
+
                         ws.send(JSON.stringify({
                             type: "LOGIN_SUCCESS",
-                            payload: { user, sessionToken }
+                            payload: { user: ws.user, sessionToken }
                         }));
-                    } catch (err) {
-                        console.error("Login Error:", err);
-                        ws.send(JSON.stringify({ type: "error", message: "Login Failed" }));
+                    } catch (e) {
+                        console.error("Login verification failed", e);
+                        ws.send(JSON.stringify({ type: "error", message: "Login failed" }));
                     }
                     return;
                 }
@@ -140,13 +139,9 @@ wss.on("connection", (ws, req) => {
                     const { token } = parsedMessage.payload;
                     const session = db.getSession(token);
                     if (session) {
-                        ws.user = {
-                            id: session.user_id,
-                            name: session.name,
-                            email: session.email,
-                            picture: session.picture,
-                            role: session.role
-                        };
+                        const user = db.getUser(session.user_id);
+                        ws.user = user;
+                        // Refresh token?
                         ws.send(JSON.stringify({
                             type: "LOGIN_SUCCESS",
                             payload: { user: ws.user, sessionToken: token }
@@ -162,38 +157,48 @@ wss.on("connection", (ws, req) => {
                     ws.user = null;
                     return;
                 }
+                case "STATE_ACK": {
+                    console.log(`[SERVER TRACE] Client ${ws.id} ACKNOWLEDGED state for room: ${parsedMessage.payload.roomId}`);
+                    break;
+                }
                 case "JOIN_ROOM": {
                     const { roomId } = parsedMessage.payload;
-                    console.log(`Client ${ws.id} requesting to join room: ${roomId}`);
+                    console.log(`[SERVER TRACE] Client ${ws.id} requesting to join room: ${roomId}`);
 
                     // Leave ALL rooms to ensure no duplicate subscriptions
-                    // This prevents the bug where a client gets stuck in an old room if ws.roomId desyncs
                     for (const [id, room] of rooms.entries()) {
                         if (room.clients.has(ws)) {
-                            console.log(`Client ${ws.id} leaving room (forced cleanup): ${id}`);
+                            console.log(`[SERVER TRACE] Client ${ws.id} leaving room (forced cleanup): ${id}`);
                             room.removeClient(ws);
+                            if (room.clients.size === 0 && !defaultRooms.includes(id)) {
+                                // console.log(`Room ${id} is empty and not default. Scheduling cleanup.`);
+                            }
                         }
                     }
 
-                    // Join new room (Check Memory -> Check DB)
-                    if (!rooms.has(roomId)) {
+                    // Try to resolve room
+                    let room = rooms.get(roomId) || rooms.get(roomId.toLowerCase()) || rooms.get(roomId.toUpperCase());
+
+                    if (!room) {
+                        // Check DB if not not in memory
                         try {
                             const roomData = db.getRoom(roomId);
                             if (roomData) {
                                 console.log(`Waking up idle room: ${roomData.name} (${roomId})`);
-                                rooms.set(roomId, new Room(roomId, roomData.name, YOUTUBE_API_KEY, roomData));
+                                room = new Room(roomId, roomData.name, YOUTUBE_API_KEY, roomData);
+                                rooms.set(roomId, room);
                             }
-                        } catch (e) { console.error("DB Lookup failed", e); }
+                        } catch (e) {
+                            console.error("DB Lookup failed", e);
+                        }
                     }
 
-                    if (rooms.has(roomId)) {
-                        ws.roomId = roomId;
-                        rooms.get(roomId).addClient(ws);
-                        console.log(`Client ${ws.id} joined room: ${roomId}`);
-                        // Update activity timestamp in DB so it doesn't rot
-                        db.updateRoomActivity(roomId);
+                    if (room) {
+                        console.log(`Client ${ws.id} joining room: ${room.id}`);
+                        ws.roomId = room.id;
+                        room.addClient(ws);
+                        db.updateRoomActivity(room.id);
                     } else {
-                        console.warn(`Room not found: ${roomId}`);
                         ws.send(JSON.stringify({ type: "error", message: "Room not found" }));
                     }
                     return;
