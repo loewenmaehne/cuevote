@@ -404,10 +404,6 @@ function App() {
   }
 
 
-  // FORCE DEBUG: Guest + Venue Mode
-  // const debugIsOwner = false;
-  // const debugPlaylistViewMode = true;
-
   return (
     <div className="min-h-screen bg-black text-white flex flex-col pb-32">
       <Header
@@ -466,7 +462,10 @@ function App() {
             <div className="absolute inset-0">
               <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
                 <PlayerErrorBoundary>
-                  <Player playerContainerRef={playerContainerRef} />
+                  <Player
+                    key={localPlayerOverride ? "maximized-player" : "standard-player"}
+                    playerContainerRef={playerContainerRef}
+                  />
                 </PlayerErrorBoundary>
                 {/* <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Player Disabled for Debug</div> */}
               </div>
@@ -502,62 +501,64 @@ function App() {
         )}
       </div>
 
-      {previewTrack ? (
-        <div className="fixed bottom-0 left-0 w-full bg-green-900/95 backdrop-blur-md border-t border-green-700 px-6 py-3 flex items-center justify-between z-50 select-none">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleStopPreview}
-              className="bg-white text-green-900 hover:bg-gray-100 transition-colors rounded-full p-3 shadow-lg flex items-center gap-2"
-              title="Back to Radio"
-            >
-              <ArrowLeft size={24} />
-              <span className="font-bold pr-2">Back to Radio</span>
-            </button>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-white text-base leading-tight">{previewTrack.title}</h3>
-                <span className="bg-green-500 text-black px-2 py-0.5 rounded text-xs font-bold animate-pulse">PREVIEW</span>
+      {
+        previewTrack ? (
+          <div className="fixed bottom-0 left-0 w-full bg-green-900/95 backdrop-blur-md border-t border-green-700 px-6 py-3 flex items-center justify-between z-50 select-none">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleStopPreview}
+                className="bg-white text-green-900 hover:bg-gray-100 transition-colors rounded-full p-3 shadow-lg flex items-center gap-2"
+                title="Back to Radio"
+              >
+                <ArrowLeft size={24} />
+                <span className="font-bold pr-2">Back to Radio</span>
+              </button>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-white text-base leading-tight">{previewTrack.title}</h3>
+                  <span className="bg-green-500 text-black px-2 py-0.5 rounded text-xs font-bold animate-pulse">PREVIEW</span>
+                </div>
+                <p className="text-green-200 text-sm">{previewTrack.artist}</p>
               </div>
-              <p className="text-green-200 text-sm">{previewTrack.artist}</p>
+            </div>
+            <div className="flex items-center gap-2 text-green-200">
+              <button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleMuteToggle();
+                }}
+                className="hover:text-white transition-colors"
+              >
+                {isMuted ? <VolumeX /> : <Volume2 />}
+              </button>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value={volume}
+                onChange={handleVolumeChange}
+                className={`accent - green - 500 w - 24 ${isMuted ? "opacity-50" : ""} `}
+                onClick={(event) => event.stopPropagation()}
+              />
             </div>
           </div>
-          <div className="flex items-center gap-2 text-green-200">
-            <button
-              onClick={(event) => {
-                event.stopPropagation();
-                handleMuteToggle();
-              }}
-              className="hover:text-white transition-colors"
-            >
-              {isMuted ? <VolumeX /> : <Volume2 />}
-            </button>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              step="1"
-              value={volume}
-              onChange={handleVolumeChange}
-              className={`accent - green - 500 w - 24 ${isMuted ? "opacity-50" : ""} `}
-              onClick={(event) => event.stopPropagation()}
-            />
-          </div>
-        </div>
-      ) : (
-        <PlaybackControls
-          isPlaying={isPlaying && !isLocallyPaused}
-          onPlayPause={handlePlayPause}
-          progress={progress}
-          currentTrack={currentTrack}
-          activeChannel={activeChannel}
-          isMuted={isMuted}
-          onMuteToggle={handleMuteToggle}
-          volume={volume}
-          onVolumeChange={handleVolumeChange}
-          onMinimizeToggle={() => setIsMinimized(!isMinimized)}
-        />
-      )}
-    </div>
+        ) : (
+          <PlaybackControls
+            isPlaying={isPlaying && !isLocallyPaused}
+            onPlayPause={handlePlayPause}
+            progress={progress}
+            currentTrack={currentTrack}
+            activeChannel={activeChannel}
+            isMuted={isMuted}
+            onMuteToggle={handleMuteToggle}
+            volume={volume}
+            onVolumeChange={handleVolumeChange}
+            onMinimizeToggle={() => setIsMinimized(!isMinimized)}
+          />
+        )
+      }
+    </div >
   );
 }
 
