@@ -15,6 +15,7 @@ export function Header({
   musicOnly,
   maxDuration,
   allowPrelisten,
+  ownerBypass,
   onUpdateSettings,
 }) {
   const headerRef = React.useRef(null);
@@ -170,6 +171,22 @@ export function Header({
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
+                    <label className="text-sm font-medium text-white">Max Length</label>
+                    <select
+                      value={maxDuration}
+                      onChange={(e) => onUpdateSettings({ maxDuration: Number(e.target.value) })}
+                      onClick={(e) => e.stopPropagation()}
+                      className="bg-neutral-800 text-white text-sm rounded-lg px-2 py-1 border border-neutral-700 focus:outline-none focus:border-orange-500"
+                    >
+                      <option value={0}>No Limit</option>
+                      <option value={300}>5 Mins</option>
+                      <option value={600}>10 Mins</option>
+                      <option value={900}>15 Mins</option>
+                      <option value={1800}>30 Mins</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-3">
                     <label className="text-sm font-medium text-white">Allow Prelisten</label>
                     <button
                       onClick={(e) => {
@@ -184,24 +201,25 @@ export function Header({
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
-                    <label className="text-sm font-medium text-white">Max Length</label>
-                    <select
-                      value={maxDuration}
-                      onChange={(e) => {
+                  {/* Owner Bypass Rules */}
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-700">
+                    <div className="flex flex-col">
+                      <label className="text-sm font-medium text-white">Owner Bypass Rules</label>
+                      <span className="text-xs text-neutral-500">Ignore filters/limits</span>
+                    </div>
+                    <button
+                      onClick={(e) => {
                         e.stopPropagation();
-                        onUpdateSettings({ maxDuration: Number(e.target.value) });
+                        onUpdateSettings({ ownerBypass: !ownerBypass });
                       }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="bg-neutral-900 text-white text-xs rounded px-2 py-1 border border-neutral-700 focus:outline-none focus:border-orange-500"
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${ownerBypass ? 'bg-orange-500' : 'bg-neutral-600'}`}
                     >
-                      <option value={0}>No Limit</option>
-                      <option value={300}>5 Mins</option>
-                      <option value={600}>10 Mins</option>
-                      <option value={900}>15 Mins</option>
-                      <option value={1800}>30 Mins</option>
-                    </select>
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${ownerBypass ? 'translate-x-6' : 'translate-x-1'}`}
+                      />
+                    </button>
                   </div>
+
                 </div>
               )}
             </div>
