@@ -6,6 +6,7 @@ import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
 import { PlaylistView } from "./components/PlaylistView"; // Added this import
+import { PendingRequests, PendingRequestsPage } from "./components/PendingRequests";
 import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
@@ -59,9 +60,21 @@ function App() {
     smartQueue = true,
     playlistViewMode = false,
     history = [],
+    suggestionMode = 'auto',
+    pendingSuggestions = [],
+    ownerPopups = true,
   } = serverState || {};
 
   const isOwner = user && ownerId && user.id === ownerId;
+
+  // Pending Suggestions Handlers
+  const handleApproveSuggestion = (trackId) => {
+    sendMessage({ type: "APPROVE_SUGGESTION", payload: { trackId } });
+  };
+
+  const handleRejectSuggestion = (trackId) => {
+    sendMessage({ type: "REJECT_SUGGESTION", payload: { trackId } });
+  };
 
   // Trace Render Cycle
   console.log(`[CLIENT TRACE] App Render.Active: ${activeRoomId}, Server: ${serverRoomId}, Stale ? ${serverState && serverRoomId && (serverRoomId.toString().trim().toLowerCase() !== activeRoomId.toString().trim().toLowerCase())} `);
@@ -93,6 +106,7 @@ function App() {
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
+  const [showPendingPage, setShowPendingPage] = useState(false);
   // showChannels removed
   const [volume, setVolume] = useState(80);
   // minimized state removed
@@ -433,11 +447,32 @@ function App() {
         playlistViewMode={playlistViewMode}
         history={history} // Passed history to Header
         onUpdateSettings={handleUpdateSettings}
+        suggestionMode={suggestionMode}
+        ownerPopups={ownerPopups}
+        onManageRequests={() => setShowPendingPage(true)}
+        pendingCount={pendingSuggestions.length}
       />
 
       <div className="relative z-10 px-6 py-4">
-        {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} isOwner={isOwner} suggestionsEnabled={suggestionsEnabled} />}
+        {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} serverMessage={lastMessage} isOwner={isOwner} suggestionsEnabled={suggestionsEnabled} />}
       </div>
+
+      {isOwner && pendingSuggestions.length > 0 && ownerPopups && (
+        <PendingRequests
+          requests={pendingSuggestions}
+          onApprove={handleApproveSuggestion}
+          onReject={handleRejectSuggestion}
+        />
+      )}
+
+      {showPendingPage && (
+        <PendingRequestsPage
+          requests={pendingSuggestions}
+          onApprove={handleApproveSuggestion}
+          onReject={handleRejectSuggestion}
+          onClose={() => setShowPendingPage(false)}
+        />
+      )}
 
       <div className={playlistViewMode && !isOwner
         ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
@@ -568,5 +603,4 @@ function App() {
     </div >
   );
 }
-
 export default App;
