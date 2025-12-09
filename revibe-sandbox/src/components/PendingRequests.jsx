@@ -5,7 +5,7 @@ export function PendingRequests({ requests, onApprove, onReject }) {
 	if (!requests || requests.length === 0) return null;
 
 	return (
-		<div className="fixed bottom-24 right-6 z-50 w-[450px] bg-neutral-900/95 backdrop-blur-md border border-neutral-700 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5">
+		<div className="fixed bottom-24 right-6 z-30 w-[450px] bg-neutral-900/95 backdrop-blur-md border border-neutral-700 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5">
 			<div className="bg-neutral-800/50 p-3 border-b border-neutral-700 flex justify-between items-center">
 				<h3 className="font-bold text-white flex items-center gap-2">
 					<Clock size={16} className="text-orange-500" />
@@ -55,7 +55,7 @@ export function PendingRequests({ requests, onApprove, onReject }) {
 
 export function PendingRequestsPage({ requests, onApprove, onReject, onClose }) {
 	return (
-		<div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex flex-col animate-in fade-in">
+		<div className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm flex flex-col animate-in fade-in">
 			<div className="p-6 border-b border-neutral-800 flex items-center gap-4 bg-black">
 				<button
 					onClick={onClose}
