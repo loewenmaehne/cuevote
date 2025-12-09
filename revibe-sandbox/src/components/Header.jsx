@@ -25,6 +25,7 @@ export function Header({
   ownerPopups,
   onManageRequests,
   pendingCount,
+  duplicateCooldown,
 }) {
   const headerRef = React.useRef(null);
   const [showSettings, setShowSettings] = React.useState(false);
@@ -245,6 +246,23 @@ export function Header({
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
+                    <label className="text-sm font-medium text-white">Prevent Repetition</label>
+                    <select
+                      value={duplicateCooldown ?? 10}
+                      onChange={(e) => onUpdateSettings({ duplicateCooldown: Number(e.target.value) })}
+                      onClick={(e) => e.stopPropagation()}
+                      className="bg-neutral-800 text-white text-sm rounded-lg px-2 py-1 border border-neutral-700 focus:outline-none focus:border-orange-500"
+                    >
+                      <option value={0}>No Limit</option>
+                      <option value={5}>5 Songs</option>
+                      <option value={10}>10 Songs</option>
+                      <option value={20}>20 Songs</option>
+                      <option value={50}>50 Songs</option>
+                      <option value={100}>100 Songs</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-white">Smart Queue</label>
                       <div className="group relative flex items-center">
@@ -376,4 +394,5 @@ Header.propTypes = {
   ownerPopups: PropTypes.bool,
   onManageRequests: PropTypes.func,
   pendingCount: PropTypes.number,
+  duplicateCooldown: PropTypes.number,
 };

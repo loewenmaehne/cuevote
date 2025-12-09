@@ -63,6 +63,7 @@ function App() {
     suggestionMode = 'auto',
     pendingSuggestions = [],
     ownerPopups = true,
+    duplicateCooldown = 10,
   } = serverState || {};
 
   const isOwner = user && ownerId && user.id === ownerId;
@@ -446,6 +447,7 @@ function App() {
         smartQueue={smartQueue}
         playlistViewMode={playlistViewMode}
         history={history} // Passed history to Header
+        duplicateCooldown={duplicateCooldown}
         onUpdateSettings={handleUpdateSettings}
         suggestionMode={suggestionMode}
         ownerPopups={ownerPopups}
