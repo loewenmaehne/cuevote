@@ -15,18 +15,25 @@ export function Track({
   onPreview,
   readOnly = false,
 }) {
+  // Check prioritized status
+  const isPriority = track.isOwnerPriority;
+
   return (
     <div
       onClick={() => onToggleExpand(track.id)}
       className={`transition-all duration-500 ease-in-out p-4 rounded-3xl shadow-lg backdrop-blur-sm cursor-pointer overflow-hidden border ${isActive
         ? "border-green-500 bg-[#0a0a0a] shadow-[0_0_15px_rgba(34,197,94,0.3)]"
-        : vote === "up"
-          ? "border-transparent bg-gradient-to-br from-orange-500/70 to-orange-600/60 shadow-[0_0_15px_#fb923c]/60"
-          : "border-transparent bg-[#1e1e1e]/80 hover:bg-[#222]"
+        : isPriority
+          ? "border-red-500/50 bg-[#1a1a1a] shadow-[0_0_10px_rgba(239,68,68,0.15)] ring-1 ring-red-500/30"
+          : vote === "up"
+            ? "border-transparent bg-gradient-to-br from-orange-500/70 to-orange-600/60 shadow-[0_0_15px_#fb923c]/60"
+            : "border-transparent bg-[#1e1e1e]/80 hover:bg-[#222]"
         } ${isExpanded
           ? isActive
             ? "scale-[1.02] ring-2 ring-green-500/60"
-            : "scale-[1.02] ring-2 ring-orange-500/60"
+            : isPriority
+              ? "scale-[1.02] ring-2 ring-red-500/60"
+              : "scale-[1.02] ring-2 ring-orange-500/60"
           : ""
         } ${readOnly ? "opacity-90" : ""}`}
     >
