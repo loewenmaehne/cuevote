@@ -102,7 +102,6 @@ function App() {
   // const [user, setUser] = useState(null); // Now from Context
   const [progress, setProgress] = useState(0);
   const [roomNotFound, setRoomNotFound] = useState(false);
-  const [localPlayerOverride, setLocalPlayerOverride] = useState(false); // New state to allow guests to see player
 
   // Auth: Resume Session logic moved to Provider
 
@@ -435,7 +434,7 @@ function App() {
         : `w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"} `
       }>
         <div className={`absolute inset - 0 border - 4 ${previewTrack ? "border-green-500" : "border-transparent"} transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
-        {playlistViewMode && !isOwner && !localPlayerOverride ? (
+        {playlistViewMode && !isOwner ? (
           /* Venue Mode: Only Playlist View */
           <div className="w-full h-full flex flex-col overflow-hidden">
             <PlaylistView
@@ -453,7 +452,6 @@ function App() {
               activeChannel={activeChannel}
               onMuteToggle={handleMuteToggle}
               onVolumeChange={handleVolumeChange}
-              onMaximize={() => setLocalPlayerOverride(true)}
             />
           </div>
         ) : (
@@ -463,7 +461,6 @@ function App() {
               <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
                 <PlayerErrorBoundary>
                   <Player
-                    key={localPlayerOverride ? "maximized-player" : "standard-player"}
                     playerContainerRef={playerContainerRef}
                   />
                 </PlayerErrorBoundary>
