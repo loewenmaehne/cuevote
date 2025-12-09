@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2 } from "lucide-react";
 
@@ -15,77 +15,184 @@ export function PlaybackControls({
   isCinemaMode = false,
   onToggleCinemaMode,
 }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [tempVisible, setTempVisible] = useState(false);
+  const hideTimeoutRef = useRef(null);
+
+  // Function to show controls temporarily (e.g. on song start or mouse leave)
+  const activateTemporaryVisibility = () => {
+    console.log("[PlaybackControls] Activating temporary visibility. Starting 3s timer.");
+    setTempVisible(true);
+    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+    hideTimeoutRef.current = setTimeout(() => {
+      console.log("[PlaybackControls] Timer expired. Setting tempVisible = false");
+      setTempVisible(false);
+    }, 3000);
+  };
+
+  // Show temporarily when track changes
+  useEffect(() => {
+    if (currentTrack) {
+      console.log("[PlaybackControls] Track changed, activating visibility.");
+      activateTemporaryVisibility();
+    }
+  }, [currentTrack?.id]);
+
+  // Clean up timeout
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+    };
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (!isHovered) console.log("[PlaybackControls] Mouse Enter");
+    setIsHovered(true);
+    setTempVisible(true); // Keep it visible without timeout while hovered
+    if (hideTimeoutRef.current) {
+      console.log("[PlaybackControls] Clearing timer due to hover");
+      clearTimeout(hideTimeoutRef.current);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    console.log("[PlaybackControls] Mouse Leave");
+    setIsHovered(false);
+    activateTemporaryVisibility(); // Start timeout once mouse leaves
+  };
+
+  // Calculate visibility before using it in effects
+  const shouldShow = !isCinemaMode || isHovered || tempVisible;
+
+  // Debug Log
+  useEffect(() => {
+    if (isCinemaMode) {
+      console.log(`[PlaybackControls] State: Cinema=${isCinemaMode}, Hover=${isHovered}, Temp=${tempVisible} => Show=${shouldShow}`);
+    }
+  }, [isCinemaMode, isHovered, tempVisible, shouldShow]);
+
+  // Handle window blur (e.g. clicking into iframe) as a "leave" event
+  useEffect(() => {
+    const handleWindowBlur = () => {
+      console.log(`[PlaybackControls] Window Blur. isHovered=${isHovered}`);
+      if (isHovered) {
+        handleMouseLeave();
+      }
+    };
+    window.addEventListener("blur", handleWindowBlur);
+    return () => window.removeEventListener("blur", handleWindowBlur);
+  }, [isHovered]);
+
+  // Bug Fix: Safety check for hover state
+  // Sometimes moving into an iframe swallows the mouseleave event.
+  // We periodically check if the browser actually thinks we are hovering.
+  const footerRef = useRef(null);
+  const overlayRef = useRef(null);
+
+  useEffect(() => {
+    let interval;
+    if (isHovered && isCinemaMode) {
+      interval = setInterval(() => {
+        const footerHover = footerRef.current?.matches(':hover');
+        const overlayHover = overlayRef.current?.matches(':hover');
+
+        // If neither is hovered according to the browser, but React thinks we are, force a leave.
+        if (!footerHover && !overlayHover) {
+          console.log("[PlaybackControls] Safety Check: Browser says NO HOVER. Forcing leave.");
+          handleMouseLeave();
+          // Clear interval immediately to prevent spamming while waiting for state update
+          clearInterval(interval);
+        }
+      }, 500); // Check every 500ms
+    }
+    return () => clearInterval(interval);
+  }, [isHovered, isCinemaMode]);
+
   return (
-    <footer
-      className="fixed bottom-0 left-0 w-full bg-[#050505]/95 backdrop-blur-md border-t border-neutral-900 px-6 py-3 flex flex-col gap-2 z-50 select-none"
-    >
-      <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+    <>
+      {isCinemaMode && (
         <div
-          className="h-2 bg-gradient-to-r from-orange-400 to-orange-600 transition-all"
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
+          ref={overlayRef}
+          className="fixed bottom-0 left-0 w-full h-24 z-[60] bg-transparent"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        />
+      )}
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
-              onPlayPause();
-            }}
-            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white rounded-full p-3 transition-all shadow-lg"
-            disabled={!currentTrack}
-          >
-            {isPlaying ? <Pause /> : <Play />}
-          </button>
+      <footer
+        ref={footerRef}
+        className={`fixed bottom-0 left-0 w-full bg-[#050505]/95 backdrop-blur-md border-t border-neutral-900 px-6 py-3 flex flex-col gap-2 z-[70] select-none transition-transform duration-500 ease-in-out ${shouldShow ? 'translate-y-0' : 'translate-y-full'}`}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+          <div
+            className="h-2 bg-gradient-to-r from-orange-400 to-orange-600 transition-all"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
 
-          <div>
-            <h3 className="text-base font-semibold leading-tight">
-              {currentTrack ? `Now Playing · ${currentTrack.title}` : "Queue Empty"}
-            </h3>
-            <p className="text-sm text-neutral-400">
-              {currentTrack
-                ? `${currentTrack.artist} • ${activeChannel} Channel`
-                : "Add songs to start playback"}
-            </p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                onPlayPause();
+              }}
+              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white rounded-full p-3 transition-all shadow-lg"
+              disabled={!currentTrack}
+            >
+              {isPlaying ? <Pause /> : <Play />}
+            </button>
+
+            <div>
+              <h3 className="text-base font-semibold leading-tight">
+                {currentTrack ? `Now Playing · ${currentTrack.title}` : "Queue Empty"}
+              </h3>
+              <p className="text-sm text-neutral-400">
+                {currentTrack
+                  ? `${currentTrack.artist} • ${activeChannel} Channel`
+                  : "Add songs to start playback"}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-neutral-400">
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                onMuteToggle();
+              }}
+              className="hover:text-orange-400 transition-colors"
+              disabled={!currentTrack}
+            >
+              {isMuted ? <VolumeX /> : <Volume2 />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={volume}
+              onChange={onVolumeChange}
+              className={`accent-orange-500 w-24 ${isMuted ? "opacity-50" : ""}`}
+              onClick={(event) => event.stopPropagation()}
+              disabled={!currentTrack}
+            />
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                onToggleCinemaMode();
+              }}
+              className="hover:text-white transition-colors ml-2"
+              title={isCinemaMode ? "Exit Cinema Mode" : "Cinema Mode"}
+            >
+              {isCinemaMode ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+            </button>
           </div>
         </div>
-
-        <div className="flex items-center gap-2 text-neutral-400">
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
-              onMuteToggle();
-            }}
-            className="hover:text-orange-400 transition-colors"
-            disabled={!currentTrack}
-          >
-            {isMuted ? <VolumeX /> : <Volume2 />}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            step="1"
-            value={volume}
-            onChange={onVolumeChange}
-            className={`accent-orange-500 w-24 ${isMuted ? "opacity-50" : ""}`}
-            onClick={(event) => event.stopPropagation()}
-            disabled={!currentTrack}
-          />
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
-              onToggleCinemaMode();
-            }}
-            className="hover:text-white transition-colors ml-2"
-            title={isCinemaMode ? "Exit Cinema Mode" : "Cinema Mode"}
-          >
-            {isCinemaMode ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
-          </button>
-        </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }
 
