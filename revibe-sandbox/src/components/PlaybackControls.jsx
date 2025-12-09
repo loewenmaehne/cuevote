@@ -16,13 +16,7 @@ export function PlaybackControls({
 }) {
   return (
     <footer
-      onClick={(event) => {
-        if (event.target.closest("button") || event.target.closest("input")) {
-          return;
-        }
-        onMinimizeToggle();
-      }}
-      className="fixed bottom-0 left-0 w-full bg-[#050505]/95 backdrop-blur-md border-t border-neutral-900 px-6 py-3 flex flex-col gap-2 z-50 cursor-pointer select-none"
+      className="fixed bottom-0 left-0 w-full bg-[#050505]/95 backdrop-blur-md border-t border-neutral-900 px-6 py-3 flex flex-col gap-2 z-50 select-none"
     >
       <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
         <div
