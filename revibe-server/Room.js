@@ -53,7 +53,9 @@ class Room {
             playlistViewMode: false, // Venue Mode: Only show playlist view for guests
             maxQueueSize: 50, // Default 50
             suggestionMode: 'auto', // 'auto' or 'manual'
+            suggestionMode: 'auto', // 'auto' or 'manual'
             pendingSuggestions: [],
+            duplicateCooldown: 10, // Default 10 songs
         };
 
         // Start the Room Timer
@@ -197,11 +199,25 @@ class Room {
         const isUserOwner = isOwner(this, ws);
         const canBypass = isUserOwner && this.state.ownerBypass;
 
-        // Check Suggestions Enabled (Owner bypass)
         if (!this.state.suggestionsEnabled && !canBypass) {
             ws.send(JSON.stringify({ type: "error", message: "Suggestions are currently disabled by the room owner." }));
             return;
         }
+
+        const { query } = payload; // Moved up for title check
+
+        // Duplicate Title Check
+        // We need to resolve the video first to get the title, OR we check videoId if we have it?
+        // Proposal says "Duplicate Song Title Prevention".
+        // Titles can slightly vary, but usually videoId is the unique identifier. 
+        // User asked for "same title", but practically "same video" (videoId) is safer and usually what is meant to prevent repetition.
+        // HOWEVER, if they want "same title" specifically to prevent covers or same song different video, that's harder.
+        // Let's stick to strict Title check as requested "repetition of turning in the same title".
+        // But we don't know the title yet until we fetch it!
+        // We will have to fetch the title first.
+        // The current flow fetches title in step 2.
+        // Let's implement the check AFTER fetching details (Step 2) but BEFORE adding to queue.
+
 
         let indexToRemove = -1; // Declare here to be accessible after video verification
 
@@ -245,7 +261,7 @@ class Room {
         }
         ws.lastSuggestionTime = now;
 
-        const { query } = payload;
+        // const { query } = payload; // Already destructured above
         const userId = ws.user.id; // Trust server-side user object
         let videoId = null;
 
@@ -341,6 +357,28 @@ class Room {
                 }
             } catch (apiError) {
                 console.error("YouTube API Check failed:", apiError);
+            }
+        }
+
+        // Duplicate Title Check (After we have track details)
+        if (track && this.state.duplicateCooldown > 0 && !canBypass) {
+            const cooldown = this.state.duplicateCooldown;
+            const titleToCheck = track.title.toLowerCase().trim();
+
+            // Check Queue
+            const queueTitles = this.state.queue.map(t => t.title.toLowerCase().trim());
+            // Check History (limit to needed amount)
+            const historyToCheck = this.state.history.slice(-cooldown).map(t => t.title.toLowerCase().trim());
+
+            // Logic: Check combined list of recent history + current queue
+            const combinedList = [...historyToCheck, ...queueTitles];
+            const recentTracks = combinedList.slice(-cooldown);
+
+            const isDuplicate = recentTracks.some(t => t === titleToCheck);
+
+            if (isDuplicate) {
+                ws.send(JSON.stringify({ type: "error", message: `This song was recently played (Limit: ${cooldown}).` }));
+                return;
             }
         }
 
@@ -467,6 +505,7 @@ class Room {
         if (typeof maxQueueSize === 'number') updates.maxQueueSize = maxQueueSize;
         if (typeof ownerPopups === 'boolean') updates.ownerPopups = ownerPopups;
         if (suggestionMode === 'auto' || suggestionMode === 'manual') updates.suggestionMode = suggestionMode;
+        if (typeof duplicateCooldown === 'number') updates.duplicateCooldown = duplicateCooldown;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
