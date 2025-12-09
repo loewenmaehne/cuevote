@@ -39,6 +39,9 @@ export function PlaylistView({
         }
     }, [currentTrack?.id]);
 
+    // Filter current track out of queue to prevent duplicates in "Up Next"
+    const filteredQueue = queue.filter(t => t.id !== currentTrack?.id);
+
     return (
         <div className="flex flex-col h-full bg-[#0a0a0a] text-white relative">
             {/* Scrollable List */}
@@ -89,13 +92,13 @@ export function PlaylistView({
                     )}
 
                     {/* Queue Section */}
-                    {queue.length > 0 ? (
+                    {filteredQueue.length > 0 ? (
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 px-2 pb-2 border-b border-neutral-800 mt-4">
                                 <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Up Next</span>
-                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-neutral-800 text-neutral-400 font-mono">{queue.length}</span>
+                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-neutral-800 text-neutral-400 font-mono">{filteredQueue.length}</span>
                             </div>
-                            {queue.map((track) => (
+                            {filteredQueue.map((track) => (
                                 <Track
                                     key={track.id}
                                     track={track}
