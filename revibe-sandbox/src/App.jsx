@@ -466,6 +466,7 @@ function App() {
           requests={pendingSuggestions}
           onApprove={handleApproveSuggestion}
           onReject={handleRejectSuggestion}
+          onClose={() => handleUpdateSettings({ ownerPopups: false })}
         />
       )}
 
