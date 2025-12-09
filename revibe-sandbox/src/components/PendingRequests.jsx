@@ -1,7 +1,7 @@
 import React from 'react';
 import { Check, X, Clock, ArrowLeft } from 'lucide-react';
 
-export function PendingRequests({ requests, onApprove, onReject }) {
+export function PendingRequests({ requests, onApprove, onReject, onClose }) {
 	if (!requests || requests.length === 0) return null;
 
 	return (
@@ -11,6 +11,12 @@ export function PendingRequests({ requests, onApprove, onReject }) {
 					<Clock size={16} className="text-orange-500" />
 					Pending Review ({requests.length})
 				</h3>
+				<button
+					onClick={onClose}
+					className="text-neutral-400 hover:text-white transition-colors p-1 rounded-md hover:bg-neutral-700"
+				>
+					<X size={16} />
+				</button>
 			</div>
 
 			<div className="max-h-60 overflow-y-auto custom-scrollbar">
