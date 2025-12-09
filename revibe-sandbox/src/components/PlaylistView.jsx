@@ -19,7 +19,6 @@ export function PlaylistView({
     activeChannel,
     onMuteToggle,
     onVolumeChange,
-    onMaximize,
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -136,7 +135,7 @@ export function PlaylistView({
                 // Maybe just disable.
                 volume={volume}
                 onVolumeChange={onVolumeChange}
-                onMinimizeToggle={onMaximize}
+                onMinimizeToggle={() => { }}
             />
         </div>
     );
