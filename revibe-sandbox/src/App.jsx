@@ -451,6 +451,7 @@ function App() {
         onUpdateSettings={handleUpdateSettings}
         suggestionMode={suggestionMode}
         ownerPopups={ownerPopups}
+        ownerQueueBypass={serverState?.ownerQueueBypass}
         onManageRequests={() => setShowPendingPage(true)}
         pendingCount={pendingSuggestions.length}
       />

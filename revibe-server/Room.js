@@ -44,10 +44,8 @@ class Room {
             musicOnly: true, // Default true
             maxDuration: 600, // Default 10 minutes
             allowPrelisten: true,
-            allowPrelisten: true,
-            ownerBypass: true,
-            ownerBypass: true,
-            ownerBypass: true,
+            ownerBypass: true, // Bypass suggestions disabled
+            ownerQueueBypass: false, // Bypass queue voting (Priority)
             smartQueue: true, // Auto-replace bad songs if full
             ownerPopups: true, // Show popups for new requests
             playlistViewMode: false, // Venue Mode: Only show playlist view for guests
@@ -407,12 +405,38 @@ class Room {
                 return;
             }
 
+            // Priority Check
+            if (this.state.ownerQueueBypass && isUserOwner) {
+                track.isOwnerPriority = true;
+            }
+
             const newQueue = [...this.state.queue, track];
             const newState = { queue: newQueue };
             if (newQueue.length === 1) {
                 newState.currentTrack = newQueue[0];
                 newState.isPlaying = true;
                 newState.progress = 0;
+            } else {
+                // Trigger auto-sort if we added to a non-empty queue
+                // We need to resort because this new track might be priority
+
+                const current = newQueue[0];
+                let upcoming = newQueue.slice(1);
+
+                upcoming.sort((a, b) => {
+                    // 1. Owner Priority
+                    if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
+                    if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
+
+                    // 2. Score
+                    const scoreDiff = (b.score || 0) - (a.score || 0);
+                    if (scoreDiff !== 0) return scoreDiff;
+
+                    // 3. Time added (implicit by stable sort or index if we had it, but generic sort is fine)
+                    return 0;
+                });
+
+                newState.queue = [current, ...upcoming];
             }
             this.updateState(newState);
         }
@@ -459,6 +483,11 @@ class Room {
             const upcoming = queue.slice(1);
 
             upcoming.sort((a, b) => {
+                // 1. Owner Priority
+                if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
+                if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
+
+                // 2. Score
                 const scoreDiff = b.score - a.score;
                 return scoreDiff !== 0 ? scoreDiff : 0;
             });
@@ -493,7 +522,7 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
@@ -506,6 +535,7 @@ class Room {
         if (typeof ownerPopups === 'boolean') updates.ownerPopups = ownerPopups;
         if (suggestionMode === 'auto' || suggestionMode === 'manual') updates.suggestionMode = suggestionMode;
         if (typeof duplicateCooldown === 'number') updates.duplicateCooldown = duplicateCooldown;
+        if (typeof ownerQueueBypass === 'boolean') updates.ownerQueueBypass = ownerQueueBypass;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
