@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { CheckCircle, Send, Clock } from "lucide-react";
 
-export function SuggestSongForm({ onSongSuggested, serverError, serverMessage, isOwner, suggestionsEnabled }) {
+export function SuggestSongForm({ onSongSuggested, serverError, serverMessage, isOwner, suggestionsEnabled, suggestionMode }) {
   const [songSuggestion, setSongSuggestion] = useState("");
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [suggestionError, setSuggestionError] = useState("");
@@ -31,25 +31,21 @@ export function SuggestSongForm({ onSongSuggested, serverError, serverMessage, i
     // Delegate everything to server (Validation, Search, Metadata)
     onSongSuggested(input);
 
-    // Optimistic Success UI - Only if NOT manual review? 
-    // Actually, we don't know if manual review is on here easily without more props.
-    // But if we get an immediate response, we can handle it.
-    // For now, let's show optimistic success, but if we get "info" message later, we update it.
+    // Optimistic Success: Only for Auto Mode
+    // For Manual Mode, we wait for the server "Submitted" confirmation to avoid "Green -> Blue" flash.
+    if (suggestionMode !== 'manual') {
+      setSubmissionSuccess(true);
+      setSongSuggestion("");
 
-    // Changing strategy: Don't set optimistic success immediately if we expect a different message?
-    // Let's keep optimistic success for "Added", but if we get "info" type message, we change the text.
+      // Reset UI after delay
+      setTimeout(() => {
+        setSubmissionSuccess(false);
+        setIsSubmittingSuggestion(false);
+        setInfoMessage("");
+      }, 3000);
+    }
 
-    setSubmissionSuccess(true);
-    setSongSuggestion("");
-
-    // Reset UI after delay
-    setTimeout(() => {
-      setSubmissionSuccess(false);
-      setIsSubmittingSuggestion(false);
-      setInfoMessage("");
-    }, 3000);
-
-  }, [songSuggestion, onSongSuggested]);
+  }, [songSuggestion, onSongSuggested, suggestionMode]);
 
   const handleKeyPress = useCallback(
     (event) => {
@@ -134,4 +130,5 @@ SuggestSongForm.propTypes = {
   serverMessage: PropTypes.object,
   isOwner: PropTypes.bool,
   suggestionsEnabled: PropTypes.bool,
+  suggestionMode: PropTypes.string,
 };
