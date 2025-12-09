@@ -27,6 +27,7 @@ export function Header({
   pendingCount,
   duplicateCooldown,
   ownerQueueBypass,
+  votesEnabled,
 }) {
   const headerRef = React.useRef(null);
   const [showSettings, setShowSettings] = React.useState(false);
@@ -335,6 +336,21 @@ export function Header({
                     </button>
                   </div>
 
+                  <div className="flex items-center justify-between mt-3">
+                    <label className="text-sm font-medium text-white">Allow Voting</label>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateSettings({ votesEnabled: !votesEnabled });
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${votesEnabled ? 'bg-orange-500' : 'bg-neutral-600'}`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${votesEnabled ? 'translate-x-6' : 'translate-x-1'}`}
+                      />
+                    </button>
+                  </div>
+
                   {/* Owner Bypass Rules */}
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-700">
                     <div className="flex items-center gap-2">
@@ -431,4 +447,5 @@ Header.propTypes = {
   pendingCount: PropTypes.number,
   duplicateCooldown: PropTypes.number,
   ownerQueueBypass: PropTypes.bool,
+  votesEnabled: PropTypes.bool,
 };

@@ -14,6 +14,7 @@ export function Track({
   onToggleExpand,
   onPreview,
   readOnly = false,
+  votesEnabled = true,
 }) {
   // Check prioritized status
   const isPriority = track.isOwnerPriority;
@@ -63,7 +64,7 @@ export function Track({
             </span>
           )}
 
-          {!readOnly && (
+          {!readOnly && votesEnabled && (
             <>
               <button
                 onClick={(event) => {

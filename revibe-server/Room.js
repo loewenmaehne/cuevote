@@ -46,11 +46,11 @@ class Room {
             allowPrelisten: true,
             ownerBypass: true, // Bypass suggestions disabled
             ownerQueueBypass: false, // Bypass queue voting (Priority)
+            votesEnabled: true, // Allow voting
             smartQueue: true, // Auto-replace bad songs if full
             ownerPopups: true, // Show popups for new requests
             playlistViewMode: false, // Venue Mode: Only show playlist view for guests
             maxQueueSize: 50, // Default 50
-            suggestionMode: 'auto', // 'auto' or 'manual'
             suggestionMode: 'auto', // 'auto' or 'manual'
             pendingSuggestions: [],
             duplicateCooldown: 10, // Default 10 songs
@@ -448,6 +448,14 @@ class Room {
             return;
         }
 
+        const isUserOwner = isOwner(this, ws);
+        const canBypass = isUserOwner && this.state.ownerBypass;
+
+        if (!this.state.votesEnabled && !canBypass) {
+            ws.send(JSON.stringify({ type: "error", message: "Voting is currently disabled." }));
+            return;
+        }
+
         const queue = [...this.state.queue];
         const trackIndex = queue.findIndex((t) => t.id === trackId);
 
@@ -522,7 +530,7 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
@@ -536,6 +544,7 @@ class Room {
         if (suggestionMode === 'auto' || suggestionMode === 'manual') updates.suggestionMode = suggestionMode;
         if (typeof duplicateCooldown === 'number') updates.duplicateCooldown = duplicateCooldown;
         if (typeof ownerQueueBypass === 'boolean') updates.ownerQueueBypass = ownerQueueBypass;
+        if (typeof votesEnabled === 'boolean') updates.votesEnabled = votesEnabled;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);

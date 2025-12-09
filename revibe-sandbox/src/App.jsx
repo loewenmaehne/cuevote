@@ -452,6 +452,7 @@ function App() {
         suggestionMode={suggestionMode}
         ownerPopups={ownerPopups}
         ownerQueueBypass={serverState?.ownerQueueBypass}
+        votesEnabled={serverState?.votesEnabled ?? true}
         onManageRequests={() => setShowPendingPage(true)}
         pendingCount={pendingSuggestions.length}
       />
@@ -500,6 +501,7 @@ function App() {
               activeChannel={activeChannel}
               onMuteToggle={handleMuteToggle}
               onVolumeChange={handleVolumeChange}
+              votesEnabled={serverState?.votesEnabled ?? true}
             />
           </div>
         ) : (
@@ -544,6 +546,7 @@ function App() {
             onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
             isMinimized={false}
             onPreview={allowPrelisten ? handlePreviewTrack : null}
+            votesEnabled={serverState?.votesEnabled ?? true}
           />
         )}
       </div>
