@@ -47,9 +47,13 @@ class Room {
             allowPrelisten: true,
             ownerBypass: true,
             ownerBypass: true,
+            ownerBypass: true,
             smartQueue: true, // Auto-replace bad songs if full
+            ownerPopups: true, // Show popups for new requests
             playlistViewMode: false, // Venue Mode: Only show playlist view for guests
             maxQueueSize: 50, // Default 50
+            suggestionMode: 'auto', // 'auto' or 'manual'
+            pendingSuggestions: [],
         };
 
         // Start the Room Timer
@@ -159,6 +163,7 @@ class Room {
                     this.handleNextTrack();
                 }
                 break;
+            case "UPDATE_DURATION":
                 if (isOwner(this, ws) && this.state.currentTrack) {
                     this.updateState({
                         currentTrack: { ...this.state.currentTrack, duration: message.payload },
@@ -168,6 +173,16 @@ class Room {
             case "UPDATE_SETTINGS":
                 if (isOwner(this, ws)) {
                     this.handleUpdateSettings(message.payload);
+                }
+                break;
+            case "APPROVE_SUGGESTION":
+                if (isOwner(this, ws)) {
+                    this.handleApproveSuggestion(message.payload);
+                }
+                break;
+            case "REJECT_SUGGESTION":
+                if (isOwner(this, ws)) {
+                    this.handleRejectSuggestion(message.payload);
                 }
                 break;
         }
@@ -346,6 +361,14 @@ class Room {
                 }
             }
 
+            // Manual Review Check
+            if (this.state.suggestionMode === 'manual' && !canBypass) {
+                const newPending = [...(this.state.pendingSuggestions || []), track];
+                this.updateState({ pendingSuggestions: newPending });
+                ws.send(JSON.stringify({ type: "info", message: "Suggestion submitted." }));
+                return;
+            }
+
             const newQueue = [...this.state.queue, track];
             const newState = { queue: newQueue };
             if (newQueue.length === 1) {
@@ -432,20 +455,57 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
-        if (typeof maxDuration === 'number') updates.maxDuration = maxDuration;
         if (typeof maxDuration === 'number') updates.maxDuration = maxDuration;
         if (typeof allowPrelisten === 'boolean') updates.allowPrelisten = allowPrelisten;
         if (typeof ownerBypass === 'boolean') updates.ownerBypass = ownerBypass;
         if (typeof smartQueue === 'boolean') updates.smartQueue = smartQueue;
         if (typeof playlistViewMode === 'boolean') updates.playlistViewMode = playlistViewMode;
         if (typeof maxQueueSize === 'number') updates.maxQueueSize = maxQueueSize;
+        if (typeof ownerPopups === 'boolean') updates.ownerPopups = ownerPopups;
+        if (suggestionMode === 'auto' || suggestionMode === 'manual') updates.suggestionMode = suggestionMode;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
+        }
+    }
+
+    handleApproveSuggestion({ trackId }) {
+        const pending = this.state.pendingSuggestions || [];
+        const index = pending.findIndex(t => t.id === trackId);
+        if (index !== -1) {
+            const track = pending[index];
+            const newPending = [...pending];
+            newPending.splice(index, 1);
+
+            // Add to queue logic (simplified version of handleSuggestSong end)
+            const newQueue = [...this.state.queue, track];
+            const newState = {
+                queue: newQueue,
+                pendingSuggestions: newPending
+            };
+
+            // Check if we need to start playing
+            if (newQueue.length === 1 && !this.state.isPlaying) {
+                newState.currentTrack = newQueue[0];
+                newState.isPlaying = true;
+                newState.progress = 0;
+            }
+
+            this.updateState(newState);
+        }
+    }
+
+    handleRejectSuggestion({ trackId }) {
+        const pending = this.state.pendingSuggestions || [];
+        const index = pending.findIndex(t => t.id === trackId);
+        if (index !== -1) {
+            const newPending = [...pending];
+            newPending.splice(index, 1);
+            this.updateState({ pendingSuggestions: newPending });
         }
     }
 
