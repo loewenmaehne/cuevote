@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
-
-const WebSocketContext = createContext(null);
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { WebSocketContext } from './WebSocketContext';
 
 const WEBSOCKET_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8080";
 
@@ -10,7 +9,7 @@ export function WebSocketProvider({ children }) {
   const [lastError, setLastError] = useState(null);
   const [lastMessage, setLastMessage] = useState(null);
   const [user, setUser] = useState(null);
-  const [clientId, setClientId] = useState(() => {
+  const [clientId] = useState(() => {
     let id = localStorage.getItem("revibe_client_id");
     if (!id) {
       id = crypto.randomUUID ? crypto.randomUUID() : `user-${Date.now()}-${Math.random()}`;
@@ -27,24 +26,7 @@ export function WebSocketProvider({ children }) {
     }
   }, []);
 
-  // Listen for messages
-  const onMessage = useCallback((event) => {
-    try {
-      const data = JSON.parse(event.data);
-      setLastMessage(data); // Broadcast all messages
-
-      if (data.type === "state") {
-        console.log("[CLIENT TRACE] <<< INCOMING STATE. RoomId:", data.payload.roomId, "Queue:", data.payload.queue?.length);
-        setState(data.payload);
-      } else if (data.type === "error") {
-        setLastError(data.message);
-        setTimeout(() => setLastError(null), 5000);
-      }
-    } catch (e) {
-      console.error("Parse error:", e);
-      setLastError("JSON Parse Error");
-    }
-  }, []);
+  // message listener logic moved to useEffect
 
   const handleLoginSuccess = useCallback((tokenResponse) => {
     console.log("Sending Access Token to Backend...", tokenResponse);
@@ -154,8 +136,4 @@ export function WebSocketProvider({ children }) {
       {children}
     </WebSocketContext.Provider>
   );
-}
-
-export function useWebSocketContext() {
-  return useContext(WebSocketContext);
 }

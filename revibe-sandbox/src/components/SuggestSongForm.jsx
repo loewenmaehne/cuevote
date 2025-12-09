@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import PropTypes from "prop-types";
 import { CheckCircle, Send } from "lucide-react";
 
-export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, isOwner, suggestionsEnabled }) {
+export function SuggestSongForm({ onSongSuggested, serverError, isOwner, suggestionsEnabled }) {
   const [songSuggestion, setSongSuggestion] = useState("");
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [suggestionError, setSuggestionError] = useState("");

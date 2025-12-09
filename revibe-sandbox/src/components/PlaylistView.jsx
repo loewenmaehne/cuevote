@@ -8,10 +8,8 @@ export function PlaylistView({
     history,
     currentTrack,
     queue,
-    user,
     onVote,
     votes, // Now receiving votes
-    isOwner,
     // Playback Props
     progress,
     volume,

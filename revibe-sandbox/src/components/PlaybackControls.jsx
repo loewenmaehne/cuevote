@@ -12,7 +12,6 @@ export function PlaybackControls({
   onMuteToggle,
   volume,
   onVolumeChange,
-  onMinimizeToggle,
 }) {
   return (
     <footer
@@ -37,6 +36,7 @@ export function PlaybackControls({
           >
             {isPlaying ? <Pause /> : <Play />}
           </button>
+
           <div>
             <h3 className="text-base font-semibold leading-tight">
               {currentTrack ? `Now Playing · ${currentTrack.title}` : "Queue Empty"}
@@ -48,6 +48,7 @@ export function PlaybackControls({
             </p>
           </div>
         </div>
+
         <div className="flex items-center gap-2 text-neutral-400">
           <button
             onClick={(event) => {
@@ -86,5 +87,4 @@ PlaybackControls.propTypes = {
   onMuteToggle: PropTypes.func.isRequired,
   volume: PropTypes.number.isRequired,
   onVolumeChange: PropTypes.func.isRequired,
-  onMinimizeToggle: PropTypes.func.isRequired,
 };
