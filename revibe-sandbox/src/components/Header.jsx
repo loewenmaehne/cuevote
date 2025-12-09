@@ -18,8 +18,13 @@ export function Header({
   allowPrelisten,
   smartQueue,
   playlistViewMode,
+
   ownerBypass,
+  suggestionMode,
   onUpdateSettings,
+  ownerPopups,
+  onManageRequests,
+  pendingCount,
 }) {
   const headerRef = React.useRef(null);
   const [showSettings, setShowSettings] = React.useState(false);
@@ -126,7 +131,20 @@ export function Header({
           </button>
 
           {isOwner && (
-            <div className="relative">
+            <div className="relative flex items-center gap-2">
+              {(pendingCount > 0 || suggestionMode === 'manual') && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onManageRequests();
+                  }}
+                  className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-800 text-orange-500 border border-orange-500/30 hover:bg-orange-500/10 transition-colors animate-pulse"
+                  title="Pending Requests"
+                >
+                  <span className="text-xs font-bold">Review ({pendingCount})</span>
+                </button>
+              )}
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -143,6 +161,20 @@ export function Header({
                 <div className="keep-open absolute right-0 top-full mt-2 w-64 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl p-4 animate-in fade-in slide-in-from-top-2 z-50">
                   <h3 className="text-sm font-bold text-neutral-400 mb-3 uppercase tracking-wider">Channel Settings</h3>
 
+                  {(pendingCount > 0 || suggestionMode === 'manual') && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onManageRequests();
+                        setShowSettings(false);
+                      }}
+                      className="w-full mb-3 flex items-center justify-between p-2 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500/20 transition-colors border border-orange-500/20"
+                    >
+                      <span className="text-sm font-medium">Review Requests</span>
+                      <span className="text-xs font-bold bg-orange-500 text-black px-1.5 rounded-full">{pendingCount}</span>
+                    </button>
+                  )}
+
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-white">Allow Suggestions</label>
                     <button
@@ -157,6 +189,23 @@ export function Header({
                       />
                     </button>
                   </div>
+
+                  {suggestionsEnabled && (
+                    <div className="flex items-center justify-between mt-3 pl-2 border-l-2 border-neutral-700 ml-1">
+                      <label className="text-sm font-medium text-neutral-300">Manual Review</label>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onUpdateSettings({ suggestionMode: suggestionMode === 'manual' ? 'auto' : 'manual' });
+                        }}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${suggestionMode === 'manual' ? 'bg-orange-500' : 'bg-neutral-600'}`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${suggestionMode === 'manual' ? 'translate-x-6' : 'translate-x-1'}`}
+                        />
+                      </button>
+                    </div>
+                  )}
 
                   <div className="flex items-center justify-between mt-3">
                     <label className="text-sm font-medium text-white">Music Only</label>
@@ -292,6 +341,22 @@ export function Header({
                     </button>
                   </div>
 
+                  {/* Popups Toggle */}
+                  <div className="flex items-center justify-between mt-3">
+                    <label className="text-sm font-medium text-neutral-300">Popups</label>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateSettings({ ownerPopups: !ownerPopups });
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${ownerPopups ? 'bg-orange-500' : 'bg-neutral-600'}`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${ownerPopups ? 'translate-x-6' : 'translate-x-1'}`}
+                      />
+                    </button>
+                  </div>
+
                 </div>
               )}
             </div>
@@ -318,5 +383,9 @@ Header.propTypes = {
   smartQueue: PropTypes.bool,
   playlistViewMode: PropTypes.bool,
   ownerBypass: PropTypes.bool,
+  suggestionMode: PropTypes.string,
   onUpdateSettings: PropTypes.func,
+  ownerPopups: PropTypes.bool,
+  onManageRequests: PropTypes.func,
+  pendingCount: PropTypes.number,
 };
