@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2 } from "lucide-react";
 
 export function PlaybackControls({
   isPlaying,
@@ -12,6 +12,8 @@ export function PlaybackControls({
   onMuteToggle,
   volume,
   onVolumeChange,
+  isCinemaMode = false,
+  onToggleCinemaMode,
 }) {
   return (
     <footer
@@ -71,6 +73,16 @@ export function PlaybackControls({
             onClick={(event) => event.stopPropagation()}
             disabled={!currentTrack}
           />
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleCinemaMode();
+            }}
+            className="hover:text-white transition-colors ml-2"
+            title={isCinemaMode ? "Exit Cinema Mode" : "Cinema Mode"}
+          >
+            {isCinemaMode ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+          </button>
         </div>
       </div>
     </footer>
@@ -87,4 +99,6 @@ PlaybackControls.propTypes = {
   onMuteToggle: PropTypes.func.isRequired,
   volume: PropTypes.number.isRequired,
   onVolumeChange: PropTypes.func.isRequired,
+  isCinemaMode: PropTypes.bool,
+  onToggleCinemaMode: PropTypes.func,
 };
