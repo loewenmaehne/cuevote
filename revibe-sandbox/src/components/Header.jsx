@@ -55,7 +55,7 @@ export function Header({
   return (
     <header
       ref={headerRef}
-      className="sticky top-0 p-4 border-b border-neutral-900 bg-[#050505]/95 backdrop-blur-md z-[55] transition-all duration-700 ease-in-out flex flex-col items-center gap-3"
+      className="p-4 flex flex-col items-center gap-3 w-full"
     >
       <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full gap-4">
         <div className="flex items-center gap-3 justify-start min-w-0">

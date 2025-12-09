@@ -431,37 +431,38 @@ function App() {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col pb-32">
       {!isCinemaMode && (
-        <Header
-          activeChannel={activeChannel}
-          onGoHome={() => navigate("/")}
-          onShowSuggest={setShowSuggest}
-          user={user}
-          onLoginSuccess={handleLoginSuccess}
-          onLogout={handleLogout}
-          isOwner={isOwner}
-          suggestionsEnabled={suggestionsEnabled}
-          musicOnly={musicOnly}
-          maxDuration={maxDuration}
-          allowPrelisten={allowPrelisten}
-          ownerBypass={ownerBypass}
-          maxQueueSize={maxQueueSize}
-          smartQueue={smartQueue}
-          playlistViewMode={playlistViewMode}
-          history={history} // Passed history to Header
-          duplicateCooldown={duplicateCooldown}
-          onUpdateSettings={handleUpdateSettings}
-          suggestionMode={suggestionMode}
-          ownerPopups={ownerPopups}
-          ownerQueueBypass={serverState?.ownerQueueBypass}
-          votesEnabled={serverState?.votesEnabled ?? true}
-          onManageRequests={() => setShowPendingPage(true)}
-          pendingCount={pendingSuggestions.length}
-        />
-      )}
-
-      {!isCinemaMode && (
-        <div className="relative z-10 px-6 py-4">
-          {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} serverMessage={lastMessage} isOwner={isOwner && ownerBypass} suggestionsEnabled={suggestionsEnabled} suggestionMode={suggestionMode} />}
+        <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
+          <Header
+            activeChannel={activeChannel}
+            onGoHome={() => navigate("/")}
+            onShowSuggest={setShowSuggest}
+            user={user}
+            onLoginSuccess={handleLoginSuccess}
+            onLogout={handleLogout}
+            isOwner={isOwner}
+            suggestionsEnabled={suggestionsEnabled}
+            musicOnly={musicOnly}
+            maxDuration={maxDuration}
+            allowPrelisten={allowPrelisten}
+            ownerBypass={ownerBypass}
+            maxQueueSize={maxQueueSize}
+            smartQueue={smartQueue}
+            playlistViewMode={playlistViewMode}
+            history={history} // Passed history to Header
+            duplicateCooldown={duplicateCooldown}
+            onUpdateSettings={handleUpdateSettings}
+            suggestionMode={suggestionMode}
+            ownerPopups={ownerPopups}
+            ownerQueueBypass={serverState?.ownerQueueBypass}
+            votesEnabled={serverState?.votesEnabled ?? true}
+            onManageRequests={() => setShowPendingPage(true)}
+            pendingCount={pendingSuggestions.length}
+          />
+          {showSuggest && (
+            <div className="px-6 pb-4">
+              <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} serverMessage={lastMessage} isOwner={isOwner && ownerBypass} suggestionsEnabled={suggestionsEnabled} suggestionMode={suggestionMode} />
+            </div>
+          )}
         </div>
       )}
 
