@@ -7,7 +7,7 @@ import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
 import { PlaylistView } from "./components/PlaylistView"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
-import { useWebSocketContext } from "./contexts/WebSocketProvider";
+import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
 
 const YouTubeState = {
@@ -93,9 +93,9 @@ function App() {
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
-  const [showChannels, setShowChannels] = useState(false);
+  // showChannels removed
   const [volume, setVolume] = useState(80);
-  const [isMinimized, setIsMinimized] = useState(false);
+  // minimized state removed
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
   const [previewTrack, setPreviewTrack] = useState(null);
@@ -112,6 +112,16 @@ function App() {
   // YouTube Player state
   const playerRef = useRef(null);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
+  const volumeRef = useRef(volume);
+  const isMutedRef = useRef(isMuted);
+
+  useEffect(() => {
+    volumeRef.current = volume;
+  }, [volume]);
+
+  useEffect(() => {
+    isMutedRef.current = isMuted;
+  }, [isMuted]);
 
 
   // YouTube API Loading
@@ -146,8 +156,8 @@ function App() {
           onReady: (event) => {
             console.log("[Player] YouTube Player onReady fired");
             setIsPlayerReady(true);
-            event.target.setVolume(volume);
-            if (isMuted) {
+            event.target.setVolume(volumeRef.current);
+            if (isMutedRef.current) {
               event.target.mute();
             } else {
               event.target.unMute();
@@ -431,7 +441,7 @@ function App() {
 
       <div className={playlistViewMode && !isOwner
         ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
-        : `w-full relative group transition-all duration-500 ease-in-out ${isMinimized ? "h-0 opacity-0" : "flex-shrink-0 aspect-video max-h-[60vh]"} `
+        : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh]"
       }>
         <div className={`absolute inset - 0 border - 4 ${previewTrack ? "border-green-500" : "border-transparent"} transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
         {playlistViewMode && !isOwner ? (
@@ -492,7 +502,7 @@ function App() {
             votes={userVotes}
             onVote={handleVote}
             onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
-            isMinimized={isMinimized}
+            isMinimized={false}
             onPreview={allowPrelisten ? handlePreviewTrack : null}
           />
         )}
@@ -551,7 +561,7 @@ function App() {
             onMuteToggle={handleMuteToggle}
             volume={volume}
             onVolumeChange={handleVolumeChange}
-            onMinimizeToggle={() => setIsMinimized(!isMinimized)}
+            onMinimizeToggle={null}
           />
         )
       }
