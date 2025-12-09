@@ -108,7 +108,7 @@ function App() {
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
   const [showPendingPage, setShowPendingPage] = useState(false);
-  // showChannels removed
+  const [isCinemaMode, setIsCinemaMode] = useState(false);
   const [volume, setVolume] = useState(80);
   // minimized state removed
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
@@ -430,36 +430,40 @@ function App() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col pb-32">
-      <Header
-        activeChannel={activeChannel}
-        onGoHome={() => navigate("/")}
-        onShowSuggest={setShowSuggest}
-        user={user}
-        onLoginSuccess={handleLoginSuccess}
-        onLogout={handleLogout}
-        isOwner={isOwner}
-        suggestionsEnabled={suggestionsEnabled}
-        musicOnly={musicOnly}
-        maxDuration={maxDuration}
-        allowPrelisten={allowPrelisten}
-        ownerBypass={ownerBypass}
-        maxQueueSize={maxQueueSize}
-        smartQueue={smartQueue}
-        playlistViewMode={playlistViewMode}
-        history={history} // Passed history to Header
-        duplicateCooldown={duplicateCooldown}
-        onUpdateSettings={handleUpdateSettings}
-        suggestionMode={suggestionMode}
-        ownerPopups={ownerPopups}
-        ownerQueueBypass={serverState?.ownerQueueBypass}
-        votesEnabled={serverState?.votesEnabled ?? true}
-        onManageRequests={() => setShowPendingPage(true)}
-        pendingCount={pendingSuggestions.length}
-      />
+      {!isCinemaMode && (
+        <Header
+          activeChannel={activeChannel}
+          onGoHome={() => navigate("/")}
+          onShowSuggest={setShowSuggest}
+          user={user}
+          onLoginSuccess={handleLoginSuccess}
+          onLogout={handleLogout}
+          isOwner={isOwner}
+          suggestionsEnabled={suggestionsEnabled}
+          musicOnly={musicOnly}
+          maxDuration={maxDuration}
+          allowPrelisten={allowPrelisten}
+          ownerBypass={ownerBypass}
+          maxQueueSize={maxQueueSize}
+          smartQueue={smartQueue}
+          playlistViewMode={playlistViewMode}
+          history={history} // Passed history to Header
+          duplicateCooldown={duplicateCooldown}
+          onUpdateSettings={handleUpdateSettings}
+          suggestionMode={suggestionMode}
+          ownerPopups={ownerPopups}
+          ownerQueueBypass={serverState?.ownerQueueBypass}
+          votesEnabled={serverState?.votesEnabled ?? true}
+          onManageRequests={() => setShowPendingPage(true)}
+          pendingCount={pendingSuggestions.length}
+        />
+      )}
 
-      <div className="relative z-10 px-6 py-4">
-        {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} serverMessage={lastMessage} isOwner={isOwner && ownerBypass} suggestionsEnabled={suggestionsEnabled} suggestionMode={suggestionMode} />}
-      </div>
+      {!isCinemaMode && (
+        <div className="relative z-10 px-6 py-4">
+          {showSuggest && <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} serverMessage={lastMessage} isOwner={isOwner && ownerBypass} suggestionsEnabled={suggestionsEnabled} suggestionMode={suggestionMode} />}
+        </div>
+      )}
 
       {isOwner && pendingSuggestions.length > 0 && ownerPopups && (
         <PendingRequests
@@ -479,9 +483,12 @@ function App() {
         />
       )}
 
-      <div className={playlistViewMode && !isOwner
-        ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
-        : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh]"
+      <div className={isCinemaMode
+        ? "fixed inset-0 z-40 bg-black transition-all duration-500 ease-in-out" // Cinema Mode Style
+        : (playlistViewMode && !isOwner
+          ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
+          : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh]"
+        )
       }>
         <div className={`absolute inset - 0 border - 4 ${previewTrack ? "border-green-500" : "border-transparent"} transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
         {playlistViewMode && !isOwner ? (
@@ -537,7 +544,7 @@ function App() {
       </div>
 
       <div className="pb-4">
-        {playlistViewMode && !isOwner ? null : ( // Hide queue if playlistViewMode is active and not owner
+        {playlistViewMode && !isOwner || isCinemaMode ? null : ( // Hide queue if playlistViewMode/isCinemaMode is active
           <Queue
             tracks={queue}
             currentTrack={currentTrack}
@@ -607,6 +614,8 @@ function App() {
               volume={volume}
               onVolumeChange={handleVolumeChange}
               onMinimizeToggle={null}
+              isCinemaMode={isCinemaMode}
+              onToggleCinemaMode={() => setIsCinemaMode(!isCinemaMode)}
             />
           )
         )
