@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Radio, Users, Sparkles, AlertCircle, X, LogOut } from "lucide-react";
-import { useWebSocketContext } from "../contexts/WebSocketProvider";
+import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { useGoogleLogin } from '@react-oauth/google';
 
 export function Lobby() {
