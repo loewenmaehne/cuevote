@@ -132,18 +132,6 @@ export function Header({
 
           {isOwner && (
             <div className="relative flex items-center gap-2">
-              {(pendingCount > 0 || suggestionMode === 'manual') && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onManageRequests();
-                  }}
-                  className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-800 text-orange-500 border border-orange-500/30 hover:bg-orange-500/10 transition-colors animate-pulse"
-                  title="Pending Requests"
-                >
-                  <span className="text-xs font-bold">Review ({pendingCount})</span>
-                </button>
-              )}
 
               <button
                 onClick={(e) => {
