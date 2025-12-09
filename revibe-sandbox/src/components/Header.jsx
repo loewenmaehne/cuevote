@@ -147,7 +147,7 @@ export function Header({
               </button>
 
               {showSettings && (
-                <div className="keep-open absolute right-0 top-full mt-2 w-64 max-h-[80vh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl p-4 animate-in fade-in slide-in-from-top-2 z-[100]">
+                <div className="keep-open absolute right-0 top-full mt-2 w-64 max-h-[60vh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl p-4 animate-in fade-in slide-in-from-top-2 z-[100]">
                   <h3 className="text-sm font-bold text-neutral-400 mb-3 uppercase tracking-wider">Channel Settings</h3>
 
                   {(pendingCount > 0 || suggestionMode === 'manual') && (
