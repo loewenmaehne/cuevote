@@ -17,6 +17,7 @@ export function PlaylistView({
     activeChannel,
     onMuteToggle,
     onVolumeChange,
+    votesEnabled = true,
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -62,6 +63,7 @@ export function PlaylistView({
                                     onVote={() => { }} // No-op
                                     onToggleExpand={() => handleToggleExpand(`hist-${track.id}-${i}`)}
                                     readOnly={true} // Read-only mode
+                                    votesEnabled={votesEnabled}
                                 />
                             ))}
                         </div>
@@ -82,6 +84,7 @@ export function PlaylistView({
                                 onVote={onVote}
                                 onToggleExpand={handleToggleExpand}
                                 readOnly={true} // Read Only in Playlist View for current track (match queue behavior?) 
+                                votesEnabled={votesEnabled}
                             // User said "Playing and Up Next is fine". 
                             // So the track items are fine.
                             />
@@ -105,6 +108,7 @@ export function PlaylistView({
                                     onVote={onVote}
                                     onToggleExpand={handleToggleExpand}
                                     readOnly={false} // Interactive
+                                    votesEnabled={votesEnabled}
                                 />
                             ))}
                         </div>
@@ -153,4 +157,5 @@ PlaylistView.propTypes = {
     activeChannel: PropTypes.string,
     onMuteToggle: PropTypes.func,
     onVolumeChange: PropTypes.func,
+    votesEnabled: PropTypes.bool,
 };
