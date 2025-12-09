@@ -594,18 +594,20 @@ function App() {
             </div>
           </div>
         ) : (
-          <PlaybackControls
-            isPlaying={isPlaying && !isLocallyPaused}
-            onPlayPause={handlePlayPause}
-            progress={progress}
-            currentTrack={currentTrack}
-            activeChannel={activeChannel}
-            isMuted={isMuted}
-            onMuteToggle={handleMuteToggle}
-            volume={volume}
-            onVolumeChange={handleVolumeChange}
-            onMinimizeToggle={null}
-          />
+          !(playlistViewMode && !isOwner) && (
+            <PlaybackControls
+              isPlaying={isPlaying && !isLocallyPaused}
+              onPlayPause={handlePlayPause}
+              progress={progress}
+              currentTrack={currentTrack}
+              activeChannel={activeChannel}
+              isMuted={isMuted}
+              onMuteToggle={handleMuteToggle}
+              volume={volume}
+              onVolumeChange={handleVolumeChange}
+              onMinimizeToggle={null}
+            />
+          )
         )
       }
     </div >
