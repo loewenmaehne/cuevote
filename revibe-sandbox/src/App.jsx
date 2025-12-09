@@ -502,17 +502,19 @@ function App() {
         ) : (
           /* Standard Mode */
           <>
-            <div className="absolute inset-0">
-              <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
-                <PlayerErrorBoundary>
-                  <Player
-                    playerContainerRef={playerContainerRef}
-                  />
-                </PlayerErrorBoundary>
-                {/* <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Player Disabled for Debug</div> */}
+            {!showPendingPage && (
+              <div className="absolute inset-0">
+                <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
+                  <PlayerErrorBoundary>
+                    <Player
+                      playerContainerRef={playerContainerRef}
+                    />
+                  </PlayerErrorBoundary>
+                  {/* <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Player Disabled for Debug</div> */}
+                </div>
+                {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
               </div>
-              {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
-            </div>
+            )}
 
             {autoplayBlocked && (
               <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
