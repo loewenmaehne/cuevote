@@ -401,7 +401,7 @@ class Room {
             if (this.state.suggestionMode === 'manual' && !canBypass) {
                 const newPending = [...(this.state.pendingSuggestions || []), track];
                 this.updateState({ pendingSuggestions: newPending });
-                ws.send(JSON.stringify({ type: "info", message: "Suggestion submitted." }));
+                ws.send(JSON.stringify({ type: "info", message: "Submitted" }));
                 return;
             }
 
