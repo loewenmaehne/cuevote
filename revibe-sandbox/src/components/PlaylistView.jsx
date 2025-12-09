@@ -122,23 +122,6 @@ export function PlaylistView({
                 </div>
             </div>
 
-            {/* Real Playback Controls (Read-Only/Disabled for Guest) */}
-            <PlaybackControls
-                isPlaying={!!currentTrack} // Show as playing if track exists (Venue Mode usually runs)
-                onPlayPause={() => { }} // Disabled
-                progress={progress}
-                currentTrack={currentTrack}
-                activeChannel={activeChannel}
-                isMuted={isMuted} // Visualize current local mute state? Or forced mute?
-                // "without video/audio playback" means locally it IS muted or no player.
-                // But we want to show it "similar" to real one.
-                // If we pass `true`, volume icon is muted.
-                onMuteToggle={onMuteToggle} // Allow toggling local mute preference? Even if no audio?
-                // Maybe just disable.
-                volume={volume}
-                onVolumeChange={onVolumeChange}
-                onMinimizeToggle={() => { }}
-            />
         </div>
     );
 }
