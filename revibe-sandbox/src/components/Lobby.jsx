@@ -245,7 +245,7 @@ export function Lobby() {
                             className={`scroll-mb-24 rounded-2xl border p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
                                 ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
                                 : user
-                                    ? "border-neutral-800 hover:border-neutral-600 text-neutral-500 hover:text-neutral-300 cursor-pointer"
+                                    ? "border-neutral-800 text-neutral-500 cursor-pointer"
                                     : "border-neutral-900 text-neutral-700 cursor-not-allowed"
                                 }`}
                             title={user ? "Create a new channel" : "Log in to create a channel"}
@@ -275,8 +275,8 @@ export function Lobby() {
                                     to={`/room/${channel.id}`}
                                     onMouseEnter={() => setFocusedIndex(actualIndex)}
                                     className={`scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block ${actualIndex === focusedIndex
-                                        ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
-                                        : "border-neutral-800 hover:border-orange-500/50"
+                                            ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
+                                            : "border-neutral-800"
                                         }`}
                                     onClick={() => setFocusedIndex(actualIndex)}
                                 >
@@ -307,12 +307,12 @@ export function Lobby() {
                                                         </span>
                                                     </div>
                                                 ) : (
-                                                    <h3 className={`text-2xl font-bold transition-colors truncate ${actualIndex === focusedIndex ? "text-orange-400" : "text-white group-hover:text-orange-400"}`}>
+                                                    <h3 className={`text-2xl font-bold transition-colors truncate ${actualIndex === focusedIndex ? "text-orange-400" : "text-white"}`}>
                                                         {channel.name}
                                                     </h3>
                                                 )}
                                             </div>
-                                            <Radio className={`transition-colors flex-shrink-0 ${actualIndex === focusedIndex ? "text-white" : "text-neutral-500 group-hover:text-white"}`} />
+                                            <Radio className={`transition-colors flex-shrink-0 ${actualIndex === focusedIndex ? "text-white" : "text-neutral-500"}`} />
                                         </div>
                                         <p className="text-neutral-400 text-sm line-clamp-2">{channel.description}</p>
 
