@@ -21,35 +21,35 @@ export function PendingRequests({ requests, onApprove, onReject, onClose }) {
 
 			<div className="max-h-60 overflow-y-auto custom-scrollbar">
 				{requests.map((track) => (
-					<div key={track.id} className="p-3 pr-6 border-b border-neutral-800 hover:bg-neutral-800/30 transition-colors flex gap-3 items-center">
+					<div key={track.id} className="p-3 pr-4 border-b border-neutral-800 hover:bg-neutral-800/30 transition-colors flex gap-3 items-start">
 						<img
 							src={track.thumbnail}
 							alt={track.title}
-							className="w-12 h-12 rounded object-cover flex-shrink-0"
+							className="w-10 h-10 sm:w-12 sm:h-12 rounded object-cover flex-shrink-0"
 						/>
 
 						<div className="flex-1 min-w-0">
-							<p className="text-sm font-medium text-white line-clamp-1" title={track.title}>{track.title}</p>
+							<p className="text-sm font-medium text-white line-clamp-2 leading-tight" title={track.title}>{track.title}</p>
 							<p className="text-xs text-neutral-400 line-clamp-1">{track.artist}</p>
-							<p className="text-xs text-neutral-500 mt-1">
-								Suggested by <span className="text-neutral-300">{track.suggestedByUsername || 'Unknown'}</span>
+							<p className="text-xs text-neutral-500 mt-0.5 line-clamp-1">
+								By <span className="text-neutral-300">{track.suggestedByUsername || 'Unknown'}</span>
 							</p>
 						</div>
 
-						<div className="flex flex-col gap-2 justify-center flex-shrink-0 pr-1">
-							<button
-								onClick={() => onApprove(track.id)}
-								className="p-1.5 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-colors"
-								title="Approve"
-							>
-								<Check size={16} />
-							</button>
+						<div className="flex gap-2 justify-center flex-shrink-0 pl-2 pt-1">
 							<button
 								onClick={() => onReject(track.id)}
 								className="p-1.5 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
 								title="Reject"
 							>
 								<X size={16} />
+							</button>
+							<button
+								onClick={() => onApprove(track.id)}
+								className="p-1.5 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-colors"
+								title="Approve"
+							>
+								<Check size={16} />
 							</button>
 						</div>
 					</div>
@@ -87,8 +87,8 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onClose }) 
 				) : (
 					<div className="grid gap-4">
 						{requests.map((track) => (
-							<div key={track.id} className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-3 sm:gap-4 hover:border-neutral-700 transition-colors">
-								<div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+							<div key={track.id} className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 hover:border-neutral-700 transition-colors">
+								<div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
 									<img
 										src={track.thumbnail}
 										alt={track.title}
@@ -96,7 +96,7 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onClose }) 
 									/>
 
 									<div className="flex-1 min-w-0">
-										<h3 className="text-sm sm:text-lg font-bold text-white truncate" title={track.title}>{track.title}</h3>
+										<h3 className="text-sm sm:text-lg font-bold text-white line-clamp-2 leading-tight" title={track.title}>{track.title}</h3>
 										<p className="text-xs sm:text-base text-neutral-400 truncate">{track.artist}</p>
 										<p className="text-xs sm:text-sm text-neutral-500 mt-0.5 sm:mt-1 flex items-center gap-1">
 											<span className="hidden sm:inline">Suggested by</span> <span className="text-neutral-300 font-medium truncate">{track.suggestedByUsername || 'Unknown'}</span>
@@ -104,7 +104,7 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onClose }) 
 									</div>
 								</div>
 
-								<div className="flex items-center gap-2 flex-shrink-0 sm:pl-4">
+								<div className="flex items-center gap-2 flex-shrink-0 sm:pl-4 pt-1 sm:pt-0">
 									<button
 										onClick={() => onReject(track.id)}
 										className="p-2 sm:px-4 sm:py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors font-medium flex items-center gap-2"
