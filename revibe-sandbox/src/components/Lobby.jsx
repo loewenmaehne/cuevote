@@ -330,10 +330,12 @@ export function Lobby() {
                                                 {actualIndex === focusedIndex && channel.name.length > 15 ? (
                                                     <div className="overflow-hidden whitespace-nowrap w-full mask-linear-fade">
                                                         <span
-                                                            className="animate-marquee inline-block pl-0 text-2xl font-bold text-orange-400"
-                                                            style={{ animationDuration: `${Math.max(10, channel.name.length * 0.4)}s` }}
+                                                            className="animate-billboard inline-block pl-0"
+                                                            style={{ animationDuration: `${Math.max(12, channel.name.length * 0.25)}s` }}
                                                         >
-                                                            {channel.name}&nbsp;&nbsp;&nbsp;&nbsp;{channel.name}&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            <h3 className="text-2xl font-bold text-orange-400 inline">
+                                                                {channel.name}&nbsp;&nbsp;&nbsp;&nbsp;{channel.name}&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            </h3>
                                                         </span>
                                                     </div>
                                                 ) : (
