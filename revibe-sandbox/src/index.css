@@ -7,6 +7,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -18,6 +19,7 @@
     opacity: 1;
     transform: translateY(0);
   }
+
   to {
     opacity: 0;
     transform: translateY(-10px);
@@ -29,18 +31,25 @@
     opacity: 0;
     transform: translate(-50%, -20px) scale(0.9);
   }
+
   50% {
     opacity: 1;
     transform: translate(-50%, 5px) scale(1.02);
   }
+
   100% {
     transform: translate(-50%, 0) scale(1);
   }
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .animate-marquee {
@@ -64,4 +73,28 @@
 
 .animate-bounceIn {
   animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes billboard {
+
+  0%,
+  15% {
+    transform: translateX(0);
+  }
+
+  85%,
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-billboard {
+  display: inline-block;
+  white-space: nowrap;
+  animation: billboard 15s linear infinite;
+}
+
+.mask-linear-fade {
+  mask-image: linear-gradient(to right, black 0px, black calc(100% - 24px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 0px, black calc(100% - 24px), transparent 100%);
 }
