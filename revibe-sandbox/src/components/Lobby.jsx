@@ -119,7 +119,20 @@ export function Lobby() {
                                 to={`/room/${channel.id}`}
                                 className="group relative overflow-hidden rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-orange-500/50 transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block"
                             >
-                                <div className={`absolute inset-0 bg-gradient-to-br ${channel.color} opacity-10 group-hover:opacity-20 transition-opacity`} />
+                                <div className="absolute inset-0">
+                                    {channel.currentTrack?.thumbnail ? (
+                                        <>
+                                            <img
+                                                src={channel.currentTrack.thumbnail}
+                                                alt={channel.name}
+                                                className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500 scale-105 group-hover:scale-110 transform transition-transform"
+                                            />
+                                            <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
+                                        </>
+                                    ) : (
+                                        <div className={`absolute inset-0 bg-gradient-to-br ${channel.color} opacity-20 group-hover:opacity-30 transition-opacity duration-500`} />
+                                    )}
+                                </div>
 
                                 <div className="relative z-10 space-y-2 w-full">
                                     <div className="flex items-center justify-between">
