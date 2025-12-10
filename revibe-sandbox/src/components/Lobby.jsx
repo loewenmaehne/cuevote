@@ -377,12 +377,17 @@ export function Lobby() {
                                     <input
                                         type="text"
                                         value={newRoomName}
-                                        onChange={(e) => setNewRoomName(e.target.value)}
+                                        onChange={(e) => setNewRoomName(e.target.value.slice(0, 100))}
                                         placeholder="e.g. Late Night Vibes"
                                         maxLength={100}
                                         className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
                                         autoFocus
                                     />
+                                    <div className="flex justify-end mt-1">
+                                        <span className={`text-xs ${newRoomName.length >= 100 ? 'text-red-500 font-bold' : 'text-neutral-500'}`}>
+                                            {newRoomName.length}/100
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="flex justify-end gap-3 pt-2">
