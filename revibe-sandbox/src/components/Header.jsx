@@ -500,9 +500,9 @@ export function Header({
                   e.stopPropagation();
                   setShowExitConfirm(false);
                 }}
-                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all ${exitConfirmIndex === 0
-                  ? "bg-neutral-700 text-white ring-2 ring-orange-500/50"
-                  : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
+                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all border ${exitConfirmIndex === 0
+                  ? "bg-neutral-700 text-white ring-2 ring-orange-500/50 border-transparent"
+                  : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700 border-transparent"
                   }`}
                 onMouseEnter={() => setExitConfirmIndex(0)}
               >
@@ -515,9 +515,9 @@ export function Header({
                   setShowExitConfirm(false);
                   onShowSuggest(false);
                 }}
-                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all ${exitConfirmIndex === 1
-                  ? "bg-orange-500 text-white ring-2 ring-orange-500/50 shadow-lg shadow-orange-500/20"
-                  : "bg-red-900/30 text-red-400 hover:bg-red-900/50 border border-red-900/50"
+                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all border ${exitConfirmIndex === 1
+                  ? "bg-orange-500 text-white ring-2 ring-orange-500/50 shadow-lg shadow-orange-500/20 border-transparent"
+                  : "bg-red-900/30 text-red-400 hover:bg-red-900/50 border-red-900/50"
                   }`}
                 onMouseEnter={() => setExitConfirmIndex(1)}
               >
