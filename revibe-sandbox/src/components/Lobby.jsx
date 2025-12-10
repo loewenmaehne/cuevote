@@ -10,7 +10,7 @@ export function Lobby() {
     const [rooms, setRooms] = useState([]);
     const [isCreatingRoom, setIsCreatingRoom] = useState(false);
     const [newRoomName, setNewRoomName] = useState("");
-    const [focusedIndex, setFocusedIndex] = useState(-1);
+    const [focusedIndex, setFocusedIndex] = useState(0);
     const [columns, setColumns] = useState(4); // Default to 4 for lg screens
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -86,12 +86,20 @@ export function Lobby() {
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 setFocusedIndex(prev => {
+                    // If we were at -1 (nothing focused), go to 0
                     if (prev === -1) return 0;
                     return Math.min(prev + columns, totalItems - 1);
                 });
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                setFocusedIndex(prev => Math.max(prev - columns, 0));
+                setFocusedIndex(prev => {
+                    // If in the top row, move focus to search
+                    if (prev < columns) {
+                        document.getElementById('channel-search')?.focus();
+                        return -1;
+                    }
+                    return Math.max(prev - columns, 0);
+                });
             } else if (e.key === 'Enter') {
                 if (focusedIndex >= 0 && focusedIndex < totalItems) {
                     e.preventDefault();
@@ -119,7 +127,7 @@ export function Lobby() {
 
     // Reset focused index when filtered rooms change
     useEffect(() => {
-        setFocusedIndex(-1);
+        setFocusedIndex(0);
     }, [filteredRooms.length]);
 
 
@@ -222,7 +230,7 @@ export function Lobby() {
                                 handleCreateRoomClick();
                                 setFocusedIndex(0);
                             }}
-                            className={`rounded-2xl border-2 border-dashed p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
+                            className={`rounded-2xl border p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
                                 ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
                                 : user
                                     ? "border-neutral-800 hover:border-neutral-600 text-neutral-500 hover:text-neutral-300 cursor-pointer"
