@@ -233,6 +233,11 @@ wss.on("connection", (ws, req) => {
                         return;
                     }
 
+                    if (name.length > 100) {
+                        ws.send(JSON.stringify({ type: "error", message: "Channel name must be 100 characters or less." }));
+                        return;
+                    }
+
                     const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + crypto.randomBytes(2).toString('hex');
 
                     try {
