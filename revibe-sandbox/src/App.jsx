@@ -64,6 +64,7 @@ function App() {
     pendingSuggestions = [],
     ownerPopups = true,
     duplicateCooldown = 10,
+    autoApproveKnown = true,
   } = serverState || {};
 
   const isOwner = user && ownerId && user.id === ownerId;
@@ -463,6 +464,7 @@ function App() {
             votesEnabled={serverState?.votesEnabled ?? true}
             onManageRequests={() => setShowPendingPage(true)}
             pendingCount={pendingSuggestions.length}
+            autoApproveKnown={autoApproveKnown}
           />
           {showSuggest && (
             <div className="px-6 pb-4">
