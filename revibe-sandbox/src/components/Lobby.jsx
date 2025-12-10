@@ -331,7 +331,7 @@ export function Lobby() {
                                                     <div className="overflow-hidden whitespace-nowrap w-full mask-linear-fade">
                                                         <span
                                                             className="animate-billboard inline-block pl-0"
-                                                            style={{ animationDuration: `${Math.max(12, channel.name.length * 0.25)}s` }}
+                                                            style={{ animationDuration: `${Math.max(8, channel.name.length * 0.2)}s` }}
                                                         >
                                                             <h3 className="text-2xl font-bold text-orange-400 inline">
                                                                 {channel.name}&nbsp;&nbsp;&nbsp;&nbsp;{channel.name}&nbsp;&nbsp;&nbsp;&nbsp;
