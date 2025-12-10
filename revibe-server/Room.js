@@ -30,6 +30,7 @@ class Room {
             is_public: metadata.is_public !== undefined ? metadata.is_public : 1
         };
         this.clients = new Set();
+        this.knownSongs = new Set(); // Stores videoIds of approved songs
 
         this.state = {
             roomId: id, // Send ID to client for validation
@@ -54,6 +55,7 @@ class Room {
             suggestionMode: 'auto', // 'auto' or 'manual'
             pendingSuggestions: [],
             duplicateCooldown: 10, // Default 10 songs
+            autoApproveKnown: true, // Default true
         };
 
         // Start the Room Timer
@@ -404,10 +406,17 @@ class Room {
 
             // Manual Review Check
             if (this.state.suggestionMode === 'manual' && !canBypass) {
-                const newPending = [...(this.state.pendingSuggestions || []), track];
-                this.updateState({ pendingSuggestions: newPending });
-                ws.send(JSON.stringify({ type: "info", message: "Submitted" }));
-                return;
+                // Check if song is known and auto-approve is enabled
+                const isKnown = this.knownSongs.has(track.videoId);
+                if (this.state.autoApproveKnown && isKnown) {
+                    // Auto-approve: Skip adding to pending, proceed to queue
+                    console.log(`[Auto-Approve] Song ${track.title} (${track.videoId}) is known. Bypassing review.`);
+                } else {
+                    const newPending = [...(this.state.pendingSuggestions || []), track];
+                    this.updateState({ pendingSuggestions: newPending });
+                    ws.send(JSON.stringify({ type: "info", message: "Submitted for review" }));
+                    return;
+                }
             }
 
             // Priority Check
@@ -535,7 +544,7 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
@@ -549,7 +558,9 @@ class Room {
         if (suggestionMode === 'auto' || suggestionMode === 'manual') updates.suggestionMode = suggestionMode;
         if (typeof duplicateCooldown === 'number') updates.duplicateCooldown = duplicateCooldown;
         if (typeof ownerQueueBypass === 'boolean') updates.ownerQueueBypass = ownerQueueBypass;
+        if (typeof ownerQueueBypass === 'boolean') updates.ownerQueueBypass = ownerQueueBypass;
         if (typeof votesEnabled === 'boolean') updates.votesEnabled = votesEnabled;
+        if (typeof autoApproveKnown === 'boolean') updates.autoApproveKnown = autoApproveKnown;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
@@ -566,6 +577,7 @@ class Room {
 
             // Add to queue logic (simplified version of handleSuggestSong end)
             const newQueue = [...this.state.queue, track];
+            this.knownSongs.add(track.videoId); // Remember this song
             const newState = {
                 queue: newQueue,
                 pendingSuggestions: newPending
