@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Radio, Users, Sparkles, AlertCircle, X, LogOut } from "lucide-react";
+import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search } from "lucide-react";
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { useGoogleLogin } from '@react-oauth/google';
 
@@ -12,6 +12,7 @@ export function Lobby() {
     const [newRoomName, setNewRoomName] = useState("");
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const [columns, setColumns] = useState(4); // Default to 4 for lg screens
+    const [searchQuery, setSearchQuery] = useState("");
 
     const login = useGoogleLogin({
         onSuccess: (tokenResponse) => {
@@ -50,12 +51,31 @@ export function Lobby() {
         return () => window.removeEventListener('resize', updateColumns);
     }, []);
 
+    // Filter rooms based on search
+    const filteredRooms = rooms.filter(room =>
+        room.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     // Handle Keyboard Navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (isCreatingRoom || !rooms.length) return;
-            // Total items = rooms + create button
-            const totalItems = rooms.length + 1;
+            if (isCreatingRoom) return; // Don't navigate if modal is open
+            if (document.activeElement.tagName === 'INPUT') {
+                if (e.key === 'Escape') {
+                    e.target.blur();
+                    return;
+                }
+                if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                    e.preventDefault();
+                    document.activeElement.blur();
+                    setFocusedIndex(0); // Move focus to Create Button
+                    return;
+                }
+                return; // Let user type in search
+            }
+
+            // Total items = create button (1) + filtered rooms
+            const totalItems = 1 + filteredRooms.length;
 
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
@@ -75,25 +95,32 @@ export function Lobby() {
             } else if (e.key === 'Enter') {
                 if (focusedIndex >= 0 && focusedIndex < totalItems) {
                     e.preventDefault();
-                    if (focusedIndex < rooms.length) {
-                        // Join Room
-                        navigate(`/room/${rooms[focusedIndex].id}`);
-                    } else {
-                        // Create Room
+                    if (focusedIndex === 0) {
+                        // Create Room (Index 0)
                         handleCreateRoomClick();
+                    } else {
+                        // Join Room (Index > 0, so mapped to filteredRooms[index - 1])
+                        const roomToJoin = filteredRooms[focusedIndex - 1];
+                        if (roomToJoin) {
+                            navigate(`/room/${roomToJoin.id}`);
+                        }
                     }
                 }
+            } else if (e.key === '/' || (e.ctrlKey && e.key === 'f') || (e.metaKey && e.key === 'k')) {
+                // Focus search
+                e.preventDefault();
+                document.getElementById('channel-search')?.focus();
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [rooms, columns, focusedIndex, isCreatingRoom, navigate]);
+    }, [filteredRooms, columns, focusedIndex, isCreatingRoom, navigate]);
 
-    // Reset focused index when rooms change or on mount
+    // Reset focused index when filtered rooms change
     useEffect(() => {
         setFocusedIndex(-1);
-    }, [rooms.length]);
+    }, [filteredRooms.length]);
 
 
     const handleCreateRoomClick = () => {
@@ -122,7 +149,7 @@ export function Lobby() {
 
     return (
         <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center p-8">
-            <header className="w-full max-w-5xl flex items-center justify-between mb-12">
+            <header className="w-full max-w-5xl flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold text-orange-500 tracking-tight">
                     ReVibe Music
                 </h1>
@@ -163,76 +190,105 @@ export function Lobby() {
             )}
 
             <main className="w-full max-w-5xl">
-                <h2 className="text-2xl font-semibold mb-6">Browse Channels</h2>
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                    <h2 className="text-2xl font-semibold">Browse Channels</h2>
+
+                    {/* Search Bar */}
+                    <div className="relative w-full md:w-72">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Search className="h-4 w-4 text-neutral-500" />
+                        </div>
+                        <input
+                            id="channel-search"
+                            type="text"
+                            className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-10 p-2.5 focus:ring-orange-500 focus:border-orange-500 placeholder-neutral-500 transition-colors"
+                            placeholder="Search channels..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                </div>
 
                 {!isConnected ? (
                     <div className="flex flex-col items-center gap-4 text-neutral-500 animate-pulse">
                         <Radio className="w-12 h-12" />
                         <span>Connecting to server...</span>
                     </div>
-                ) : rooms.length === 0 ? (
-                    <div className="text-neutral-500">Loading active channels...</div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                        {rooms.map((channel, index) => (
-                            <Link
-                                key={channel.id}
-                                to={`/room/${channel.id}`}
-                                className={`group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block ${index === focusedIndex
-                                        ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
-                                        : "border-neutral-800 hover:border-orange-500/50"
-                                    }`}
-                                onClick={() => setFocusedIndex(index)}
-                            >
-                                <div className="absolute inset-0">
-                                    {channel.currentTrack?.thumbnail ? (
-                                        <>
-                                            <img
-                                                src={channel.currentTrack.thumbnail}
-                                                alt={channel.name}
-                                                className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500 scale-105 group-hover:scale-110 transform transition-transform"
-                                            />
-                                            <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
-                                        </>
-                                    ) : (
-                                        <div className={`absolute inset-0 bg-gradient-to-br ${channel.color} opacity-20 group-hover:opacity-30 transition-opacity duration-500`} />
-                                    )}
-                                </div>
-
-                                <div className="relative z-10 space-y-2 w-full">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className={`text-2xl font-bold transition-colors truncate pr-2 ${index === focusedIndex ? "text-orange-400" : "text-white group-hover:text-orange-400"}`}>
-                                            {channel.name}
-                                        </h3>
-                                        <Radio className={`transition-colors flex-shrink-0 ${index === focusedIndex ? "text-white" : "text-neutral-500 group-hover:text-white"}`} />
-                                    </div>
-                                    <p className="text-neutral-400 text-sm line-clamp-2">{channel.description}</p>
-
-                                    <div className="flex items-center gap-2 pt-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                                        <Users size={14} /> <span>{channel.listeners || 0} Live</span>
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
-
+                        {/* Create Room Button - Always First */}
                         <button
                             onClick={() => {
                                 handleCreateRoomClick();
-                                setFocusedIndex(rooms.length);
+                                setFocusedIndex(0);
                             }}
-                            className={`rounded-2xl border-2 border-dashed p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] ${rooms.length === focusedIndex
-                                    ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
-                                    : user
-                                        ? "border-neutral-800 hover:border-neutral-600 text-neutral-500 hover:text-neutral-300 cursor-pointer"
-                                        : "border-neutral-900 text-neutral-700 cursor-not-allowed"
+                            className={`rounded-2xl border-2 border-dashed p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
+                                ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
+                                : user
+                                    ? "border-neutral-800 hover:border-neutral-600 text-neutral-500 hover:text-neutral-300 cursor-pointer"
+                                    : "border-neutral-900 text-neutral-700 cursor-not-allowed"
                                 }`}
                             title={user ? "Create a new channel" : "Log in to create a channel"}
                         >
-                            <Sparkles size={32} className={rooms.length === focusedIndex ? "text-orange-500" : ""} />
-                            <span className={`font-medium ${rooms.length === focusedIndex ? "text-white" : ""}`}>
+                            <Sparkles size={32} className={focusedIndex === 0 ? "text-orange-500" : ""} />
+                            <span className={`font-medium ${focusedIndex === 0 ? "text-white" : ""}`}>
                                 {user ? "Create Channel" : "Log in to Create"}
                             </span>
                         </button>
+
+                        {/* Filtered Rooms */}
+                        {filteredRooms.length === 0 && searchQuery && (
+                            <div className="col-span-full text-center text-neutral-500 py-12 flex flex-col items-center">
+                                <Search className="w-8 h-8 mb-2 opacity-50" />
+                                <p>No channels found matching "{searchQuery}"</p>
+                            </div>
+                        )}
+
+                        {filteredRooms.map((channel, i) => {
+                            // Adjust index for mapping because Create Button is 0
+                            const actualIndex = i + 1;
+
+                            return (
+                                <Link
+                                    key={channel.id}
+                                    to={`/room/${channel.id}`}
+                                    className={`group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block ${actualIndex === focusedIndex
+                                        ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
+                                        : "border-neutral-800 hover:border-orange-500/50"
+                                        }`}
+                                    onClick={() => setFocusedIndex(actualIndex)}
+                                >
+                                    <div className="absolute inset-0">
+                                        {channel.currentTrack?.thumbnail ? (
+                                            <>
+                                                <img
+                                                    src={channel.currentTrack.thumbnail}
+                                                    alt={channel.name}
+                                                    className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500 scale-105 group-hover:scale-110 transform transition-transform"
+                                                />
+                                                <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
+                                            </>
+                                        ) : (
+                                            <div className={`absolute inset-0 bg-gradient-to-br ${channel.color} opacity-20 group-hover:opacity-30 transition-opacity duration-500`} />
+                                        )}
+                                    </div>
+
+                                    <div className="relative z-10 space-y-2 w-full">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className={`text-2xl font-bold transition-colors truncate pr-2 ${actualIndex === focusedIndex ? "text-orange-400" : "text-white group-hover:text-orange-400"}`}>
+                                                {channel.name}
+                                            </h3>
+                                            <Radio className={`transition-colors flex-shrink-0 ${actualIndex === focusedIndex ? "text-white" : "text-neutral-500 group-hover:text-white"}`} />
+                                        </div>
+                                        <p className="text-neutral-400 text-sm line-clamp-2">{channel.description}</p>
+
+                                        <div className="flex items-center gap-2 pt-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                                            <Users size={14} /> <span>{channel.listeners || 0} Live</span>
+                                        </div>
+                                    </div>
+                                </Link>
+                            );
+                        })}
                     </div>
                 )}
             </main>
