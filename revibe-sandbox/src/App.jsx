@@ -435,6 +435,13 @@ function App() {
 
   const isVenueMode = playlistViewMode && !isOwner;
 
+  // Force exit cinema mode when Venue Mode is activated
+  useEffect(() => {
+    if (isVenueMode) {
+      setIsCinemaMode(false);
+    }
+  }, [isVenueMode]);
+
   return (
     <div className={`min-h-screen text-white flex flex-col ${isVenueMode ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
       {!isCinemaMode && (
