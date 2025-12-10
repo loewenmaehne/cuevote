@@ -67,7 +67,16 @@ function App() {
     autoApproveKnown = true,
   } = serverState || {};
 
+
   const isOwner = user && ownerId && user.id === ownerId;
+  const isVenueMode = playlistViewMode && !isOwner;
+
+  // Force exit cinema mode when Venue Mode is activated
+  useEffect(() => {
+    if (isVenueMode) {
+      setIsCinemaMode(false);
+    }
+  }, [isVenueMode]);
 
   // Pending Suggestions Handlers
   const handleApproveSuggestion = (trackId) => {
@@ -433,14 +442,7 @@ function App() {
     sendMessage({ type: "DELETE_SONG", payload: { trackId } });
   };
 
-  const isVenueMode = playlistViewMode && !isOwner;
 
-  // Force exit cinema mode when Venue Mode is activated
-  useEffect(() => {
-    if (isVenueMode) {
-      setIsCinemaMode(false);
-    }
-  }, [isVenueMode]);
 
   return (
     <div className={`min-h-screen text-white flex flex-col ${isVenueMode ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
