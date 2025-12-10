@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { ThumbsUp, ThumbsDown, Headphones } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Headphones, Trash2 } from "lucide-react";
 
 const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;
 const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
@@ -15,6 +15,7 @@ export function Track({
   onPreview,
   readOnly = false,
   votesEnabled = true,
+  onDelete,
 }) {
   // Check prioritized status
   const isPriority = track.isOwnerPriority;
@@ -124,6 +125,20 @@ export function Track({
                 Preview Song
               </button>
             )}
+            {onDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (window.confirm("Are you sure you want to delete this song?")) {
+                    onDelete(track.id);
+                  }
+                }}
+                className="flex-1 bg-neutral-800 hover:bg-red-900/30 text-red-500 hover:text-red-400 py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-colors border border-transparent hover:border-red-500/30"
+              >
+                <Trash2 size={20} />
+                Delete Song
+              </button>
+            )}
           </div>
           <p className="text-sm italic break-words overflow-hidden text-ellipsis">
             {track.lyrics}
@@ -152,4 +167,5 @@ Track.propTypes = {
   onToggleExpand: PropTypes.func.isRequired,
   onPreview: PropTypes.func,
   readOnly: PropTypes.bool,
+  onDelete: PropTypes.func,
 };
