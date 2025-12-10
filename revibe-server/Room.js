@@ -411,10 +411,11 @@ class Room {
                 if (this.state.autoApproveKnown && isKnown) {
                     // Auto-approve: Skip adding to pending, proceed to queue
                     console.log(`[Auto-Approve] Song ${track.title} (${track.videoId}) is known. Bypassing review.`);
+                    ws.send(JSON.stringify({ type: "success", message: "Added" }));
                 } else {
                     const newPending = [...(this.state.pendingSuggestions || []), track];
                     this.updateState({ pendingSuggestions: newPending });
-                    ws.send(JSON.stringify({ type: "info", message: "Submitted for review" }));
+                    ws.send(JSON.stringify({ type: "info", message: "Submitted" }));
                     return;
                 }
             }

@@ -93,16 +93,18 @@ export function WebSocketProvider({ children }) {
       const handleMessage = (event) => {
         try {
           const message = JSON.parse(event.data);
-          setLastMessage(message); // Broadcast all messages
           if (message.type === "state") {
             console.log(`[CLIENT TRACE] <<< INCOMING STATE. RoomId: ${message.payload.roomId}`);
             setState(message.payload);
-          } else if (message.type === "error") {
-            setLastError(message.message);
-            console.warn("[CLIENT TRACE] <<< ERROR:", message.message);
-            setTimeout(() => setLastError(null), 5000);
-          } else if (message.type === "INFO") {
-            console.log("[CLIENT TRACE] <<< INFO:", message.payload);
+          } else {
+            setLastMessage(message); // Broadcast non-state messages (events)
+            if (message.type === "error") {
+              setLastError(message.message);
+              console.warn("[CLIENT TRACE] <<< ERROR:", message.message);
+              setTimeout(() => setLastError(null), 5000);
+            } else if (message.type === "INFO") {
+              console.log("[CLIENT TRACE] <<< INFO:", message.payload);
+            }
           }
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);

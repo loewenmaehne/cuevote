@@ -76,6 +76,18 @@ export function SuggestSongForm({ onSongSuggested, serverError, serverMessage, i
         setInfoMessage("");
       }, 3000);
     }
+
+    if (serverMessage && serverMessage.type === "success") {
+      // Direct success (e.g. Auto-Approved) - Show Green Check (no info message implies Green)
+      setInfoMessage(""); // Ensure no info message triggers Blue state
+      setSubmissionSuccess(true);
+      setSongSuggestion("");
+      setIsSubmittingSuggestion(false);
+
+      setTimeout(() => {
+        setSubmissionSuccess(false);
+      }, 3000);
+    }
   }, [serverError, serverMessage]);
 
   const activeError = suggestionError || serverError;
