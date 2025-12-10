@@ -517,7 +517,19 @@ function App() {
               onMuteToggle={handleMuteToggle}
               onVolumeChange={handleVolumeChange}
               votesEnabled={serverState?.votesEnabled ?? true}
+              onPreview={allowPrelisten ? handlePreviewTrack : null}
             />
+            {previewTrack && (
+              <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
+                <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
+                  <PlayerErrorBoundary>
+                    <Player
+                      playerContainerRef={playerContainerRef}
+                    />
+                  </PlayerErrorBoundary>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           /* Standard Mode */
