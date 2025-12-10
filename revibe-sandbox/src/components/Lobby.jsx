@@ -295,9 +295,21 @@ export function Lobby() {
 
                                     <div className="relative z-10 space-y-2 w-full">
                                         <div className="flex items-center justify-between">
-                                            <h3 className={`text-2xl font-bold transition-colors truncate pr-2 ${actualIndex === focusedIndex ? "text-orange-400" : "text-white group-hover:text-orange-400"}`}>
-                                                {channel.name}
-                                            </h3>
+                                            <div className="flex-1 min-w-0 pr-2">
+                                                {actualIndex === focusedIndex && channel.name.length > 20 ? (
+                                                    <div className="overflow-hidden whitespace-nowrap w-full mask-linear-fade">
+                                                        <span className="animate-billboard inline-block pl-0">
+                                                            <h3 className="text-2xl font-bold text-orange-400 inline">
+                                                                {channel.name}&nbsp;&nbsp;&nbsp;&nbsp;{channel.name}&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            </h3>
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <h3 className={`text-2xl font-bold transition-colors truncate ${actualIndex === focusedIndex ? "text-orange-400" : "text-white group-hover:text-orange-400"}`}>
+                                                        {channel.name}
+                                                    </h3>
+                                                )}
+                                            </div>
                                             <Radio className={`transition-colors flex-shrink-0 ${actualIndex === focusedIndex ? "text-white" : "text-neutral-500 group-hover:text-white"}`} />
                                         </div>
                                         <p className="text-neutral-400 text-sm line-clamp-2">{channel.description}</p>
