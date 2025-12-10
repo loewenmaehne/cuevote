@@ -428,6 +428,10 @@ function App() {
   }
 
 
+  const handleDeleteSong = (trackId) => {
+    sendMessage({ type: "DELETE_SONG", payload: { trackId } });
+  };
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col pb-32">
       {!isCinemaMode && (
@@ -556,8 +560,10 @@ function App() {
             isMinimized={false}
             onPreview={allowPrelisten ? handlePreviewTrack : null}
             votesEnabled={serverState?.votesEnabled ?? true}
+            onDelete={isOwner ? handleDeleteSong : null}
           />
         )}
+
       </div>
 
       {
