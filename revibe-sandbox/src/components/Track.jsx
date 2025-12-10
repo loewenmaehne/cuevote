@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { ThumbsUp, ThumbsDown, Headphones, Trash2 } from "lucide-react";
 
@@ -19,6 +19,7 @@ export function Track({
 }) {
   // Check prioritized status
   const isPriority = track.isOwnerPriority;
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   return (
     <div
@@ -112,7 +113,7 @@ export function Track({
 
       {isExpanded && (
         <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-neutral-800 text-neutral-300 mt-4 space-y-3">
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3">
             {onPreview && !readOnly && !isActive && (
               <button
                 onClick={(e) => {
@@ -126,18 +127,39 @@ export function Track({
               </button>
             )}
             {onDelete && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (window.confirm("Are you sure you want to delete this song?")) {
-                    onDelete(track.id);
-                  }
-                }}
-                className="flex-1 bg-neutral-800 hover:bg-red-900/30 text-red-500 hover:text-red-400 py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-colors border border-transparent hover:border-red-500/30"
-              >
-                <Trash2 size={20} />
-                Delete Song
-              </button>
+              showDeleteConfirm ? (
+                <div className="flex gap-3 animate-fadeIn">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowDeleteConfirm(false);
+                    }}
+                    className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white py-3 rounded-xl font-semibold transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(track.id);
+                    }}
+                    className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/50 py-3 rounded-xl font-semibold transition-colors"
+                  >
+                    Confirm Delete
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDeleteConfirm(true);
+                  }}
+                  className="flex-1 bg-neutral-800 hover:bg-red-900/30 text-red-500 hover:text-red-400 py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-colors border border-transparent hover:border-red-500/30"
+                >
+                  <Trash2 size={20} />
+                  Delete Song
+                </button>
+              )
             )}
           </div>
           <p className="text-sm italic break-words overflow-hidden text-ellipsis">
