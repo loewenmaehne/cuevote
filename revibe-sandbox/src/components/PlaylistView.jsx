@@ -18,6 +18,7 @@ export function PlaylistView({
     onMuteToggle,
     onVolumeChange,
     votesEnabled = true,
+    onPreview,
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -109,6 +110,7 @@ export function PlaylistView({
                                     onToggleExpand={handleToggleExpand}
                                     readOnly={false} // Interactive
                                     votesEnabled={votesEnabled}
+                                    onPreview={onPreview}
                                 />
                             ))}
                         </div>
@@ -141,4 +143,5 @@ PlaylistView.propTypes = {
     onMuteToggle: PropTypes.func,
     onVolumeChange: PropTypes.func,
     votesEnabled: PropTypes.bool,
+    onPreview: PropTypes.func,
 };
