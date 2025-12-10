@@ -112,7 +112,7 @@ export function Track({
       {isExpanded && (
         <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-neutral-800 text-neutral-300 mt-4 space-y-3">
           <div className="flex gap-3">
-            {onPreview && !readOnly && (
+            {onPreview && !readOnly && !isActive && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
