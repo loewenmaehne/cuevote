@@ -112,7 +112,7 @@ export function Lobby() {
                 ) : rooms.length === 0 ? (
                     <div className="text-neutral-500">Loading active channels...</div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                         {rooms.map((channel) => (
                             <Link
                                 key={channel.id}
