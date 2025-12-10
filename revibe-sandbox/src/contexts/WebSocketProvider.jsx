@@ -1,7 +1,21 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { WebSocketContext } from './WebSocketContext';
 
-const WEBSOCKET_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8080";
+const getWebSocketUrl = () => {
+  const envUrl = import.meta.env.VITE_WS_URL;
+  const hostname = window.location.hostname;
+
+  // If we are running on a network address (not localhost), prioritize that hostname.
+  // This fixes issues where .env has 'ws://localhost:8080' but we are accessing via 10.0.2.2 or LAN IP.
+  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+    return `ws://${hostname}:8080`;
+  }
+
+  if (envUrl) return envUrl;
+  return `ws://${hostname}:8080`;
+};
+
+const WEBSOCKET_URL = getWebSocketUrl();
 
 export function WebSocketProvider({ children }) {
   const [state, setState] = useState(null);
