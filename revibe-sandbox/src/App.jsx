@@ -584,25 +584,25 @@ function App() {
 
       {
         previewTrack ? (
-          <div className="fixed bottom-0 left-0 w-full bg-green-900/95 backdrop-blur-md border-t border-green-700 px-6 py-3 flex items-center justify-between z-50 select-none">
-            <div className="flex items-center gap-4">
+          <div className="fixed bottom-0 left-0 w-full bg-green-900/95 backdrop-blur-md border-t border-green-700 px-3 py-2 sm:px-6 sm:py-3 flex items-center justify-between z-50 select-none">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <button
                 onClick={handleStopPreview}
-                className="bg-white text-green-900 hover:bg-gray-100 transition-colors rounded-full p-3 shadow-lg flex items-center gap-2"
+                className="bg-white text-green-900 hover:bg-gray-100 transition-colors rounded-full p-2 sm:p-3 shadow-lg flex-shrink-0 flex items-center gap-2"
                 title="Back to Radio"
               >
-                <ArrowLeft size={24} />
-                <span className="font-bold pr-2">Back to Radio</span>
+                <ArrowLeft size={18} className="sm:w-6 sm:h-6" />
+                <span className="font-bold pr-2 hidden sm:inline">Back to Radio</span>
               </button>
-              <div>
+              <div className="truncate min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-white text-base leading-tight">{previewTrack.title}</h3>
-                  <span className="bg-green-500 text-black px-2 py-0.5 rounded text-xs font-bold animate-pulse">PREVIEW</span>
+                  <h3 className="font-bold text-white text-sm sm:text-base leading-tight truncate">{previewTrack.title}</h3>
+                  <span className="bg-green-500 text-black px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-bold animate-pulse flex-shrink-0">PREVIEW</span>
                 </div>
-                <p className="text-green-200 text-sm">{previewTrack.artist}</p>
+                <p className="text-green-200 text-xs sm:text-sm truncate">{previewTrack.artist}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-green-200">
+            <div className="flex items-center gap-1 sm:gap-2 text-green-200 pl-2 sm:pl-4 flex-shrink-0">
               <button
                 onClick={(event) => {
                   event.stopPropagation();
