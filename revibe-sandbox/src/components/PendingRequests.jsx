@@ -5,7 +5,7 @@ export function PendingRequests({ requests, onApprove, onReject, onClose }) {
 	if (!requests || requests.length === 0) return null;
 
 	return (
-		<div className="fixed bottom-24 right-6 z-30 w-[450px] bg-neutral-900/95 backdrop-blur-md border border-neutral-700 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5">
+		<div className="fixed bottom-20 sm:bottom-24 left-4 right-4 sm:left-auto sm:right-6 sm:w-[450px] z-30 bg-neutral-900/95 backdrop-blur-md border border-neutral-700 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5">
 			<div className="bg-neutral-800/50 p-3 border-b border-neutral-700 flex justify-between items-center">
 				<h3 className="font-bold text-white flex items-center gap-2">
 					<Clock size={16} className="text-orange-500" />
@@ -87,35 +87,37 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onClose }) 
 				) : (
 					<div className="grid gap-4">
 						{requests.map((track) => (
-							<div key={track.id} className="bg-neutral-900 border border-neutral-800 rounded-xl p-4 flex items-center justify-between gap-4 hover:border-neutral-700 transition-colors">
-								<div className="flex items-center gap-4 flex-1 min-w-0">
+							<div key={track.id} className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-3 sm:gap-4 hover:border-neutral-700 transition-colors">
+								<div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
 									<img
 										src={track.thumbnail}
 										alt={track.title}
-										className="w-24 h-16 rounded-lg object-cover flex-shrink-0 shadow-sm"
+										className="w-16 h-12 sm:w-24 sm:h-16 rounded-lg object-cover flex-shrink-0 shadow-sm"
 									/>
 
 									<div className="flex-1 min-w-0">
-										<h3 className="text-lg font-bold text-white truncate" title={track.title}>{track.title}</h3>
-										<p className="text-neutral-400">{track.artist}</p>
-										<p className="text-sm text-neutral-500 mt-1 flex items-center gap-1">
-											Suggested by <span className="text-neutral-300 font-medium">{track.suggestedByUsername || 'Unknown'}</span>
+										<h3 className="text-sm sm:text-lg font-bold text-white truncate" title={track.title}>{track.title}</h3>
+										<p className="text-xs sm:text-base text-neutral-400 truncate">{track.artist}</p>
+										<p className="text-xs sm:text-sm text-neutral-500 mt-0.5 sm:mt-1 flex items-center gap-1">
+											<span className="hidden sm:inline">Suggested by</span> <span className="text-neutral-300 font-medium truncate">{track.suggestedByUsername || 'Unknown'}</span>
 										</p>
 									</div>
 								</div>
 
-								<div className="flex items-center gap-3 flex-shrink-0 pl-4">
+								<div className="flex items-center gap-2 flex-shrink-0 sm:pl-4">
 									<button
 										onClick={() => onReject(track.id)}
-										className="px-4 py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors font-medium flex items-center gap-2"
+										className="p-2 sm:px-4 sm:py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors font-medium flex items-center gap-2"
+										title="Decline"
 									>
-										<X size={18} /> Decline
+										<X size={18} /> <span className="hidden sm:inline">Decline</span>
 									</button>
 									<button
 										onClick={() => onApprove(track.id)}
-										className="px-4 py-2 rounded-lg bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-colors font-medium flex items-center gap-2"
+										className="p-2 sm:px-4 sm:py-2 rounded-lg bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-colors font-medium flex items-center gap-2"
+										title="Accept"
 									>
-										<Check size={18} /> Accept
+										<Check size={18} /> <span className="hidden sm:inline">Accept</span>
 									</button>
 								</div>
 							</div>
