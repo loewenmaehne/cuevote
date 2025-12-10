@@ -432,8 +432,10 @@ function App() {
     sendMessage({ type: "DELETE_SONG", payload: { trackId } });
   };
 
+  const isVenueMode = playlistViewMode && !isOwner;
+
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col pb-32">
+    <div className={`min-h-screen text-white flex flex-col ${isVenueMode ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header
