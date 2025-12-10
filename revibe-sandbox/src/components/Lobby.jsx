@@ -10,6 +10,8 @@ export function Lobby() {
     const [rooms, setRooms] = useState([]);
     const [isCreatingRoom, setIsCreatingRoom] = useState(false);
     const [newRoomName, setNewRoomName] = useState("");
+    const [focusedIndex, setFocusedIndex] = useState(-1);
+    const [columns, setColumns] = useState(4); // Default to 4 for lg screens
 
     const login = useGoogleLogin({
         onSuccess: (tokenResponse) => {
@@ -34,6 +36,65 @@ export function Lobby() {
             }
         }
     }, [lastMessage, navigate]);
+
+    // Handle column resize
+    useEffect(() => {
+        const updateColumns = () => {
+            if (window.innerWidth >= 1024) setColumns(4);
+            else if (window.innerWidth >= 768) setColumns(3);
+            else setColumns(2);
+        };
+
+        updateColumns();
+        window.addEventListener('resize', updateColumns);
+        return () => window.removeEventListener('resize', updateColumns);
+    }, []);
+
+    // Handle Keyboard Navigation
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (isCreatingRoom || !rooms.length) return;
+            // Total items = rooms + create button
+            const totalItems = rooms.length + 1;
+
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                setFocusedIndex(prev => Math.min(prev + 1, totalItems - 1));
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                setFocusedIndex(prev => Math.max(prev - 1, 0));
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                setFocusedIndex(prev => {
+                    if (prev === -1) return 0;
+                    return Math.min(prev + columns, totalItems - 1);
+                });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                setFocusedIndex(prev => Math.max(prev - columns, 0));
+            } else if (e.key === 'Enter') {
+                if (focusedIndex >= 0 && focusedIndex < totalItems) {
+                    e.preventDefault();
+                    if (focusedIndex < rooms.length) {
+                        // Join Room
+                        navigate(`/room/${rooms[focusedIndex].id}`);
+                    } else {
+                        // Create Room
+                        handleCreateRoomClick();
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [rooms, columns, focusedIndex, isCreatingRoom, navigate]);
+
+    // Reset focused index when rooms change or on mount
+    useEffect(() => {
+        setFocusedIndex(-1);
+    }, [rooms.length]);
+
 
     const handleCreateRoomClick = () => {
         if (!user) {
@@ -113,11 +174,15 @@ export function Lobby() {
                     <div className="text-neutral-500">Loading active channels...</div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                        {rooms.map((channel) => (
+                        {rooms.map((channel, index) => (
                             <Link
                                 key={channel.id}
                                 to={`/room/${channel.id}`}
-                                className="group relative overflow-hidden rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-orange-500/50 transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block"
+                                className={`group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block ${index === focusedIndex
+                                        ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
+                                        : "border-neutral-800 hover:border-orange-500/50"
+                                    }`}
+                                onClick={() => setFocusedIndex(index)}
                             >
                                 <div className="absolute inset-0">
                                     {channel.currentTrack?.thumbnail ? (
@@ -136,10 +201,10 @@ export function Lobby() {
 
                                 <div className="relative z-10 space-y-2 w-full">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-2xl font-bold text-white group-hover:text-orange-400 transition-colors truncate pr-2">
+                                        <h3 className={`text-2xl font-bold transition-colors truncate pr-2 ${index === focusedIndex ? "text-orange-400" : "text-white group-hover:text-orange-400"}`}>
                                             {channel.name}
                                         </h3>
-                                        <Radio className="text-neutral-500 group-hover:text-white transition-colors flex-shrink-0" />
+                                        <Radio className={`transition-colors flex-shrink-0 ${index === focusedIndex ? "text-white" : "text-neutral-500 group-hover:text-white"}`} />
                                     </div>
                                     <p className="text-neutral-400 text-sm line-clamp-2">{channel.description}</p>
 
@@ -151,15 +216,20 @@ export function Lobby() {
                         ))}
 
                         <button
-                            onClick={handleCreateRoomClick}
-                            className={`rounded-2xl border-2 border-dashed p-6 flex flex-col items-center justify-center gap-4 transition-colors w-full aspect-[4/3] ${user
-                                ? "border-neutral-800 hover:border-neutral-600 text-neutral-500 hover:text-neutral-300 cursor-pointer"
-                                : "border-neutral-900 text-neutral-700 cursor-not-allowed"
+                            onClick={() => {
+                                handleCreateRoomClick();
+                                setFocusedIndex(rooms.length);
+                            }}
+                            className={`rounded-2xl border-2 border-dashed p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] ${rooms.length === focusedIndex
+                                    ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
+                                    : user
+                                        ? "border-neutral-800 hover:border-neutral-600 text-neutral-500 hover:text-neutral-300 cursor-pointer"
+                                        : "border-neutral-900 text-neutral-700 cursor-not-allowed"
                                 }`}
                             title={user ? "Create a new channel" : "Log in to create a channel"}
                         >
-                            <Sparkles size={32} />
-                            <span className="font-medium">
+                            <Sparkles size={32} className={rooms.length === focusedIndex ? "text-orange-500" : ""} />
+                            <span className={`font-medium ${rooms.length === focusedIndex ? "text-white" : ""}`}>
                                 {user ? "Create Channel" : "Log in to Create"}
                             </span>
                         </button>
