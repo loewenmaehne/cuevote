@@ -209,7 +209,7 @@ export function Lobby() {
                         <input
                             id="channel-search"
                             type="text"
-                            className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-10 p-2.5 focus:ring-orange-500 focus:border-orange-500 placeholder-neutral-500 transition-colors"
+                            className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-10 p-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-neutral-500 transition-all"
                             placeholder="Search channels..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
