@@ -78,7 +78,7 @@
 @keyframes billboard {
 
   0%,
-  15% {
+  5% {
     transform: translateX(0);
   }
 
