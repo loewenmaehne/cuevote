@@ -327,12 +327,13 @@ export function Lobby() {
                                     <div className="relative z-10 space-y-2 w-full">
                                         <div className="flex items-center justify-between">
                                             <div className="flex-1 min-w-0 pr-2">
-                                                {actualIndex === focusedIndex && channel.name.length > 20 ? (
+                                                {actualIndex === focusedIndex && channel.name.length > 15 ? (
                                                     <div className="overflow-hidden whitespace-nowrap w-full mask-linear-fade">
-                                                        <span className="animate-billboard inline-block pl-0">
-                                                            <h3 className="text-2xl font-bold text-orange-400 inline">
-                                                                {channel.name}&nbsp;&nbsp;&nbsp;&nbsp;{channel.name}&nbsp;&nbsp;&nbsp;&nbsp;
-                                                            </h3>
+                                                        <span
+                                                            className="animate-marquee inline-block pl-0 text-2xl font-bold text-orange-400"
+                                                            style={{ animationDuration: `${Math.max(10, channel.name.length * 0.4)}s` }}
+                                                        >
+                                                            {channel.name}&nbsp;&nbsp;&nbsp;&nbsp;{channel.name}&nbsp;&nbsp;&nbsp;&nbsp;
                                                         </span>
                                                     </div>
                                                 ) : (
@@ -376,6 +377,7 @@ export function Lobby() {
                                         value={newRoomName}
                                         onChange={(e) => setNewRoomName(e.target.value)}
                                         placeholder="e.g. Late Night Vibes"
+                                        maxLength={100}
                                         className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
                                         autoFocus
                                     />
