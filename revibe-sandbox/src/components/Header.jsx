@@ -146,7 +146,10 @@ export function Header({
             <Radio size={22} className="flex-shrink-0" />
             {activeChannel.length > 15 ? (
               <div className="overflow-hidden whitespace-nowrap w-full mask-linear-fade">
-                <span className="animate-marquee inline-block pl-0">
+                <span
+                  className="animate-marquee inline-block pl-0"
+                  style={{ animationDuration: `${Math.max(10, activeChannel.length * 0.4)}s` }}
+                >
                   {activeChannel}&nbsp;&nbsp;&nbsp;&nbsp;{activeChannel}&nbsp;&nbsp;&nbsp;&nbsp;
                 </span>
               </div>
