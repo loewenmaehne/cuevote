@@ -12,6 +12,7 @@ export function Queue({
   isMinimized,
   onPreview,
   votesEnabled = true,
+  onDelete,
 }) {
   return (
     <div
@@ -36,6 +37,7 @@ export function Queue({
           onToggleExpand={onToggleExpand}
           onPreview={onPreview}
           votesEnabled={votesEnabled}
+          onDelete={onDelete}
         />
       ))}
     </div>
@@ -52,4 +54,5 @@ Queue.propTypes = {
   isMinimized: PropTypes.bool.isRequired,
   onPreview: PropTypes.func,
   votesEnabled: PropTypes.bool,
+  onDelete: PropTypes.func,
 };

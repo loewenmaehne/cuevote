@@ -185,6 +185,11 @@ class Room {
                     this.handleRejectSuggestion(message.payload);
                 }
                 break;
+            case "DELETE_SONG":
+                if (isOwner(this, ws)) {
+                    this.handleDeleteSong(message.payload);
+                }
+                break;
         }
     }
 
@@ -584,6 +589,37 @@ class Room {
             const newPending = [...pending];
             newPending.splice(index, 1);
             this.updateState({ pendingSuggestions: newPending });
+        }
+    }
+
+    handleDeleteSong({ trackId }) {
+        const queue = this.state.queue;
+        const index = queue.findIndex(t => t.id === trackId);
+
+        if (index !== -1) {
+            const newQueue = [...queue];
+            newQueue.splice(index, 1);
+
+            // If we deleted the current track (index 0), we need to advance
+            if (index === 0) {
+                // Logic similar to handleNextTrack but without adding to history? 
+                // Or acts as skip? Let's just update queue and if empty stop.
+                // If we remove head, next becomes head.
+                const newState = {
+                    queue: newQueue,
+                    progress: 0
+                };
+                if (newQueue.length > 0) {
+                    newState.currentTrack = newQueue[0];
+                    newState.isPlaying = true; // Keep playing next
+                } else {
+                    newState.currentTrack = null;
+                    newState.isPlaying = false;
+                }
+                this.updateState(newState);
+            } else {
+                this.updateState({ queue: newQueue });
+            }
         }
     }
 
