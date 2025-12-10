@@ -496,8 +496,11 @@ export function Header({
 
             <div className="flex gap-3 justify-center">
               <button
-                onClick={() => setShowExitConfirm(false)}
-                className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${exitConfirmIndex === 0
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowExitConfirm(false);
+                }}
+                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all ${exitConfirmIndex === 0
                   ? "bg-neutral-700 text-white ring-2 ring-orange-500/50"
                   : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
                   }`}
@@ -506,7 +509,8 @@ export function Header({
                 Cancel
               </button>
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   onGoHome();
                   setShowExitConfirm(false);
                   onShowSuggest(false);
@@ -519,10 +523,6 @@ export function Header({
               >
                 Leave
               </button>
-            </div>
-            <div className="mt-4 text-xs text-neutral-500 flex items-center justify-center gap-4">
-              <span className="flex items-center gap-1"><span className="px-1.5 py-0.5 rounded bg-neutral-800 border border-neutral-700 font-mono">←/→</span> Navigate</span>
-              <span className="flex items-center gap-1"><span className="px-1.5 py-0.5 rounded bg-neutral-800 border border-neutral-700 font-mono">Enter</span> Select</span>
             </div>
           </div>
         </div>,
