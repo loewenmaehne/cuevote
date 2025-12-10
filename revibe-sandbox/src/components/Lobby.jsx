@@ -131,6 +131,16 @@ export function Lobby() {
     }, [filteredRooms.length]);
 
 
+    // Auto-scroll to focused item
+    useEffect(() => {
+        if (focusedIndex >= 0) {
+            const element = document.getElementById(`lobby-item-${focusedIndex}`);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    }, [focusedIndex]);
+
     const handleCreateRoomClick = () => {
         if (!user) {
             alert("Please sign in (top right corner of a room) to create a channel!");
@@ -226,11 +236,12 @@ export function Lobby() {
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                         {/* Create Room Button - Always First */}
                         <button
+                            id="lobby-item-0"
                             onClick={() => {
                                 handleCreateRoomClick();
                                 setFocusedIndex(0);
                             }}
-                            className={`rounded-2xl border p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
+                            className={`scroll-mb-24 rounded-2xl border p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
                                 ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
                                 : user
                                     ? "border-neutral-800 hover:border-neutral-600 text-neutral-500 hover:text-neutral-300 cursor-pointer"
@@ -259,8 +270,9 @@ export function Lobby() {
                             return (
                                 <Link
                                     key={channel.id}
+                                    id={`lobby-item-${actualIndex}`}
                                     to={`/room/${channel.id}`}
-                                    className={`group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block ${actualIndex === focusedIndex
+                                    className={`scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block ${actualIndex === focusedIndex
                                         ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
                                         : "border-neutral-800 hover:border-orange-500/50"
                                         }`}
