@@ -32,6 +32,8 @@ export function Header({
 }) {
   const headerRef = React.useRef(null);
   const [showSettings, setShowSettings] = React.useState(false);
+  const [showExitConfirm, setShowExitConfirm] = React.useState(false);
+  const [exitConfirmIndex, setExitConfirmIndex] = React.useState(0); // 0 = Cancel, 1 = Leave
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => {
@@ -40,18 +42,50 @@ export function Header({
     onError: () => console.log('Login Failed'),
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (!headerRef.current) return;
       if (headerRef.current.contains(event.target)) return;
       if (event.target.closest(".keep-open")) return;
+      // Do not close settings if exit confirm is open to avoid conflict
+      if (showExitConfirm) return;
       onShowSuggest(false);
       setShowSettings(false);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onShowSuggest]);
+  }, [onShowSuggest, showExitConfirm]);
+
+  // Handle Keyboard Navigation for Exit Confirmation
+  useEffect(() => {
+    if (!showExitConfirm) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        setExitConfirmIndex(1); // Move to Leave
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setExitConfirmIndex(0); // Move to Cancel
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (exitConfirmIndex === 1) {
+          onGoHome();
+          setShowExitConfirm(false);
+          onShowSuggest(false);
+        } else {
+          setShowExitConfirm(false);
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        setShowExitConfirm(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showExitConfirm, exitConfirmIndex, onGoHome, onShowSuggest]);
 
   return (
     <header
@@ -101,8 +135,9 @@ export function Header({
           <button
             onClick={(event) => {
               event.stopPropagation();
-              onGoHome();
-              onShowSuggest(false);
+              setShowExitConfirm(true);
+              setExitConfirmIndex(0); // Default to "Cancel" for safety
+              setShowSettings(false);
             }}
             className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors flex-shrink-0 max-w-[160px] overflow-hidden"
             title={activeChannel}
@@ -448,6 +483,46 @@ export function Header({
           )}
         </div>
       </div>
+      {/* Exit Confirmation Modal */}
+      {showExitConfirm && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200 text-center">
+            <h3 className="text-xl font-bold text-white mb-2">Leave Channel?</h3>
+            <p className="text-neutral-400 mb-6">Are you sure you want to return to the lobby?</p>
+
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setShowExitConfirm(false)}
+                className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${exitConfirmIndex === 0
+                    ? "bg-neutral-700 text-white ring-2 ring-orange-500/50"
+                    : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
+                  }`}
+                onMouseEnter={() => setExitConfirmIndex(0)}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  onGoHome();
+                  setShowExitConfirm(false);
+                  onShowSuggest(false);
+                }}
+                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all ${exitConfirmIndex === 1
+                    ? "bg-orange-500 text-white ring-2 ring-orange-500/50 shadow-lg shadow-orange-500/20"
+                    : "bg-red-900/30 text-red-400 hover:bg-red-900/50 border border-red-900/50"
+                  }`}
+                onMouseEnter={() => setExitConfirmIndex(1)}
+              >
+                Leave
+              </button>
+            </div>
+            <div className="mt-4 text-xs text-neutral-500 flex items-center justify-center gap-4">
+              <span className="flex items-center gap-1"><span className="px-1.5 py-0.5 rounded bg-neutral-800 border border-neutral-700 font-mono">←/→</span> Navigate</span>
+              <span className="flex items-center gap-1"><span className="px-1.5 py-0.5 rounded bg-neutral-800 border border-neutral-700 font-mono">Enter</span> Select</span>
+            </div>
+          </div>
+        </div>
+      )}
     </header >
   );
 }
