@@ -35,7 +35,7 @@ export function Lobby() {
             if (lastMessage.type === "ROOM_LIST") {
                 setRooms(lastMessage.payload);
             } else if (lastMessage.type === "ROOM_CREATED") {
-                navigate(`/ room / ${lastMessage.payload.id} `);
+                navigate(`/room/${lastMessage.payload.id}`);
             }
         }
     }, [lastMessage, navigate]);
@@ -112,7 +112,7 @@ export function Lobby() {
                         // Join Room (Index > 0, so mapped to filteredRooms[index - 1])
                         const roomToJoin = filteredRooms[focusedIndex - 1];
                         if (roomToJoin) {
-                            navigate(`/ room / ${roomToJoin.id} `);
+                            navigate(`/room/${roomToJoin.id}`);
                         }
                     }
                 }
@@ -153,7 +153,7 @@ export function Lobby() {
     // Auto-scroll to focused item
     useEffect(() => {
         if (focusedIndex >= 0) {
-            const element = document.getElementById(`lobby - item - ${focusedIndex} `);
+            const element = document.getElementById(`lobby-item-${focusedIndex}`);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
@@ -176,7 +176,7 @@ export function Lobby() {
             type: "CREATE_ROOM",
             payload: {
                 name: newRoomName,
-                description: `Hosted by ${user.name} `,
+                description: `Hosted by ${user.name}`,
                 color: "from-gray-700 to-black"
             }
         });
@@ -263,16 +263,16 @@ export function Lobby() {
                             onMouseEnter={() => {
                                 if (!isScrolling.current) setFocusedIndex(0);
                             }}
-                            className={`scroll - mt - 56 scroll - mb - 24 rounded - 2xl border p - 6 flex flex - col items - center justify - center gap - 4 transition - all duration - 300 w - full aspect - [4 / 3] order - first ${focusedIndex === 0
-                                    ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
-                                    : user
-                                        ? "border-neutral-800 text-neutral-500 cursor-pointer"
-                                        : "border-neutral-900 text-neutral-700 cursor-not-allowed"
-                                } `}
+                            className={`scroll-mt-56 scroll-mb-24 rounded-2xl border p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
+                                ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
+                                : user
+                                    ? "border-neutral-800 text-neutral-500 cursor-pointer"
+                                    : "border-neutral-900 text-neutral-700 cursor-not-allowed"
+                                }`}
                             title={user ? "Create a new channel" : "Log in to create a channel"}
                         >
                             <Sparkles size={32} className={focusedIndex === 0 ? "text-orange-500" : ""} />
-                            <span className={`font - medium ${focusedIndex === 0 ? "text-white" : ""} `}>
+                            <span className={`font-medium ${focusedIndex === 0 ? "text-white" : ""}`}>
                                 {user ? "Create Channel" : "Log in to Create"}
                             </span>
                         </button>
@@ -292,15 +292,15 @@ export function Lobby() {
                             return (
                                 <Link
                                     key={channel.id}
-                                    id={`lobby - item - ${actualIndex} `}
-                                    to={`/ room / ${channel.id} `}
+                                    id={`lobby-item-${actualIndex}`}
+                                    to={`/room/${channel.id}`}
                                     onMouseEnter={() => {
                                         if (!isScrolling.current) setFocusedIndex(actualIndex);
                                     }}
-                                    className={`scroll - mt - 56 scroll - mb - 24 group relative overflow - hidden rounded - 2xl bg - neutral - 900 border transition - all duration - 300 text - left p - 6 aspect - [4 / 3] flex flex - col justify - end block ${actualIndex === focusedIndex
-                                            ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
-                                            : "border-neutral-800"
-                                        } `}
+                                    className={`scroll-mt-56 scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block ${actualIndex === focusedIndex
+                                        ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
+                                        : "border-neutral-800"
+                                        }`}
                                     onClick={() => setFocusedIndex(actualIndex)}
                                 >
                                     <div className="absolute inset-0">
@@ -314,7 +314,7 @@ export function Lobby() {
                                                 <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
                                             </>
                                         ) : (
-                                            <div className={`absolute inset - 0 bg - gradient - to - br ${channel.color} opacity - 20 group - hover: opacity - 30 transition - opacity duration - 500`} />
+                                            <div className={`absolute inset-0 bg-gradient-to-br ${channel.color} opacity-20 group-hover:opacity-30 transition-opacity duration-500`} />
                                         )}
                                     </div>
 
@@ -330,12 +330,12 @@ export function Lobby() {
                                                         </span>
                                                     </div>
                                                 ) : (
-                                                    <h3 className={`text - 2xl font - bold transition - colors truncate ${actualIndex === focusedIndex ? "text-orange-400" : "text-white"} `}>
+                                                    <h3 className={`text-2xl font-bold transition-colors truncate ${actualIndex === focusedIndex ? "text-orange-400" : "text-white"}`}>
                                                         {channel.name}
                                                     </h3>
                                                 )}
                                             </div>
-                                            <Radio className={`transition - colors flex - shrink - 0 ${actualIndex === focusedIndex ? "text-white" : "text-neutral-500"} `} />
+                                            <Radio className={`transition-colors flex-shrink-0 ${actualIndex === focusedIndex ? "text-white" : "text-neutral-500"}`} />
                                         </div>
                                         <p className="text-neutral-400 text-sm line-clamp-2">{channel.description}</p>
 
