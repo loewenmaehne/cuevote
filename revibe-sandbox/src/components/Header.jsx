@@ -496,7 +496,9 @@ export function Header({
 
             <div className="flex gap-3 justify-center">
               <button
+                type="button"
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   setShowExitConfirm(false);
                 }}
@@ -509,8 +511,11 @@ export function Header({
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
+                  console.log("[Header] Leave confirmed, navigating home...");
                   onGoHome();
                   setShowExitConfirm(false);
                   onShowSuggest(false);
