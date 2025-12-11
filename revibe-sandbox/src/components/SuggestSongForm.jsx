@@ -19,6 +19,7 @@ export function SuggestSongForm({ onSongSuggested, serverError, serverMessage, i
 
   const handleSubmitSuggestion = useCallback(async () => {
     const input = songSuggestion.trim();
+
     if (!input) {
       setSuggestionError("Please enter a YouTube link or song name.");
       return;
