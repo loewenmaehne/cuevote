@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Play, SkipForward, Volume2, Check } from "lucide-react";
+import { Play, SkipForward, Volume2, Check, ArrowDown } from "lucide-react";
 import { Track } from "./Track";
 import { PlaybackControls } from "./PlaybackControls";
 
@@ -22,19 +22,58 @@ export function PlaylistView({
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
+    const [showJumpToNow, setShowJumpToNow] = useState(false);
+    const [isAutoScrolling, setIsAutoScrolling] = useState(false);
 
     const handleToggleExpand = (trackId) => {
         setExpandedTrackId((prev) => (prev === trackId ? null : trackId));
     };
 
-    // Scroll to current track on mount
-    useEffect(() => {
+    // Helper to scroll to current track
+    const scrollToCurrent = (smooth = true) => {
         if (scrollRef.current) {
-            // Find current track element
             const currentEl = document.getElementById("playlist-current-track");
             if (currentEl) {
-                currentEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                setIsAutoScrolling(true);
+                currentEl.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
+                // Reset auto-scrolling flag after animation (approx timing)
+                setTimeout(() => setIsAutoScrolling(false), 1000);
             }
+        }
+    };
+
+    // Scroll listener to toggle "Jump to Now" button
+    const handleScroll = () => {
+        if (isAutoScrolling) return; // Ignore scroll events during auto-scroll
+
+        if (scrollRef.current) {
+            const container = scrollRef.current;
+            const currentEl = document.getElementById("playlist-current-track");
+
+            if (currentEl) {
+                const containerRect = container.getBoundingClientRect();
+                const trackRect = currentEl.getBoundingClientRect();
+
+                // Check if current track is significantly out of view
+                // We consider "away" if the track is not roughly centered or visible
+                // Simple check: is it outside the viewport?
+                const isOutOfView = (
+                    trackRect.bottom < containerRect.top ||
+                    trackRect.top > containerRect.bottom
+                );
+
+                setShowJumpToNow(isOutOfView);
+            }
+        }
+    };
+
+    // Scroll to current track on mount or track change, ONLY if not scrolled away
+    useEffect(() => {
+        // If we are already showing the jump button, it means the user is purposefully looking away.
+        // So we DO NOT auto-scroll.
+        // If the jump button is hidden, we assume the user is "following" the request, so we scroll.
+        if (!showJumpToNow) {
+            scrollToCurrent();
         }
     }, [currentTrack?.id]);
 
@@ -44,7 +83,11 @@ export function PlaylistView({
     return (
         <div className="flex flex-col h-full bg-[#0a0a0a] text-white relative">
             {/* Scrollable List */}
-            <div className="flex-1 overflow-y-auto px-4 pb-24 custom-scrollbar scroll-smooth" ref={scrollRef}>
+            <div
+                className="flex-1 overflow-y-auto px-4 pb-24 custom-scrollbar scroll-smooth"
+                ref={scrollRef}
+                onScroll={handleScroll}
+            >
                 <div className="max-w-3xl mx-auto space-y-4 py-6">
 
                     {/* History Section */}
@@ -123,6 +166,19 @@ export function PlaylistView({
                     )}
                 </div>
             </div>
+
+            {/* Jump to Now Button */}
+            {showJumpToNow && currentTrack && (
+                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50 animate-fadeIn">
+                    <button
+                        onClick={() => scrollToCurrent(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 transition-all hover:scale-105 active:scale-95 font-medium text-sm"
+                    >
+                        <span>Back to Playing</span>
+                        <ArrowDown size={16} />
+                    </button>
+                </div>
+            )}
 
         </div>
     );
