@@ -1,8 +1,8 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { CheckCircle, Send, Clock } from "lucide-react";
 
-export function SuggestSongForm({ onSongSuggested, serverError, serverMessage, isOwner, suggestionsEnabled, suggestionMode }) {
+export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, serverMessage, isOwner, suggestionsEnabled, suggestionMode }) {
   const [songSuggestion, setSongSuggestion] = useState("");
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [suggestionError, setSuggestionError] = useState("");
@@ -32,21 +32,15 @@ export function SuggestSongForm({ onSongSuggested, serverError, serverMessage, i
     // Delegate everything to server (Validation, Search, Metadata)
     onSongSuggested(input);
 
-    // Optimistic Success: Only for Auto Mode
-    // For Manual Mode, we wait for the server "Submitted" confirmation to avoid "Green -> Blue" flash.
-    if (suggestionMode !== 'manual') {
-      setSubmissionSuccess(true);
-      setSongSuggestion("");
+    // Delegate everything to server (Validation, Search, Metadata)
+    onSongSuggested(input);
 
-      // Reset UI after delay
-      setTimeout(() => {
-        setSubmissionSuccess(false);
-        setIsSubmittingSuggestion(false);
-        setInfoMessage("");
-      }, 3000);
-    }
+    // Optimistic Success REMOVED.
+    // We now rely entirely on server messages ("success" or "info" or "error")
+    // to drive the UI state. This ensures we don't auto-close on errors (duplicates etc).
 
-  }, [songSuggestion, onSongSuggested, suggestionMode]);
+
+  }, [songSuggestion, onSongSuggested, suggestionMode, onShowSuggest]);
 
   const handleKeyPress = useCallback(
     (event) => {
@@ -57,8 +51,18 @@ export function SuggestSongForm({ onSongSuggested, serverError, serverMessage, i
     [handleSubmitSuggestion],
   );
 
+  // Track processed messages to avoid reacting to stale state on remount
+  const processedMessageRef = useRef(serverMessage);
+
   // Handle Server Messages (Error or Info)
   useEffect(() => {
+    // Skip if we've already processed this exact message object (or it's the specific stale one from mount)
+    if (serverMessage === processedMessageRef.current) {
+      return;
+    }
+    // Mark as processed
+    processedMessageRef.current = serverMessage;
+
     if (serverError) {
       setSubmissionSuccess(false);
       setIsSubmittingSuggestion(false); // Stop spinning/disabled
@@ -75,7 +79,8 @@ export function SuggestSongForm({ onSongSuggested, serverError, serverMessage, i
       setTimeout(() => {
         setSubmissionSuccess(false);
         setInfoMessage("");
-      }, 3000);
+        onShowSuggest(false); // Auto-minimize fast
+      }, 1500);
     }
 
     if (serverMessage && serverMessage.type === "success") {
@@ -87,9 +92,10 @@ export function SuggestSongForm({ onSongSuggested, serverError, serverMessage, i
 
       setTimeout(() => {
         setSubmissionSuccess(false);
-      }, 3000);
+        onShowSuggest(false); // Auto-minimize fast
+      }, 1500);
     }
-  }, [serverError, serverMessage]);
+  }, [serverError, serverMessage, onShowSuggest]);
 
   const activeError = suggestionError || serverError;
 
