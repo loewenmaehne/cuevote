@@ -24,6 +24,7 @@ function App() {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const activeRoomId = roomId || "synthwave";
+  const [localPlaylistView, setLocalPlaylistView] = useState(false);
 
   console.log("App Component MOUNTED, Room:", activeRoomId);
 
@@ -71,6 +72,7 @@ function App() {
 
   const isOwner = user && ownerId && user.id === ownerId;
   const isVenueMode = playlistViewMode && !isOwner;
+  const isAnyPlaylistView = isVenueMode || localPlaylistView;
 
   // Force exit cinema mode when Venue Mode is activated
   useEffect(() => {
@@ -448,7 +450,7 @@ function App() {
 
 
   return (
-    <div className={`min-h-screen text-white flex flex-col ${isVenueMode ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
+    <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header
@@ -478,6 +480,10 @@ function App() {
             pendingCount={pendingSuggestions.length}
             autoApproveKnown={autoApproveKnown}
             autoRefill={autoRefill}
+            onTogglePlaylistView={() => {
+              console.log("[App] Toggling Playlist View", !localPlaylistView);
+              setLocalPlaylistView(!localPlaylistView);
+            }}
           />
           {showSuggest && (
             <div className="px-6 pb-4">
@@ -507,13 +513,13 @@ function App() {
 
       <div className={isCinemaMode
         ? "fixed inset-0 z-40 bg-black transition-all duration-500 ease-in-out" // Cinema Mode Style
-        : (playlistViewMode && !isOwner
+        : (isAnyPlaylistView
           ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
           : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh]"
         )
       }>
         <div className={`absolute inset - 0 border - 4 ${previewTrack ? "border-green-500" : "border-transparent"} transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
-        {playlistViewMode && !isOwner ? (
+        {isAnyPlaylistView ? (
           /* Venue Mode: Only Playlist View */
           <div className="w-full h-full flex flex-col overflow-hidden">
             <PlaylistView
@@ -533,6 +539,7 @@ function App() {
               onVolumeChange={handleVolumeChange}
               votesEnabled={serverState?.votesEnabled ?? true}
               onPreview={allowPrelisten ? handlePreviewTrack : null}
+              onExit={localPlaylistView ? () => setLocalPlaylistView(false) : null}
             />
             {previewTrack && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
@@ -578,7 +585,7 @@ function App() {
       </div>
 
       <div className="pb-4">
-        {playlistViewMode && !isOwner || isCinemaMode ? null : ( // Hide queue if playlistViewMode/isCinemaMode is active
+        {isAnyPlaylistView || isCinemaMode ? null : ( // Hide queue if playlistViewMode/isCinemaMode is active
           <Queue
             tracks={queue}
             currentTrack={currentTrack}
@@ -638,7 +645,7 @@ function App() {
             </div>
           </div>
         ) : (
-          !(playlistViewMode && !isOwner) && (
+          !isAnyPlaylistView && (
             <PlaybackControls
               isPlaying={isPlaying && !isLocallyPaused}
               onPlayPause={handlePlayPause}
