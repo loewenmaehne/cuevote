@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { ArrowDown, ArrowUp, X } from "lucide-react";
 import { Track } from "./Track";
@@ -23,7 +24,6 @@ export function PlaylistView({
     const [expandedTrackId, setExpandedTrackId] = useState(null);
     const [showJumpToNow, setShowJumpToNow] = useState(false);
     const [jumpDirection, setJumpDirection] = useState("down");
-    const isAutoScrollingRef = useRef(false);
 
     const handleToggleExpand = (trackId) => {
         setExpandedTrackId((prev) => (prev === trackId ? null : trackId));
@@ -34,12 +34,8 @@ export function PlaylistView({
         if (scrollRef.current) {
             const currentEl = document.getElementById("playlist-current-track");
             if (currentEl) {
-                isAutoScrollingRef.current = true;
+                setShowJumpToNow(false);
                 currentEl.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
-                // Reset flag after animation
-                setTimeout(() => {
-                    isAutoScrollingRef.current = false;
-                }, 1000);
             }
         }
     };
@@ -51,8 +47,6 @@ export function PlaylistView({
 
         const observer = new IntersectionObserver(
             ([entry]) => {
-                if (isAutoScrollingRef.current) return;
-
                 const isVisible = entry.isIntersecting;
                 setShowJumpToNow(!isVisible);
 
@@ -183,9 +177,9 @@ export function PlaylistView({
                 </div>
             </div>
 
-            {/* Back to Now Button */}
-            {showJumpToNow && currentTrack && (
-                <div className="fixed bottom-8 right-8 z-50 animate-fadeIn">
+            {/* Back to Now Button - Portal to escape potential masks/fades */}
+            {showJumpToNow && currentTrack && createPortal(
+                <div className="fixed bottom-8 right-8 z-[100] animate-fadeIn">
                     <button
                         onClick={() => scrollToCurrent(true)}
                         className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 hover:shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0 font-medium text-sm"
@@ -193,7 +187,8 @@ export function PlaylistView({
                         <span>Back to Now</span>
                         {jumpDirection === 'up' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
                     </button>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
