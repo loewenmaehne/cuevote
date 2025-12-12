@@ -211,7 +211,10 @@ class Room {
             // "Respect the repetition prevent setting"
             // If cooldown is 10, we shouldn't add a song that was played in the last 10 songs.
             // Our "history" array HAS the last played songs at the end.
-            const historyTitles = history.slice(-duplicateCooldown).map(t => t.title.toLowerCase().trim());
+            // Fix: slice(-0) returns the whole array in JS (start index 0). We want empty array if cooldown is 0.
+            const historyTitles = (duplicateCooldown > 0)
+                ? history.slice(-duplicateCooldown).map(t => t.title.toLowerCase().trim())
+                : [];
             const videoIdsToCheck = [];
 
             for (const track of shuffledHistory) {
@@ -779,6 +782,11 @@ class Room {
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
+
+            // Trigger Auto-Refill if enabled and queue is empty
+            if (updates.autoRefill === true && this.state.queue.length === 0 && this.state.history.length >= 5) {
+                this.populateQueueFromHistory();
+            }
         }
     }
 
