@@ -616,7 +616,7 @@ class Room {
                 if (this.state.autoApproveKnown && isKnown) {
                     // Auto-approve: Skip adding to pending, proceed to queue
                     console.log(`[Auto-Approve] Song ${track.title} (${track.videoId}) is known. Bypassing review.`);
-                    ws.send(JSON.stringify({ type: "success", message: "Added" }));
+                    // Fallthrough to add to queue and send success at the end
                 } else {
                     const newPending = [...(this.state.pendingSuggestions || []), track];
                     this.updateState({ pendingSuggestions: newPending });
@@ -659,6 +659,9 @@ class Room {
                 newState.queue = [current, ...upcoming];
             }
             this.updateState(newState);
+
+            // Send Success Message (For all successful queue additions: Owner Bypass, Auto-Approve, or Auto-Mode)
+            ws.send(JSON.stringify({ type: "success", message: "Added" }));
         }
     }
 
