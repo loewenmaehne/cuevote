@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, X } from "lucide-react";
 import { Track } from "./Track";
 
 export function PlaylistView({
@@ -17,6 +17,7 @@ export function PlaylistView({
     onVolumeChange,
     votesEnabled = true,
     onPreview,
+    onExit,
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -90,10 +91,23 @@ export function PlaylistView({
     return (
         <div className="flex flex-col h-full bg-[#0a0a0a] text-white relative">
             <div
-                className="flex-1 overflow-y-auto px-4 pb-24 custom-scrollbar scroll-smooth"
+                className="flex-1 overflow-y-auto px-4 pb-24 custom-scrollbar scroll-smooth relative"
                 ref={scrollRef}
             >
-                <div className="max-w-3xl mx-auto space-y-4 py-6">
+                {/* Exit Button - Floating Fixed */}
+                {onExit && (
+                    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+                        <button
+                            onClick={onExit}
+                            className="pointer-events-auto flex items-center gap-2 px-6 py-2.5 bg-black/80 backdrop-blur-md text-white rounded-full hover:bg-neutral-800 transition-all shadow-xl border border-white/10 hover:scale-105 active:scale-95 group"
+                        >
+                            <span className="text-sm font-bold group-hover:text-orange-500 transition-colors">Close Playlist</span>
+                            <X size={18} className="group-hover:text-orange-500 transition-colors" />
+                        </button>
+                    </div>
+                )}
+
+                <div className="max-w-3xl mx-auto space-y-4 py-6 pt-2">
                     {/* History */}
                     {history.length > 0 && (
                         <div className="space-y-2 opacity-60 hover:opacity-100 transition-opacity duration-300">
@@ -201,4 +215,5 @@ PlaylistView.propTypes = {
     onVolumeChange: PropTypes.func,
     votesEnabled: PropTypes.bool,
     onPreview: PropTypes.func,
+    onExit: PropTypes.func,
 };
