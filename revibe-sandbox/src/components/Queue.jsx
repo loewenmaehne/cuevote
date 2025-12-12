@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { Track } from "./Track";
@@ -18,18 +19,14 @@ export function Queue({
   const containerRef = useRef(null);
   const [showJumpToNow, setShowJumpToNow] = useState(false);
   const [jumpDirection, setJumpDirection] = useState("down");
-  const isAutoScrollingRef = useRef(false);
 
   // Helper to scroll to current track (which is inside the mapped list)
   const scrollToCurrent = (smooth = true) => {
     if (currentTrack) {
       const currentEl = document.getElementById(`track-${currentTrack.id}`);
       if (currentEl) {
-        isAutoScrollingRef.current = true;
+        setShowJumpToNow(false);
         currentEl.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
-        setTimeout(() => {
-          isAutoScrollingRef.current = false;
-        }, 1000);
       }
     }
   };
@@ -43,8 +40,6 @@ export function Queue({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (isAutoScrollingRef.current) return;
-
         const isVisible = entry.isIntersecting;
         setShowJumpToNow(!isVisible);
 
@@ -103,17 +98,19 @@ export function Queue({
         </div>
       ))}
 
-      {/* Floating Back to Now Button */}
-      {showJumpToNow && currentTrack && (
-        <div className="fixed bottom-8 right-8 z-50 animate-fadeIn">
+      {/* Floating Back to Now Button - Portal to escape mask-image */}
+      {/* Floating Back to Now Button - Portal to escape mask-image */}
+      {showJumpToNow && currentTrack && createPortal(
+        <div className="fixed bottom-36 right-8 z-[2000]">
           <button
             onClick={() => scrollToCurrent(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 hover:shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0 font-medium text-sm"
+            className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 hover:shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0 font-medium text-sm pointer-events-auto"
           >
             <span>Back to Now</span>
             {jumpDirection === 'up' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
           </button>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
