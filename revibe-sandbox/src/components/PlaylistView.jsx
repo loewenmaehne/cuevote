@@ -99,10 +99,10 @@ export function PlaylistView({
                     <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
                         <button
                             onClick={onExit}
-                            className="pointer-events-auto flex items-center gap-2 px-6 py-2.5 bg-black/80 backdrop-blur-md text-white rounded-full hover:bg-neutral-800 transition-all shadow-xl border border-white/10 hover:scale-105 active:scale-95 group"
+                            className="pointer-events-auto flex items-center gap-2 px-6 py-2.5 bg-black/80 backdrop-blur-md text-orange-500 rounded-full hover:bg-neutral-800 transition-all shadow-xl border border-white/10 hover:scale-105 active:scale-95 group"
                         >
-                            <span className="text-sm font-bold group-hover:text-orange-500 transition-colors">Close Playlist</span>
-                            <X size={18} className="group-hover:text-orange-500 transition-colors" />
+                            <span className="text-sm font-bold">Close Playlist</span>
+                            <X size={18} />
                         </button>
                     </div>
                 )}
