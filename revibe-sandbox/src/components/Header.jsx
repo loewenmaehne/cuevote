@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { useGoogleLogin } from '@react-oauth/google';
-import { Radio, Send, LogOut, Settings, HelpCircle } from "lucide-react";
+import { Radio, Send, LogOut, Settings, HelpCircle, QrCode } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 export function Header({
   activeChannel,
@@ -30,11 +31,13 @@ export function Header({
   ownerQueueBypass,
   votesEnabled,
   autoApproveKnown,
+  autoRefill,
 }) {
   const headerRef = React.useRef(null);
   const [showSettings, setShowSettings] = React.useState(false);
   const [showExitConfirm, setShowExitConfirm] = React.useState(false);
   const [exitConfirmIndex, setExitConfirmIndex] = React.useState(0); // 0 = Cancel, 1 = Leave
+  const [showQRCode, setShowQRCode] = React.useState(false);
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => {
@@ -52,6 +55,10 @@ export function Header({
       if (showExitConfirm) return;
       onShowSuggest(false);
       setShowSettings(false);
+      // Close QR code if clicked outside (unless it's the QR code modal content)
+      if (!event.target.closest(".qr-code-modal")) {
+        setShowQRCode(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -181,6 +188,19 @@ export function Header({
               </button>
             );
           })()}
+
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              setShowQRCode(true);
+              setShowSettings(false);
+              onShowSuggest(false);
+            }}
+            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
+            title="Share Channel"
+          >
+            <QrCode size={20} />
+          </button>
 
           {isOwner && (
             <div className="relative flex items-center gap-2">
@@ -363,6 +383,29 @@ export function Header({
                     </button>
                   </div>
 
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-white">Auto Refill</label>
+                      <div className="group relative flex items-center">
+                        <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+                          Automatically add songs from history when queue is empty
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onUpdateSettings({ autoRefill: !autoRefill });
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autoRefill ? 'bg-orange-500' : 'bg-neutral-600'}`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoRefill ? 'translate-x-6' : 'translate-x-1'}`}
+                      />
+                    </button>
+                  </div>
+
 
 
                   <div className="flex items-center justify-between mt-3">
@@ -533,7 +576,40 @@ export function Header({
         </div>,
         document.body
       )}
-    </header >
+      {/* QR Code Modal */}
+      {showQRCode && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+          onClick={() => setShowQRCode(false)}
+        >
+          <div
+            className="qr-code-modal bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200 text-center flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold text-orange-500 mb-4">Share Channel</h3>
+            <div className="bg-white/5 p-4 rounded-xl mb-4 border border-white/10">
+              <QRCodeSVG
+                value={window.location.href}
+                size={200}
+                level={"H"}
+                includeMargin={false}
+                fgColor={"#ffffff"}
+                bgColor={"transparent"}
+              />
+            </div>
+            <p className="text-neutral-400 text-sm break-all mb-6">{window.location.href}</p>
+
+            <button
+              onClick={() => setShowQRCode(false)}
+              className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 text-orange-500 border border-orange-500/20 hover:border-orange-500/50 rounded-lg transition-all font-medium"
+            >
+              Close
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
+    </header>
   );
 }
 
@@ -562,4 +638,5 @@ Header.propTypes = {
   ownerQueueBypass: PropTypes.bool,
   votesEnabled: PropTypes.bool,
   autoApproveKnown: PropTypes.bool,
+  autoRefill: PropTypes.bool,
 };
