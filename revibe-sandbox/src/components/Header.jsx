@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { useGoogleLogin } from '@react-oauth/google';
-import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check } from "lucide-react";
+import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export function Header({
@@ -32,6 +32,7 @@ export function Header({
   votesEnabled,
   autoApproveKnown,
   autoRefill,
+  onTogglePlaylistView,
 }) {
   const headerRef = React.useRef(null);
   const [showSettings, setShowSettings] = React.useState(false);
@@ -135,6 +136,21 @@ export function Header({
               </div>
             )}
           </div>
+          {/* Playlist View Toggle - Next to User Widget */}
+          {!(playlistViewMode && !isOwner) && (
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                onTogglePlaylistView();
+                setShowSettings(false);
+                onShowSuggest(false);
+              }}
+              className="flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors ml-2"
+              title="Playlist View"
+            >
+              <List size={22} />
+            </button>
+          )}
         </div>
 
         <h1 className="text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap text-center">
@@ -166,6 +182,8 @@ export function Header({
               <span className="hidden md:inline truncate">{activeChannel}</span>
             )}
           </button>
+
+
 
           {/* Suggest Button */}
           {(() => {
@@ -203,6 +221,8 @@ export function Header({
           >
             <QrCode size={20} />
           </button>
+
+
 
           {isOwner && (
             <div className="relative flex items-center gap-2">
@@ -660,4 +680,5 @@ Header.propTypes = {
   votesEnabled: PropTypes.bool,
   autoApproveKnown: PropTypes.bool,
   autoRefill: PropTypes.bool,
+  onTogglePlaylistView: PropTypes.func,
 };
