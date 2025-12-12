@@ -204,7 +204,7 @@ export function Header({
                   }`}
                 title={isDisabled ? "Suggestions disabled by owner (View Only)" : "Suggest a Song"}
               >
-                <Send size={18} /> <span className="">Suggest</span>
+                <Send size={18} /> <span className="hidden sm:inline">Suggest</span>
               </button>
             );
           })()}
