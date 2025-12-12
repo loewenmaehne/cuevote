@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { useGoogleLogin } from '@react-oauth/google';
-import { Radio, Send, LogOut, Settings, HelpCircle, QrCode } from "lucide-react";
+import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export function Header({
@@ -38,6 +38,7 @@ export function Header({
   const [showExitConfirm, setShowExitConfirm] = React.useState(false);
   const [exitConfirmIndex, setExitConfirmIndex] = React.useState(0); // 0 = Cancel, 1 = Leave
   const [showQRCode, setShowQRCode] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => {
@@ -58,6 +59,7 @@ export function Header({
       // Close QR code if clicked outside (unless it's the QR code modal content)
       if (!event.target.closest(".qr-code-modal")) {
         setShowQRCode(false);
+        setCopied(false);
       }
     };
 
@@ -587,17 +589,36 @@ export function Header({
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-xl font-bold text-orange-500 mb-4">Share Channel</h3>
-            <div className="bg-white/5 p-4 rounded-xl mb-4 border border-white/10">
-              <QRCodeSVG
-                value={window.location.href}
-                size={200}
-                level={"H"}
-                includeMargin={false}
-                fgColor={"#ffffff"}
-                bgColor={"transparent"}
-              />
+            <div className="relative group">
+              <div className="relative bg-neutral-900 p-4 rounded-xl mb-4 border border-orange-500/50">
+                <QRCodeSVG
+                  value={window.location.href}
+                  size={200}
+                  level={"H"}
+                  includeMargin={false}
+                  fgColor={"#ffffff"}
+                  bgColor={"transparent"}
+                />
+              </div>
             </div>
-            <p className="text-neutral-400 text-sm break-all mb-6">{window.location.href}</p>
+
+            <div className="flex items-center gap-2 mb-6 bg-neutral-800/50 p-2 pl-4 rounded-xl w-full max-w-[280px] border border-neutral-800">
+              <p className="text-neutral-400 text-sm truncate flex-1 font-mono">{window.location.href}</p>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                className={`p-2 rounded-lg transition-all ${copied
+                    ? "bg-green-500/10 text-green-500"
+                    : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white"
+                  }`}
+                title="Copy URL"
+              >
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+              </button>
+            </div>
 
             <button
               onClick={() => setShowQRCode(false)}
