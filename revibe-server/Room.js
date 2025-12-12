@@ -141,23 +141,19 @@ class Room {
                 if (!newCurrentTrack) {
                     newState.isPlaying = false;
 
+                    this.updateState(newState);
+
                     // Auto-Refill Logic
-                    if (this.state.autoRefill && this.state.history.length > 0) {
-                        // We need to trigger this asynchronously to not block tick? 
-                        // Or just call it. It involves async API calls.
-                        // tick is synchronous. We should fire and forget or handle promise?
-                        // "tick" is called every second. If we fire async, we might trigger multiple times if we don't set a flag.
-                        // But newState.isPlaying is set to false.
-                        // Let's call a method that handles the async refill and updates state when done.
-                        // We should probably check if we are ALREADY refilling to avoid spamming.
+                    // Moved AFTER updateState to ensure history includes the just-finished track
+                    // for accurate repetition checking.
+                    if (!newCurrentTrack && this.state.autoRefill && this.state.history.length > 0) {
                         if (!this.state.isRefilling) {
                             this.populateQueueFromHistory();
                         }
                     }
+                } else {
+                    this.updateState({ progress: newProgress });
                 }
-                this.updateState(newState);
-            } else {
-                this.updateState({ progress: newProgress });
             }
         }
     }
@@ -188,30 +184,24 @@ class Room {
             const targetFillSize = Math.floor((maxQueueSize > 0 ? maxQueueSize : 50) / 2); // Default to 25 if unlimited
             let needed = targetFillSize;
 
-            // Optimization: If needed is more than history, cap it?
-            // User: "If there is less than half of the queue size in history, add the total amount of songs"
-            // So we take what we can get.
-
             // 2. Filter Candidates (Repetition, Duration)
-            // We need to randomize FIRST, then filter? Or Filter then randomize?
-            // "Add them randomized."
-            // "Respect the repetition prevent setting. Respect maximum song length..."
-            // "if a song does not meet max length requirements anymore, keep in history but just dont add it this time."
 
-            // Let's Shuffle the history first to get random candidates.
-            const shuffledHistory = [...history].sort(() => 0.5 - Math.random());
+            // Deduplicate history for the candidate pool to avoid frequency bias
+            const uniqueHistoryMap = new Map();
+            history.forEach(track => uniqueHistoryMap.set(track.videoId, track));
+            const uniqueHistory = Array.from(uniqueHistoryMap.values());
+
+            // Check if we have enough unique history?
+            // If unique history is small, we might just re-add same songs?
+            // "If there is less than half of the queue size in history, add the total amount of songs"
+
+            // Shuffle the UNIQUE history
+            const shuffledHistory = [...uniqueHistory].sort(() => 0.5 - Math.random());
 
             const candidates = [];
-            const historyMetadataMap = new Map(); // Store metadata for ease
 
-            // Pre-calculate recent titles for duplicate check
-            // Current queue is empty (we just emptied it or it is empty), so just check recent history?
-            // Wait, we are adding TO the queue.
-            // Duplicate check needs to respect the cooldown relative to the START of the new queue?
-            // "Respect the repetition prevent setting"
-            // If cooldown is 10, we shouldn't add a song that was played in the last 10 songs.
-            // Our "history" array HAS the last played songs at the end.
-            // Fix: slice(-0) returns the whole array in JS (start index 0). We want empty array if cooldown is 0.
+            // Pre-calculate recent titles from RAW history for duplicate check
+            // Use RAW history to strictly enforce "recently playing" cooldown
             const historyTitles = (duplicateCooldown > 0)
                 ? history.slice(-duplicateCooldown).map(t => t.title.toLowerCase().trim())
                 : [];
