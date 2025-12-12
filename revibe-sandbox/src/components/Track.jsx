@@ -40,28 +40,28 @@ export function Track({
           : ""
         } ${readOnly ? "opacity-90" : ""}`}
     >
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-4">
+      <div className="flex justify-between items-center gap-3">
+        <div className="flex items-center gap-4 flex-1 min-w-0">
           <img
             src={track.thumbnail ?? buildThumbnailUrl(track.videoId)}
             alt={track.title}
-            className="w-16 h-16 rounded-3xl object-cover shadow-md"
+            className="w-16 h-16 rounded-3xl object-cover shadow-md flex-shrink-0"
             loading="lazy"
           />
-          <div>
-            <h3 className="text-lg font-semibold tracking-tight">
+          <div className="min-w-0">
+            <h3 className="text-lg font-semibold tracking-tight truncate">
               {track.title}
             </h3>
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-neutral-400 truncate">
               {track.artist}
               {isActive ? " • Playing" : ""}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-shrink-0">
           {track.suggestedByUsername && (
-            <span className="text-xs text-neutral-500 font-medium mr-2 hidden sm:block">
+            <span className="text-xs text-neutral-500 font-medium mr-2 whitespace-nowrap">
               {track.suggestedByUsername}
             </span>
           )}
