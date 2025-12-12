@@ -65,6 +65,7 @@ function App() {
     ownerPopups = true,
     duplicateCooldown = 10,
     autoApproveKnown = true,
+    autoRefill = false,
   } = serverState || {};
 
 
@@ -274,6 +275,8 @@ function App() {
         }
       }, 2000);
       return () => clearTimeout(check);
+    } else {
+      setAutoplayBlocked(false);
     }
   }, [isPlaying, isPlayerReady, currentTrack]);
 
@@ -474,6 +477,7 @@ function App() {
             onManageRequests={() => setShowPendingPage(true)}
             pendingCount={pendingSuggestions.length}
             autoApproveKnown={autoApproveKnown}
+            autoRefill={autoRefill}
           />
           {showSuggest && (
             <div className="px-6 pb-4">
