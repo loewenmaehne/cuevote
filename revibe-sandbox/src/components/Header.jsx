@@ -603,7 +603,7 @@ export function Header({
             </div>
 
             <div className="flex items-center gap-2 mb-6 bg-neutral-800/50 p-2 pl-4 rounded-xl w-full max-w-[280px] border border-neutral-800">
-              <p className="text-neutral-400 text-sm truncate flex-1 font-mono">{window.location.href}</p>
+              <p className="text-neutral-400 text-sm overflow-x-auto whitespace-nowrap flex-1 font-mono no-scrollbar">{window.location.href}</p>
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(window.location.href);
@@ -611,8 +611,8 @@ export function Header({
                   setTimeout(() => setCopied(false), 2000);
                 }}
                 className={`p-2 rounded-lg transition-all ${copied
-                    ? "bg-green-500/10 text-green-500"
-                    : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white"
+                  ? "bg-green-500/10 text-green-500"
+                  : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white"
                   }`}
                 title="Copy URL"
               >
