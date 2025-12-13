@@ -33,12 +33,14 @@ export function Header({
   autoApproveKnown,
   autoRefill,
   onTogglePlaylistView,
+  showQRCode, // <--- Added prop
+  onShowQRCode, // <--- Added prop
 }) {
   const headerRef = React.useRef(null);
   const [showSettings, setShowSettings] = React.useState(false);
   const [showExitConfirm, setShowExitConfirm] = React.useState(false);
   const [exitConfirmIndex, setExitConfirmIndex] = React.useState(0); // 0 = Cancel, 1 = Leave
-  const [showQRCode, setShowQRCode] = React.useState(false);
+  // const [showQRCode, setShowQRCode] = React.useState(false); // Removed local state
   const [copied, setCopied] = React.useState(false);
 
   const login = useGoogleLogin({
@@ -59,7 +61,7 @@ export function Header({
       setShowSettings(false);
       // Close QR code if clicked outside (unless it's the QR code modal content)
       if (!event.target.closest(".qr-code-modal")) {
-        setShowQRCode(false);
+        onShowQRCode(false);
         setCopied(false);
       }
     };
@@ -212,7 +214,7 @@ export function Header({
           <button
             onClick={(event) => {
               event.stopPropagation();
-              setShowQRCode(true);
+              onShowQRCode(true);
               setShowSettings(false);
               onShowSuggest(false);
             }}
@@ -602,7 +604,7 @@ export function Header({
       {showQRCode && createPortal(
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-          onClick={() => setShowQRCode(false)}
+          onClick={() => onShowQRCode(false)}
         >
           <div
             className="qr-code-modal bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200 text-center flex flex-col items-center"
@@ -641,7 +643,7 @@ export function Header({
             </div>
 
             <button
-              onClick={() => setShowQRCode(false)}
+              onClick={() => onShowQRCode(false)}
               className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 text-orange-500 border border-orange-500/20 hover:border-orange-500/50 rounded-lg transition-all font-medium"
             >
               Close
