@@ -48,7 +48,8 @@ export function Lobby() {
             if (lastMessage.type === "ROOM_LIST") {
                 setRooms(lastMessage.payload);
             } else if (lastMessage.type === "ROOM_CREATED") {
-                navigate(`/room/${lastMessage.payload.id}`, { state: { showShareOnLoad: true } });
+                // Auto-share only for private channels (is_public === 0)
+                navigate(`/room/${lastMessage.payload.id}`, { state: { showShareOnLoad: !lastMessage.payload.is_public } });
                 clearMessage(); // Clear message to avoid loop
             }
         }
