@@ -161,7 +161,7 @@ wss.on("connection", (ws, req) => {
                     break;
                 }
                 case "JOIN_ROOM": {
-                    const { roomId } = parsedMessage.payload;
+                    const { roomId, password } = parsedMessage.payload;
                     console.log(`[SERVER TRACE] Client ${ws.id} requesting to join room: ${roomId}`);
 
                     // Leave ALL rooms to ensure no duplicate subscriptions
@@ -169,9 +169,6 @@ wss.on("connection", (ws, req) => {
                         if (room.clients.has(ws)) {
                             console.log(`[SERVER TRACE] Client ${ws.id} leaving room (forced cleanup): ${id}`);
                             room.removeClient(ws);
-                            if (room.clients.size === 0 && !defaultRooms.includes(id)) {
-                                // console.log(`Room ${id} is empty and not default. Scheduling cleanup.`);
-                            }
                         }
                     }
 
@@ -193,6 +190,15 @@ wss.on("connection", (ws, req) => {
                     }
 
                     if (room) {
+                        // Password Check
+                        if (room.metadata.password) {
+                            const isOwner = ws.user && ws.user.id === room.metadata.owner_id;
+                            if (!isOwner && (!password || password !== room.metadata.password)) {
+                                ws.send(JSON.stringify({ type: "error", code: "PASSWORD_REQUIRED", message: "Password required" }));
+                                return;
+                            }
+                        }
+
                         console.log(`Client ${ws.id} joining room: ${room.id}`);
                         ws.roomId = room.id;
                         room.addClient(ws);
@@ -203,7 +209,7 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "CREATE_ROOM": {
-                    const { name, description, color } = parsedMessage.payload;
+                    const { name, description, color, isPrivate, password } = parsedMessage.payload;
                     if (!ws.user) {
                         ws.send(JSON.stringify({ type: "error", message: "You must be logged in to create a room." }));
                         return;
@@ -223,7 +229,8 @@ wss.on("connection", (ws, req) => {
                             description: description || "Community Station",
                             owner_id: ws.user.id,
                             color: color || "from-gray-700 to-black",
-                            is_public: 1
+                            is_public: isPrivate ? 0 : 1,
+                            password: (isPrivate && password) ? password : null
                         };
 
                         db.createRoom(roomData);
@@ -237,12 +244,61 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "LIST_ROOMS": {
+                    const { type } = parsedMessage.payload || {}; // 'public' or 'private'
+                    const showPrivate = type === 'private';
+
                     const roomList = [];
+                    // 1. Get from Memory (Active)
                     for (const room of rooms.values()) {
-                        if (room.metadata.is_public) {
+                        const isPublic = room.metadata.is_public === 1;
+                        if ((showPrivate && !isPublic) || (!showPrivate && isPublic)) {
                             roomList.push(room.getSummary());
                         }
                     }
+
+                    // 2. Get from DB (To ensure we show searchable rooms that are idle)
+                    // The memory list is only active rooms. We want searchable.
+                    // But we don't want duplicates.
+
+                    const dbRooms = showPrivate ? db.listPrivateRooms() : db.listPublicRooms();
+                    const activeIds = new Set(roomList.map(r => r.id));
+
+                    dbRooms.forEach(dbr => {
+                        if (!activeIds.has(dbr.id)) {
+                            // Minimal summary for idle room
+                            roomList.push({
+                                id: dbr.id,
+                                name: dbr.name,
+                                description: dbr.description,
+                                color: dbr.color,
+                                listeners: 0,
+                                currentTrack: null,
+                                is_protected: !!dbr.password // Hint for frontend
+                            });
+                        }
+                    });
+
+                    // Add is_protected flag to active rooms too (for UI lock icon)
+                    roomList.forEach(r => {
+                        const roomObj = rooms.get(r.id);
+                        if (roomObj && roomObj.metadata.password) {
+                            r.is_protected = true;
+                        } else if (!roomObj) {
+                            // Already handled in db loop?
+                            // Actually active rooms summary comes from room.getSummary()
+                            // room.getSummary doesn't include is_protected.
+                            // We should add it to getSummary or patch it here.
+                        }
+                    });
+
+                    // Patch active rooms with protection status
+                    for (const roomItem of roomList) {
+                        const activeRoom = rooms.get(roomItem.id);
+                        if (activeRoom && activeRoom.metadata.password) {
+                            roomItem.is_protected = true;
+                        }
+                    }
+
                     ws.send(JSON.stringify({ type: "ROOM_LIST", payload: roomList }));
                     return;
                 }

@@ -27,7 +27,8 @@ class Room {
             description: metadata.description || "",
             color: metadata.color || "from-gray-700 to-black",
             owner_id: metadata.owner_id,
-            is_public: metadata.is_public !== undefined ? metadata.is_public : 1
+            is_public: metadata.is_public !== undefined ? metadata.is_public : 1,
+            password: metadata.password || null
         };
         this.clients = new Set();
         this.knownSongs = new Set(); // Stores videoIds of approved songs
