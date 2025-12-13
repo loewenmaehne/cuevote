@@ -131,8 +131,17 @@ function App() {
     if (serverState && serverRoomId && activeRoomId && serverRoomId.toLowerCase() === activeRoomId.toLowerCase()) {
       setShowPasswordModal(false);
       setPasswordError("");
+
+      // Auto-open Share Modal if requested (e.g. new channel)
+      if (location.state?.showShareOnLoad) {
+        setShowQRModal(true);
+        // Clear state to prevent reopening on reload? 
+        // React Router history state persists on reload in some implementations, but typically we want it once.
+        // We can't easily clear location.state without navigating again, which might cause re-renders.
+        // For now, this is acceptable as it's a "fresh" navigation from Lobby.
+      }
     }
-  }, [serverState, serverRoomId, activeRoomId]);
+  }, [serverState, serverRoomId, activeRoomId, location.state]);
 
 
   const submitPasswordJoin = (e) => {
@@ -173,6 +182,7 @@ function App() {
   // const [user, setUser] = useState(null); // Now from Context
   const [progress, setProgress] = useState(0);
   const [roomNotFound, setRoomNotFound] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false); // <--- Added this
 
   // Auth: Resume Session logic moved to Provider
 
@@ -583,6 +593,8 @@ function App() {
               console.log("[App] Toggling Playlist View", !localPlaylistView);
               setLocalPlaylistView(!localPlaylistView);
             }}
+            showQRCode={showQRModal}
+            onShowQRCode={setShowQRModal}
           />
           {showSuggest && (
             <div className="px-6 pb-4">
