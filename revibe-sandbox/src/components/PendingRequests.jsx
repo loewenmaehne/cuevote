@@ -66,23 +66,32 @@ export function PendingRequests({ requests, onApprove, onReject, onBan, onClose 
 	);
 }
 
-export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onClose }) {
+export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onManageBanned, onClose }) {
 	return (
 		<div className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm flex flex-col animate-in fade-in">
-			<div className="p-6 border-b border-neutral-800 flex items-center gap-4 bg-black">
+			<div className="p-6 border-b border-neutral-800 flex items-center justify-between bg-black">
+				<div className="flex items-center gap-4">
+					<button
+						onClick={onClose}
+						className="p-2 rounded-full hover:bg-neutral-800 text-white transition-colors"
+					>
+						<ArrowLeft size={24} />
+					</button>
+					<h1 className="text-2xl font-bold text-white flex items-center gap-3">
+						<Clock className="text-orange-500" />
+						Pending Requests
+						<span className="text-lg font-normal text-neutral-500">
+							({requests.length} pending)
+						</span>
+					</h1>
+				</div>
 				<button
-					onClick={onClose}
-					className="p-2 rounded-full hover:bg-neutral-800 text-white transition-colors"
+					onClick={onManageBanned}
+					className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors border border-neutral-700 font-medium"
 				>
-					<ArrowLeft size={24} />
+					<Ban size={18} className="text-red-500" />
+					<span>Banned Songs</span>
 				</button>
-				<h1 className="text-2xl font-bold text-white flex items-center gap-3">
-					<Clock className="text-orange-500" />
-					Pending Requests
-					<span className="text-lg font-normal text-neutral-500">
-						({requests.length} pending)
-					</span>
-				</h1>
 			</div>
 
 			<div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
