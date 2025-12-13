@@ -112,6 +112,7 @@ function App() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const lastPasswordAttemptRef = useRef(null); // Track the last password we sent
 
   useEffect(() => {
     if (isConnected) {
@@ -124,6 +125,7 @@ function App() {
 
       // console.log(`Joining room: ${ activeRoomId } `);
       const password = location.state?.password;
+      lastPasswordAttemptRef.current = password; // Track it
       sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password } });
     }
   }, [isConnected, activeRoomId, sendMessage, location.state, serverRoomId]);
@@ -132,7 +134,12 @@ function App() {
   useEffect(() => {
     if (lastErrorCode === "PASSWORD_REQUIRED") {
       setShowPasswordModal(true);
-      setPasswordError("Incorrect password");
+      // Only show "Incorrect password" if we actually TRIED a password.
+      if (lastPasswordAttemptRef.current) {
+        setPasswordError("Incorrect password");
+      } else {
+        setPasswordError(""); // Reset error if we just bumped into the lock without a key
+      }
     }
   }, [lastErrorCode, lastErrorTimestamp]);
 
@@ -141,6 +148,7 @@ function App() {
     if (serverState && serverRoomId && activeRoomId && serverRoomId.toLowerCase() === activeRoomId.toLowerCase()) {
       setShowPasswordModal(false);
       setPasswordError("");
+      lastPasswordAttemptRef.current = null; // Reset
 
       // Auto-open Share Modal if requested (e.g. new channel)
       if (location.state?.showShareOnLoad) {
@@ -157,6 +165,7 @@ function App() {
   const submitPasswordJoin = (e) => {
     e.preventDefault();
     setPasswordError(""); // Clear previous errors
+    lastPasswordAttemptRef.current = passwordInput; // Track it
     sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password: passwordInput } });
     // Do NOT close modal here. Wait for success or error.
     // setShowPasswordModal(false); 
