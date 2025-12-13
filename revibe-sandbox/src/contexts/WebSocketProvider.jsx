@@ -148,7 +148,7 @@ export function WebSocketProvider({ children }) {
   }, [clientId]);
 
   return (
-    <WebSocketContext.Provider value={{ state, isConnected, sendMessage, lastError, lastMessage, clientId, user, handleLoginSuccess, handleLogout }}>
+    <WebSocketContext.Provider value={{ state, isConnected, sendMessage, lastError, lastMessage, clientId, user, handleLoginSuccess, handleLogout, clearMessage: () => setLastMessage(null) }}>
       {children}
     </WebSocketContext.Provider>
   );
