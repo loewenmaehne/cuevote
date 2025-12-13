@@ -6,7 +6,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 
 export function Lobby() {
     const navigate = useNavigate();
-    const { sendMessage, lastMessage, isConnected, lastError, user, handleLoginSuccess, handleLogout } = useWebSocketContext();
+    const { sendMessage, lastMessage, isConnected, lastError, user, handleLoginSuccess, handleLogout, clearMessage } = useWebSocketContext();
     const [rooms, setRooms] = useState([]);
     const [isCreatingRoom, setIsCreatingRoom] = useState(false);
     const [newRoomName, setNewRoomName] = useState("");
@@ -36,9 +36,10 @@ export function Lobby() {
                 setRooms(lastMessage.payload);
             } else if (lastMessage.type === "ROOM_CREATED") {
                 navigate(`/room/${lastMessage.payload.id}`);
+                clearMessage(); // Clear message to avoid loop
             }
         }
-    }, [lastMessage, navigate]);
+    }, [lastMessage, navigate, clearMessage]);
 
     // Handle column resize
     useEffect(() => {
