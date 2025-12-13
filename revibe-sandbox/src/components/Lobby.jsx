@@ -48,7 +48,7 @@ export function Lobby() {
             if (lastMessage.type === "ROOM_LIST") {
                 setRooms(lastMessage.payload);
             } else if (lastMessage.type === "ROOM_CREATED") {
-                navigate(`/room/${lastMessage.payload.id}`);
+                navigate(`/room/${lastMessage.payload.id}`, { state: { showShareOnLoad: true } });
                 clearMessage(); // Clear message to avoid loop
             }
         }
@@ -496,7 +496,7 @@ export function Lobby() {
                                             type="text"
                                             value={createPassword}
                                             onChange={(e) => setCreatePassword(e.target.value)}
-                                            placeholder="Leave empty for open private channel"
+                                            placeholder="Leave empty for unlisted channel"
                                             className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
                                         />
                                     </div>
