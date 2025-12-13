@@ -1,15 +1,27 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from "react-router-dom";
-import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search } from "lucide-react";
+import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe } from "lucide-react";
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { useGoogleLogin } from '@react-oauth/google';
 
 export function Lobby() {
     const navigate = useNavigate();
-    const { sendMessage, lastMessage, isConnected, lastError, user, handleLoginSuccess, handleLogout, clearMessage } = useWebSocketContext();
+    const { sendMessage, lastMessage, isConnected, lastError, lastErrorCode, user, handleLoginSuccess, handleLogout, clearMessage } = useWebSocketContext();
     const [rooms, setRooms] = useState([]);
+
+    // Creation State
     const [isCreatingRoom, setIsCreatingRoom] = useState(false);
     const [newRoomName, setNewRoomName] = useState("");
+    const [isPrivate, setIsPrivate] = useState(false);
+    const [createPassword, setCreatePassword] = useState("");
+
+    // Joining State (Password)
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [passwordRoomId, setPasswordRoomId] = useState(null);
+    const [passwordInput, setPasswordInput] = useState("");
+
+    // View State
+    const [channelType, setChannelType] = useState('public'); // 'public' | 'private'
     const [focusedIndex, setFocusedIndex] = useState(0);
     const [columns, setColumns] = useState(3);
     const isScrolling = useRef(false);
@@ -26,9 +38,9 @@ export function Lobby() {
     // Handle Messages
     useEffect(() => {
         if (isConnected) {
-            sendMessage({ type: "LIST_ROOMS" });
+            sendMessage({ type: "LIST_ROOMS", payload: { type: channelType } });
         }
-    }, [isConnected, sendMessage]);
+    }, [isConnected, sendMessage, channelType]);
 
     useEffect(() => {
         if (lastMessage) {
@@ -113,7 +125,7 @@ export function Lobby() {
                         // Join Room (Index > 0, so mapped to filteredRooms[index - 1])
                         const roomToJoin = filteredRooms[focusedIndex - 1];
                         if (roomToJoin) {
-                            navigate(`/room/${roomToJoin.id}`);
+                            handleRoomClick(roomToJoin);
                         }
                     }
                 }
@@ -161,12 +173,45 @@ export function Lobby() {
         }
     }, [focusedIndex]);
 
+    // Handle Password Required Error
+    useEffect(() => {
+        if (lastErrorCode === "PASSWORD_REQUIRED") {
+            // If we tried to join a room and it failed, we need to know WHICH room.
+            // Ideally the error payload should include it, or we infer it from valid interaction.
+            // For now, if we clicked a room and got this, we open the modal for the LAST clicked room?
+            // But we don't track "last clicked room" persistently.
+            // Wait, effectively we tried to navigate to /room/:id, but App.jsx handles the join.
+            // If App.jsx fails to join, it likely doesn't redirect back here. Current Lobby Logic navigates FIRST.
+            // So this component might be unmounted when the error happens if we navigated!
+
+            // Issue: The current flow is: User clicks room -> `navigate('/room/:id')` -> App.jsx mounts -> App.jsx sends JOIN_ROOM -> Error.
+            // So the error happens in App.jsx, not Lobby.jsx!
+            // Lobby.jsx is mostly unmounted.
+
+            // However, users can also join from here if we change the flow.
+            // BUT, if we click a private room, we should PROMPT password FIRST if we know it's private.
+            // The room list has `is_protected` flag now.
+        }
+    }, [lastErrorCode]);
+
     const handleCreateRoomClick = () => {
         if (!user) {
             alert("Please sign in (top right corner of a room) to create a channel!");
             return;
         }
         setIsCreatingRoom(true);
+        setIsPrivate(false);
+        setCreatePassword("");
+    };
+
+    const handleRoomClick = (room) => {
+        if (room.is_protected) {
+            setPasswordRoomId(room.id);
+            setShowPasswordModal(true);
+            setPasswordInput("");
+        } else {
+            navigate(`/room/${room.id}`);
+        }
     };
 
     const submitCreateRoom = (e) => {
@@ -178,11 +223,23 @@ export function Lobby() {
             payload: {
                 name: newRoomName,
                 description: `Hosted by ${user.name}`,
-                color: "from-gray-700 to-black"
+                color: "from-gray-700 to-black",
+                isPrivate,
+                password: isPrivate ? createPassword : null
             }
         });
         setIsCreatingRoom(false);
         setNewRoomName("");
+        setIsPrivate(false);
+        setCreatePassword("");
+    };
+
+    const submitPasswordJoin = (e) => {
+        e.preventDefault();
+        // Since the App.jsx handles joining based on URL, we can't easily pass the password via URL state unless we use location state.
+        // We will navigate with state.
+        navigate(`/room/${passwordRoomId}`, { state: { password: passwordInput } });
+        setShowPasswordModal(false);
     };
 
     return (
@@ -229,7 +286,23 @@ export function Lobby() {
 
             <main className="w-full max-w-5xl">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                    <h2 className="text-2xl font-semibold">Browse Channels</h2>
+                    <div className="flex items-center gap-4">
+                        <h2 className="text-2xl font-semibold">Browse Channels</h2>
+                        <div className="flex bg-neutral-900 rounded-lg p-1 border border-neutral-800">
+                            <button
+                                onClick={() => setChannelType('public')}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'public' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'}`}
+                            >
+                                <Globe size={14} /> Public
+                            </button>
+                            <button
+                                onClick={() => setChannelType('private')}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'private' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'}`}
+                            >
+                                <Lock size={14} /> Private
+                            </button>
+                        </div>
+                    </div>
 
                     {/* Search Bar */}
                     <div className="relative w-full md:w-72">
@@ -294,21 +367,23 @@ export function Lobby() {
                             const actualIndex = i + 1;
 
                             return (
-                                <Link
+                                <div
                                     key={channel.id}
                                     id={`lobby-item-${actualIndex}`}
-                                    to={`/room/${channel.id}`}
+                                    onClick={() => {
+                                        setFocusedIndex(actualIndex);
+                                        handleRoomClick(channel); // Use handler instead of direct navigate
+                                    }}
                                     onMouseEnter={() => {
                                         if (!isScrolling.current) setFocusedIndex(actualIndex);
                                     }}
                                     onMouseMove={() => {
                                         if (!isScrolling.current && focusedIndex !== actualIndex) setFocusedIndex(actualIndex);
                                     }}
-                                    className={`scroll-mt-56 scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block ${actualIndex === focusedIndex
+                                    className={`scroll-mt-56 scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block cursor-pointer ${actualIndex === focusedIndex
                                         ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
                                         : "border-neutral-800"
                                         }`}
-                                    onClick={() => setFocusedIndex(actualIndex)}
                                 >
                                     <div className="absolute inset-0">
                                         {channel.currentTrack?.thumbnail ? (
@@ -349,30 +424,34 @@ export function Lobby() {
                                         </div>
                                         <p className="text-neutral-400 text-sm line-clamp-2">{channel.description}</p>
 
-                                        <div className="flex items-center gap-2 pt-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                                            <Users size={14} /> <span>{channel.listeners || 0} Live</span>
+                                        <div className="flex items-center gap-2 pt-4 text-xs font-medium text-neutral-500 uppercase tracking-wider justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <Users size={14} /> <span>{channel.listeners || 0} Live</span>
+                                            </div>
+                                            {channel.is_protected && <Lock size={14} className="text-orange-500" />}
                                         </div>
                                     </div>
-                                </Link>
+                                </div>
                             );
                         })}
                     </div>
-                )}
+                )
+                }
             </main>
 
             {/* Create Room Modal */}
-            {
-                isCreatingRoom && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-md p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-bold text-white">Create New Channel</h3>
-                                <button onClick={() => setIsCreatingRoom(false)} className="text-neutral-500 hover:text-white transition-colors">
-                                    <X size={24} />
-                                </button>
-                            </div>
+            {isCreatingRoom && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-md p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-white">Create New Channel</h3>
+                            <button onClick={() => setIsCreatingRoom(false)} className="text-neutral-500 hover:text-white transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
 
-                            <form onSubmit={submitCreateRoom} className="space-y-4">
+                        <form onSubmit={submitCreateRoom}>
+                            <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-neutral-400 mb-1">Channel Name</label>
                                     <input
@@ -391,27 +470,97 @@ export function Lobby() {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-end gap-3 pt-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsCreatingRoom(false)}
-                                        className="px-4 py-2 rounded-xl text-neutral-400 hover:text-white transition-colors font-medium"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={!newRoomName.trim()}
-                                        className="px-6 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-400 hover:to-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                    >
-                                        Create Channel
-                                    </button>
+                                <div>
+                                    <label className="block text-sm font-medium text-neutral-400 mb-1">Privacy</label>
+                                    <div className="flex gap-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsPrivate(false)}
+                                            className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${!isPrivate ? 'bg-orange-500/10 border-orange-500 text-orange-500' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
+                                        >
+                                            <Globe size={18} /> Public
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsPrivate(true)}
+                                            className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${isPrivate ? 'bg-orange-500/10 border-orange-500 text-orange-500' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
+                                        >
+                                            <Lock size={18} /> Private
+                                        </button>
+                                    </div>
                                 </div>
-                            </form>
-                        </div>
+
+                                {isPrivate && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <label className="block text-sm font-medium text-neutral-400 mb-1">Password (Optional)</label>
+                                        <input
+                                            type="text"
+                                            value={createPassword}
+                                            onChange={(e) => setCreatePassword(e.target.value)}
+                                            placeholder="Leave empty for open private channel"
+                                            className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex justify-end gap-3 pt-4 border-t border-neutral-800 mt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCreatingRoom(false)}
+                                    className="px-4 py-2 rounded-xl text-neutral-400 hover:text-white transition-colors font-medium"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={!newRoomName.trim()}
+                                    className="px-6 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-400 hover:to-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                >
+                                    Create Channel
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                )
-            }
-        </div >
+                </div>
+            )}
+
+            {/* Password Modal */}
+            {showPasswordModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Lock size={20} className="text-orange-500" /> Private Channel
+                            </h3>
+                            <button onClick={() => setShowPasswordModal(false)} className="text-neutral-500 hover:text-white transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={submitPasswordJoin} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-neutral-400 mb-1">Enter Password</label>
+                                <input
+                                    type="password"
+                                    value={passwordInput}
+                                    onChange={(e) => setPasswordInput(e.target.value)}
+                                    placeholder="Channel password..."
+                                    className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
+                                    autoFocus
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-400 hover:to-orange-500 transition-all mt-2"
+                            >
+                                Unlock & Join
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
