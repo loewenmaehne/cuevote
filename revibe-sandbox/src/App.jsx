@@ -123,6 +123,13 @@ function App() {
         return;
       }
 
+      // NEW: If we are already in the target room (according to server state), skip redundant join.
+      // This prevents the "double unlock" bug where a state update triggers a second join without password.
+      if (serverRoomId && activeRoomId && serverRoomId.toString().trim().toLowerCase() === activeRoomId.toString().trim().toLowerCase()) {
+        console.log("[App] Skipping join, already in target room:", activeRoomId);
+        return;
+      }
+
       // console.log(`Joining room: ${ activeRoomId } `);
       const password = location.state?.password;
       lastPasswordAttemptRef.current = password; // Track it
