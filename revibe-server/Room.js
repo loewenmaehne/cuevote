@@ -119,10 +119,19 @@ class Room {
 
     tick() {
         if (this.state.isPlaying && this.state.currentTrack) {
-            const newProgress = this.state.progress + 1;
+            // FIX: Timestamp Stability
+            // If startedAt is missing (legacy track or server restart), back-fill it
+            if (!this.state.currentTrack.startedAt) {
+                // Assume current progress is correct relative to now
+                this.state.currentTrack.startedAt = Date.now() - (this.state.progress * 1000);
+            }
+
+            // Calculate progress based on wall-clock time diff
+            const elapsed = Math.floor((Date.now() - this.state.currentTrack.startedAt) / 1000);
+            const newProgress = elapsed >= 0 ? elapsed : 0;
             const duration = this.state.currentTrack.duration || 200;
 
-            if (newProgress > duration) {
+            if (newProgress >= duration) {
                 // Auto-Advance
                 const newQueue = [...this.state.queue];
 
@@ -134,6 +143,12 @@ class Room {
 
                 newQueue.shift();
                 const newCurrentTrack = newQueue[0] || null;
+
+                // Initialize timestamp for new track
+                if (newCurrentTrack) {
+                    newCurrentTrack.startedAt = Date.now();
+                }
+
                 const newState = {
                     queue: newQueue,
                     history: newHistory,
@@ -146,14 +161,18 @@ class Room {
                     this.updateState(newState);
 
                     // Auto-Refill Logic
-                    // Moved AFTER updateState to ensure history includes the just-finished track
-                    // for accurate repetition checking.
                     if (!newCurrentTrack && this.state.autoRefill && this.state.history.length > 0) {
                         if (!this.state.isRefilling) {
                             this.populateQueueFromHistory();
                         }
                     }
                 } else {
+                    this.updateState(newState);
+                }
+            } else {
+                // Only broadcast if progress changed (it should every second)
+                // or just broadcast to keep clients in sync
+                if (newProgress !== this.state.progress) {
                     this.updateState({ progress: newProgress });
                 }
             }
@@ -209,16 +228,23 @@ class Room {
                 : [];
             const videoIdsToCheck = [];
 
+            // Perform strict duplicate check against CURRENT QUEUE + Recent History
+            const queueVideoIds = new Set(this.state.queue.map(t => t.videoId));
+
             for (const track of shuffledHistory) {
                 if (candidates.length >= needed) break;
 
                 // Duration Check
                 if (maxDuration > 0 && track.duration > maxDuration) continue;
 
-                // Repetition Check
+                // Repetition Check (History cooldown)
                 const title = track.title.toLowerCase().trim();
                 // Check if title is in recent history
                 if (historyTitles.includes(title)) continue;
+
+                // FIX: Check if song is ALREADY IN QUEUE (prevent immediate duplicate)
+                if (queueVideoIds.has(track.videoId)) continue;
+
                 // Check if we already picked this title in current candidates
                 if (candidates.some(c => c.title.toLowerCase().trim() === title)) continue;
 
@@ -510,8 +536,7 @@ class Room {
                         // All results were livestreams? Fallback to first regular one even if live, handled by validation later?
                         // Or just let validation fail. Let's pick the first one if we can't find a filtered one, 
                         // so validation allows the user to see the specific error if needed, OR we just fail here.
-                        // Better UX: Pick the first one and let validation reject it with the message, 
-                        // OR (preferred) pick the first one and hope it's valid, but we already know we want to skip live.
+                        // Better UX: Pick the first one and hope it's valid, but we already know we want to skip live.
                         // If ALL 5 are live, we probably can't help much.
                         videoId = searchData.items[0].id.videoId;
                     }
@@ -653,6 +678,7 @@ class Room {
             const newState = { queue: newQueue };
             if (newQueue.length === 1) {
                 newState.currentTrack = newQueue[0];
+                newState.currentTrack.startedAt = Date.now(); // Init Timestamp
                 newState.isPlaying = true;
                 newState.progress = 0;
             } else {
@@ -682,6 +708,7 @@ class Room {
             // Send Success Message (For all successful queue additions: Owner Bypass, Auto-Approve, or Auto-Mode)
             ws.send(JSON.stringify({ type: "success", message: "Added" }));
         }
+
     }
 
     handleVote(ws, { trackId, voteType }) {
@@ -759,6 +786,11 @@ class Room {
 
         newQueue.shift();
         const newCurrentTrack = newQueue[0] || null;
+
+        if (newCurrentTrack) {
+            newCurrentTrack.startedAt = Date.now(); // Init Timestamp
+        }
+
         const newState = {
             queue: newQueue,
             history: newHistory,
