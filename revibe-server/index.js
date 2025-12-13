@@ -252,6 +252,10 @@ wss.on("connection", (ws, req) => {
                     for (const room of rooms.values()) {
                         const isPublic = room.metadata.is_public === 1;
                         if ((showPrivate && !isPublic) || (!showPrivate && isPublic)) {
+                            // Link-Only Access: Private rooms without password are hidden from lobby
+                            if (showPrivate && !room.metadata.password) {
+                                continue;
+                            }
                             roomList.push(room.getSummary());
                         }
                     }
@@ -264,6 +268,11 @@ wss.on("connection", (ws, req) => {
                     const activeIds = new Set(roomList.map(r => r.id));
 
                     dbRooms.forEach(dbr => {
+                        // Link-Only Access: Private rooms without password are hidden from lobby
+                        if (showPrivate && !dbr.password) {
+                            return;
+                        }
+
                         if (!activeIds.has(dbr.id)) {
                             // Minimal summary for idle room
                             roomList.push({
