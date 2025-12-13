@@ -39,7 +39,7 @@ const Room = require('./Room');
 // Room Manager
 const rooms = new Map();
 
-const defaultRooms = ["Synthwave", "Lofi", "Pop", "Hip Hop", "R&B", "Techno", "Trap", "House", "Indie"];
+// Default rooms removed
 
 // Initialize Rooms from DB
 function loadRooms() {
@@ -63,30 +63,6 @@ function loadRooms() {
         });
     }
 
-    // Ensure Default Rooms exist
-    defaultRooms.forEach(name => {
-        const id = name.toLowerCase().replace(/\s+/g, '-');
-        if (!rooms.has(id)) {
-            try {
-                let existing = db.getRoom(id);
-                if (!existing) {
-                    existing = {
-                        id,
-                        name,
-                        description: `Official ${name} Channel`,
-                        owner_id: 'system',
-                        color: 'from-gray-700 to-black',
-                        is_public: 1
-                    };
-                    db.createRoom(existing);
-                }
-                rooms.set(id, new Room(id, name, YOUTUBE_API_KEY, existing));
-                console.log(`Created System Room: ${name}`);
-            } catch (err) {
-                console.error(`Failed to init room ${name}:`, err);
-            }
-        }
-    });
 }
 
 loadRooms();
@@ -300,11 +276,6 @@ setInterval(() => {
     console.log("Running cleanup task...");
     for (const [id, room] of rooms.entries()) {
         if (room.clients.size === 0) {
-            // Prevent deleting default rooms
-            const defaultRooms = ["synthwave", "lofi", "pop", "hip-hop", "r-b", "techno", "trap", "house", "indie"];
-            if (defaultRooms.includes(id)) {
-                continue;
-            }
             console.log(`Unloading idle room: ${room.name} (${id})`);
             room.destroy(); // Stop the timer
             rooms.delete(id);
