@@ -244,19 +244,33 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "LIST_ROOMS": {
-                    const { type } = parsedMessage.payload || {}; // 'public' or 'private'
+                    const { type } = parsedMessage.payload || {}; // 'public', 'private', or 'my_channels'
                     const showPrivate = type === 'private';
+                    const showMyChannels = type === 'my_channels';
+
+                    if (showMyChannels && !ws.user) {
+                        // If requesting my channels but not logged in, return empty or error?
+                        // Frontend should handle UI, but backend should be safe.
+                        ws.send(JSON.stringify({ type: "ROOM_LIST", payload: [] }));
+                        return;
+                    }
 
                     const roomList = [];
                     // 1. Get from Memory (Active)
                     for (const room of rooms.values()) {
-                        const isPublic = room.metadata.is_public === 1;
-                        if ((showPrivate && !isPublic) || (!showPrivate && isPublic)) {
-                            // Link-Only Access: Private rooms without password are hidden from lobby
-                            if (showPrivate && !room.metadata.password) {
-                                continue;
+                        if (showMyChannels) {
+                            if (room.metadata.owner_id === ws.user.id) {
+                                roomList.push(room.getSummary());
                             }
-                            roomList.push(room.getSummary());
+                        } else {
+                            const isPublic = room.metadata.is_public === 1;
+                            if ((showPrivate && !isPublic) || (!showPrivate && isPublic)) {
+                                // Link-Only Access: Private rooms without password are hidden from lobby
+                                if (showPrivate && !room.metadata.password) {
+                                    continue;
+                                }
+                                roomList.push(room.getSummary());
+                            }
                         }
                     }
 
@@ -264,12 +278,21 @@ wss.on("connection", (ws, req) => {
                     // The memory list is only active rooms. We want searchable.
                     // But we don't want duplicates.
 
-                    const dbRooms = showPrivate ? db.listPrivateRooms() : db.listPublicRooms();
+                    let dbRooms = [];
+                    if (showMyChannels) {
+                        dbRooms = db.listUserRooms(ws.user.id);
+                    } else {
+                        dbRooms = showPrivate ? db.listPrivateRooms() : db.listPublicRooms();
+                    }
+
                     const activeIds = new Set(roomList.map(r => r.id));
 
                     dbRooms.forEach(dbr => {
                         // Link-Only Access: Private rooms without password are hidden from lobby
-                        if (showPrivate && !dbr.password) {
+                        // UNLESS it is "My Channels" - I should see my own link-only links?
+                        // User request: "My Channels, which are all channels created by me"
+                        // So we should show them even if they are link-only/hidden from public lobby.
+                        if (!showMyChannels && showPrivate && !dbr.password) {
                             return;
                         }
 
