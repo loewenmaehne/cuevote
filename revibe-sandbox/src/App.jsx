@@ -631,7 +631,8 @@ function App() {
           requests={pendingSuggestions}
           onApprove={handleApproveSuggestion}
           onReject={handleRejectSuggestion}
-          onBan={handleBanSuggestion} // Added this
+          onBan={handleBanSuggestion}
+          onManageBanned={() => setShowBannedPage(true)} // Added this
           onClose={() => setShowPendingPage(false)}
         />
       )}
