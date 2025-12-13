@@ -7,6 +7,7 @@ import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
 import { PlaylistView } from "./components/PlaylistView"; // Added this import
 import { PendingRequests, PendingRequestsPage } from "./components/PendingRequests";
+import { BannedSongsPage } from "./components/BannedSongs"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
@@ -69,6 +70,7 @@ function App() {
     duplicateCooldown = 10,
     autoApproveKnown = true,
     autoRefill = false,
+    bannedSongs = [], // Added this
   } = serverState || {};
 
 
@@ -90,6 +92,14 @@ function App() {
 
   const handleRejectSuggestion = (trackId) => {
     sendMessage({ type: "REJECT_SUGGESTION", payload: { trackId } });
+  };
+
+  const handleBanSuggestion = (trackId) => {
+    sendMessage({ type: "BAN_SUGGESTION", payload: { trackId } });
+  };
+
+  const handleUnbanSong = (videoId) => {
+    sendMessage({ type: "UNBAN_SONG", payload: { videoId } });
   };
 
   // Trace Render Cycle
@@ -173,6 +183,7 @@ function App() {
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
   const [showPendingPage, setShowPendingPage] = useState(false);
+  const [showBannedPage, setShowBannedPage] = useState(false); // Added this
   const [isCinemaMode, setIsCinemaMode] = useState(false);
   const [volume, setVolume] = useState(80);
   // minimized state removed
@@ -586,6 +597,7 @@ function App() {
             ownerQueueBypass={serverState?.ownerQueueBypass}
             votesEnabled={serverState?.votesEnabled ?? true}
             onManageRequests={() => setShowPendingPage(true)}
+            onManageBanned={() => setShowBannedPage(true)} // Added this
             pendingCount={pendingSuggestions.length}
             autoApproveKnown={autoApproveKnown}
             autoRefill={autoRefill}
@@ -609,6 +621,7 @@ function App() {
           requests={pendingSuggestions}
           onApprove={handleApproveSuggestion}
           onReject={handleRejectSuggestion}
+          onBan={handleBanSuggestion} // Added this
           onClose={() => handleUpdateSettings({ ownerPopups: false })}
         />
       )}
@@ -618,7 +631,16 @@ function App() {
           requests={pendingSuggestions}
           onApprove={handleApproveSuggestion}
           onReject={handleRejectSuggestion}
+          onBan={handleBanSuggestion} // Added this
           onClose={() => setShowPendingPage(false)}
+        />
+      )}
+
+      {showBannedPage && (
+        <BannedSongsPage
+          bannedSongs={bannedSongs}
+          onUnban={handleUnbanSong}
+          onClose={() => setShowBannedPage(false)}
         />
       )}
 
@@ -667,7 +689,7 @@ function App() {
         ) : (
           /* Standard Mode */
           <>
-            {!showPendingPage && (
+            {!showPendingPage && !showBannedPage && (
               <div className="absolute inset-0">
                 <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
                   <PlayerErrorBoundary>
