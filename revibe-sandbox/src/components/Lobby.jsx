@@ -199,7 +199,7 @@ export function Lobby() {
             return;
         }
         setIsCreatingRoom(true);
-        setIsPrivate(false);
+        setIsPrivate(channelType === 'private');
         setCreatePassword("");
     };
 
