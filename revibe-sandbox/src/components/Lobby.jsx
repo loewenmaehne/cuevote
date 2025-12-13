@@ -308,7 +308,7 @@ export function Lobby() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                     <div className="flex items-center gap-4">
                         <h2 className="text-2xl font-semibold">Browse Channels</h2>
-                        <div className="flex bg-neutral-900 rounded-lg p-1 border border-neutral-800">
+                        <div className="flex bg-neutral-900 rounded-lg p-1.5 gap-2 border border-neutral-800">
                             <button
                                 onClick={() => setChannelType('public')}
                                 className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'public' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -2 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
