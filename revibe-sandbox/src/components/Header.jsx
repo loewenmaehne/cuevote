@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { useGoogleLogin } from '@react-oauth/google';
-import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Ban } from "lucide-react";
+import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export function Header({
@@ -26,7 +26,6 @@ export function Header({
   onUpdateSettings,
   ownerPopups,
   onManageRequests,
-  onManageBanned, // Added this
   pendingCount,
   duplicateCooldown,
   ownerQueueBypass,
@@ -259,19 +258,6 @@ export function Header({
                       <span className="text-xs font-bold bg-orange-500 text-black px-1.5 rounded-full">{pendingCount}</span>
                     </button>
                   )}
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onManageBanned();
-                      setShowSettings(false);
-                    }}
-                    className="w-full mb-3 flex items-center justify-between p-2 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition-colors border border-neutral-700 hover:border-neutral-600"
-                  >
-                    <span className="text-sm font-medium flex items-center gap-2">
-                      <Ban size={16} className="text-red-500" /> Banned Songs
-                    </span>
-                  </button>
 
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-white">Allow Suggestions</label>
@@ -569,104 +555,108 @@ export function Header({
         </div>
       </div>
       {/* Exit Confirmation Modal */}
-      {showExitConfirm && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200 text-center">
-            <h3 className="text-xl font-bold text-white mb-2">Leave Channel?</h3>
-            <p className="text-neutral-400 mb-6">Are you sure you want to return to the lobby?</p>
+      {
+        showExitConfirm && createPortal(
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200 text-center">
+              <h3 className="text-xl font-bold text-white mb-2">Leave Channel?</h3>
+              <p className="text-neutral-400 mb-6">Are you sure you want to return to the lobby?</p>
 
-            <div className="flex gap-3 justify-center">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowExitConfirm(false);
-                }}
-                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all border ${exitConfirmIndex === 0
-                  ? "bg-neutral-700 text-white ring-2 ring-orange-500/50 border-transparent"
-                  : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700 border-transparent"
-                  }`}
-                onMouseEnter={() => setExitConfirmIndex(0)}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log("[Header] Leave confirmed, navigating home...");
-                  onGoHome();
-                  setShowExitConfirm(false);
-                  onShowSuggest(false);
-                }}
-                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all border ${exitConfirmIndex === 1
-                  ? "bg-orange-500 text-white ring-2 ring-orange-500/50 shadow-lg shadow-orange-500/20 border-transparent"
-                  : "bg-red-900/30 text-red-400 hover:bg-red-900/50 border-red-900/50"
-                  }`}
-                onMouseEnter={() => setExitConfirmIndex(1)}
-              >
-                Leave
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-      {/* QR Code Modal */}
-      {showQRCode && createPortal(
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-          onClick={() => onShowQRCode(false)}
-        >
-          <div
-            className="qr-code-modal bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200 text-center flex flex-col items-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-xl font-bold text-orange-500 mb-4">Share Channel</h3>
-            <div className="relative group">
-              <div className="relative bg-neutral-900 p-4 rounded-xl mb-4 border border-orange-500/50">
-                <QRCodeSVG
-                  value={window.location.href}
-                  size={200}
-                  level={"H"}
-                  includeMargin={false}
-                  fgColor={"#ffffff"}
-                  bgColor={"transparent"}
-                />
+              <div className="flex gap-3 justify-center">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowExitConfirm(false);
+                  }}
+                  className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all border ${exitConfirmIndex === 0
+                    ? "bg-neutral-700 text-white ring-2 ring-orange-500/50 border-transparent"
+                    : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700 border-transparent"
+                    }`}
+                  onMouseEnter={() => setExitConfirmIndex(0)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("[Header] Leave confirmed, navigating home...");
+                    onGoHome();
+                    setShowExitConfirm(false);
+                    onShowSuggest(false);
+                  }}
+                  className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all border ${exitConfirmIndex === 1
+                    ? "bg-orange-500 text-white ring-2 ring-orange-500/50 shadow-lg shadow-orange-500/20 border-transparent"
+                    : "bg-red-900/30 text-red-400 hover:bg-red-900/50 border-red-900/50"
+                    }`}
+                  onMouseEnter={() => setExitConfirmIndex(1)}
+                >
+                  Leave
+                </button>
               </div>
             </div>
+          </div>,
+          document.body
+        )
+      }
+      {/* QR Code Modal */}
+      {
+        showQRCode && createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+            onClick={() => onShowQRCode(false)}
+          >
+            <div
+              className="qr-code-modal bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200 text-center flex flex-col items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold text-orange-500 mb-4">Share Channel</h3>
+              <div className="relative group">
+                <div className="relative bg-neutral-900 p-4 rounded-xl mb-4 border border-orange-500/50">
+                  <QRCodeSVG
+                    value={window.location.href}
+                    size={200}
+                    level={"H"}
+                    includeMargin={false}
+                    fgColor={"#ffffff"}
+                    bgColor={"transparent"}
+                  />
+                </div>
+              </div>
 
-            <div className="flex items-center gap-2 mb-6 bg-neutral-800/50 p-2 pl-4 rounded-xl w-full max-w-[280px] border border-neutral-800">
-              <p className="text-neutral-400 text-sm overflow-x-auto whitespace-nowrap flex-1 font-mono no-scrollbar">{window.location.href}</p>
+              <div className="flex items-center gap-2 mb-6 bg-neutral-800/50 p-2 pl-4 rounded-xl w-full max-w-[280px] border border-neutral-800">
+                <p className="text-neutral-400 text-sm overflow-x-auto whitespace-nowrap flex-1 font-mono no-scrollbar">{window.location.href}</p>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className={`p-2 rounded-lg transition-all ${copied
+                    ? "bg-green-500/10 text-green-500"
+                    : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white"
+                    }`}
+                  title="Copy URL"
+                >
+                  {copied ? <Check size={16} /> : <Copy size={16} />}
+                </button>
+              </div>
+
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                }}
-                className={`p-2 rounded-lg transition-all ${copied
-                  ? "bg-green-500/10 text-green-500"
-                  : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white"
-                  }`}
-                title="Copy URL"
+                onClick={() => onShowQRCode(false)}
+                className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 text-orange-500 border border-orange-500/20 hover:border-orange-500/50 rounded-lg transition-all font-medium"
               >
-                {copied ? <Check size={16} /> : <Copy size={16} />}
+                Close
               </button>
             </div>
-
-            <button
-              onClick={() => onShowQRCode(false)}
-              className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 text-orange-500 border border-orange-500/20 hover:border-orange-500/50 rounded-lg transition-all font-medium"
-            >
-              Close
-            </button>
-          </div>
-        </div>,
-        document.body
-      )}
-    </header>
+          </div>,
+          document.body
+        )
+      }
+    </header >
   );
 }
 
@@ -690,7 +680,6 @@ Header.propTypes = {
   onUpdateSettings: PropTypes.func,
   ownerPopups: PropTypes.bool,
   onManageRequests: PropTypes.func,
-  onManageBanned: PropTypes.func, // Added this
   pendingCount: PropTypes.number,
   duplicateCooldown: PropTypes.number,
   ownerQueueBypass: PropTypes.bool,
