@@ -28,6 +28,7 @@ db.exec(`
     description TEXT,
     owner_id TEXT NOT NULL,
     is_public INTEGER DEFAULT 1,
+    password TEXT, -- Optional password
     last_active_at INTEGER DEFAULT (unixepoch()),
     created_at INTEGER DEFAULT (unixepoch()),
     color TEXT DEFAULT 'from-gray-700 to-black',
@@ -67,8 +68,8 @@ module.exports = {
   // Room Management
   createRoom: (room) => {
     const stmt = db.prepare(`
-        INSERT INTO rooms (id, name, description, owner_id, color)
-        VALUES (@id, @name, @description, @owner_id, @color)
+        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password)
+        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password)
     `);
     stmt.run(room);
     return db.prepare('SELECT * FROM rooms WHERE id = ?').get(room.id);
@@ -79,6 +80,11 @@ module.exports = {
     const activeDays = parseInt(process.env.ACTIVE_CHANNEL_DAYS || '60', 10);
     const threshold = Math.floor(Date.now() / 1000) - (activeDays * 24 * 60 * 60);
     return db.prepare('SELECT * FROM rooms WHERE is_public = 1 AND last_active_at > ? ORDER BY last_active_at DESC').all(threshold);
+  },
+  listPrivateRooms: () => {
+    const activeDays = parseInt(process.env.ACTIVE_CHANNEL_DAYS || '60', 10);
+    const threshold = Math.floor(Date.now() / 1000) - (activeDays * 24 * 60 * 60);
+    return db.prepare('SELECT * FROM rooms WHERE is_public = 0 AND last_active_at > ? ORDER BY last_active_at DESC').all(threshold);
   },
   updateRoomActivity: (id) => {
     db.prepare('UPDATE rooms SET last_active_at = unixepoch() WHERE id = ?').run(id);

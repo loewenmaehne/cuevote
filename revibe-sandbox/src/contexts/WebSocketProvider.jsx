@@ -5,7 +5,7 @@ const getWebSocketUrl = () => {
   const envUrl = import.meta.env.VITE_WS_URL;
   const hostname = window.location.hostname;
 
-  // If we are running on a network address (not localhost), prioritize that hostname.
+  // If we am running on a network address (not localhost), prioritize that hostname.
   // This fixes issues where .env has 'ws://localhost:8080' but we are accessing via 10.0.2.2 or LAN IP.
   if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
     return `ws://${hostname}:8080`;
@@ -21,6 +21,8 @@ export function WebSocketProvider({ children }) {
   const [state, setState] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [lastError, setLastError] = useState(null);
+  const [lastErrorCode, setLastErrorCode] = useState(null);
+  const [lastErrorTimestamp, setLastErrorTimestamp] = useState(0);
   const [lastMessage, setLastMessage] = useState(null);
   const [user, setUser] = useState(null);
   const [clientId] = useState(() => {
@@ -39,8 +41,6 @@ export function WebSocketProvider({ children }) {
       ws.current.send(JSON.stringify(message));
     }
   }, []);
-
-  // message listener logic moved to useEffect
 
   const handleLoginSuccess = useCallback((tokenResponse) => {
     console.log("Sending Access Token to Backend...", tokenResponse);
@@ -108,14 +108,19 @@ export function WebSocketProvider({ children }) {
         try {
           const message = JSON.parse(event.data);
           if (message.type === "state") {
-            console.log(`[CLIENT TRACE] <<< INCOMING STATE. RoomId: ${message.payload.roomId}`);
+            // console.log(`[CLIENT TRACE] <<< INCOMING STATE. RoomId: ${message.payload.roomId}`);
             setState(message.payload);
           } else {
             setLastMessage(message); // Broadcast non-state messages (events)
             if (message.type === "error") {
               setLastError(message.message);
+              setLastErrorCode(message.code || null);
+              setLastErrorTimestamp(Date.now());
               console.warn("[CLIENT TRACE] <<< ERROR:", message.message);
-              setTimeout(() => setLastError(null), 5000);
+              setTimeout(() => {
+                setLastError(null);
+                setLastErrorCode(null);
+              }, 5000);
             } else if (message.type === "INFO") {
               console.log("[CLIENT TRACE] <<< INFO:", message.payload);
             }
@@ -123,6 +128,7 @@ export function WebSocketProvider({ children }) {
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
           setLastError("JSON PARSE ERROR: " + error.message);
+          setLastErrorTimestamp(Date.now());
         }
       };
 
@@ -148,7 +154,7 @@ export function WebSocketProvider({ children }) {
   }, [clientId]);
 
   return (
-    <WebSocketContext.Provider value={{ state, isConnected, sendMessage, lastError, lastMessage, clientId, user, handleLoginSuccess, handleLogout, clearMessage: () => setLastMessage(null) }}>
+    <WebSocketContext.Provider value={{ state, isConnected, sendMessage, lastError, lastErrorCode, lastErrorTimestamp, lastMessage, clientId, user, handleLoginSuccess, handleLogout, clearMessage: () => setLastMessage(null) }}>
       {children}
     </WebSocketContext.Provider>
   );
