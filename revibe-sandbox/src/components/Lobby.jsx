@@ -114,15 +114,22 @@ export function Lobby() {
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
                 if (focusedIndex === -2) setFocusedIndex(-1); // Public -> Private
-                else if (focusedIndex === -1) {
-                    // Private -> Search
+                else if (focusedIndex === -1 && user) setFocusedIndex(-4); // Private -> My Channels
+                else if (focusedIndex === -1 && !user) {
+                    // Private -> Search (if no My Channels)
                     document.getElementById('channel-search')?.focus();
-                    setFocusedIndex(-3); // invalid/search state
+                    setFocusedIndex(-3);
+                }
+                else if (focusedIndex === -4) {
+                    // My Channels -> Search
+                    document.getElementById('channel-search')?.focus();
+                    setFocusedIndex(-3);
                 }
                 else setFocusedIndex(prev => Math.min(prev + 1, totalItems - 1));
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 if (focusedIndex === -1) setFocusedIndex(-2); // Private -> Public
+                else if (focusedIndex === -4) setFocusedIndex(-1); // My Channels -> Private
                 else if (focusedIndex === -2) { /* stay */ }
                 else setFocusedIndex(prev => Math.max(prev - 1, 0));
             } else if (e.key === 'ArrowDown') {
@@ -149,6 +156,7 @@ export function Lobby() {
                 e.preventDefault();
                 if (focusedIndex === -2) setChannelType('public');
                 else if (focusedIndex === -1) setChannelType('private');
+                else if (focusedIndex === -4) setChannelType('my_channels');
                 else if (focusedIndex >= 0 && focusedIndex < totalItems) {
                     if (focusedIndex === 0) {
                         // Create Room (Index 0)
@@ -321,6 +329,14 @@ export function Lobby() {
                             >
                                 <Lock size={14} /> Private
                             </button>
+                            {user && (
+                                <button
+                                    onClick={() => setChannelType('my_channels')}
+                                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'my_channels' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -4 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
+                                >
+                                    <Sparkles size={14} /> My Channels
+                                </button>
+                            )}
                         </div>
                     </div>
 
