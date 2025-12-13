@@ -32,9 +32,6 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
     // Delegate everything to server (Validation, Search, Metadata)
     onSongSuggested(input);
 
-    // Delegate everything to server (Validation, Search, Metadata)
-    onSongSuggested(input);
-
     // Optimistic Success REMOVED.
     // We now rely entirely on server messages ("success" or "info" or "error")
     // to drive the UI state. This ensures we don't auto-close on errors (duplicates etc).
