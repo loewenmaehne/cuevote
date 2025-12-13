@@ -58,6 +58,7 @@ class Room {
             duplicateCooldown: 10, // Default 10 songs
             autoApproveKnown: true, // Default true
             autoRefill: false, // Automated Refill
+            bannedSongs: [], // List of banned songs { videoId, title, artist, ... }
         };
 
         // Start the Room Timer
@@ -393,9 +394,20 @@ class Room {
                     this.handleRejectSuggestion(message.payload);
                 }
                 break;
+
             case "DELETE_SONG":
                 if (isOwner(this, ws)) {
                     this.handleDeleteSong(message.payload);
+                }
+                break;
+            case "BAN_SUGGESTION":
+                if (isOwner(this, ws)) {
+                    this.handleBanSuggestion(message.payload);
+                }
+                break;
+            case "UNBAN_SONG":
+                if (isOwner(this, ws)) {
+                    this.handleUnbanSong(message.payload);
                 }
                 break;
         }
@@ -524,6 +536,12 @@ class Room {
 
                 if (data.items && data.items.length > 0) {
                     const videoData = data.items[0];
+
+                    // Check Banned Status
+                    if (this.state.bannedSongs.some(b => b.videoId === videoId)) {
+                        ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
+                        return;
+                    }
 
                     const broadcastContent = videoData.snippet.liveBroadcastContent;
                     if (broadcastContent === 'live') {
@@ -819,6 +837,43 @@ class Room {
             newPending.splice(index, 1);
             this.updateState({ pendingSuggestions: newPending });
         }
+    }
+
+    handleBanSuggestion({ trackId }) {
+        const pending = this.state.pendingSuggestions || [];
+        const index = pending.findIndex(t => t.id === trackId);
+
+        if (index !== -1) {
+            const track = pending[index];
+            const newPending = [...pending];
+            newPending.splice(index, 1);
+
+            // Add to banned list
+            if (!this.state.bannedSongs.some(b => b.videoId === track.videoId)) {
+                const newBanned = [
+                    ...this.state.bannedSongs,
+                    {
+                        videoId: track.videoId,
+                        title: track.title,
+                        artist: track.artist,
+                        thumbnail: track.thumbnail,
+                        bannedAt: Date.now()
+                    }
+                ];
+                this.updateState({
+                    pendingSuggestions: newPending,
+                    bannedSongs: newBanned
+                });
+            } else {
+                this.updateState({ pendingSuggestions: newPending });
+            }
+        }
+    }
+
+    handleUnbanSong({ videoId }) {
+        const banned = this.state.bannedSongs || [];
+        const newBanned = banned.filter(t => t.videoId !== videoId);
+        this.updateState({ bannedSongs: newBanned });
     }
 
     handleDeleteSong({ trackId }) {

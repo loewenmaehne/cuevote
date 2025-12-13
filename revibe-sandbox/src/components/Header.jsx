@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { useGoogleLogin } from '@react-oauth/google';
-import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List } from "lucide-react";
+import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Ban } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export function Header({
@@ -26,6 +26,7 @@ export function Header({
   onUpdateSettings,
   ownerPopups,
   onManageRequests,
+  onManageBanned, // Added this
   pendingCount,
   duplicateCooldown,
   ownerQueueBypass,
@@ -258,6 +259,19 @@ export function Header({
                       <span className="text-xs font-bold bg-orange-500 text-black px-1.5 rounded-full">{pendingCount}</span>
                     </button>
                   )}
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onManageBanned();
+                      setShowSettings(false);
+                    }}
+                    className="w-full mb-3 flex items-center justify-between p-2 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 transition-colors border border-neutral-700 hover:border-neutral-600"
+                  >
+                    <span className="text-sm font-medium flex items-center gap-2">
+                      <Ban size={16} className="text-red-500" /> Banned Songs
+                    </span>
+                  </button>
 
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium text-white">Allow Suggestions</label>
@@ -676,6 +690,7 @@ Header.propTypes = {
   onUpdateSettings: PropTypes.func,
   ownerPopups: PropTypes.bool,
   onManageRequests: PropTypes.func,
+  onManageBanned: PropTypes.func, // Added this
   pendingCount: PropTypes.number,
   duplicateCooldown: PropTypes.number,
   ownerQueueBypass: PropTypes.bool,

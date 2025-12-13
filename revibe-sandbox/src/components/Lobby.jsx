@@ -86,7 +86,9 @@ export function Lobby() {
     // Handle Keyboard Navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (isCreatingRoom || showPasswordModal) return; // Don't navigate if modal is open (Added showPasswordModal)
+            if (isCreatingRoom || showPasswordModal) return; // Don't navigate if modal is open
+
+            // Search Input Handling
             if (document.activeElement.tagName === 'INPUT') {
                 if (e.key === 'Escape') {
                     e.target.blur();
@@ -95,8 +97,13 @@ export function Lobby() {
                 if (e.key === 'ArrowDown' || e.key === 'Enter') {
                     e.preventDefault();
                     document.activeElement.blur();
-                    setFocusedIndex(0); // Move focus to Create Button
+                    setFocusedIndex(-1); // Move focus to Private Filter
                     return;
+                }
+                if (e.key === 'ArrowLeft' && e.target.selectionStart === 0) {
+                    // e.preventDefault(); // Optional: allow leaving input only at start
+                    // setFocusedIndex(-1);
+                    // document.activeElement.blur();
                 }
                 return; // Let user type in search
             }
@@ -106,30 +113,43 @@ export function Lobby() {
 
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
-                setFocusedIndex(prev => Math.min(prev + 1, totalItems - 1));
+                if (focusedIndex === -2) setFocusedIndex(-1); // Public -> Private
+                else if (focusedIndex === -1) {
+                    // Private -> Search
+                    document.getElementById('channel-search')?.focus();
+                    setFocusedIndex(-3); // invalid/search state
+                }
+                else setFocusedIndex(prev => Math.min(prev + 1, totalItems - 1));
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
-                setFocusedIndex(prev => Math.max(prev - 1, 0));
+                if (focusedIndex === -1) setFocusedIndex(-2); // Private -> Public
+                else if (focusedIndex === -2) { /* stay */ }
+                else setFocusedIndex(prev => Math.max(prev - 1, 0));
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                setFocusedIndex(prev => {
-                    // If we were at -1 (nothing focused), go to 0
-                    if (prev === -1) return 0;
-                    return Math.min(prev + columns, totalItems - 1);
-                });
+                if (focusedIndex < 0) setFocusedIndex(0); // Filters -> Grid Start
+                else {
+                    setFocusedIndex(prev => {
+                        return Math.min(prev + columns, totalItems - 1);
+                    });
+                }
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                setFocusedIndex(prev => {
-                    // If in the top row, move focus to search
-                    if (prev < columns) {
-                        document.getElementById('channel-search')?.focus();
-                        return -1;
-                    }
-                    return Math.max(prev - columns, 0);
-                });
+                if (focusedIndex < 0) { /* stay in filters */ }
+                else {
+                    setFocusedIndex(prev => {
+                        // If in the top row, move focus to filters
+                        if (prev < columns) {
+                            return -2; // Default to Public filter
+                        }
+                        return Math.max(prev - columns, 0);
+                    });
+                }
             } else if (e.key === 'Enter') {
-                if (focusedIndex >= 0 && focusedIndex < totalItems) {
-                    e.preventDefault();
+                e.preventDefault();
+                if (focusedIndex === -2) setChannelType('public');
+                else if (focusedIndex === -1) setChannelType('private');
+                else if (focusedIndex >= 0 && focusedIndex < totalItems) {
                     if (focusedIndex === 0) {
                         // Create Room (Index 0)
                         handleCreateRoomClick();
@@ -291,13 +311,13 @@ export function Lobby() {
                         <div className="flex bg-neutral-900 rounded-lg p-1 border border-neutral-800">
                             <button
                                 onClick={() => setChannelType('public')}
-                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'public' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'}`}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'public' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -2 ? 'ring-2 ring-orange-500 text-white' : ''}`}
                             >
                                 <Globe size={14} /> Public
                             </button>
                             <button
                                 onClick={() => setChannelType('private')}
-                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'private' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'}`}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'private' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -1 ? 'ring-2 ring-orange-500 text-white' : ''}`}
                             >
                                 <Lock size={14} /> Private
                             </button>
