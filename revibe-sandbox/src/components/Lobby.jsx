@@ -6,7 +6,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 
 export function Lobby() {
     const navigate = useNavigate();
-    const { sendMessage, lastMessage, isConnected, lastError, lastErrorCode, user, handleLoginSuccess, handleLogout, clearMessage } = useWebSocketContext();
+    const { sendMessage, lastMessage, isConnected, lastError, lastErrorCode, user, handleLoginSuccess, handleLogout, clearMessage, state } = useWebSocketContext();
     const [rooms, setRooms] = useState([]);
 
     // Creation State
@@ -19,11 +19,12 @@ export function Lobby() {
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [passwordRoomId, setPasswordRoomId] = useState(null);
     const [passwordInput, setPasswordInput] = useState("");
+    const [passwordError, setPasswordError] = useState("");
 
     // View State
     const [channelType, setChannelType] = useState('public'); // 'public' | 'private'
     const [focusedIndex, setFocusedIndex] = useState(0);
-    const [columns, setColumns] = useState(3);
+    const [columns, setColumns] = useState(4);
     const isScrolling = useRef(false);
     // Default to 4 for lg screens
     const [searchQuery, setSearchQuery] = useState("");
@@ -53,6 +54,16 @@ export function Lobby() {
         }
     }, [lastMessage, navigate, clearMessage]);
 
+    // Handle Join Success (In-Lobby Password Check)
+    useEffect(() => {
+        if (state && passwordRoomId && state.roomId === passwordRoomId && showPasswordModal) {
+            // Successfully joined the protected room
+            setShowPasswordModal(false);
+            navigate(`/room/${passwordRoomId}`, { state: { alreadyJoined: true } });
+        }
+    }, [state, passwordRoomId, showPasswordModal, navigate]);
+
+
     // Handle column resize
     useEffect(() => {
         const updateColumns = () => {
@@ -74,7 +85,7 @@ export function Lobby() {
     // Handle Keyboard Navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (isCreatingRoom) return; // Don't navigate if modal is open
+            if (isCreatingRoom || showPasswordModal) return; // Don't navigate if modal is open (Added showPasswordModal)
             if (document.activeElement.tagName === 'INPUT') {
                 if (e.key === 'Escape') {
                     e.target.blur();
@@ -138,7 +149,7 @@ export function Lobby() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [filteredRooms, columns, focusedIndex, isCreatingRoom, navigate]);
+    }, [filteredRooms, columns, focusedIndex, isCreatingRoom, showPasswordModal, navigate]);
 
     // Reset focused index when filtered rooms change
     useEffect(() => {
@@ -176,23 +187,11 @@ export function Lobby() {
     // Handle Password Required Error
     useEffect(() => {
         if (lastErrorCode === "PASSWORD_REQUIRED") {
-            // If we tried to join a room and it failed, we need to know WHICH room.
-            // Ideally the error payload should include it, or we infer it from valid interaction.
-            // For now, if we clicked a room and got this, we open the modal for the LAST clicked room?
-            // But we don't track "last clicked room" persistently.
-            // Wait, effectively we tried to navigate to /room/:id, but App.jsx handles the join.
-            // If App.jsx fails to join, it likely doesn't redirect back here. Current Lobby Logic navigates FIRST.
-            // So this component might be unmounted when the error happens if we navigated!
-
-            // Issue: The current flow is: User clicks room -> `navigate('/room/:id')` -> App.jsx mounts -> App.jsx sends JOIN_ROOM -> Error.
-            // So the error happens in App.jsx, not Lobby.jsx!
-            // Lobby.jsx is mostly unmounted.
-
-            // However, users can also join from here if we change the flow.
-            // BUT, if we click a private room, we should PROMPT password FIRST if we know it's private.
-            // The room list has `is_protected` flag now.
+            if (showPasswordModal) {
+                setPasswordError("Incorrect password");
+            }
         }
-    }, [lastErrorCode]);
+    }, [lastErrorCode, showPasswordModal]);
 
     const handleCreateRoomClick = () => {
         if (!user) {
@@ -209,6 +208,7 @@ export function Lobby() {
             setPasswordRoomId(room.id);
             setShowPasswordModal(true);
             setPasswordInput("");
+            setPasswordError("");
         } else {
             navigate(`/room/${room.id}`);
         }
@@ -236,10 +236,9 @@ export function Lobby() {
 
     const submitPasswordJoin = (e) => {
         e.preventDefault();
-        // Since the App.jsx handles joining based on URL, we can't easily pass the password via URL state unless we use location state.
-        // We will navigate with state.
-        navigate(`/room/${passwordRoomId}`, { state: { password: passwordInput } });
-        setShowPasswordModal(false);
+        setPasswordError("");
+        // Attempt to join directly from Lobby
+        sendMessage({ type: "JOIN_ROOM", payload: { roomId: passwordRoomId, password: passwordInput } });
     };
 
     return (
@@ -275,7 +274,7 @@ export function Lobby() {
                 )}
             </header>
 
-            {lastError && (
+            {lastError && !showPasswordModal && (
                 <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-bounceIn">
                     <div className="bg-red-900/90 border border-red-500 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 backdrop-blur-md">
                         <AlertCircle size={20} className="text-red-400" />
@@ -546,9 +545,14 @@ export function Lobby() {
                                     value={passwordInput}
                                     onChange={(e) => setPasswordInput(e.target.value)}
                                     placeholder="Channel password..."
-                                    className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
+                                    className={`w-full bg-[#050505] border ${passwordError ? 'border-red-500 focus:border-red-500' : 'border-neutral-800 focus:border-orange-500'} rounded-xl px-4 py-3 text-white focus:outline-none transition-colors`}
                                     autoFocus
                                 />
+                                {passwordError && (
+                                    <div className="text-red-500 text-sm mt-2 font-medium animate-in slide-in-from-top-1">
+                                        {passwordError}
+                                    </div>
+                                )}
                             </div>
 
                             <button

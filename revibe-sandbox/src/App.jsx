@@ -101,27 +101,47 @@ function App() {
   // Password Modal State
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     if (isConnected) {
+      // If we joined from the lobby (verified password there), we don't need to join again.
+      // However, we should ensure the server state matches.
+      if (location.state?.alreadyJoined && activeRoomId === serverRoomId) {
+        console.log("[App] Skipping join, already joined from Lobby");
+        return;
+      }
+
       // console.log(`Joining room: ${ activeRoomId } `);
       const password = location.state?.password;
       sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password } });
     }
-  }, [isConnected, activeRoomId, sendMessage, location.state]);
+  }, [isConnected, activeRoomId, sendMessage, location.state, serverRoomId]);
 
   // Handle Password Required Error
   useEffect(() => {
     if (lastErrorCode === "PASSWORD_REQUIRED") {
       setShowPasswordModal(true);
+      setPasswordError("Incorrect password");
     }
   }, [lastErrorCode, lastErrorTimestamp]);
 
+  // Clear modal on successful join
+  useEffect(() => {
+    if (serverState && serverRoomId && activeRoomId && serverRoomId.toLowerCase() === activeRoomId.toLowerCase()) {
+      setShowPasswordModal(false);
+      setPasswordError("");
+    }
+  }, [serverState, serverRoomId, activeRoomId]);
+
+
   const submitPasswordJoin = (e) => {
     e.preventDefault();
+    setPasswordError(""); // Clear previous errors
     sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password: passwordInput } });
-    setShowPasswordModal(false);
-    setPasswordInput("");
+    // Do NOT close modal here. Wait for success or error.
+    // setShowPasswordModal(false); 
+    // setPasswordInput("");
   };
 
   // Stale State Guard: If we switched rooms but serverState is still from the old room, show loading.
@@ -443,15 +463,6 @@ function App() {
     );
   }
 
-  if ((!serverState || isStaleState) && !showPasswordModal) {
-    return <div className="min-h-screen bg-black text-white flex items-center justify-center">
-      <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
-        <h2 className="text-2xl font-bold mb-4">Switching Channels...</h2>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-      </div>
-    </div>;
-  }
-
   // Compute user's votes from the queue data
   const userVotes = {};
   if (clientId) {
@@ -463,6 +474,71 @@ function App() {
     if (currentTrack && currentTrack.voters && currentTrack.voters[clientId]) {
       userVotes[currentTrack.id] = currentTrack.voters[clientId];
     }
+  }
+
+  const passwordModalContent = showPasswordModal ? (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <Lock size={20} className="text-orange-500" /> Private Channel
+          </h3>
+          <button onClick={() => navigate('/')} className="text-neutral-500 hover:text-white transition-colors">
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="mb-4 text-neutral-400 text-sm">
+          This channel is password protected. Please enter the password to join.
+        </div>
+
+        <form onSubmit={submitPasswordJoin} className="space-y-4">
+          <div>
+            <input
+              type="password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              placeholder="Enter password..."
+              className={`w-full bg-[#050505] border ${passwordError ? 'border-red-500 focus:border-red-500' : 'border-neutral-800 focus:border-orange-500'} rounded-xl px-4 py-3 text-white focus:outline-none transition-colors`}
+              autoFocus
+            />
+            {passwordError && (
+              <div className="text-red-500 text-sm mt-2 font-medium animate-in slide-in-from-top-1">
+                {passwordError}
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="flex-1 px-4 py-3 rounded-xl border border-neutral-700 text-neutral-300 font-medium hover:bg-neutral-800 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-400 hover:to-orange-500 transition-all"
+            >
+              Unlock
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  ) : null;
+
+  if ((!serverState || isStaleState)) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
+          <h2 className="text-2xl font-bold mb-4">Switching Channels...</h2>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
+        </div>
+        {passwordModalContent}
+      </div>
+    );
   }
 
 
@@ -686,55 +762,7 @@ function App() {
           )
         )
       }
-      {
-        showPasswordModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-200">
-            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Lock size={20} className="text-orange-500" /> Private Channel
-                </h3>
-                <button onClick={() => navigate('/')} className="text-neutral-500 hover:text-white transition-colors">
-                  <X size={24} />
-                </button>
-              </div>
-
-              <div className="mb-4 text-neutral-400 text-sm">
-                This channel is password protected. Please enter the password to join.
-              </div>
-
-              <form onSubmit={submitPasswordJoin} className="space-y-4">
-                <div>
-                  <input
-                    type="password"
-                    value={passwordInput}
-                    onChange={(e) => setPasswordInput(e.target.value)}
-                    placeholder="Enter password..."
-                    className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
-                    autoFocus
-                  />
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => navigate('/')}
-                    className="flex-1 px-4 py-3 rounded-xl border border-neutral-700 text-neutral-300 font-medium hover:bg-neutral-800 transition-all"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-400 hover:to-orange-500 transition-all"
-                  >
-                    Unlock
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )
-      }
+      {passwordModalContent}
     </div >
   );
 }
