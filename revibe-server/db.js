@@ -86,6 +86,9 @@ module.exports = {
     const threshold = Math.floor(Date.now() / 1000) - (activeDays * 24 * 60 * 60);
     return db.prepare('SELECT * FROM rooms WHERE is_public = 0 AND last_active_at > ? ORDER BY last_active_at DESC').all(threshold);
   },
+  listUserRooms: (userId) => {
+    return db.prepare('SELECT * FROM rooms WHERE owner_id = ? ORDER BY last_active_at DESC').all(userId);
+  },
   updateRoomActivity: (id) => {
     db.prepare('UPDATE rooms SET last_active_at = unixepoch() WHERE id = ?').run(id);
   }
