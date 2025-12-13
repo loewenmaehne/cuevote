@@ -606,7 +606,6 @@ function App() {
             ownerQueueBypass={serverState?.ownerQueueBypass}
             votesEnabled={serverState?.votesEnabled ?? true}
             onManageRequests={() => setShowPendingPage(true)}
-            onManageBanned={() => setShowBannedPage(true)} // Added this
             pendingCount={pendingSuggestions.length}
             autoApproveKnown={autoApproveKnown}
             autoRefill={autoRefill}
