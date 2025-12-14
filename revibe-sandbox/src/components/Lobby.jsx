@@ -602,6 +602,12 @@ export function Lobby() {
                     </div>
                 </div>
             )}
+
+            <footer className="w-full max-w-5xl mt-12 py-6 border-t border-neutral-800 flex justify-center">
+                <Link to="/legal" className="text-neutral-500 hover:text-orange-500 transition-colors text-sm font-medium">
+                    Terms & Legal
+                </Link>
+            </footer>
         </div>
     );
 }
