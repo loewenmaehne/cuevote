@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, AlertCircle } from 'lucide-react';
 
@@ -7,13 +7,23 @@ export function LegalPage() {
     const [activeTab, setActiveTab] = useState('terms');
     const [scrolled, setScrolled] = useState(false);
 
-    useEffect(() => {
+    // Use useLayoutEffect for immediate scroll reset to prevent visual jumping
+    useLayoutEffect(() => {
+        window.scrollTo(0, 0);
+
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
         };
+
+        handleScroll();
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    // Scroll to top when tab changes
+    useLayoutEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [activeTab]);
 
     const tabs = [
         { id: 'terms', label: 'Terms of Service', icon: Scale, desc: "Rules & Agreements" },
@@ -29,12 +39,12 @@ export function LegalPage() {
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[120px]" />
             </div>
 
-            {/* Navigation Bar */}
-            <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#050505]/80 backdrop-blur-md border-b border-white/5 py-4' : 'bg-transparent py-6'}`}>
+            {/* Navigation Bar - Increased z-index and ensured background visibility */}
+            <nav className={`fixed top-0 inset-x-0 z-[100] transition-all duration-300 ${scrolled ? 'bg-[#050505]/90 border-b border-white/5 py-4' : 'bg-[#050505]/60 py-6'} backdrop-blur-xl`}>
                 <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
                     <button
                         onClick={() => navigate('/')}
-                        className="group flex items-center gap-2 text-neutral-400 hover:text-white transition-colors"
+                        className="group flex items-center gap-2 text-neutral-400 hover:text-white transition-colors relative z-50"
                     >
                         <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
                             <ArrowLeft size={20} />
@@ -61,7 +71,7 @@ export function LegalPage() {
 
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Sidebar / Tabs */}
-                    <div className="lg:w-1/3 lg:sticky lg:top-32 h-fit space-y-4">
+                    <div className="lg:w-1/3 lg:sticky lg:top-36 h-fit space-y-4">
                         {tabs.map(tab => (
                             <button
                                 key={tab.id}
