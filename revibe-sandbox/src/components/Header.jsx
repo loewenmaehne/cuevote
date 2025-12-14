@@ -143,10 +143,10 @@ export function Header({
             )}
             <a
               href="/legal"
-              className="group flex items-center justify-center w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 transition-all ml-2"
+              className="flex items-center justify-center p-2 text-neutral-400 hover:text-white transition-colors ml-1"
               title="Legal Information"
             >
-              <Scale size={16} className="text-neutral-500 group-hover:text-neutral-300 transition-colors" />
+              <Scale size={20} />
             </a>
             {/* Playlist View Toggle - Next to User Widget */}
             {!(playlistViewMode && !isOwner) && (
