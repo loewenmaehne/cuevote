@@ -141,5 +141,19 @@ module.exports = {
   getSearchTermVideo: (term) => {
     const row = db.prepare('SELECT video_id FROM search_cache WHERE term = ?').get(term);
     return row ? row.video_id : null;
+  },
+  deleteUser: (userId) => {
+    const deleteSessions = db.prepare('DELETE FROM sessions WHERE user_id = ?');
+    const deleteRooms = db.prepare('DELETE FROM rooms WHERE owner_id = ?');
+    const deleteUser = db.prepare('DELETE FROM users WHERE id = ?');
+
+    const transaction = db.transaction(() => {
+      deleteSessions.run(userId);
+      deleteRooms.run(userId);
+      deleteUser.run(userId);
+    });
+
+    transaction();
+    return true;
   }
 };

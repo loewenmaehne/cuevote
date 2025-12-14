@@ -35,10 +35,13 @@ export function Header({
   onTogglePlaylistView,
   showQRCode, // <--- Added prop
   onShowQRCode, // <--- Added prop
+  onDeleteAccount, // GDPR: Right to Erasure
 }) {
   const headerRef = React.useRef(null);
   const [showSettings, setShowSettings] = React.useState(false);
   const [showExitConfirm, setShowExitConfirm] = React.useState(false);
+  const [showProfileModal, setShowProfileModal] = React.useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [exitConfirmIndex, setExitConfirmIndex] = React.useState(0); // 0 = Cancel, 1 = Leave
   // const [showQRCode, setShowQRCode] = React.useState(false); // Removed local state
   const [copied, setCopied] = React.useState(false);
@@ -109,21 +112,22 @@ export function Header({
         <div className="flex items-center gap-3 justify-start min-w-0">
           <div className="flex items-center flex-shrink-0 transition-all duration-300">
             {user ? (
-              <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowProfileModal(true)}
+                className="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border border-transparent transition-all group cursor-pointer"
+                title="Profile & Settings"
+              >
                 <div className="flex items-center gap-2">
-                  {user.picture && (
+                  {user.picture ? (
                     <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full border border-neutral-700" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
+                      {user.name?.charAt(0)}
+                    </div>
                   )}
-                  <span className="text-sm font-medium text-neutral-300 truncate max-w-[120px]">{user.name}</span>
+                  <span className="text-sm font-medium text-neutral-300 truncate max-w-[120px] group-hover:text-white transition-colors">{user.name}</span>
                 </div>
-                <button
-                  onClick={onLogout}
-                  className="text-neutral-500 hover:text-red-400 transition-colors"
-                  title="Logout"
-                >
-                  <LogOut size={18} />
-                </button>
-              </div>
+              </button>
             ) : (
               <div>
                 <button
@@ -663,6 +667,80 @@ export function Header({
           document.body
         )
       }
+      {
+        showProfileModal && createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+            onClick={() => setShowProfileModal(false)}
+          >
+            <div
+              className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex flex-col items-center mb-6">
+                {user?.picture ? (
+                  <img src={user.picture} alt={user.name} className="w-20 h-20 rounded-full border-2 border-neutral-700 mb-4 shadow-xl" />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-neutral-800 flex items-center justify-center text-3xl font-bold text-neutral-500 mb-4 border-2 border-neutral-700">
+                    {user?.name?.charAt(0)}
+                  </div>
+                )}
+                <h3 className="text-xl font-bold text-white">{user?.name}</h3>
+                <p className="text-sm text-neutral-400">{user?.email}</p>
+              </div>
+
+              {!showDeleteConfirm ? (
+                <div className="space-y-3">
+                  <button
+                    onClick={() => {
+                      onLogout();
+                      setShowProfileModal(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-medium transition-colors border border-black/20"
+                  >
+                    <LogOut size={18} /> Sign Out
+                  </button>
+
+                  <div className="pt-4 border-t border-neutral-800 mt-4">
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-red-900/30 text-red-500 hover:bg-red-950/30 hover:border-red-900/50 transition-colors text-sm font-medium"
+                    >
+                      Delete Account
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center animate-in fade-in slide-in-from-bottom-2">
+                  <h4 className="text-lg font-bold text-red-500 mb-2">Are you absolutely sure?</h4>
+                  <p className="text-sm text-neutral-400 mb-6 leading-relaxed">
+                    This action cannot be undone. It will permanently delete your account and <strong>all channels</strong> you have created.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowDeleteConfirm(false)}
+                      className="flex-1 px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-medium transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        onDeleteAccount();
+                        setShowProfileModal(false);
+                        setShowDeleteConfirm(false);
+                      }}
+                      className="flex-1 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold transition-colors shadow-lg shadow-red-900/20"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>,
+          document.body
+        )
+      }
     </header >
   );
 }
@@ -694,4 +772,7 @@ Header.propTypes = {
   autoApproveKnown: PropTypes.bool,
   autoRefill: PropTypes.bool,
   onTogglePlaylistView: PropTypes.func,
+  showQRCode: PropTypes.bool,
+  onShowQRCode: PropTypes.func,
+  onDeleteAccount: PropTypes.func,
 };

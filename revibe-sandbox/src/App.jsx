@@ -585,6 +585,20 @@ function App() {
 
 
 
+  // Handle Delete Account Success
+  useEffect(() => {
+    if (lastMessage && lastMessage.type === "DELETE_ACCOUNT_SUCCESS") {
+      console.log("Account deleted successfully");
+      handleLogout();
+      navigate('/');
+    }
+  }, [lastMessage, handleLogout, navigate]);
+
+  const handleDeleteAccount = () => {
+    sendMessage({ type: "DELETE_ACCOUNT", payload: {} });
+  };
+
+
   return (
     <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
       {!isCinemaMode && (
@@ -596,6 +610,7 @@ function App() {
             user={user}
             onLoginSuccess={handleLoginSuccess}
             onLogout={handleLogout}
+            onDeleteAccount={handleDeleteAccount} // GDPR
             isOwner={isOwner}
             suggestionsEnabled={suggestionsEnabled}
             musicOnly={musicOnly}
