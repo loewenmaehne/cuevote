@@ -157,7 +157,12 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "DELETE_ACCOUNT": {
-                    if (!ws.user) return;
+                    console.log("[SERVER TRACE] DELETE_ACCOUNT received");
+                    if (!ws.user) {
+                        console.warn("[GDPR] DELETE_ACCOUNT failed: No user attached to socket.");
+                        ws.send(JSON.stringify({ type: "error", message: "Not logged in." }));
+                        return;
+                    }
                     const userId = ws.user.id;
                     console.log(`[GDPR] Deleting account for user: ${userId}`);
 
