@@ -105,32 +105,46 @@ wss.on("connection", (ws, req) => {
             switch (parsedMessage.type) {
                 case "LOGIN": {
                     const { token } = parsedMessage.payload;
+                    console.log("[LOGIN TRACE] Processing login request...");
                     try {
                         const payload = await verifyGoogleToken(token);
+                        console.log(`[LOGIN TRACE] Token verified for Google Subject: ${payload.sub}`);
+
                         let user = db.getUser(payload.sub);
+                        console.log(`[LOGIN TRACE] User found in DB? ${!!user}`);
+
                         if (!user) {
+                            console.log("[LOGIN TRACE] Creating new user record...");
                             user = {
                                 id: payload.sub,
                                 email: payload.email,
                                 name: payload.name,
                                 picture: payload.picture
                             };
-                            db.upsertUser(user);
+                            try {
+                                db.upsertUser(user);
+                                console.log("[LOGIN TRACE] Upsert successful.");
+                            } catch (dbErr) {
+                                console.error("[LOGIN CRITICAL] UpsertUser failed:", dbErr);
+                                throw dbErr;
+                            }
                         }
                         ws.user = user;
 
                         // Generate Session Token
+                        console.log("[LOGIN TRACE] Creating session...");
                         const sessionToken = crypto.randomBytes(32).toString('hex');
                         const expiresAt = Math.floor(Date.now() / 1000) + (24 * 60 * 60); // 24 hours
                         db.createSession(sessionToken, user.id, expiresAt);
 
+                        console.log("[LOGIN TRACE] Sending LOGIN_SUCCESS");
                         ws.send(JSON.stringify({
                             type: "LOGIN_SUCCESS",
                             payload: { user: ws.user, sessionToken }
                         }));
                     } catch (e) {
-                        console.error("Login verification failed", e);
-                        ws.send(JSON.stringify({ type: "error", message: "Login failed" }));
+                        console.error("[LOGIN FAILURE] Error Details:", e);
+                        ws.send(JSON.stringify({ type: "error", message: "Login failed: " + e.message }));
                     }
                     return;
                 }
