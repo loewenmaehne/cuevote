@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const db = require("./db");
 
 // Helper to check ownership
 function isOwner(room, ws) {
@@ -516,33 +517,41 @@ class Room {
 
         // 1. Resolve Video ID (URL or Search)
         const urlMatch = query.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+
         if (urlMatch) {
             videoId = urlMatch[1];
-        } else if (this.apiKey) {
-            // Search via API
-            try {
-                // Fetch up to 5 results to find a non-livestream
-                const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=5&key=${this.apiKey}`;
-                const searchRes = await fetch(searchUrl);
-                const searchData = await searchRes.json();
+        } else {
+            // Check Search Cache
+            const cachedSearchId = db.getSearchTermVideo(query);
+            if (cachedSearchId) {
+                console.log(`[Search Cache] Hit for "${query}" -> ${cachedSearchId}`);
+                videoId = cachedSearchId;
+            } else if (this.apiKey) {
+                // Search via API
+                try {
+                    // Fetch up to 5 results to find a non-livestream
+                    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=5&key=${this.apiKey}`;
+                    const searchRes = await fetch(searchUrl);
+                    const searchData = await searchRes.json();
 
-                if (searchData.items && searchData.items.length > 0) {
-                    // Find first non-livestream
-                    const validVideo = searchData.items.find(item => item.snippet && item.snippet.liveBroadcastContent === 'none');
+                    if (searchData.items && searchData.items.length > 0) {
+                        // Find first non-livestream
+                        const validVideo = searchData.items.find(item => item.snippet && item.snippet.liveBroadcastContent === 'none');
 
-                    if (validVideo) {
-                        videoId = validVideo.id.videoId;
-                    } else {
-                        // All results were livestreams? Fallback to first regular one even if live, handled by validation later?
-                        // Or just let validation fail. Let's pick the first one if we can't find a filtered one, 
-                        // so validation allows the user to see the specific error if needed, OR we just fail here.
-                        // Better UX: Pick the first one and hope it's valid, but we already know we want to skip live.
-                        // If ALL 5 are live, we probably can't help much.
-                        videoId = searchData.items[0].id.videoId;
+                        if (validVideo) {
+                            videoId = validVideo.id.videoId;
+                        } else {
+                            videoId = searchData.items[0].id.videoId;
+                        }
+
+                        // Cache the result
+                        if (videoId) {
+                            db.cacheSearchTerm(query, videoId);
+                        }
                     }
+                } catch (err) {
+                    console.error("Search failed:", err);
                 }
-            } catch (err) {
-                console.error("Search failed:", err);
             }
         }
 
@@ -553,7 +562,54 @@ class Room {
 
         // 2. Fetch Details & Validate
         let track = null;
-        if (this.apiKey) {
+
+        // Check if banned before anything else
+        if (this.state.bannedSongs.some(b => b.videoId === videoId)) {
+            ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
+            return;
+        }
+
+        // Check Video DB Cache
+        let cachedVideo = db.getVideo(videoId);
+        if (cachedVideo) {
+            const nowSeconds = Math.floor(Date.now() / 1000);
+            // 28 Days = 2419200 seconds
+            if (nowSeconds - cachedVideo.fetched_at > 2419200) {
+                console.log(`[Video Cache] Stale for ${videoId}. Refetching.`);
+                cachedVideo = null;
+            }
+        }
+
+        if (cachedVideo) {
+            console.log(`[Video Cache] Hit for ${videoId} (Fresh)`);
+
+            // Validate Cached Data against Room Rules
+            // Max Duration
+            if (this.state.maxDuration > 0 && !canBypass && cachedVideo.duration > this.state.maxDuration) {
+                const maxMinutes = Math.floor(this.state.maxDuration / 60);
+                ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
+                return;
+            }
+            // Music Only
+            if (this.state.musicOnly && cachedVideo.category_id !== '10') {
+                ws.send(JSON.stringify({ type: "error", message: "Only music videos are allowed in this channel." }));
+                return;
+            }
+
+            track = {
+                id: crypto.randomUUID(),
+                videoId: cachedVideo.id,
+                title: cachedVideo.title,
+                artist: cachedVideo.artist,
+                thumbnail: cachedVideo.thumbnail,
+                duration: cachedVideo.duration,
+                score: 0,
+                voters: {},
+                suggestedBy: userId,
+                suggestedByUsername: ws.user.name
+            };
+
+        } else if (this.apiKey) {
             try {
                 const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,snippet&key=${this.apiKey}`;
                 const response = await fetch(apiUrl);
@@ -561,12 +617,6 @@ class Room {
 
                 if (data.items && data.items.length > 0) {
                     const videoData = data.items[0];
-
-                    // Check Banned Status
-                    if (this.state.bannedSongs.some(b => b.videoId === videoId)) {
-                        ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
-                        return;
-                    }
 
                     const broadcastContent = videoData.snippet.liveBroadcastContent;
                     if (broadcastContent === 'live') {
@@ -587,6 +637,15 @@ class Room {
                         return;
                     }
 
+                    // Music Only Check
+                    if (this.state.musicOnly) {
+                        const categoryId = videoData.snippet.categoryId;
+                        if (categoryId !== '10') { // 10 is Music
+                            ws.send(JSON.stringify({ type: "error", message: "Only music videos are allowed in this channel." }));
+                            return;
+                        }
+                    }
+
                     track = {
                         id: crypto.randomUUID(),
                         videoId: videoId,
@@ -600,14 +659,15 @@ class Room {
                         suggestedByUsername: ws.user.name
                     };
 
-                    // Music Only Check
-                    if (this.state.musicOnly) {
-                        const categoryId = videoData.snippet.categoryId;
-                        if (categoryId !== '10') { // 10 is Music
-                            ws.send(JSON.stringify({ type: "error", message: "Only music videos are allowed in this channel." }));
-                            return;
-                        }
-                    }
+                    // Cache to DB
+                    db.upsertVideo({
+                        id: videoId,
+                        title: track.title,
+                        artist: track.artist,
+                        thumbnail: track.thumbnail,
+                        duration: track.duration,
+                        category_id: videoData.snippet.categoryId
+                    });
                 }
             } catch (apiError) {
                 console.error("YouTube API Check failed:", apiError);
