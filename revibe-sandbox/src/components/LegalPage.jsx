@@ -31,6 +31,8 @@ export function LegalPage() {
         { id: 'imprint', label: 'Legal Notice', icon: FileText, desc: "Imprint & Contact" },
     ];
 
+    const LastUpdated = "December 14, 2025";
+
     return (
         <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-orange-500/30">
             {/* Ambient Background */}
@@ -39,9 +41,9 @@ export function LegalPage() {
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[120px]" />
             </div>
 
-            {/* Navigation Bar - Increased z-index and ensured background visibility */}
+            {/* Navigation Bar */}
             <nav className={`fixed top-0 inset-x-0 z-[100] transition-all duration-300 ${scrolled ? 'bg-[#050505]/90 border-b border-white/5 py-4' : 'bg-[#050505]/60 py-6'} backdrop-blur-xl`}>
-                <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
+                <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                     <button
                         onClick={() => navigate('/')}
                         className="group flex items-center gap-2 text-neutral-400 hover:text-white transition-colors relative z-50"
@@ -53,12 +55,12 @@ export function LegalPage() {
                     </button>
                     <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                        <span className="font-bold tracking-tight text-white">Legal Center</span>
+                        <span className="font-bold tracking-tight text-white hidden md:block">Legal Center</span>
                     </div>
                 </div>
             </nav>
 
-            <main className="relative pt-32 pb-20 px-6 max-w-6xl mx-auto">
+            <main className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto">
                 {/* Hero Section */}
                 <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight bg-gradient-to-br from-white via-white to-neutral-500 bg-clip-text text-transparent">
@@ -71,7 +73,7 @@ export function LegalPage() {
 
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Sidebar / Tabs */}
-                    <div className="lg:w-1/3 lg:sticky lg:top-36 h-fit space-y-4">
+                    <div className="lg:w-1/4 lg:sticky lg:top-36 h-fit space-y-4">
                         {tabs.map(tab => (
                             <button
                                 key={tab.id}
@@ -120,55 +122,100 @@ export function LegalPage() {
                     </div>
 
                     {/* Content Area */}
-                    <div className="lg:w-2/3 min-h-[600px] animate-in fade-in slide-in-from-bottom-8 duration-500 fill-mode-both" key={activeTab}>
+                    <div className="lg:w-3/4 min-h-[600px] animate-in fade-in slide-in-from-bottom-8 duration-500 fill-mode-both" key={activeTab}>
                         <div className="p-8 md:p-12 rounded-3xl bg-neutral-900/50 border border-white/5 backdrop-blur-xl relative overflow-hidden">
                             {/* Content Header */}
-                            <div className="mb-10 border-b border-white/5 pb-8">
-                                <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600 mb-2">
-                                    {tabs.find(t => t.id === activeTab)?.label}
-                                </h2>
-                                <p className="text-neutral-400">Effective Date: December 14, 2025</p>
+                            <div className="mb-10 border-b border-white/5 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                                <div>
+                                    <h2 className="text-3xl lg:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600 mb-2">
+                                        {tabs.find(t => t.id === activeTab)?.label}
+                                    </h2>
+                                    <p className="text-neutral-400">Effective Date: <span className="text-neutral-300">{LastUpdated}</span></p>
+                                </div>
+                                <div className="text-sm text-neutral-500 italic">
+                                    Version 1.2
+                                </div>
                             </div>
 
-                            <article className="prose prose-invert prose-lg max-w-none">
+                            <article className="prose prose-invert prose-lg max-w-none prose-headings:text-neutral-200 prose-p:text-neutral-400 prose-li:text-neutral-400 prose-strong:text-white prose-a:text-orange-500 hover:prose-a:text-orange-400">
                                 {activeTab === 'terms' && (
                                     <div className="space-y-12">
+                                        <div className="p-6 rounded-xl bg-orange-500/5 border border-orange-500/10 text-sm text-neutral-300">
+                                            <strong>Key Takeaway:</strong> By using ReVibe Music, you agree to these terms, including the fact that we use YouTube for content and do not host copyrighted music ourselves. Play nice, respect others, and enjoy the vibes.
+                                        </div>
+
                                         <section>
-                                            <h3 className="flex items-center gap-3 text-xl font-bold text-white mb-4">
-                                                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-orange-500 text-sm">01</span>
-                                                Acceptance of Terms
-                                            </h3>
-                                            <p className="text-neutral-400 leading-relaxed text-base">
-                                                By accessing and using ReVibe Music ("the Service"), you currently accept and agree to be bound by the terms and provision of this agreement.
-                                                Using our service serves as a binding contract between your device and our servers.
+                                            <h3>1. Introduction</h3>
+                                            <p>
+                                                Welcome to ReVibe Music ("we," "our," or "us"). By accessing or using our website, mobile application, or services (collectively, the "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not use the Service.
                                             </p>
                                         </section>
 
                                         <section>
-                                            <h3 className="flex items-center gap-3 text-xl font-bold text-white mb-4">
-                                                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-orange-500 text-sm">02</span>
-                                                Usage License
-                                            </h3>
-                                            <p className="text-neutral-400 leading-relaxed text-base mb-4">
-                                                Permission is granted to temporarily view the materials (information or software) on ReVibe Music for personal, non-commercial transitory viewing only.
+                                            <h3>2. Service Description</h3>
+                                            <p>
+                                                ReVibe Music is a social listening platform that allows users to create virtual rooms ("Lobbies"), curate playlists using content via the YouTube Data API, and vote on music in real-time. We act as a technical intermediary and interface; we do not host, store, or distribute copyrighted music or video files on our servers.
                                             </p>
-                                            <ul className="grid gap-3">
-                                                {['Modify or copy the materials', 'Use materials for commercial purpose', 'Attempt to reverse engineer'].map((item, i) => (
-                                                    <li key={i} className="flex items-center gap-3 text-neutral-400 text-base bg-white/5 p-3 rounded-lg border border-white/5">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500/50" />
-                                                        {item}
-                                                    </li>
-                                                ))}
+                                        </section>
+
+                                        <section>
+                                            <h3>3. Accounts & Registration</h3>
+                                            <ul className="list-disc pl-5 space-y-2">
+                                                <li>You may need to authenticate using a third-party provider (e.g., Google) to access certain features.</li>
+                                                <li>You are responsible for maintaining the confidentiality of your account login information.</li>
+                                                <li>You are responsible for all activities that occur under your account.</li>
+                                                <li>You must be at least 16 years old to use this Service, or the age of digital consent in your country of residence.</li>
                                             </ul>
                                         </section>
 
                                         <section>
-                                            <h3 className="flex items-center gap-3 text-xl font-bold text-white mb-4">
-                                                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-orange-500 text-sm">03</span>
-                                                Platform Content
-                                            </h3>
-                                            <p className="text-neutral-400 leading-relaxed text-base">
-                                                Users act as "DJs" and curate content from YouTube. We do not host any music or video files. All content is embedded via the YouTube API and is subject to YouTube's Terms of Service.
+                                            <h3>4. YouTube API Services</h3>
+                                            <p>
+                                                Our Service uses YouTube API Services to display content. By using ReVibe Music, you also agree to be bound by the <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Terms of Service</a> and acknowledge the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.
+                                            </p>
+                                            <p>
+                                                You acknowledge that we do not have control over the availability of YouTube content/videos and that videos may be blocked or removed by YouTube or rights holders at any time.
+                                            </p>
+                                        </section>
+
+                                        <section>
+                                            <h3>5. User Conduct</h3>
+                                            <p>You agree not to:</p>
+                                            <ul className="list-disc pl-5 space-y-2">
+                                                <li>Use the Service for any illegal purpose or in violation of any local, state, national, or international law.</li>
+                                                <li>Harass, threaten, demean, embarrass, or otherwise harm any other user of the Service.</li>
+                                                <li>Impersonate any person or entity.</li>
+                                                <li>Interfere with security-related features of the Service.</li>
+                                                <li>Use any robot, spider, scraper, or other automated means to access the Service for any purpose without our express written permission.</li>
+                                            </ul>
+                                        </section>
+
+                                        <section>
+                                            <h3>6. Intellectual Property</h3>
+                                            <p>
+                                                The ReVibe Music interface, branding, logo, and custom code are proprietary intellectual property of the operators. However, all audiovisual content streamed through the Service is the property of its respective third-party owners (e.g., YouTube creators, record labels) and is accessed via public APIs. We claim no ownership over such external content.
+                                            </p>
+                                        </section>
+
+                                        <section>
+                                            <h3>7. Disclaimer of Warranties</h3>
+                                            <p className="uppercase text-xs font-bold tracking-widest text-neutral-500 mb-2">Disclaimer</p>
+                                            <p>
+                                                THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED OR ERROR-FREE.
+                                            </p>
+                                        </section>
+
+                                        <section>
+                                            <h3>8. Limitation of Liability</h3>
+                                            <p>
+                                                IN NO EVENT SHALL REVIBE MUSIC BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR PUNITIVE DAMAGES, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF THE SERVICE.
+                                            </p>
+                                        </section>
+
+                                        <section>
+                                            <h3>9. Governing Law</h3>
+                                            <p>
+                                                These Terms shall be governed by and construed in accordance with the laws of the Federal Republic of Germany, without regard to its conflict of law provisions.
                                             </p>
                                         </section>
                                     </div>
@@ -176,30 +223,112 @@ export function LegalPage() {
 
                                 {activeTab === 'privacy' && (
                                     <div className="space-y-12">
+                                        <div className="p-6 rounded-xl bg-orange-500/5 border border-orange-500/10 flex gap-4">
+                                            <Shield className="text-orange-500 shrink-0" size={24} />
+                                            <div>
+                                                <h4 className="font-bold text-white mb-1">GDPR Compliance</h4>
+                                                <p className="text-sm text-neutral-400">This policy is designed to comply with the European Union's General Data Protection Regulation (GDPR). You have full control over your data.</p>
+                                            </div>
+                                        </div>
+
                                         <section>
-                                            <h3 className="flex items-center gap-3 text-xl font-bold text-white mb-4">
-                                                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-orange-500 text-sm">01</span>
-                                                What We Collect
-                                            </h3>
-                                            <div className="grid md:grid-cols-2 gap-4">
-                                                <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                                                    <h4 className="font-bold text-white mb-2">Essential Data</h4>
-                                                    <p className="text-sm text-neutral-400">Basic profile info from Google Login (Name, Avatar) to personalize your experience.</p>
+                                            <h3>1. Controller Information</h3>
+                                            <p>
+                                                The data controller responsible for your personal information for the purposes of GDPR is:<br />
+                                                <strong className="text-white">ReVibe Digital</strong><br />
+                                                [Insert Street Address]<br />
+                                                [Insert City, Zip Code, Country]<br />
+                                                Email: privacy@revibe.music
+                                            </p>
+                                        </section>
+
+                                        <section>
+                                            <h3>2. Data We Collect</h3>
+                                            <div className="space-y-6">
+                                                <div>
+                                                    <h4 className="text-white font-bold mb-2">A. Information You Provide</h4>
+                                                    <ul className="list-disc pl-5 space-y-1">
+                                                        <li><strong>Account Data:</strong> If you log in via Google, we collect your name, email address, and profile picture URL.</li>
+                                                        <li><strong>User Content:</strong> Room names, chat messages (if applicable), and playlist selections you create or submit.</li>
+                                                    </ul>
                                                 </div>
-                                                <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                                                    <h4 className="font-bold text-white mb-2">Usage Data</h4>
-                                                    <p className="text-sm text-neutral-400">Room history, favorite tracks, and settings preferences.</p>
+                                                <div>
+                                                    <h4 className="text-white font-bold mb-2">B. Information Collected Automatically</h4>
+                                                    <ul className="list-disc pl-5 space-y-1">
+                                                        <li><strong>Usage Data:</strong> Pages visited, time spent, songs voted on, and interaction with features.</li>
+                                                        <li><strong>Technical Data:</strong> IP address, browser type, device information, and operating system (via standard server logs).</li>
+                                                        <li><strong>Cookies & Local Storage:</strong> We use local storage to remember your session, room preferences, and volume settings.</li>
+                                                    </ul>
                                                 </div>
                                             </div>
                                         </section>
 
                                         <section>
-                                            <h3 className="flex items-center gap-3 text-xl font-bold text-white mb-4">
-                                                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-orange-500 text-sm">02</span>
-                                                Data Usage
-                                            </h3>
-                                            <p className="text-neutral-400 leading-relaxed text-base">
-                                                We process this data solely to provide functionality. For example, remembering your last visited room or re-queuing your favorite songs. We explicitly <strong className="text-white">do not sell</strong> your data to advertisers or third parties.
+                                            <h3>3. Purpose and Legal Basis</h3>
+                                            <p>We process your data for the following purposes based on these legal grounds:</p>
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-left text-sm border-collapse">
+                                                    <thead>
+                                                        <tr className="border-b border-white/10">
+                                                            <th className="py-3 font-bold text-white">Purpose</th>
+                                                            <th className="py-3 font-bold text-white">Legal Basis (GDPR Art. 6)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-white/5">
+                                                        <tr><td className="py-3 pr-4">Providing the Service (Rooms, Playlists)</td><td className="py-3">Performance of Contract (Art. 6(1)(b))</td></tr>
+                                                        <tr><td className="py-3 pr-4">User Authentication</td><td className="py-3">Consent / Contract (Art. 6(1)(a/b))</td></tr>
+                                                        <tr><td className="py-3 pr-4">Improving Security & Features</td><td className="py-3">Legitimate Interest (Art. 6(1)(f))</td></tr>
+                                                        <tr><td className="py-3 pr-4">Compliance with Law</td><td className="py-3">Legal Obligation (Art. 6(1)(c))</td></tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </section>
+
+                                        <section>
+                                            <h3>4. Data Sharing & Third Parties</h3>
+                                            <p>
+                                                We do not sell your personal data. However, we share data with the following categories of recipients to operate the Service:
+                                            </p>
+                                            <ul className="list-disc pl-5 space-y-2">
+                                                <li><strong>YouTube API:</strong> To play music and display video metadata. YouTube may collect data associated with your playback activity in accordance with their privacy policy.</li>
+                                                <li><strong>Hosting Providers:</strong> We use cloud service providers (e.g., AWS, Vercel, Heroku) to host our application and database. These providers act as data processors bound by data processing agreements (DPAs).</li>
+                                            </ul>
+                                        </section>
+
+                                        <section>
+                                            <h3>5. International Transfers</h3>
+                                            <p>
+                                                Some of our service providers (e.g., Google) are based outside the European Economic Area (EEA), specifically in the USA. We ensure that data transfers are protected by appropriate safeguards, such as the EU-US Data Privacy Framework or Standard Contractual Clauses (SCCs).
+                                            </p>
+                                        </section>
+
+                                        <section>
+                                            <h3>6. Your Rights</h3>
+                                            <p>Under the GDPR, you have the following rights regarding your personal data:</p>
+                                            <ul className="grid md:grid-cols-2 gap-4 mt-4">
+                                                {[
+                                                    ['Access', 'Request a copy of your data.'],
+                                                    ['Rectification', 'Correct inaccurate data.'],
+                                                    ['Erasure', 'Request "Right to be Forgotten".'],
+                                                    ['Restriction', 'Limit how we use your data.'],
+                                                    ['Portability', 'Get your data in a machine-readable format.'],
+                                                    ['Objection', 'Object to processing based on legitimate interests.']
+                                                ].map(([right, desc]) => (
+                                                    <li key={right} className="bg-white/5 p-4 rounded-lg border border-white/5">
+                                                        <strong className="text-white block mb-1">Right to {right}</strong>
+                                                        <span className="text-sm opacity-80">{desc}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            <p className="mt-4">
+                                                To exercise these rights, please contact us at <a href="mailto:privacy@revibe.music">privacy@revibe.music</a>.
+                                            </p>
+                                        </section>
+
+                                        <section>
+                                            <h3>7. Data Retention</h3>
+                                            <p>
+                                                We retain your personal data only as long as necessary to provide the Service or to comply with legal obligations. Session logs are typically deleted after 30 days. Account data is retained until you request deletion.
                                             </p>
                                         </section>
                                     </div>
@@ -212,50 +341,79 @@ export function LegalPage() {
                                                 <AlertCircle size={20} />
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-orange-500 text-sm uppercase tracking-wide mb-1">Demo Content Only</h4>
+                                                <h4 className="font-bold text-orange-500 text-sm uppercase tracking-wide mb-1">Legal Notice (Impressum)</h4>
                                                 <p className="text-sm text-neutral-400">
-                                                    This application is for demonstration purposes. The legal entities and contact details listed below are placeholders and do not represent a real company.
+                                                    Information according to § 5 TMG (German Telemedia Act).
                                                 </p>
                                             </div>
                                         </div>
 
-                                        <div className="p-8 rounded-2xl bg-gradient-to-br from-neutral-900 to-black border border-neutral-800 relative overflow-hidden">
-                                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl -mr-10 -mt-10" />
-
-                                            <h3 className="text-2xl font-bold text-white mb-1">ReVibe Music</h3>
-                                            <p className="text-neutral-500 mb-8">Concept &amp; Implementation</p>
-
-                                            <div className="grid md:grid-cols-2 gap-8">
-                                                <div>
-                                                    <h4 className="text-xs font-bold text-orange-500 uppercase tracking-widest mb-3">Operator</h4>
-                                                    <p className="text-neutral-300 font-medium text-lg">ReVibe Digital</p>
-                                                    <p className="text-neutral-400">123 Creator Blvd</p>
-                                                    <p className="text-neutral-400">Berlin, Germany 10115</p>
+                                        <div className="grid md:grid-cols-2 gap-12">
+                                            <div>
+                                                <h3 className="text-xl font-bold text-white mb-6">Service Provider</h3>
+                                                <div className="space-y-4 text-neutral-300">
+                                                    <p>
+                                                        <strong className="text-white block">ReVibe Digital</strong>
+                                                        Sample Street 123<br />
+                                                        10115 Berlin<br />
+                                                        Germany
+                                                    </p>
+                                                    <p>
+                                                        <strong className="text-white block">Represented by:</strong>
+                                                        [Managing Director Name]
+                                                    </p>
                                                 </div>
-                                                <div>
-                                                    <h4 className="text-xs font-bold text-orange-500 uppercase tracking-widest mb-3">Contact</h4>
-                                                    <div className="space-y-2">
-                                                        <p className="text-neutral-400 flex items-center justify-between border-b border-white/5 pb-2">
-                                                            <span>Email</span>
-                                                            <span className="text-white">hello@revibe.music</span>
-                                                        </p>
-                                                        <p className="text-neutral-400 flex items-center justify-between border-b border-white/5 pb-2">
-                                                            <span>Phone</span>
-                                                            <span className="text-white">+49 (0) 30 1234567</span>
-                                                        </p>
-                                                    </div>
+                                            </div>
+
+                                            <div>
+                                                <h3 className="text-xl font-bold text-white mb-6">Contact</h3>
+                                                <div className="space-y-4">
+                                                    <p className="flex items-center justify-between border-b border-white/5 pb-2">
+                                                        <span className="text-neutral-500">Phone</span>
+                                                        <span className="text-white font-mono">+49 (0) 123 456789</span>
+                                                    </p>
+                                                    <p className="flex items-center justify-between border-b border-white/5 pb-2">
+                                                        <span className="text-neutral-500">Email</span>
+                                                        <a href="mailto:info@revibe.music" className="text-orange-500 hover:text-orange-400 font-mono">info@revibe.music</a>
+                                                    </p>
+                                                    <p className="flex items-center justify-between border-b border-white/5 pb-2">
+                                                        <span className="text-neutral-500">Website</span>
+                                                        <a href="https://revibe.music" className="text-orange-500 hover:text-orange-400 font-mono">www.revibe.music</a>
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="p-6 rounded-xl bg-orange-500/5 border border-orange-500/10">
-                                            <h4 className="font-bold text-white mb-2 flex items-center gap-2">
-                                                <Scale size={16} className="text-orange-500" />
-                                                Legal Disclaimer
-                                            </h4>
-                                            <p className="text-sm text-neutral-400 leading-relaxed">
-                                                Despite careful control of the contents, we do not assume any liability for the contents of external links. The operators of the linked pages are solely responsible for their content.
-                                            </p>
+                                        <div className="space-y-6 pt-8 border-t border-white/5">
+                                            <section>
+                                                <h4 className="font-bold text-white mb-2">VAT ID</h4>
+                                                <p className="text-neutral-400">
+                                                    Sales tax identification number according to § 27a of the Sales Tax Law:<br />
+                                                    <span className="font-mono text-neutral-300">DE 123 456 789</span>
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-white mb-2">Online Dispute Resolution (ODR)</h4>
+                                                <p className="text-neutral-400">
+                                                    The European Commission provides a platform for online dispute resolution (OS): <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr/</a>.<br />
+                                                    We are not willing or obliged to participate in dispute resolution proceedings before a consumer arbitration board.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-white mb-2">Liability for Content</h4>
+                                                <p className="text-neutral-400 text-sm leading-relaxed">
+                                                    As a service provider, we are responsible for our own content on these pages in accordance with § 7 Section 1 TMG under general laws. According to §§ 8 to 10 TMG, however, we are not obligated to monitor transmitted or stored third-party information or to investigate circumstances that indicate illegal activity. Obligations to remove or block the use of information under general laws remain unaffected. However, liability in this regard is only possible from the point in time at which we become aware of a specific legal violation. Upon becoming aware of such legal violations, we will remove this content immediately.
+                                                </p>
+                                            </section>
+
+                                            <section>
+                                                <h4 className="font-bold text-white mb-2">Liability for Links</h4>
+                                                <p className="text-neutral-400 text-sm leading-relaxed">
+                                                    Our offer contains links to external third-party websites over whose content we have no influence. Therefore, we cannot assume any liability for this external content. The respective provider or operator of the pages is always responsible for the content of the linked pages.
+                                                </p>
+                                            </section>
                                         </div>
                                     </div>
                                 )}
