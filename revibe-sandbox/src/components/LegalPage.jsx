@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, AlertCircle, Mail, Phone, Globe } from 'lucide-react';
+import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, Mail, Phone, Globe } from 'lucide-react';
 
 export function LegalPage() {
     const navigate = useNavigate();
@@ -39,33 +39,33 @@ export function LegalPage() {
                 <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                     <button
                         onClick={() => navigate('/')}
-                        className="group flex items-center gap-2 text-neutral-400 hover:text-white transition-colors relative z-50"
+                        className="group flex items-center gap-2 text-neutral-400 hover:text-white transition-colors relative z-50 current-color"
                     >
                         <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
                             <ArrowLeft size={20} />
                         </div>
-                        <span className="font-medium">Back</span>
+                        <span className="font-medium">Back to Revibe</span>
                     </button>
                     <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
                         <span className="font-bold tracking-tight text-white hidden md:block">Legal Center</span>
                     </div>
                 </div>
             </nav>
 
             <main className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto">
+                {/* Hero Section */}
+                <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight bg-gradient-to-br from-white via-white to-neutral-500 bg-clip-text text-transparent">
+                        Transparency &amp; Trust
+                    </h1>
+                    <p className="text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed">
+                        We believe in open communication. Here's everything you need to know about how we operate, protect your data, and respect your rights.
+                    </p>
+                </div>
+
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Sidebar */}
                     <div className="lg:w-1/4 lg:sticky lg:top-36 h-fit space-y-4">
-                        <div className="mb-8">
-                            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-neutral-400">
-                                Legal
-                            </h1>
-                            <p className="text-neutral-500 mt-2 text-sm leading-relaxed">
-                                Transparent operations from the Netherlands.
-                            </p>
-                        </div>
-
                         {tabs.map(tab => (
                             <button
                                 key={tab.id}
@@ -139,7 +139,12 @@ export function LegalPage() {
                                             The service is provided "as is". ReVibe Music disclaims all warranties. To the fullest extent permitted by Dutch law, we shall not be liable for any indirect damages arising from your use of the service.
                                         </p>
 
-                                        <h3>5. Governing Law</h3>
+                                        <h3>5. Google Privacy Policy</h3>
+                                        <p>
+                                            Since we utilize YouTube API Services, you acknowledge that by using those services, your data may be processed in accordance with the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.
+                                        </p>
+
+                                        <h3>6. Governing Law</h3>
                                         <p>
                                             These terms are governed by the laws of <strong>The Netherlands</strong>. Any disputes shall be subject to the exclusive jurisdiction of the courts in Amsterdam, unless mandatory consumer protection laws dictate otherwise.
                                         </p>
@@ -149,8 +154,8 @@ export function LegalPage() {
                                 {activeTab === 'privacy' && (
                                     <>
                                         <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-500/20 text-sm text-neutral-300 mb-8">
-                                            <strong className="text-orange-500 block mb-1">GDPR Summary</strong>
-                                            We collect minimal data to make the app work. We don't sell your data. We respect your privacy rights under European Law (AVG/GDPR).
+                                            <strong className="text-orange-500 block mb-1">GDPR & Google Data Summary</strong>
+                                            We collect minimal data to make the app work and use YouTube's API for content. We don't sell your data. We respect your privacy rights under European Law (AVG/GDPR).
                                         </div>
 
                                         <h3>1. Who We Are</h3>
@@ -166,16 +171,16 @@ export function LegalPage() {
                                         <p>We process data for specific, legitimate purposes:</p>
                                         <ul className="list-none pl-0 space-y-4">
                                             <li className="pl-4 border-l-2 border-white/10">
-                                                <strong className="block text-white">Account Information</strong>
-                                                <span className="text-sm">When you login via Google, we store your email, name, and avatar to identify you in rooms. Legal basis: Contract (Art. 6.1.b GDPR).</span>
+                                                <strong className="block text-white">Google Account Information</strong>
+                                                <span className="text-sm">When you login via Google, we verify your identity and store your email, name, and avatar URL to display your profile in rooms. Legal basis: Contract (Art. 6.1.b GDPR).</span>
                                             </li>
                                             <li className="pl-4 border-l-2 border-white/10">
                                                 <strong className="block text-white">Usage Statistics</strong>
-                                                <span className="text-sm">We log room history and voted songs to improve recommendations. Legal basis: Legitimate Interest (Art. 6.1.f GDPR).</span>
+                                                <span className="text-sm">We log room history and voted songs to improve recommendations. This data is internal to ReVibe. Legal basis: Legitimate Interest (Art. 6.1.f GDPR).</span>
                                             </li>
                                             <li className="pl-4 border-l-2 border-white/10">
-                                                <strong className="block text-white">Technical Logs</strong>
-                                                <span className="text-sm">IP addresses and browser agents are logged temporarily for security and debugging. Legal basis: Legitimate Interest.</span>
+                                                <strong className="block text-white">YouTube API Data</strong>
+                                                <span className="text-sm">When you search or play songs, we send requests to YouTube's API. YouTube may collect data on your viewing behavior via their embedded player. Legal basis: Contract/Consent (via your use of YouTube).</span>
                                             </li>
                                         </ul>
 
@@ -184,19 +189,22 @@ export function LegalPage() {
                                             We engage trusted third parties to operate our infrastructure. We ensure they are GDPR compliant.
                                         </p>
                                         <ul>
-                                            <li><strong>Google/YouTube</strong> (Auth & Content API) - USA</li>
+                                            <li><strong>Google/YouTube</strong> (Auth & Content API) - USA. <br /><span className="text-sm">See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.</span></li>
                                             <li><strong>Hosting Provider</strong> (Server Infrastructure) - EU/USA</li>
                                             <li><strong>Database Provider</strong> (Data Storage) - EU/USA</li>
                                         </ul>
 
                                         <h3>4. Your Rights</h3>
                                         <p>
-                                            You have the right to access, correct, delete, or export your personal data at any time. To exercise these rights ("Right to be Forgotten"), simply contact us at the email provided above.
+                                            You have the right to access, correct, delete, or export your personal data at any time. To exercise these rights ("Right to be Forgotten" or "Revocation of Access"), contact us at the email provided above.
+                                        </p>
+                                        <p>
+                                            You can also revoke our access to your Google Data via the <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">Google Security Settings</a> page.
                                         </p>
 
                                         <h3>5. Cookies</h3>
                                         <p>
-                                            We use only essential local storage to maintain your session. We do not use third-party tracking cookies for advertising (marketing cookies).
+                                            We use only essential local storage to maintain your session (e.g. your login token). We do not use third-party tracking cookies for advertising (marketing cookies) on our own domain, though third-party embeds (YouTube) may set their own cookies.
                                         </p>
                                     </>
                                 )}
