@@ -187,26 +187,25 @@ wss.on("connection", (ws, req) => {
                     const userId = ws.user.id;
                     console.log(`[GDPR] Deleting account for user: ${userId}`);
 
-                    // 1. Send Success Signal FIRST to ensure client handles it before room death
-                    // This allows the client to logout and navigate away cleanly.
+                    // 1. Delete from DB (Synchronous Transaction)
+                    // We must do this BEFORE sending success to avoid race conditions where the client
+                    // redirects to Lobby and fetches the room list before we've actually deleted the data.
+                    try {
+                        console.log(`[GDPR TRACE] Starting DB Deletion for ${userId}...`);
+                        db.deleteUser(userId);
+                        console.log(`[GDPR TRACE] DB Deletion complete for ${userId}`);
+                    } catch (e) {
+                        console.error("Failed to delete user from DB", e);
+                        ws.send(JSON.stringify({ type: "error", message: "Failed to delete account data." }));
+                        return;
+                    }
+
+                    // 2. Send Success Signal
+                    // Client will navigate away.
                     ws.send(JSON.stringify({ type: "DELETE_ACCOUNT_SUCCESS" }));
                     ws.user = null; // Detach user immediately
 
-                    // 2. Delete from DB (Synchronous Transaction)
-                    try {
-                        db.deleteUser(userId);
-                        console.log(`[GDPR] DB records deleted for user: ${userId}`);
-                    } catch (e) {
-                        console.error("Failed to delete user from DB", e);
-                        // We already sent success, so we can't revert easily, but for GDPR we must ensure it.
-                        // Ideally checking this before sending success would be better, but the race condition 
-                        // with room destruction is the priority for UX. 
-                        // Since db.deleteUser is a transaction, it either fails or succeeds. 
-                        // If it fails, we log critical error.
-                    }
-
                     // 3. Destroy active memory rooms owned by user
-                    // We do this LAST so the broadcast doesn't confuse the now-deleted user's client (who should be leaving).
                     const roomsToDestroy = [];
                     console.log(`[GDPR DEBUG] Checking ${rooms.size} active rooms for ownership match against ${userId}`);
 
