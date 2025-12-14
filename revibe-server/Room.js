@@ -628,12 +628,24 @@ class Room {
 
         } else if (this.apiKey) {
             try {
-                const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,snippet&key=${this.apiKey}`;
+                const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,snippet,status&key=${this.apiKey}`;
                 const response = await fetch(apiUrl);
                 const data = await response.json();
 
                 if (data.items && data.items.length > 0) {
                     const videoData = data.items[0];
+
+                    // Check Embeddable Status
+                    if (videoData.status && videoData.status.embeddable === false) {
+                        ws.send(JSON.stringify({ type: "error", message: "This video playback is restricted by the owner (Not Embeddable)." }));
+                        return;
+                    }
+
+                    // Check Age Restriction
+                    if (videoData.contentDetails?.contentRating?.ytRating === 'ytAgeRestricted') {
+                        ws.send(JSON.stringify({ type: "error", message: "Age-restricted videos are not allowed." }));
+                        return;
+                    }
 
                     const broadcastContent = videoData.snippet.liveBroadcastContent;
                     if (broadcastContent === 'live') {
