@@ -228,6 +228,21 @@ export function Lobby() {
         }
     }, [focusedIndex]);
 
+    // Handle Escape Key to Close Modals
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                if (isCreatingRoom) setIsCreatingRoom(false);
+                if (showPasswordModal) setShowPasswordModal(false);
+                if (showProfileModal) setShowProfileModal(false);
+                if (showDeleteConfirm) setShowDeleteConfirm(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleEscape);
+        return () => window.removeEventListener('keydown', handleEscape);
+    }, [isCreatingRoom, showPasswordModal, showProfileModal, showDeleteConfirm]);
+
     // Handle Password Required Error
     useEffect(() => {
         if (lastErrorCode === "PASSWORD_REQUIRED") {

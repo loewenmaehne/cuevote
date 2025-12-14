@@ -222,6 +222,27 @@ function App() {
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false); // <--- Added this
 
+  // Handle Escape Key for App-level modals
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        if (showPendingPage) setShowPendingPage(false);
+        if (showBannedPage) setShowBannedPage(false);
+        if (showSuggest) setShowSuggest(false);
+        if (showQRModal) setShowQRModal(false);
+        // Password Modal is tricky - usually mandatory but if user wants to cancel joining, maybe? 
+        // Logic in View was: Cancel -> navigate('/'). So we can replicate that?
+        if (showPasswordModal) {
+          // Optional: Uncomment if Escape should effectively "Cancel" the join
+          // navigate('/'); 
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [showPendingPage, showBannedPage, showSuggest, showQRModal, showPasswordModal]);
+
   // Auth: Resume Session logic moved to Provider
 
   // Auth: Handle Login Events logic moved to Provider? 
