@@ -156,6 +156,43 @@ wss.on("connection", (ws, req) => {
                     ws.user = null;
                     return;
                 }
+                case "DELETE_ACCOUNT": {
+                    if (!ws.user) return;
+                    const userId = ws.user.id;
+                    console.log(`[GDPR] Deleting account for user: ${userId}`);
+
+                    // 1. Destroy active rooms owned by user
+                    const roomsToDestroy = [];
+                    for (const [id, room] of rooms.entries()) {
+                        if (room.metadata.owner_id === userId) {
+                            roomsToDestroy.push(id);
+                        }
+                    }
+
+                    roomsToDestroy.forEach(id => {
+                        const room = rooms.get(id);
+                        if (room) {
+                            console.log(`[GDPR] Destroying room owned by deleted user: ${id}`);
+                            room.broadcast({ type: "error", code: "ROOM_DELETED", message: "Room has been deleted by owner." });
+                            room.destroy();
+                            rooms.delete(id);
+                        }
+                    });
+
+                    // 2. Delete from DB
+                    try {
+                        db.deleteUser(userId);
+                    } catch (e) {
+                        console.error("Failed to delete user from DB", e);
+                        ws.send(JSON.stringify({ type: "error", message: "Failed to delete account data." }));
+                        return;
+                    }
+
+                    // 3. Confirm
+                    ws.send(JSON.stringify({ type: "DELETE_ACCOUNT_SUCCESS" }));
+                    ws.user = null;
+                    return;
+                }
                 case "STATE_ACK": {
                     console.log(`[SERVER TRACE] Client ${ws.id} ACKNOWLEDGED state for room: ${parsedMessage.payload.roomId}`);
                     break;
