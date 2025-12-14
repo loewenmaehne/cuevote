@@ -680,8 +680,8 @@ export function Lobby() {
                                     </p>
 
                                     <div className="mb-6">
-                                        <label className="block text-xs text-neutral-500 mb-2 uppercase tracking-wider font-medium">
-                                            Type <span className="text-neutral-300 font-mono select-none">Delete this account and all my channels forever</span> to confirm
+                                        <label className="block text-xs text-neutral-500 mb-2 font-medium">
+                                            Type <span className="text-neutral-300 font-bold select-none">Delete this account and all my channels forever</span> to confirm
                                         </label>
                                         <input
                                             type="text"
