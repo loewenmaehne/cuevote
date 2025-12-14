@@ -9,6 +9,17 @@ const crypto = require("crypto");
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const db = require('./db');
+const fs = require('fs');
+
+const logFile = 'debug_server.log';
+function logToFile(msg) {
+    const timestamp = new Date().toISOString();
+    const line = `[${timestamp}] ${msg}\n`;
+    try {
+        fs.appendFileSync(logFile, line);
+    } catch (e) { console.error("Log failed", e); }
+    console.log(msg);
+}
 
 const wss = new WebSocket.Server({ port: process.env.PORT || 8080, host: '0.0.0.0' });
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -177,15 +188,7 @@ wss.on("connection", (ws, req) => {
                     ws.user = null;
                     return;
                 }
-                    const fs = require('fs');
-                    const logFile = 'debug_server.log';
 
-                    function logToFile(msg) {
-                        const timestamp = new Date().toISOString();
-                        const line = `[${timestamp}] ${msg}\n`;
-                        fs.appendFileSync(logFile, line);
-                        console.log(msg);
-                    }
 
                 // ... existing code ...
 
@@ -216,7 +219,7 @@ wss.on("connection", (ws, req) => {
                         // No, listUserRooms queries 'rooms' table by owner_id. It doesn't join 'users' necessarily.
                         // Let's check listUserRooms implementation.
                         // "SELECT * FROM rooms WHERE owner_id = ?"
-                        const afterRooms = db.prepare('SELECT * FROM rooms WHERE owner_id = ?').all(userId);
+                        const afterRooms = db.listUserRooms(userId);
                         logToFile(`[GDPR POST-CHECK] User owns ${afterRooms.length} rooms in DB. (Should be 0)`);
 
                     } catch (e) {
