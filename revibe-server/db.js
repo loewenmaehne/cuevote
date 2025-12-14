@@ -143,31 +143,35 @@ module.exports = {
     return row ? row.video_id : null;
   },
   deleteUser: (userId) => {
-    // Paranoid: Prepare inside function
-    const countRooms = db.prepare('SELECT COUNT(*) as count FROM rooms WHERE owner_id = ?');
-    const deleteSessions = db.prepare('DELETE FROM sessions WHERE user_id = ?');
-    const deleteRooms = db.prepare('DELETE FROM rooms WHERE owner_id = ?');
-    const deleteUser = db.prepare('DELETE FROM users WHERE id = ?');
+    // 1. Get User Email for double-tap deletion (prevents email unique constraint zombies)
+    const user = db.prepare('SELECT email FROM users WHERE id = ?').get(userId);
+    const userEmail = user ? user.email : null;
 
-    // Debug Pre-Check
-    const beforeCount = countRooms.get(userId).count;
-    console.log(`[DB DEBUG] deleteUser: Found ${beforeCount} rooms owned by ${userId} before deletion.`);
+    console.log(`[DB DELETE] Starting cleanup for User ID: ${userId}, Email: ${userEmail}`);
 
     const transaction = db.transaction(() => {
-      const sessionResult = deleteSessions.run(userId);
-      console.log(`[DB] Deleted ${sessionResult.changes} sessions for user ${userId}`);
+      // Sessions
+      const s1 = db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId);
 
-      const roomResult = deleteRooms.run(userId);
-      console.log(`[DB] Deleted ${roomResult.changes} rooms for user ${userId}`);
+      // Rooms
+      const r1 = db.prepare('DELETE FROM rooms WHERE owner_id = ?').run(userId);
 
-      const userResult = deleteUser.run(userId);
-      console.log(`[DB] Deleted ${userResult.changes} user record for ${userId}`);
+      // Users (Primary ID)
+      const u1 = db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+
+      // Users (Email cleanup explanation: If ID somehow changed or we have a zombie row with same email)
+      let u2 = { changes: 0 };
+      if (userEmail) {
+        u2 = db.prepare('DELETE FROM users WHERE email = ? AND id != ?').run(userEmail, userId);
+      }
+
+      console.log(`[DB DELETE] Result - Sessions: ${s1.changes}, Rooms: ${r1.changes}, Users(ID): ${u1.changes}, Users(Email): ${u2.changes}`);
     });
 
     try {
       transaction();
-      // Force checkpoint
-      db.pragma('wal_checkpoint(PASSIVE)');
+      // FORCE synchronous write to disk and clear WAL
+      db.pragma('wal_checkpoint(TRUNCATE)');
       return true;
     } catch (err) {
       console.error("[DB] deleteUser Transaction Failed:", err);
