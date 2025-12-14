@@ -104,6 +104,23 @@ export function Header({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showExitConfirm, exitConfirmIndex, onGoHome, onShowSuggest]);
 
+  // Handle Escape Key for other modals
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        if (showSettings) setShowSettings(false);
+        if (showProfileModal) setShowProfileModal(false);
+        if (showDeleteConfirm) setShowDeleteConfirm(false);
+        // We can safely call these even if not open, assuming they set boolean state
+        onShowSuggest(false);
+        onShowQRCode(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [showSettings, showProfileModal, showDeleteConfirm, onShowSuggest, onShowQRCode]);
+
   return (
     <header
       ref={headerRef}
