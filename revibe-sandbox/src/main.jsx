@@ -6,6 +6,7 @@ import { WebSocketProvider } from './contexts/WebSocketProvider.jsx';
 import './index.css'
 import App from './App.jsx'
 import { Lobby } from './components/Lobby.jsx'
+import { LegalPage } from './components/LegalPage.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
 
 createRoot(document.getElementById('root')).render(
@@ -15,6 +16,7 @@ createRoot(document.getElementById('root')).render(
         <WebSocketProvider>
           <Routes>
             <Route path="/room/:roomId" element={<App />} />
+            <Route path="/legal" element={<LegalPage />} />
             <Route path="/" element={<Lobby />} />
           </Routes>
         </WebSocketProvider>

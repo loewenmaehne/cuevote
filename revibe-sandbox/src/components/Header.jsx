@@ -137,6 +137,13 @@ export function Header({
                 </button>
               </div>
             )}
+            <a
+              href="/legal"
+              className="group flex items-center justify-center w-9 h-9 rounded-full border border-neutral-700 bg-neutral-800/50 hover:bg-neutral-700 hover:border-neutral-500 transition-all active:scale-95 shadow-sm ml-2"
+              title="Legal Information"
+            >
+              <HelpCircle size={18} className="text-neutral-400 group-hover:text-white transition-colors" />
+            </a>
           </div>
           {/* Playlist View Toggle - Next to User Widget */}
           {!(playlistViewMode && !isOwner) && (
