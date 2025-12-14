@@ -143,9 +143,15 @@ module.exports = {
     return row ? row.video_id : null;
   },
   deleteUser: (userId) => {
+    // Paranoid: Prepare inside function
+    const countRooms = db.prepare('SELECT COUNT(*) as count FROM rooms WHERE owner_id = ?');
     const deleteSessions = db.prepare('DELETE FROM sessions WHERE user_id = ?');
     const deleteRooms = db.prepare('DELETE FROM rooms WHERE owner_id = ?');
     const deleteUser = db.prepare('DELETE FROM users WHERE id = ?');
+
+    // Debug Pre-Check
+    const beforeCount = countRooms.get(userId).count;
+    console.log(`[DB DEBUG] deleteUser: Found ${beforeCount} rooms owned by ${userId} before deletion.`);
 
     const transaction = db.transaction(() => {
       const sessionResult = deleteSessions.run(userId);
@@ -160,6 +166,8 @@ module.exports = {
 
     try {
       transaction();
+      // Force checkpoint
+      db.pragma('wal_checkpoint(PASSIVE)');
       return true;
     } catch (err) {
       console.error("[DB] deleteUser Transaction Failed:", err);
