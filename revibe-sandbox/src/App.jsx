@@ -173,10 +173,8 @@ function App() {
       // Auto-open Share Modal if requested (e.g. new channel)
       if (location.state?.showShareOnLoad) {
         setShowQRModal(true);
-        // Clear state to prevent reopening on reload? 
-        // React Router history state persists on reload in some implementations, but typically we want it once.
-        // We can't easily clear location.state without navigating again, which might cause re-renders.
-        // For now, this is acceptable as it's a "fresh" navigation from Lobby.
+        // Clear the state so it doesn't trigger again on subsequent updates
+        navigate(location.pathname, { replace: true, state: { ...location.state, showShareOnLoad: false } });
       }
     }
   }, [serverState, serverRoomId, activeRoomId, location.state]);
