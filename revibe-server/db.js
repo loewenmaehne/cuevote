@@ -148,12 +148,22 @@ module.exports = {
     const deleteUser = db.prepare('DELETE FROM users WHERE id = ?');
 
     const transaction = db.transaction(() => {
-      deleteSessions.run(userId);
-      deleteRooms.run(userId);
-      deleteUser.run(userId);
+      const sessionResult = deleteSessions.run(userId);
+      console.log(`[DB] Deleted ${sessionResult.changes} sessions for user ${userId}`);
+
+      const roomResult = deleteRooms.run(userId);
+      console.log(`[DB] Deleted ${roomResult.changes} rooms for user ${userId}`);
+
+      const userResult = deleteUser.run(userId);
+      console.log(`[DB] Deleted ${userResult.changes} user record for ${userId}`);
     });
 
-    transaction();
-    return true;
+    try {
+      transaction();
+      return true;
+    } catch (err) {
+      console.error("[DB] deleteUser Transaction Failed:", err);
+      throw err;
+    }
   }
 };
