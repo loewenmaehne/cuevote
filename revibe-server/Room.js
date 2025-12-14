@@ -437,6 +437,18 @@ class Room {
                     this.handleUnbanSong(message.payload);
                 }
                 break;
+            case "DELETE_ACCOUNT":
+                // Delegate back to main server handler or handle here?
+                // Returning a specific flag or emitting an event would be ideal, 
+                // but since we are in `Room.js`, we can just implement the destruction logic or 
+                // rely on the fact that `index.js` might be checking this message type BEFORE calling room.handleMessage?
+                // ERROR: I suspect index.js logic forwards it blindly.
+                // Let's force a "return false" or similar if we want parent to handle it?
+                // Or simply `return` and ensure index.js handles it?
+                // Let's assume index.js needs to handle it.
+                // If I modify index.js to check for DELETE_ACCOUNT *before* routing to room, that fixes it globally.
+                // I will NOT edit Room.js yet. I will edit index.js.
+                break;
         }
     }
 
