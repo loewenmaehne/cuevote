@@ -45,6 +45,7 @@ export function Header({
   const [exitConfirmIndex, setExitConfirmIndex] = React.useState(0); // 0 = Cancel, 1 = Leave
   // const [showQRCode, setShowQRCode] = React.useState(false); // Removed local state
   const [copied, setCopied] = React.useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = React.useState("");
 
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => {
@@ -713,12 +714,30 @@ export function Header({
               ) : (
                 <div className="text-center animate-in fade-in slide-in-from-bottom-2">
                   <h4 className="text-lg font-bold text-red-500 mb-2">Are you absolutely sure?</h4>
-                  <p className="text-sm text-neutral-400 mb-6 leading-relaxed">
+                  <p className="text-sm text-neutral-400 mb-4 leading-relaxed">
                     This action cannot be undone. It will permanently delete your account and <strong>all channels</strong> you have created.
                   </p>
+
+                  <div className="mb-6">
+                    <label className="block text-xs text-neutral-500 mb-2 uppercase tracking-wider font-medium">
+                      Type <span className="text-neutral-300 font-mono select-none">Delete this account and all my channels forever</span> to confirm
+                    </label>
+                    <input
+                      type="text"
+                      value={deleteConfirmationText}
+                      onChange={(e) => setDeleteConfirmationText(e.target.value)}
+                      className="w-full bg-black/30 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors placeholder-neutral-700 font-mono"
+                      placeholder="Type the confirmation phrase..."
+                      autoFocus
+                    />
+                  </div>
+
                   <div className="flex gap-3">
                     <button
-                      onClick={() => setShowDeleteConfirm(false)}
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setDeleteConfirmationText("");
+                      }}
                       className="flex-1 px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-medium transition-colors"
                     >
                       Cancel
@@ -729,8 +748,10 @@ export function Header({
                         onDeleteAccount();
                         setShowProfileModal(false);
                         setShowDeleteConfirm(false);
+                        setDeleteConfirmationText("");
                       }}
-                      className="flex-1 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold transition-colors shadow-lg shadow-red-900/20"
+                      disabled={deleteConfirmationText !== "Delete this account and all my channels forever"}
+                      className="flex-1 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold transition-colors shadow-lg shadow-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-800 disabled:text-neutral-500 disabled:shadow-none"
                     >
                       Delete
                     </button>
