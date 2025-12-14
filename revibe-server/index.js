@@ -200,24 +200,21 @@ wss.on("connection", (ws, req) => {
                         return;
                     }
 
-                    // 2. Send Success Signal
-                    // Client will navigate away.
-                    ws.send(JSON.stringify({ type: "DELETE_ACCOUNT_SUCCESS" }));
-                    ws.user = null; // Detach user immediately
-
-                    // 3. Destroy active memory rooms owned by user
+                    // 2. Destroy active memory rooms owned by user (BEFORE success signal)
+                    // This guarantees that when the client redirects and refreshes, the rooms are GONE from memory.
                     const roomsToDestroy = [];
                     console.log(`[GDPR DEBUG] Checking ${rooms.size} active rooms for ownership match against ${userId}`);
+                    const targetId = String(userId).trim();
 
                     for (const [id, room] of rooms.entries()) {
-                        const owner = room.metadata.owner_id;
-                        const match = (owner === userId) || (String(owner) === String(userId));
-
-                        if (match) {
+                        const owner = String(room.metadata.owner_id || '').trim();
+                        // Loose equality check with trimming
+                        if (owner === targetId) {
                             console.log(`[GDPR DEBUG] Marking room ${id} (Owner: ${owner}) for destruction.`);
                             roomsToDestroy.push(id);
                         } else {
-                            // console.log(`[GDPR DEBUG] Skipping room ${id} (Owner: ${owner} !== ${userId})`);
+                            // Debugging trace for non-matches just in case
+                            // console.log(`[GDPR DEBUG] Skipping room ${id}: owner '${owner}' != target '${targetId}'`);
                         }
                     }
 
@@ -234,6 +231,12 @@ wss.on("connection", (ws, req) => {
                             }
                         }
                     });
+
+                    // 3. Send Success Signal
+                    // Client will navigate away.
+                    console.log("[GDPR TRACE] Sending DELETE_ACCOUNT_SUCCESS");
+                    ws.send(JSON.stringify({ type: "DELETE_ACCOUNT_SUCCESS" }));
+                    ws.user = null; // Detach user immediately
 
                     return;
                 }
