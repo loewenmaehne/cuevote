@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { useGoogleLogin } from '@react-oauth/google';
-import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List } from "lucide-react";
+import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export function Header({
@@ -142,7 +142,7 @@ export function Header({
               className="group flex items-center justify-center w-9 h-9 rounded-full border border-neutral-700 bg-neutral-800/50 hover:bg-neutral-700 hover:border-neutral-500 transition-all active:scale-95 shadow-sm ml-2"
               title="Legal Information"
             >
-              <HelpCircle size={18} className="text-neutral-400 group-hover:text-white transition-colors" />
+              <Scale size={18} className="text-neutral-400 group-hover:text-white transition-colors" />
             </a>
           </div>
           {/* Playlist View Toggle - Next to User Widget */}

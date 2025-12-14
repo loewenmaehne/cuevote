@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from "react-router-dom";
-import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe } from "lucide-react";
+import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale } from "lucide-react";
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { useGoogleLogin } from '@react-oauth/google';
 
@@ -604,8 +604,9 @@ export function Lobby() {
             )}
 
             <footer className="w-full max-w-5xl mt-12 py-6 border-t border-neutral-800 flex justify-center">
-                <Link to="/legal" className="text-neutral-500 hover:text-orange-500 transition-colors text-sm font-medium">
-                    Terms & Legal
+                <Link to="/legal" className="text-neutral-500 hover:text-orange-500 transition-colors text-sm font-medium flex items-center gap-2">
+                    <Scale size={16} />
+                    <span>Terms & Legal</span>
                 </Link>
             </footer>
         </div>
