@@ -34,6 +34,23 @@ db.exec(`
     color TEXT DEFAULT 'from-gray-700 to-black',
     FOREIGN KEY(owner_id) REFERENCES users(id)
   );
+
+  CREATE TABLE IF NOT EXISTS videos (
+    id TEXT PRIMARY KEY,
+    title TEXT,
+    artist TEXT,
+    thumbnail TEXT,
+    duration INTEGER,
+    category_id TEXT,
+    fetched_at INTEGER DEFAULT (unixepoch())
+  );
+
+  CREATE TABLE IF NOT EXISTS search_cache (
+    term TEXT PRIMARY KEY,
+    video_id TEXT NOT NULL,
+    created_at INTEGER DEFAULT (unixepoch()),
+    FOREIGN KEY(video_id) REFERENCES videos(id)
+  );
 `);
 
 module.exports = {
@@ -91,5 +108,38 @@ module.exports = {
   },
   updateRoomActivity: (id) => {
     db.prepare('UPDATE rooms SET last_active_at = unixepoch() WHERE id = ?').run(id);
+  },
+
+  // Video Caching
+  upsertVideo: (video) => {
+    const stmt = db.prepare(`
+      INSERT INTO videos (id, title, artist, thumbnail, duration, category_id, fetched_at)
+      VALUES (@id, @title, @artist, @thumbnail, @duration, @category_id, unixepoch())
+      ON CONFLICT(id) DO UPDATE SET
+        title = @title,
+        artist = @artist,
+        thumbnail = @thumbnail,
+        duration = @duration,
+        category_id = @category_id,
+        fetched_at = unixepoch()
+    `);
+    stmt.run(video);
+  },
+  getVideo: (id) => {
+    return db.prepare('SELECT * FROM videos WHERE id = ?').get(id);
+  },
+  cacheSearchTerm: (term, videoId) => {
+    const stmt = db.prepare(`
+      INSERT INTO search_cache (term, video_id, created_at)
+      VALUES (?, ?, unixepoch())
+      ON CONFLICT(term) DO UPDATE SET
+        video_id = excluded.video_id,
+        created_at = unixepoch()
+    `);
+    stmt.run(term, videoId);
+  },
+  getSearchTermVideo: (term) => {
+    const row = db.prepare('SELECT video_id FROM search_cache WHERE term = ?').get(term);
+    return row ? row.video_id : null;
   }
 };
