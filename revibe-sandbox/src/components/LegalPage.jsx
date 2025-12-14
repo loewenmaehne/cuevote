@@ -38,13 +38,13 @@ export function LegalPage() {
             <nav className={`fixed top-0 inset-x-0 z-[100] transition-all duration-300 ${scrolled ? 'bg-[#050505]/90 border-b border-white/5 py-4' : 'bg-[#050505]/60 py-6'} backdrop-blur-xl`}>
                 <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={() => navigate(-1)}
                         className="group flex items-center gap-2 text-neutral-400 hover:text-white transition-colors relative z-50 current-color"
                     >
                         <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
                             <ArrowLeft size={20} />
                         </div>
-                        <span className="font-medium">Back to Revibe</span>
+                        <span className="font-medium">Back</span>
                     </button>
                     <div className="flex items-center gap-2">
                         <span className="font-bold tracking-tight text-white hidden md:block">Legal Center</span>
