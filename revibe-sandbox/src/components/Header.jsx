@@ -71,7 +71,7 @@ export function Header({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onShowSuggest, showExitConfirm]);
+  }, [onShowSuggest, showExitConfirm, onShowQRCode]); // Added onShowQRCode to dependency array
 
   // Handle Keyboard Navigation for Exit Confirmation
   useEffect(() => {
@@ -725,6 +725,7 @@ export function Header({
                     </button>
                     <button
                       onClick={() => {
+                        console.log("Delete button clicked in Header");
                         onDeleteAccount();
                         setShowProfileModal(false);
                         setShowDeleteConfirm(false);
