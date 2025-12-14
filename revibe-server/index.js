@@ -194,9 +194,17 @@ wss.on("connection", (ws, req) => {
                     // 3. Destroy active memory rooms owned by user
                     // We do this LAST so the broadcast doesn't confuse the now-deleted user's client (who should be leaving).
                     const roomsToDestroy = [];
+                    console.log(`[GDPR DEBUG] Checking ${rooms.size} active rooms for ownership match against ${userId}`);
+
                     for (const [id, room] of rooms.entries()) {
-                        if (room.metadata.owner_id === userId) {
+                        const owner = room.metadata.owner_id;
+                        const match = (owner === userId) || (String(owner) === String(userId));
+
+                        if (match) {
+                            console.log(`[GDPR DEBUG] Marking room ${id} (Owner: ${owner}) for destruction.`);
                             roomsToDestroy.push(id);
+                        } else {
+                            // console.log(`[GDPR DEBUG] Skipping room ${id} (Owner: ${owner} !== ${userId})`);
                         }
                     }
 
@@ -204,9 +212,13 @@ wss.on("connection", (ws, req) => {
                         const room = rooms.get(id);
                         if (room) {
                             console.log(`[GDPR] Destroying room owned by deleted user: ${id}`);
-                            room.broadcast({ type: "error", code: "ROOM_DELETED", message: "Room has been deleted by owner." });
-                            room.destroy();
-                            rooms.delete(id);
+                            try {
+                                room.broadcast({ type: "error", code: "ROOM_DELETED", message: "Room has been deleted by owner." });
+                                room.destroy();
+                                rooms.delete(id);
+                            } catch (err) {
+                                console.error(`[GDPR ERROR] Failed to destroy room ${id}:`, err);
+                            }
                         }
                     });
 
