@@ -106,9 +106,14 @@ class Room {
 
     broadcastState() {
         const message = JSON.stringify({ type: "state", payload: this.state });
+        this.broadcast(message);
+    }
+
+    broadcast(message) {
+        const payload = typeof message === 'string' ? message : JSON.stringify(message);
         for (const client of this.clients) {
             if (client.readyState === 1) { // OPEN
-                client.send(message);
+                client.send(payload);
             }
         }
     }
