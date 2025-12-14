@@ -139,12 +139,19 @@ wss.on("connection", (ws, req) => {
                     const session = db.getSession(token);
                     if (session) {
                         const user = db.getUser(session.user_id);
-                        ws.user = user;
-                        // Refresh token?
-                        ws.send(JSON.stringify({
-                            type: "LOGIN_SUCCESS",
-                            payload: { user: ws.user, sessionToken: token }
-                        }));
+                        if (user) {
+                            ws.user = user;
+                            // Refresh token?
+                            ws.send(JSON.stringify({
+                                type: "LOGIN_SUCCESS",
+                                payload: { user: ws.user, sessionToken: token }
+                            }));
+                        } else {
+                            // Session exists but user is gone (deleted?)
+                            console.warn(`[Resume Session] Session found but user ${session.user_id} is missing. Invalidating.`);
+                            db.deleteSession(token);
+                            ws.send(JSON.stringify({ type: "SESSION_INVALID" }));
+                        }
                     } else {
                         ws.send(JSON.stringify({ type: "SESSION_INVALID" }));
                     }
