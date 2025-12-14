@@ -46,6 +46,19 @@ function App() {
 
   console.log("Server State:", serverState);
 
+  // Handle Delete Account Success (Moved up to avoid conditional hook call error)
+  useEffect(() => {
+    if (lastMessage && lastMessage.type === "DELETE_ACCOUNT_SUCCESS") {
+      console.log("Account deleted successfully");
+      handleLogout();
+      navigate('/');
+    }
+  }, [lastMessage, handleLogout, navigate]);
+
+  const handleDeleteAccount = () => {
+    sendMessage({ type: "DELETE_ACCOUNT", payload: {} });
+  };
+
   // Destructure server state (Moved up for useEffect access)
   const {
     roomId: serverRoomId,
@@ -585,18 +598,7 @@ function App() {
 
 
 
-  // Handle Delete Account Success
-  useEffect(() => {
-    if (lastMessage && lastMessage.type === "DELETE_ACCOUNT_SUCCESS") {
-      console.log("Account deleted successfully");
-      handleLogout();
-      navigate('/');
-    }
-  }, [lastMessage, handleLogout, navigate]);
 
-  const handleDeleteAccount = () => {
-    sendMessage({ type: "DELETE_ACCOUNT", payload: {} });
-  };
 
 
   return (
