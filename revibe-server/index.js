@@ -177,67 +177,86 @@ wss.on("connection", (ws, req) => {
                     ws.user = null;
                     return;
                 }
+                    const fs = require('fs');
+                    const logFile = 'debug_server.log';
+
+                    function logToFile(msg) {
+                        const timestamp = new Date().toISOString();
+                        const line = `[${timestamp}] ${msg}\n`;
+                        fs.appendFileSync(logFile, line);
+                        console.log(msg);
+                    }
+
+                // ... existing code ...
+
                 case "DELETE_ACCOUNT": {
-                    console.log("[SERVER TRACE] DELETE_ACCOUNT received");
+                    logToFile("[SERVER TRACE] DELETE_ACCOUNT received");
                     if (!ws.user) {
-                        console.warn("[GDPR] DELETE_ACCOUNT failed: No user attached to socket.");
+                        logToFile(`[GDPR] DELETE_ACCOUNT failed: No user attached to socket. WS ID: ${ws.id}`);
                         ws.send(JSON.stringify({ type: "error", message: "Not logged in." }));
                         return;
                     }
                     const userId = ws.user.id;
-                    console.log(`[GDPR] Deleting account for user: ${userId}`);
+                    logToFile(`[GDPR] Deleting account for user: ${userId}`);
 
                     // 1. Delete from DB (Synchronous Transaction)
-                    // We must do this BEFORE sending success to avoid race conditions where the client
-                    // redirects to Lobby and fetches the room list before we've actually deleted the data.
                     try {
-                        console.log(`[GDPR TRACE] Starting DB Deletion for ${userId}...`);
-                        db.deleteUser(userId);
-                        console.log(`[GDPR TRACE] DB Deletion complete for ${userId}`);
+                        logToFile(`[GDPR TRACE] Starting DB Deletion for ${userId}...`);
+
+                        // Debug: Count before
+                        const beforeRooms = db.listUserRooms(userId);
+                        logToFile(`[GDPR PRE-CHECK] User owns ${beforeRooms.length} rooms in DB.`);
+
+                        const success = db.deleteUser(userId);
+                        logToFile(`[GDPR TRACE] DB Deletion execution success: ${success}`);
+
+                        // Debug: Count after
+                        // If delete worked, this should be empty list (wait, listUserRooms uses user ID)
+                        // But user is deleted! So listUserRooms(userId) might return empty just because user is gone?
+                        // No, listUserRooms queries 'rooms' table by owner_id. It doesn't join 'users' necessarily.
+                        // Let's check listUserRooms implementation.
+                        // "SELECT * FROM rooms WHERE owner_id = ?"
+                        const afterRooms = db.prepare('SELECT * FROM rooms WHERE owner_id = ?').all(userId);
+                        logToFile(`[GDPR POST-CHECK] User owns ${afterRooms.length} rooms in DB. (Should be 0)`);
+
                     } catch (e) {
+                        logToFile(`[GDPR ERROR] Failed to delete user from DB: ${e.message}`);
                         console.error("Failed to delete user from DB", e);
                         ws.send(JSON.stringify({ type: "error", message: "Failed to delete account data." }));
                         return;
                     }
 
-                    // 2. Destroy active memory rooms owned by user (BEFORE success signal)
-                    // This guarantees that when the client redirects and refreshes, the rooms are GONE from memory.
+                    // 2. Destroy Memory
                     const roomsToDestroy = [];
-                    console.log(`[GDPR DEBUG] Checking ${rooms.size} active rooms for ownership match against ${userId}`);
+                    logToFile(`[GDPR DEBUG] Checking ${rooms.size} active memory rooms for ownership...`);
                     const targetId = String(userId).trim();
 
                     for (const [id, room] of rooms.entries()) {
                         const owner = String(room.metadata.owner_id || '').trim();
-                        // Loose equality check with trimming
                         if (owner === targetId) {
-                            console.log(`[GDPR DEBUG] Marking room ${id} (Owner: ${owner}) for destruction.`);
+                            logToFile(`[GDPR DEBUG] Marking memory room ${id} for destruction.`);
                             roomsToDestroy.push(id);
-                        } else {
-                            // Debugging trace for non-matches just in case
-                            // console.log(`[GDPR DEBUG] Skipping room ${id}: owner '${owner}' != target '${targetId}'`);
                         }
                     }
 
                     roomsToDestroy.forEach(id => {
                         const room = rooms.get(id);
                         if (room) {
-                            console.log(`[GDPR] Destroying room owned by deleted user: ${id}`);
+                            logToFile(`[GDPR] Destroying room ${id} from memory.`);
                             try {
                                 room.broadcast({ type: "error", code: "ROOM_DELETED", message: "Room has been deleted by owner." });
                                 room.destroy();
                                 rooms.delete(id);
                             } catch (err) {
-                                console.error(`[GDPR ERROR] Failed to destroy room ${id}:`, err);
+                                logToFile(`[GDPR ERROR] Failed to destroy room ${id}: ${err.message}`);
                             }
                         }
                     });
 
-                    // 3. Send Success Signal
-                    // Client will navigate away.
-                    console.log("[GDPR TRACE] Sending DELETE_ACCOUNT_SUCCESS");
+                    // 3. Success
+                    logToFile("[GDPR TRACE] Sending DELETE_ACCOUNT_SUCCESS");
                     ws.send(JSON.stringify({ type: "DELETE_ACCOUNT_SUCCESS" }));
-                    ws.user = null; // Detach user immediately
-
+                    ws.user = null;
                     return;
                 }
                 case "STATE_ACK": {
