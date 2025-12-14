@@ -321,6 +321,10 @@ wss.on("connection", (ws, req) => {
                     const showPrivate = type === 'private';
                     const showMyChannels = type === 'my_channels';
 
+                    if (showMyChannels) {
+                        console.log(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${ws.user?.id} (${ws.user?.name})`);
+                    }
+
                     if (showMyChannels && !ws.user) {
                         // If requesting my channels but not logged in, return empty or error?
                         // Frontend should handle UI, but backend should be safe.
@@ -334,6 +338,8 @@ wss.on("connection", (ws, req) => {
                         if (showMyChannels) {
                             if (room.metadata.owner_id === ws.user.id) {
                                 roomList.push(room.getSummary());
+                            } else {
+                                // console.log(`[DEBUG] Skipping room ${room.id} owned by ${room.metadata.owner_id} (Me: ${ws.user.id})`);
                             }
                         } else {
                             const isPublic = room.metadata.is_public === 1;
@@ -354,6 +360,7 @@ wss.on("connection", (ws, req) => {
                     let dbRooms = [];
                     if (showMyChannels) {
                         dbRooms = db.listUserRooms(ws.user.id);
+                        console.log(`[DEBUG_MARATHON] DB returned ${dbRooms.length} rooms for user ${ws.user.id}. IDs: ${dbRooms.map(r => r.id).join(', ')}`);
                     } else {
                         dbRooms = showPrivate ? db.listPrivateRooms() : db.listPublicRooms();
                     }
