@@ -220,27 +220,44 @@ wss.on("connection", (ws, req) => {
                         return;
                     }
 
-                    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + crypto.randomBytes(2).toString('hex');
+                    let attempts = 0;
+                    let success = false;
+                    while (attempts < 3 && !success) {
+                        attempts++;
+                        // Generate ID (4 bytes = 8 hex chars)
+                        const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + crypto.randomBytes(4).toString('hex');
 
-                    try {
-                        const roomData = {
-                            id,
-                            name,
-                            description: description || "Community Station",
-                            owner_id: ws.user.id,
-                            color: color || "from-gray-700 to-black",
-                            is_public: isPrivate ? 0 : 1,
-                            password: (isPrivate && password) ? password : null
-                        };
+                        try {
+                            const roomData = {
+                                id,
+                                name,
+                                description: description || "Community Station",
+                                owner_id: ws.user.id,
+                                color: color || "from-gray-700 to-black",
+                                is_public: isPrivate ? 0 : 1,
+                                password: (isPrivate && password) ? password : null
+                            };
 
-                        db.createRoom(roomData);
-                        rooms.set(id, new Room(id, name, YOUTUBE_API_KEY, roomData));
+                            db.createRoom(roomData);
+                            rooms.set(id, new Room(id, name, YOUTUBE_API_KEY, roomData));
 
-                        ws.send(JSON.stringify({ type: "ROOM_CREATED", payload: roomData }));
-                    } catch (err) {
-                        console.error("Create Room Error:", err);
-                        ws.send(JSON.stringify({ type: "error", message: "Failed to create room." }));
+                            ws.send(JSON.stringify({ type: "ROOM_CREATED", payload: roomData }));
+                            success = true;
+                        } catch (err) {
+                            if (err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
+                                console.warn(`[Create Room] ID Collision for ${id}. Retrying... (${attempts}/3)`);
+                                continue;
+                            }
+                            console.error("Create Room Error:", err);
+                            ws.send(JSON.stringify({ type: "error", message: "Failed to create room." }));
+                            return; // Exit on non-collision error
+                        }
                     }
+
+                    if (!success) {
+                        ws.send(JSON.stringify({ type: "error", message: "Failed to generate a unique channel ID. Please try again." }));
+                    }
+                    return;
                     return;
                 }
                 case "LIST_ROOMS": {
