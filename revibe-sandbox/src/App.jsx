@@ -12,6 +12,7 @@ import { ChannelLibrary } from "./components/ChannelLibrary"; // Added this impo
 import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
+import { Toast } from "./components/Toast";
 
 const YouTubeState = {
   UNSTARTED: -1,
@@ -44,6 +45,22 @@ function App() {
     handleLogout,
     handleLoginSuccess,
   } = useWebSocketContext();
+
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    if (lastError) {
+      setToast({ message: lastError.message || "An error occurred", type: "error" });
+    }
+  }, [lastError, lastErrorTimestamp]);
+
+  useEffect(() => {
+    if (lastMessage) {
+      if (lastMessage.type === 'info') setToast({ message: lastMessage.message, type: "info" });
+      else if (lastMessage.type === 'success') setToast({ message: lastMessage.payload || "Success", type: "success" });
+      else if (lastMessage.type === 'error') setToast({ message: lastMessage.message, type: "error" });
+    }
+  }, [lastMessage]);
 
   console.log("Server State:", serverState);
 
@@ -876,6 +893,13 @@ function App() {
           )
         )
       }
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       {passwordModalContent}
     </div >
   );
