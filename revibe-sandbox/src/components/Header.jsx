@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { useGoogleLogin } from '@react-oauth/google';
-import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale } from "lucide-react";
+import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, Library } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export function Header({
@@ -36,6 +36,7 @@ export function Header({
   showQRCode, // <--- Added prop
   onShowQRCode, // <--- Added prop
   onDeleteAccount, // GDPR: Right to Erasure
+  onToggleChannelLibrary
 }) {
   const headerRef = React.useRef(null);
   const [showSettings, setShowSettings] = React.useState(false);
@@ -181,6 +182,19 @@ export function Header({
                 <List size={22} />
               </button>
             )}
+            {/* Channel Library Toggle */}
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                if (onToggleChannelLibrary) onToggleChannelLibrary();
+                setShowSettings(false);
+                onShowSuggest(false);
+              }}
+              className="flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors ml-2"
+              title="Channel Library"
+            >
+              <Library size={22} />
+            </button>
           </div>
         </div>
 
@@ -674,6 +688,18 @@ export function Header({
                 </button>
               </div>
 
+              {/* Channel Library Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onToggleChannelLibrary) onToggleChannelLibrary();
+                }}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white transition-all ml-2"
+                title="Channel Library"
+              >
+                <Library size={20} />
+              </button>
+
               <button
                 onClick={() => onShowQRCode(false)}
                 className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 text-orange-500 border border-orange-500/20 hover:border-orange-500/50 rounded-lg transition-all font-medium"
@@ -814,4 +840,5 @@ Header.propTypes = {
   showQRCode: PropTypes.bool,
   onShowQRCode: PropTypes.func,
   onDeleteAccount: PropTypes.func,
+  onToggleChannelLibrary: PropTypes.func,
 };

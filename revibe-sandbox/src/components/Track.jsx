@@ -16,6 +16,7 @@ export function Track({
   readOnly = false,
   votesEnabled = true,
   onDelete,
+  onAdd, // <--- Added this to destructuring
 }) {
   // Check prioritized status
   const isPriority = track.isOwnerPriority;
@@ -114,6 +115,17 @@ export function Track({
       {isExpanded && (
         <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-neutral-800 text-neutral-300 mt-4 space-y-3">
           <div className="flex flex-col gap-3">
+            {onAdd && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAdd(track);
+                }}
+                className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-all shadow-lg shadow-orange-900/20"
+              >
+                Add to Queue
+              </button>
+            )}
             {onPreview && !readOnly && !isActive && (
               <button
                 onClick={(e) => {
@@ -190,4 +202,5 @@ Track.propTypes = {
   onPreview: PropTypes.func,
   readOnly: PropTypes.bool,
   onDelete: PropTypes.func,
+  onAdd: PropTypes.func,
 };
