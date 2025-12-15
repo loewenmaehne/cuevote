@@ -7,7 +7,9 @@ export function ChannelLibrary({
 	history = [],
 	onExit,
 	activeChannel,
-	onAdd // New prop to add song to queue
+	onAdd, // New prop to add song to queue
+	isOwner,
+	onDelete
 }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -116,6 +118,7 @@ export function ChannelLibrary({
 									console.log("ChannelLibrary: Adding video", track.videoId);
 									if (onAdd) onAdd(track.videoId);
 								}}
+								onDelete={onDelete ? () => onDelete(track.videoId) : undefined}
 							/>
 						))
 					) : (
@@ -134,5 +137,7 @@ ChannelLibrary.propTypes = {
 	history: PropTypes.array.isRequired,
 	onExit: PropTypes.func.isRequired,
 	activeChannel: PropTypes.string,
-	onAdd: PropTypes.func
+	onAdd: PropTypes.func,
+	isOwner: PropTypes.bool,
+	onDelete: PropTypes.func
 };

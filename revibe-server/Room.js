@@ -442,6 +442,11 @@ class Room {
                     this.handleUnbanSong(message.payload);
                 }
                 break;
+            case "REMOVE_FROM_LIBRARY":
+                if (isOwner(this, ws)) {
+                    this.handleRemoveFromLibrary(message.payload);
+                }
+                break;
             case "DELETE_ACCOUNT":
                 // Delegate back to main server handler or handle here?
                 // Returning a specific flag or emitting an event would be ideal, 
@@ -995,6 +1000,23 @@ class Room {
         const banned = this.state.bannedSongs || [];
         const newBanned = banned.filter(t => t.videoId !== videoId);
         this.updateState({ bannedSongs: newBanned });
+    }
+
+    handleRemoveFromLibrary({ videoId }) {
+        if (!videoId) return;
+        const initialCount = this.state.history.length;
+        // Filter out all instances of this videoId
+        const newHistory = this.state.history.filter(t => t.videoId !== videoId);
+
+        // Also remove from knownSongs cache
+        if (this.knownSongs.has(videoId)) {
+            this.knownSongs.delete(videoId);
+        }
+
+        if (newHistory.length !== initialCount) {
+            console.log(`[Room ${this.roomId}] Removed video ${videoId} from history.`);
+            this.updateState({ history: newHistory });
+        }
     }
 
     handleDeleteSong({ trackId }) {
