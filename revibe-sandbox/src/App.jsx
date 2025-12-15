@@ -662,7 +662,7 @@ function App() {
             showQRCode={showQRModal}
             onShowQRCode={setShowQRModal}
             onToggleChannelLibrary={() => {
-              if (!showChannelLibrary) setShowPlaylistView(false); // Close Playlist View
+              if (!showChannelLibrary) setLocalPlaylistView(false); // Close Playlist View
               setShowChannelLibrary(!showChannelLibrary);
             }}
           />
