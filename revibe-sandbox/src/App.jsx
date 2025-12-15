@@ -472,9 +472,18 @@ function App() {
 
 
   const handleSongSuggested = (query) => {
-
     sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
+  };
 
+  const handleLibraryAdd = (videoId) => {
+    console.log("[App] Adding from Library:", videoId);
+    handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
+    setShowChannelLibrary(false);
+  };
+
+  const handleRemoveFromLibrary = (videoId) => {
+    console.log("[App] Removing from Library:", videoId);
+    sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { videoId } });
   };
 
 
@@ -708,16 +717,9 @@ function App() {
           history={history}
           activeChannel={activeChannel}
           onExit={() => setShowChannelLibrary(false)}
-          onAdd={(videoId) => {
-            console.log("[App] Adding from Library:", videoId);
-            handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
-            setShowChannelLibrary(false); // Close library to show feedback
-          }}
-          isOwner={isOwner} // Pass ownership status
-          onDelete={isOwner ? (videoId) => {
-            console.log("[App] Removing from Library:", videoId);
-            sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { videoId } });
-          } : undefined}
+          onAdd={handleLibraryAdd}
+          isOwner={isOwner}
+          onDelete={isOwner ? handleRemoveFromLibrary : undefined}
         />
       )}
 
