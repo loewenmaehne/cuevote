@@ -52,30 +52,10 @@ export function ChannelLibrary({
 	}, [uniqueSongs, searchQuery]);
 
 	return (
-		<div className="fixed inset-0 z-50 bg-[#0a0a0a] text-white flex flex-col md:animate-in md:fade-in md:slide-in-from-bottom-10 md:duration-300">
-			{/* Header */}
-			<div className="flex items-center justify-between p-4 border-b border-neutral-800 bg-black/50 backdrop-blur-md sticky top-0 z-10">
-				<div className="flex items-center gap-3">
-					<div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500">
-						<Library size={20} />
-					</div>
-					<div>
-						<h2 className="text-lg font-bold">Channel Library</h2>
-						<p className="text-xs text-neutral-500 flex items-center gap-2">
-							<span className="font-mono">{filteredSongs.length}</span> active songs (last 28d)
-						</p>
-					</div>
-				</div>
-				<button
-					onClick={onExit}
-					className="p-2 rounded-full hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors"
-				>
-					<X size={24} />
-				</button>
-			</div>
+		<div className="fixed inset-0 top-16 z-40 bg-[#0a0a0a] text-white flex flex-col md:animate-in md:fade-in md:slide-in-from-bottom-10 md:duration-300">
 
 			{/* Search */}
-			<div className="p-4 border-b border-neutral-800 bg-black/20">
+			<div className="p-4 border-b border-neutral-800 bg-black/20 backdrop-blur-md">
 				<div className="relative max-w-2xl mx-auto">
 					<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" size={18} />
 					<input
@@ -86,6 +66,9 @@ export function ChannelLibrary({
 						className="w-full bg-neutral-900 border border-neutral-800 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-orange-500 transition-colors"
 					/>
 				</div>
+				<p className="text-xs text-neutral-500 text-center mt-3 font-medium">
+					<span className="text-orange-500">{filteredSongs.length}</span> {filteredSongs.length === 1 ? 'song' : 'songs'} in library
+				</p>
 			</div>
 
 			{/* Content */}

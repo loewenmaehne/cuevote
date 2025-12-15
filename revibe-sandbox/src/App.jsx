@@ -71,10 +71,18 @@ function App() {
       handleLogout();
       navigate('/');
     }
+    if (lastMessage && lastMessage.type === "ROOM_DELETED") {
+      console.log("Room deleted successfully");
+      navigate('/');
+    }
   }, [lastMessage, handleLogout, navigate]);
 
   const handleDeleteAccount = () => {
     sendMessage({ type: "DELETE_ACCOUNT", payload: {} });
+  };
+
+  const handleDeleteChannel = () => {
+    sendMessage({ type: "DELETE_ROOM", payload: {} });
   };
 
   // Destructure server state (Moved up for useEffect access)
@@ -692,6 +700,8 @@ function App() {
               if (!showChannelLibrary) setLocalPlaylistView(false); // Close Playlist View
               setShowChannelLibrary(!showChannelLibrary);
             }}
+            onDeleteAccount={handleDeleteAccount}
+            onDeleteChannel={handleDeleteChannel}
           />
           {showSuggest && (
             <div className="px-6 pb-4">
