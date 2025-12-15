@@ -91,6 +91,7 @@ module.exports = {
     stmt.run(room);
     return db.prepare('SELECT * FROM rooms WHERE id = ?').get(room.id);
   },
+  deleteRoom: (id) => db.prepare('DELETE FROM rooms WHERE id = ?').run(id),
   getRoom: (id) => db.prepare('SELECT * FROM rooms WHERE id = ?').get(id),
   listPublicRooms: () => {
     // Default 60 days, configurable via env

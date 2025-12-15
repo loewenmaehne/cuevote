@@ -34,15 +34,19 @@ export function Header({
   autoRefill,
   onTogglePlaylistView,
   showQRCode, // <--- Added prop
-  onShowQRCode, // <--- Added prop
+  onShowQRCode,
   onDeleteAccount, // GDPR: Right to Erasure
-  onToggleChannelLibrary
+  onToggleChannelLibrary,
+  onDeleteChannel
 }) {
   const headerRef = React.useRef(null);
   const [showSettings, setShowSettings] = React.useState(false);
   const [showExitConfirm, setShowExitConfirm] = React.useState(false);
   const [showProfileModal, setShowProfileModal] = React.useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false); // Account Delete
+  const [showDeleteChannelConfirm, setShowDeleteChannelConfirm] = React.useState(false); // Channel Delete
+  const [deleteChannelText, setDeleteChannelText] = React.useState("");
+
   const [exitConfirmIndex, setExitConfirmIndex] = React.useState(0); // 0 = Cancel, 1 = Leave
   // const [showQRCode, setShowQRCode] = React.useState(false); // Removed local state
   const [copied, setCopied] = React.useState(false);
@@ -593,12 +597,78 @@ export function Header({
                     </button>
                   </div>
 
+                  {/* Delete Channel */}
+                  <div className="mt-6 pt-4 border-t border-neutral-700">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowSettings(false);
+                        setDeleteChannelText("");
+                        setShowDeleteChannelConfirm(true);
+                      }}
+                      className="w-full py-2.5 bg-red-900/20 text-red-500 border border-red-900/50 rounded-lg text-sm font-bold hover:bg-red-900/40 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                      Delete Channel
+                    </button>
+                    <p className="text-[10px] text-neutral-500 text-center mt-2">
+                      This action is permanent and cannot be undone.
+                    </p>
+                  </div>
+
                 </div>
               )}
             </div>
           )}
         </div>
       </div>
+
+      {/* Delete Channel Confirmation Modal */}
+      {showDeleteChannelConfirm && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-white mb-2 text-center text-red-500">Delete Channel?</h3>
+            <p className="text-neutral-400 mb-6 text-center text-sm">
+              This action cannot be undone. To confirm, please type <br />
+              <span className="font-mono text-white bg-neutral-800 px-1 py-0.5 rounded select-all border border-neutral-700">Delete this channel forever</span>
+            </p>
+
+            <input
+              autoFocus
+              type="text"
+              value={deleteChannelText}
+              onChange={(e) => setDeleteChannelText(e.target.value)}
+              placeholder="Type confirmation phrase..."
+              className="w-full bg-black border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors mb-6 text-sm"
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteChannelConfirm(false)}
+                className="flex-1 px-4 py-3 rounded-xl border border-neutral-700 text-neutral-300 font-medium hover:bg-neutral-800 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                disabled={deleteChannelText !== "Delete this channel forever"}
+                onClick={() => {
+                  if (deleteChannelText === "Delete this channel forever") {
+                    onDeleteChannel();
+                    setShowDeleteChannelConfirm(false);
+                  }
+                }}
+                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all ${deleteChannelText === "Delete this channel forever"
+                  ? "bg-red-600 text-white hover:bg-red-500 shadow-lg shadow-red-900/20"
+                  : "bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700"
+                  }`}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
       {/* Exit Confirmation Modal */}
       {
         showExitConfirm && createPortal(

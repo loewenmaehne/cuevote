@@ -447,6 +447,11 @@ class Room {
                     this.handleRemoveFromLibrary(message.payload);
                 }
                 break;
+            case "DELETE_ROOM":
+                if (isOwner(this, ws)) {
+                    this.handleDeleteRoom(ws);
+                }
+                break;
             case "DELETE_ACCOUNT":
                 // Delegate back to main server handler or handle here?
                 // Returning a specific flag or emitting an event would be ideal, 
@@ -1047,6 +1052,17 @@ class Room {
             } else {
                 this.updateState({ queue: newQueue });
             }
+        }
+    }
+
+    handleDeleteRoom(ws) {
+        console.log(`[Room ${this.id}] DELETING ROOM initiated by owner.`);
+        try {
+            db.deleteRoom(this.id);
+            this.broadcast(JSON.stringify({ type: "ROOM_DELETED" }));
+        } catch (err) {
+            console.error("Delete room failed", err);
+            ws.send(JSON.stringify({ type: "error", message: "Failed to delete room." }));
         }
     }
 
