@@ -8,6 +8,7 @@ import { Queue } from "./components/Queue";
 import { PlaylistView } from "./components/PlaylistView"; // Added this import
 import { PendingRequests, PendingRequestsPage } from "./components/PendingRequests";
 import { BannedSongsPage } from "./components/BannedSongs"; // Added this import
+import { ChannelLibrary } from "./components/ChannelLibrary"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
@@ -221,6 +222,7 @@ function App() {
   const [progress, setProgress] = useState(0);
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false); // <--- Added this
+  const [showChannelLibrary, setShowChannelLibrary] = useState(false); // <--- Added this
 
   // Handle Escape Key for App-level modals
   useEffect(() => {
@@ -230,6 +232,7 @@ function App() {
         if (showBannedPage) setShowBannedPage(false);
         if (showSuggest) setShowSuggest(false);
         if (showQRModal) setShowQRModal(false);
+        if (showChannelLibrary) setShowChannelLibrary(false);
         // Password Modal is tricky - usually mandatory but if user wants to cancel joining, maybe? 
         // Logic in View was: Cancel -> navigate('/'). So we can replicate that?
         if (showPasswordModal) {
@@ -658,6 +661,10 @@ function App() {
             }}
             showQRCode={showQRModal}
             onShowQRCode={setShowQRModal}
+            onToggleChannelLibrary={() => {
+              if (!showChannelLibrary) setShowPlaylistView(false); // Close Playlist View
+              setShowChannelLibrary(!showChannelLibrary);
+            }}
           />
           {showSuggest && (
             <div className="px-6 pb-4">
@@ -693,6 +700,19 @@ function App() {
           bannedSongs={bannedSongs}
           onUnban={handleUnbanSong}
           onClose={() => setShowBannedPage(false)}
+        />
+      )}
+
+      {showChannelLibrary && (
+        <ChannelLibrary
+          history={history}
+          activeChannel={activeChannel}
+          onExit={() => setShowChannelLibrary(false)}
+          onAdd={(videoId) => {
+            console.log("[App] Adding from Library:", videoId);
+            suggestSong({ query: `https://www.youtube.com/watch?v=${videoId}` });
+            setShowChannelLibrary(false); // Close library to show feedback
+          }}
         />
       )}
 
