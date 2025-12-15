@@ -180,6 +180,7 @@ export function Header({
                 title="Playlist View"
               >
                 <List size={22} />
+                <span className="hidden md:block text-sm font-medium whitespace-nowrap">Playlist</span>
               </button>
             )}
             {/* Channel Library Toggle */}
@@ -194,6 +195,7 @@ export function Header({
               title="Channel Library"
             >
               <Library size={22} />
+              <span className="hidden md:block text-sm font-medium whitespace-nowrap">Library</span>
             </button>
           </div>
         </div>

@@ -666,6 +666,7 @@ function App() {
             autoRefill={autoRefill}
             onTogglePlaylistView={() => {
               console.log("[App] Toggling Playlist View", !localPlaylistView);
+              if (!localPlaylistView) setShowChannelLibrary(false);
               setLocalPlaylistView(!localPlaylistView);
             }}
             showQRCode={showQRModal}
