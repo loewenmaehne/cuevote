@@ -710,7 +710,7 @@ function App() {
           onExit={() => setShowChannelLibrary(false)}
           onAdd={(videoId) => {
             console.log("[App] Adding from Library:", videoId);
-            suggestSong({ query: `https://www.youtube.com/watch?v=${videoId}` });
+            handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
             setShowChannelLibrary(false); // Close library to show feedback
           }}
         />
