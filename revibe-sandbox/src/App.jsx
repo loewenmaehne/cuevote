@@ -713,6 +713,11 @@ function App() {
             handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
             setShowChannelLibrary(false); // Close library to show feedback
           }}
+          isOwner={isOwner} // Pass ownership status
+          onDelete={isOwner ? (videoId) => {
+            console.log("[App] Removing from Library:", videoId);
+            sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { videoId } });
+          } : undefined}
         />
       )}
 
