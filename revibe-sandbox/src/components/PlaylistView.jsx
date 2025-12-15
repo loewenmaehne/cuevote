@@ -107,9 +107,11 @@ export function PlaylistView({
                         <div className="space-y-2 opacity-60 hover:opacity-100 transition-opacity duration-300">
                             <div className="flex items-center gap-2 px-2 pb-2 border-b border-neutral-800">
                                 <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">History</span>
-                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-neutral-900 text-neutral-600 font-mono">{history.length}</span>
+                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-neutral-900 text-neutral-600 font-mono">
+                                    {history.length > 50 ? `Last 50 of ${history.length}` : history.length}
+                                </span>
                             </div>
-                            {history.map((track, i) => (
+                            {history.slice(-50).map((track, i) => (
                                 <Track
                                     key={`hist-${track.id}-${i}`}
                                     track={track}
