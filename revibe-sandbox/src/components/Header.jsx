@@ -227,7 +227,7 @@ export function Header({
             title={activeChannel}
           >
             <Radio size={22} className="flex-shrink-0" />
-            <div className={`hidden md:block overflow-hidden whitespace-nowrap transition-all duration-300 ${activeChannel.length > 15 ? "w-[90px] lg:w-[120px] xl:w-[200px] mask-linear-fade" : "max-w-[90px] lg:max-w-[120px] xl:max-w-[200px]"}`}>
+            <div className={`hidden lg:block overflow-hidden whitespace-nowrap transition-all duration-300 ${activeChannel.length > 15 ? "w-[120px] xl:w-[200px] mask-linear-fade" : "max-w-[120px] xl:max-w-[200px]"}`}>
               {activeChannel.length > 15 ? (
                 <div className="w-full overflow-hidden">
                   <span
