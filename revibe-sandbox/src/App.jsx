@@ -249,6 +249,7 @@ function App() {
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false); // <--- Added this
   const [showChannelLibrary, setShowChannelLibrary] = useState(false); // <--- Added this
+  const [controlsVisible, setControlsVisible] = useState(true); // Track footer visibility
 
   // Handle Escape Key for App-level modals
   useEffect(() => {
@@ -751,13 +752,19 @@ function App() {
         />
       )}
 
-      <div className={isCinemaMode
-        ? "fixed inset-0 z-40 bg-black transition-all duration-500 ease-in-out" // Cinema Mode Style
-        : (isAnyPlaylistView
-          ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
-          : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh]"
-        )
-      }>
+      <div
+        className={isCinemaMode
+          ? "fixed inset-0 z-40 bg-black transition-all duration-500 ease-in-out"
+          : (isAnyPlaylistView
+            ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
+            : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh]"
+          )
+        }
+        style={{
+          // In Cinema Mode, lift the bottom if controls are visible to avoid overlay violation
+          bottom: (isCinemaMode && controlsVisible) ? "6rem" : "0px"
+        }}
+      >
         <div className={`absolute inset - 0 border - 4 ${previewTrack ? "border-green-500" : "border-transparent"} transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
         {isAnyPlaylistView ? (
           /* Venue Mode: Only Playlist View */
@@ -899,6 +906,7 @@ function App() {
               onMinimizeToggle={null}
               isCinemaMode={isCinemaMode}
               onToggleCinemaMode={() => setIsCinemaMode(!isCinemaMode)}
+              onVisibilityChange={setControlsVisible}
             />
           )
         )
