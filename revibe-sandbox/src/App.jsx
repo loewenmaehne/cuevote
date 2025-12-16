@@ -818,6 +818,7 @@ function App() {
               votesEnabled={serverState?.votesEnabled ?? true}
               onPreview={allowPrelisten ? handlePreviewTrack : null}
               onExit={localPlaylistView ? () => setLocalPlaylistView(false) : null}
+              onDelete={isOwner ? handleDeleteSong : null} // Added Delete feature
             />
             {previewTrack && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
