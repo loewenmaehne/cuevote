@@ -246,6 +246,7 @@ function App() {
   // minimized state removed
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
+  const [isLocallyPlaying, setIsLocallyPlaying] = useState(false);
   const [previewTrack, setPreviewTrack] = useState(null);
   // const [user, setUser] = useState(null); // Now from Context
   const [progress, setProgress] = useState(0);
@@ -340,6 +341,7 @@ function App() {
             const state = event.data;
             if (state === YouTubeState.PLAYING) {
               setIsLocallyPaused(false);
+              setIsLocallyPlaying(true);
               setAutoplayBlocked(false);
               const duration = event.target.getDuration();
               if (duration && duration > 0) {
@@ -348,6 +350,7 @@ function App() {
             } else if (state === YouTubeState.PAUSED) {
               // If user pauses manually in the iframe, respect it locally
               setIsLocallyPaused(true);
+              setIsLocallyPlaying(false);
             }
           },
           onError: (event) => {
@@ -393,13 +396,13 @@ function App() {
     if (isPlayerReady && playerRef.current) {
       if (previewTrack) {
         playerRef.current.playVideo?.();
-      } else if (isPlaying && !isLocallyPaused) {
+      } else if ((isPlaying || isLocallyPlaying) && !isLocallyPaused) {
         playerRef.current.playVideo?.();
       } else {
         playerRef.current.pauseVideo?.();
       }
     }
-  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, previewTrack]);
+  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack]);
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current && isPlaying && !previewTrack) {
@@ -447,24 +450,29 @@ function App() {
   // Event Handlers
 
   const handlePlayPause = () => {
+    const isEffectivelyPlaying = (isPlaying || isLocallyPlaying) && !isLocallyPaused;
+
     if (isOwner) {
-      // Owner controls global state
-      // If currently playing (globally), we want to pause (false).
-      // If currently paused (globally), we want to play (true).
-      sendMessage({ type: "PLAY_PAUSE", payload: !isPlaying });
-      // We also ensure local pause is cleared so the owner sees the change immediately if they were locally paused?
-      // Actually, if global state changes, the effect hook will sync it.
-      // But if owner was LOCALLY paused, and they hit play, they probably expect it to resume.
+      // Owner controls global state based on what THEY see (effective state)
+      // If effective state is playing, we send PAUSE.
+      // If effective state is paused, we send PLAY.
+      sendMessage({ type: "PLAY_PAUSE", payload: !isEffectivelyPlaying });
+
+      // Reset local overrides to resync with the new server state we just requested
       setIsLocallyPaused(false);
+      setIsLocallyPlaying(false);
     } else {
       // Guest: Local Toggle Only
-      if (isLocallyPaused) {
-        setIsLocallyPaused(false);
-        playerRef.current?.seekTo?.(serverProgress);
-        playerRef.current?.playVideo?.();
-      } else {
+      if (isEffectivelyPlaying) {
+        // User wants to PAUSE
         setIsLocallyPaused(true);
+        setIsLocallyPlaying(false);
         playerRef.current?.pauseVideo?.();
+      } else {
+        // User wants to PLAY
+        setIsLocallyPaused(false);
+        setIsLocallyPlaying(true);
+        playerRef.current?.playVideo?.();
       }
     }
   };
@@ -903,7 +911,7 @@ function App() {
         ) : (
           !isAnyPlaylistView && (
             <PlaybackControls
-              isPlaying={isPlaying && !isLocallyPaused}
+              isPlaying={(isPlaying || isLocallyPlaying) && !isLocallyPaused}
               onPlayPause={handlePlayPause}
               progress={progress}
               currentTrack={currentTrack}
