@@ -375,7 +375,9 @@ function App() {
               }
             } else if (state === YouTubeState.PAUSED) {
               // If user pauses manually in the iframe, respect it locally
-              setIsLocallyPaused(true);
+              // BUT: if this pause comes from a server sync (i.e. server is paused), we shouldn't treat it as a local override.
+              // We only want to set isLocallyPaused=true if we are pausing *against* the server state (i.e. server is playing).
+              setIsLocallyPaused(isPlayingRef.current);
               setIsLocallyPlaying(false);
             }
           },
