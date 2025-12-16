@@ -416,6 +416,15 @@ class Room {
                     });
                 }
                 break;
+            case "SEEK_TO":
+                if (isOwner(this, ws) && this.state.currentTrack) {
+                    const newProgress = message.payload;
+                    // Update startedAt so tick() calculates correct progress
+                    this.state.currentTrack.startedAt = Date.now() - (newProgress * 1000);
+                    // Broadcast immediately to update clients
+                    this.updateState({ progress: newProgress });
+                }
+                break;
             case "UPDATE_SETTINGS":
                 if (isOwner(this, ws)) {
                     this.handleUpdateSettings(message.payload);
