@@ -78,6 +78,11 @@ class Room {
     }
 
     addClient(ws) {
+        if (this.deleted) {
+            ws.send(JSON.stringify({ type: "error", message: "This channel has been deleted." }));
+            ws.close();
+            return;
+        }
         console.log(`[SERVER TRACE] Room ${this.id}: Adding client. Total clients: ${this.clients.size + 1}`);
         this.clients.add(ws);
 
@@ -450,6 +455,8 @@ class Room {
             case "DELETE_ROOM":
                 if (isOwner(this, ws)) {
                     this.handleDeleteRoom(ws);
+                } else {
+                    ws.send(JSON.stringify({ type: "error", message: "Unauthorized to delete room. Are you the owner?" }));
                 }
                 break;
             case "DELETE_ACCOUNT":
@@ -1057,12 +1064,29 @@ class Room {
 
     handleDeleteRoom(ws) {
         console.log(`[Room ${this.id}] DELETING ROOM initiated by owner.`);
+        ws.send(JSON.stringify({ type: "info", message: "Processing deletion..." }));
         try {
-            db.deleteRoom(this.id);
-            this.broadcast(JSON.stringify({ type: "ROOM_DELETED" }));
+            const result = db.deleteRoom(this.id);
+            console.log(`[Delete Room] DB Result:`, result);
+
+            if (result.changes > 0) {
+                this.deleted = true;
+                ws.send(JSON.stringify({ type: "success", message: `Channel deleted. Goodbye!` }));
+                this.broadcast(JSON.stringify({ type: "ROOM_DELETED" }));
+
+                // Force close connections
+                setTimeout(() => {
+                    this.clients.forEach(c => {
+                        try { c.close(); } catch (e) { }
+                    });
+                    this.clients.clear();
+                }, 500);
+            } else {
+                ws.send(JSON.stringify({ type: "error", message: "Database deletion returned 0 changes. Room ID mismatch?" }));
+            }
         } catch (err) {
             console.error("Delete room failed", err);
-            ws.send(JSON.stringify({ type: "error", message: "Failed to delete room." }));
+            ws.send(JSON.stringify({ type: "error", message: `Failed to delete room: ${err.message}` }));
         }
     }
 

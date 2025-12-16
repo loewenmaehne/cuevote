@@ -606,9 +606,8 @@ export function Header({
                         setDeleteChannelText("");
                         setShowDeleteChannelConfirm(true);
                       }}
-                      className="w-full py-2.5 bg-red-900/20 text-red-500 border border-red-900/50 rounded-lg text-sm font-bold hover:bg-red-900/40 transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-2.5 bg-red-900/10 text-red-500 border border-red-900/30 rounded-lg text-sm font-bold hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2"
                     >
-                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                       Delete Channel
                     </button>
                     <p className="text-[10px] text-neutral-500 text-center mt-2">
@@ -630,7 +629,7 @@ export function Header({
             <h3 className="text-xl font-bold text-white mb-2 text-center text-red-500">Delete Channel?</h3>
             <p className="text-neutral-400 mb-6 text-center text-sm">
               This action cannot be undone. To confirm, please type <br />
-              <span className="font-mono text-white bg-neutral-800 px-1 py-0.5 rounded select-all border border-neutral-700">Delete this channel forever</span>
+              <span className="font-mono text-white bg-neutral-950 px-2 py-1 rounded select-all border border-neutral-800 mt-2 inline-block">Delete this channel forever</span>
             </p>
 
             <input
@@ -639,7 +638,7 @@ export function Header({
               value={deleteChannelText}
               onChange={(e) => setDeleteChannelText(e.target.value)}
               placeholder="Type confirmation phrase..."
-              className="w-full bg-black border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors mb-6 text-sm"
+              className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition-all mb-6 text-sm font-mono text-center"
             />
 
             <div className="flex gap-3">
@@ -658,8 +657,8 @@ export function Header({
                   }
                 }}
                 className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all ${deleteChannelText === "Delete this channel forever"
-                  ? "bg-red-600 text-white hover:bg-red-500 shadow-lg shadow-red-900/20"
-                  : "bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700"
+                    ? "bg-red-600 text-white hover:bg-red-500 shadow-lg shadow-red-900/20"
+                    : "bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700"
                   }`}
               >
                 Delete
