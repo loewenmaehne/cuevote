@@ -172,6 +172,8 @@ export function Header({
               <Scale size={20} />
             </a>
 
+
+
           </div>
         </div>
 
@@ -189,7 +191,7 @@ export function Header({
               title="Playlist View"
             >
               <List size={20} className="md:w-[22px] md:h-[22px]" />
-              <span className="hidden lg:block text-sm font-medium whitespace-nowrap">Playlist</span>
+              <span className="hidden xl:block text-sm font-medium whitespace-nowrap">Playlist</span>
             </button>
           )}
 
@@ -209,7 +211,7 @@ export function Header({
             title="Channel Library"
           >
             <Library size={20} className="md:w-[22px] md:h-[22px]" />
-            <span className="hidden lg:block text-sm font-medium whitespace-nowrap">Library</span>
+            <span className="hidden xl:block text-sm font-medium whitespace-nowrap">Library</span>
           </button>
         </div>
 
@@ -221,23 +223,26 @@ export function Header({
               setExitConfirmIndex(0); // Default to "Cancel" for safety
               setShowSettings(false);
             }}
-            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors flex-shrink min-w-0 max-w-[120px] sm:max-w-[160px] overflow-hidden"
+            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
             title={activeChannel}
           >
             <Radio size={22} className="flex-shrink-0" />
-            {activeChannel.length > 15 ? (
-              <div className="hidden sm:block overflow-hidden whitespace-nowrap w-full mask-linear-fade">
-                <span
-                  className="animate-marquee inline-block pl-0"
-                  style={{ animationDuration: `${Math.max(10, activeChannel.length * 0.4)}s` }}
-                >
-                  {activeChannel}&nbsp;&nbsp;&nbsp;&nbsp;{activeChannel}&nbsp;&nbsp;&nbsp;&nbsp;
-                </span>
-              </div>
-            ) : (
-              <span className="hidden sm:inline truncate">{activeChannel}</span>
-            )}
+            <div className={`hidden lg:block overflow-hidden whitespace-nowrap mask-linear-fade transition-all duration-300 ${activeChannel.length > 15 ? "w-[120px] xl:w-[200px]" : "max-w-[120px] xl:max-w-[200px]"}`}>
+              {activeChannel.length > 15 ? (
+                <div className="w-full overflow-hidden">
+                  <span
+                    className="animate-marquee inline-block pl-0"
+                    style={{ animationDuration: `${Math.max(10, activeChannel.length * 0.4)}s` }}
+                  >
+                    {activeChannel}&nbsp;&nbsp;&nbsp;&nbsp;{activeChannel}&nbsp;&nbsp;&nbsp;&nbsp;
+                  </span>
+                </div>
+              ) : (
+                <span className="truncate block">{activeChannel}</span>
+              )}
+            </div>
           </button>
+
 
 
 
