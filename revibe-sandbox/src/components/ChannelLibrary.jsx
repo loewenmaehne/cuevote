@@ -9,7 +9,8 @@ export function ChannelLibrary({
 	activeChannel,
 	onAdd, // New prop to add song to queue
 	isOwner,
-	onDelete
+	onDelete,
+	onPreview
 }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -52,7 +53,7 @@ export function ChannelLibrary({
 	}, [uniqueSongs, searchQuery]);
 
 	return (
-		<div className="fixed inset-0 top-16 z-40 bg-[#0a0a0a] text-white flex flex-col md:animate-in md:fade-in md:slide-in-from-bottom-10 md:duration-300">
+		<div className="w-full h-full flex flex-col bg-[#0a0a0a] text-white md:animate-in md:fade-in md:slide-in-from-bottom-10 md:duration-300">
 
 			{/* Search */}
 			<div className="p-4 border-b border-neutral-800 bg-black/20 backdrop-blur-md">
@@ -102,6 +103,7 @@ export function ChannelLibrary({
 									if (onAdd) onAdd(track.videoId);
 								}}
 								onDelete={onDelete ? () => onDelete(track.videoId) : undefined}
+								onPreview={onPreview}
 							/>
 						))
 					) : (
@@ -122,5 +124,6 @@ ChannelLibrary.propTypes = {
 	activeChannel: PropTypes.string,
 	onAdd: PropTypes.func,
 	isOwner: PropTypes.bool,
-	onDelete: PropTypes.func
+	onDelete: PropTypes.func,
+	onPreview: PropTypes.func
 };
