@@ -66,7 +66,7 @@ export function Header({
       if (event.target.closest(".keep-open")) return;
       // Do not close settings if exit confirm is open to avoid conflict
       if (showExitConfirm) return;
-      onShowSuggest(false);
+      // onShowSuggest(false); // User requested to keep suggest bar open on back key press (click outside)
       setShowSettings(false);
       // Close QR code if clicked outside (unless it's the QR code modal content)
       if (!event.target.closest(".qr-code-modal")) {
