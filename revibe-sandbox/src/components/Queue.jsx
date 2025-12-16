@@ -69,6 +69,9 @@ export function Queue({
   }, [currentTrack?.id]);
 
 
+  // Filter out current track as it is shown in the bottom bar
+  const visibleTracks = tracks.filter(t => t.id !== currentTrack?.id);
+
   return (
     <div
       ref={containerRef}
@@ -82,11 +85,11 @@ export function Queue({
           : "linear-gradient(to bottom, white 80%, transparent 100%)",
       }}
     >
-      {tracks.map((track) => (
+      {visibleTracks.map((track) => (
         <div key={track.id} id={`track-${track.id}`}>
           <Track
             track={track}
-            isActive={currentTrack?.id === track.id}
+            isActive={false} // Never active in this list
             isExpanded={expandedTrackId === track.id}
             vote={votes[track.id]}
             onVote={onVote}
@@ -98,20 +101,7 @@ export function Queue({
         </div>
       ))}
 
-      {/* Floating Back to Now Button - Portal to escape mask-image */}
-      {/* Floating Back to Now Button - Portal to escape mask-image */}
-      {showJumpToNow && currentTrack && createPortal(
-        <div className="fixed bottom-36 right-8 z-[2000]">
-          <button
-            onClick={() => scrollToCurrent(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 hover:shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0 font-medium text-sm pointer-events-auto"
-          >
-            <span>Back to Now</span>
-            {jumpDirection === 'up' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
-          </button>
-        </div>,
-        document.body
-      )}
+      {/* "Back to Now" removed as current track is not in list */}
     </div>
   );
 }
