@@ -447,25 +447,26 @@ function App() {
   // Event Handlers
 
   const handlePlayPause = () => {
-
-    if (isLocallyPaused) {
-
+    if (isOwner) {
+      // Owner controls global state
+      // If currently playing (globally), we want to pause (false).
+      // If currently paused (globally), we want to play (true).
+      sendMessage({ type: "PLAY_PAUSE", payload: !isPlaying });
+      // We also ensure local pause is cleared so the owner sees the change immediately if they were locally paused?
+      // Actually, if global state changes, the effect hook will sync it.
+      // But if owner was LOCALLY paused, and they hit play, they probably expect it to resume.
       setIsLocallyPaused(false);
-
-      playerRef.current?.seekTo?.(serverProgress);
-
-      playerRef.current?.playVideo?.();
-
+    } else {
+      // Guest: Local Toggle Only
+      if (isLocallyPaused) {
+        setIsLocallyPaused(false);
+        playerRef.current?.seekTo?.(serverProgress);
+        playerRef.current?.playVideo?.();
+      } else {
+        setIsLocallyPaused(true);
+        playerRef.current?.pauseVideo?.();
+      }
     }
-
-    else {
-
-      setIsLocallyPaused(true);
-
-      playerRef.current?.pauseVideo?.();
-
-    }
-
   };
 
 
