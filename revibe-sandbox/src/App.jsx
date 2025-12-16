@@ -50,13 +50,13 @@ function App() {
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    if (lastError) {
+    if (lastError && !showSuggest) {
       setToast({ message: lastError.message || "An error occurred", type: "error" });
     }
   }, [lastError, lastErrorTimestamp]);
 
   useEffect(() => {
-    if (lastMessage) {
+    if (lastMessage && !showSuggest) {
       if (lastMessage.type === 'info') setToast({ message: lastMessage.message, type: "info" });
       else if (lastMessage.type === 'success') {
         if (lastMessage.message === "Added") return; // Suppress redundant "Success" popup for song additions
@@ -261,6 +261,11 @@ function App() {
   // Handle Escape Key for App-level modals
   useEffect(() => {
     const handleEscape = (e) => {
+      // Prevent Backspace from closing modals while typing
+      if (e.key === 'Backspace' && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+        return;
+      }
+
       // Allow "Back" or "Escape" on TV to exit Cinema Mode
       if (isCinemaMode && (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'ArrowLeft')) {
         // Special handling: if ArrowLeft, only exit if no specialized UI is focused?
