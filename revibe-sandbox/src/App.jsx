@@ -776,7 +776,8 @@ function App() {
           requests={pendingSuggestions}
           onApprove={handleApproveSuggestion}
           onReject={handleRejectSuggestion}
-          onBan={handleBanSuggestion} // Added this
+          onBan={handleBanSuggestion}
+          onPreview={handlePreviewTrack}
           onClose={() => handleUpdateSettings({ ownerPopups: false })}
         />
       )}
@@ -787,9 +788,22 @@ function App() {
           onApprove={handleApproveSuggestion}
           onReject={handleRejectSuggestion}
           onBan={handleBanSuggestion}
-          onManageBanned={() => setShowBannedPage(true)} // Added this
+          onManageBanned={() => setShowBannedPage(true)}
+          onPreview={handlePreviewTrack}
           onClose={() => setShowPendingPage(false)}
         />
+      )}
+
+      {showPendingPage && previewTrack && (
+        <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
+          <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
+            <PlayerErrorBoundary>
+              <Player
+                playerContainerRef={playerContainerRef}
+              />
+            </PlayerErrorBoundary>
+          </div>
+        </div>
       )}
 
       {showBannedPage && (
@@ -926,7 +940,7 @@ function App() {
 
       {
         previewTrack ? (
-          <div className="fixed bottom-0 left-0 w-full bg-green-900/95 backdrop-blur-md border-t border-green-700 px-3 py-2 sm:px-6 sm:py-3 flex items-center justify-between z-50 select-none">
+          <div className="fixed bottom-0 left-0 w-full bg-green-900/95 backdrop-blur-md border-t border-green-700 px-3 py-2 sm:px-6 sm:py-3 flex items-center justify-between z-[80] select-none">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <button
                 onClick={handleStopPreview}
@@ -961,13 +975,13 @@ function App() {
                 step="1"
                 value={volume}
                 onChange={handleVolumeChange}
-                className={`accent - green - 500 w - 24 ${isMuted ? "opacity-50" : ""} `}
+                className={`accent-green-500 w-24 ${isMuted ? "opacity-50" : ""} `}
                 onClick={(event) => event.stopPropagation()}
               />
             </div>
           </div>
         ) : (
-          !isAnyPlaylistView && !showChannelLibrary && (
+          !isAnyPlaylistView && !showChannelLibrary && !showPendingPage && (
             <PlaybackControls
               isPlaying={(isPlaying || isLocallyPlaying) && !isLocallyPaused}
               onPlayPause={handlePlayPause}

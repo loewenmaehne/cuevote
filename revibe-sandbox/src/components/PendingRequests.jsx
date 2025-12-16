@@ -1,7 +1,7 @@
 import React from 'react';
-import { Check, X, Clock, ArrowLeft, Ban } from 'lucide-react';
+import { Check, X, Clock, ArrowLeft, Ban, Headphones } from 'lucide-react';
 
-export function PendingRequests({ requests, onApprove, onReject, onBan, onClose }) {
+export function PendingRequests({ requests, onApprove, onReject, onBan, onPreview, onClose }) {
 	if (!requests || requests.length === 0) return null;
 
 	return (
@@ -38,6 +38,13 @@ export function PendingRequests({ requests, onApprove, onReject, onBan, onClose 
 
 						<div className="flex gap-2 justify-center flex-shrink-0 pl-2 pt-1">
 							<button
+								onClick={() => onPreview && onPreview(track)}
+								className="p-1.5 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
+								title="Preview"
+							>
+								<Headphones size={16} />
+							</button>
+							<button
 								onClick={() => onBan(track.id)}
 								className="p-1.5 rounded-full bg-neutral-800 text-neutral-400 hover:bg-red-900 hover:text-red-400 transition-colors"
 								title="Ban Song"
@@ -61,12 +68,12 @@ export function PendingRequests({ requests, onApprove, onReject, onBan, onClose 
 						</div>
 					</div>
 				))}
-			</div>
-		</div>
+			</div >
+		</div >
 	);
 }
 
-export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onManageBanned, onClose }) {
+export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onManageBanned, onPreview, onClose }) {
 	return (
 		<div className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm flex flex-col animate-in fade-in">
 			<div className="p-6 border-b border-neutral-800 flex items-center justify-between bg-black">
@@ -121,6 +128,13 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onMa
 								</div>
 
 								<div className="flex items-center gap-2 flex-shrink-0 sm:pl-4 pt-1 sm:pt-0">
+									<button
+										onClick={() => onPreview && onPreview(track)}
+										className="p-2 sm:px-4 sm:py-2 rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors font-medium flex items-center gap-2"
+										title="Preview Song"
+									>
+										<Headphones size={18} /> <span className="hidden sm:inline">Preview</span>
+									</button>
 									<button
 										onClick={() => onBan(track.id)}
 										className="p-2 sm:px-4 sm:py-2 rounded-lg bg-neutral-800 text-neutral-400 hover:bg-red-900/30 hover:text-red-400 transition-colors font-medium flex items-center gap-2"
