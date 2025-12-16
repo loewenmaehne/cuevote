@@ -698,7 +698,7 @@ function App() {
 
 
   return (
-    <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
+    <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView || showChannelLibrary ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header
@@ -779,21 +779,12 @@ function App() {
         />
       )}
 
-      {showChannelLibrary && (
-        <ChannelLibrary
-          history={history}
-          activeChannel={activeChannel}
-          onExit={() => setShowChannelLibrary(false)}
-          onAdd={handleLibraryAdd}
-          isOwner={isOwner}
-          onDelete={isOwner ? handleRemoveFromLibrary : undefined}
-        />
-      )}
+
 
       <div
         className={isCinemaMode
           ? "fixed inset-0 z-40 bg-black transition-all duration-500 ease-in-out"
-          : (isAnyPlaylistView
+          : (isAnyPlaylistView || showChannelLibrary
             ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
             : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh]"
           )
@@ -804,7 +795,31 @@ function App() {
         }}
       >
         <div className={`absolute inset - 0 border - 4 ${previewTrack ? "border-green-500" : "border-transparent"} transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
-        {isAnyPlaylistView ? (
+        {showChannelLibrary ? (
+          /* Channel Library View */
+          <div className="w-full h-full flex flex-col overflow-hidden">
+            <ChannelLibrary
+              history={history}
+              activeChannel={activeChannel}
+              onExit={() => setShowChannelLibrary(false)}
+              onAdd={handleLibraryAdd}
+              isOwner={isOwner}
+              onDelete={isOwner ? handleRemoveFromLibrary : undefined}
+              onPreview={allowPrelisten ? handlePreviewTrack : null}
+            />
+            {previewTrack && (
+              <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
+                <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
+                  <PlayerErrorBoundary>
+                    <Player
+                      playerContainerRef={playerContainerRef}
+                    />
+                  </PlayerErrorBoundary>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : isAnyPlaylistView ? (
           /* Venue Mode: Only Playlist View */
           <div className="w-full h-full flex flex-col overflow-hidden">
             <PlaylistView
@@ -859,10 +874,10 @@ function App() {
             {autoplayBlocked && (
               <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
                 <button
-                  onClick={() => playerRef.current?.playVideo?.()}
+                  onClick={() => window.location.reload()}
                   className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-lg shadow-lg hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all active:scale-95"
                 >
-                  Tap to Join Session
+                  Reload to Join
                 </button>
               </div>
             )}
@@ -871,7 +886,7 @@ function App() {
       </div>
 
       <div className="pb-4">
-        {isAnyPlaylistView || isCinemaMode ? null : ( // Hide queue if playlistViewMode/isCinemaMode is active
+        {isAnyPlaylistView || isCinemaMode || showChannelLibrary ? null : ( // Hide queue if playlistViewMode/isCinemaMode/ChannelLibrary is active
           <Queue
             tracks={queue}
             currentTrack={currentTrack}
@@ -931,7 +946,7 @@ function App() {
             </div>
           </div>
         ) : (
-          !isAnyPlaylistView && (
+          !isAnyPlaylistView && !showChannelLibrary && (
             <PlaybackControls
               isPlaying={(isPlaying || isLocallyPlaying) && !isLocallyPaused}
               onPlayPause={handlePlayPause}
