@@ -82,6 +82,7 @@ function App() {
   };
 
   const handleDeleteChannel = () => {
+    console.log("SENDING DELETE_ROOM message");
     sendMessage({ type: "DELETE_ROOM", payload: {} });
   };
 
@@ -700,7 +701,6 @@ function App() {
               if (!showChannelLibrary) setLocalPlaylistView(false); // Close Playlist View
               setShowChannelLibrary(!showChannelLibrary);
             }}
-            onDeleteAccount={handleDeleteAccount}
             onDeleteChannel={handleDeleteChannel}
           />
           {showSuggest && (
