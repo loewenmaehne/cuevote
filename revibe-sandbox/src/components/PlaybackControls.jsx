@@ -14,6 +14,7 @@ export function PlaybackControls({
   onVolumeChange,
   isCinemaMode = false,
   onToggleCinemaMode,
+  onVisibilityChange,
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [tempVisible, setTempVisible] = useState(false);
@@ -63,6 +64,13 @@ export function PlaybackControls({
 
   // Calculate visibility before using it in effects
   const shouldShow = !isCinemaMode || isHovered || tempVisible;
+
+  // Notify parent of visibility changes
+  useEffect(() => {
+    if (onVisibilityChange) {
+      onVisibilityChange(shouldShow);
+    }
+  }, [shouldShow, onVisibilityChange]);
 
   // Debug Log
   useEffect(() => {
@@ -208,4 +216,5 @@ PlaybackControls.propTypes = {
   onVolumeChange: PropTypes.func.isRequired,
   isCinemaMode: PropTypes.bool,
   onToggleCinemaMode: PropTypes.func,
+  onVisibilityChange: PropTypes.func,
 };
