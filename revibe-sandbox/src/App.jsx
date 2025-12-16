@@ -337,12 +337,17 @@ function App() {
             }
           },
           onStateChange: (event) => {
-            if (event.data === YouTubeState.PLAYING) {
+            const state = event.data;
+            if (state === YouTubeState.PLAYING) {
+              setIsLocallyPaused(false);
               setAutoplayBlocked(false);
               const duration = event.target.getDuration();
               if (duration && duration > 0) {
                 sendMessage({ type: "UPDATE_DURATION", payload: duration });
               }
+            } else if (state === YouTubeState.PAUSED) {
+              // If user pauses manually in the iframe, respect it locally
+              setIsLocallyPaused(true);
             }
           },
           onError: (event) => {
