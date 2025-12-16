@@ -145,9 +145,11 @@ export function Lobby() {
                     return;
                 }
                 if (e.key === 'ArrowLeft' && e.target.selectionStart === 0) {
-                    // e.preventDefault(); // Optional: allow leaving input only at start
-                    // setFocusedIndex(-1);
-                    // document.activeElement.blur();
+                    e.preventDefault();
+                    document.activeElement.blur();
+                    // Go to right-most filter
+                    if (user) setFocusedIndex(-4); // My Channels
+                    else setFocusedIndex(-1); // Private
                 }
                 return; // Let user type in search
             }
@@ -189,13 +191,13 @@ export function Lobby() {
                 e.preventDefault();
                 if (focusedIndex < 0) { /* stay in filters */ }
                 else {
-                    setFocusedIndex(prev => {
-                        // If in the top row, move focus to filters
-                        if (prev < columns) {
-                            return -2; // Default to Public filter
-                        }
-                        return Math.max(prev - columns, 0);
-                    });
+                    // Logic to jump to Search Bar if in top row (User Request)
+                    if (focusedIndex < columns) {
+                        document.getElementById('channel-search')?.focus();
+                        setFocusedIndex(-3);
+                    } else {
+                        setFocusedIndex(prev => prev - columns);
+                    }
                 }
             } else if (e.key === 'Enter') {
                 e.preventDefault();
