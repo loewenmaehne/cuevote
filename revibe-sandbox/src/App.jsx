@@ -119,7 +119,9 @@ function App() {
 
 
   const isOwner = user && ownerId && user.id === ownerId;
-  const isVenueMode = playlistViewMode && !isOwner;
+  // TV always ignores Venue Mode (shows video)
+  const isVenueMode = playlistViewMode && !isOwner && !isTV();
+  // TV always defaults to Fullscreen (CinemaMode), unless manually exited
   const isAnyPlaylistView = isVenueMode || localPlaylistView;
 
   // Force exit cinema mode when Venue Mode is activated
