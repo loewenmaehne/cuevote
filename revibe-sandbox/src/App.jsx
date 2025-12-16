@@ -702,6 +702,20 @@ function App() {
 
 
 
+  const handleSeek = (percentage) => {
+    if (!playerRef.current) return;
+    const duration = playerRef.current.getDuration();
+    if (!duration) return;
+    const seconds = (percentage / 100) * duration;
+
+    // Send to server (Owner only check server-side, but frontend check is good too)
+    if (isOwner) {
+      sendMessage({ type: "SEEK_TO", payload: seconds });
+      // Seek locally immediately for responsiveness
+      playerRef.current.seekTo(seconds, true);
+    }
+  };
+
   return (
     <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView || showChannelLibrary ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
       {!isCinemaMode && (
@@ -966,6 +980,8 @@ function App() {
               isCinemaMode={isCinemaMode}
               onToggleCinemaMode={() => setIsCinemaMode(!isCinemaMode)}
               onVisibilityChange={setControlsVisible}
+              isOwner={isOwner}
+              onSeek={handleSeek}
             />
           )
         )

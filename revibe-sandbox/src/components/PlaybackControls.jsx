@@ -15,18 +15,22 @@ export function PlaybackControls({
   isCinemaMode = false,
   onToggleCinemaMode,
   onVisibilityChange,
+  isOwner = false,
+  onSeek,
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [tempVisible, setTempVisible] = useState(false);
   const hideTimeoutRef = useRef(null);
+  const progressBarRef = useRef(null);
 
   // Function to show controls temporarily (e.g. on song start or mouse leave)
   const activateTemporaryVisibility = () => {
-    console.log("[PlaybackControls] Activating temporary visibility. Starting 3s timer.");
+    if (isHovered) return; // Don't hide if hovered
+    // console.log("[PlaybackControls] Activating temporary visibility. Starting 3s timer.");
     setTempVisible(true);
     if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
     hideTimeoutRef.current = setTimeout(() => {
-      console.log("[PlaybackControls] Timer expired. Setting tempVisible = false");
+      // console.log("[PlaybackControls] Timer expired. Setting tempVisible = false");
       setTempVisible(false);
     }, 3000);
   };
@@ -34,7 +38,7 @@ export function PlaybackControls({
   // Show temporarily when track changes
   useEffect(() => {
     if (currentTrack) {
-      console.log("[PlaybackControls] Track changed, activating visibility.");
+      // console.log("[PlaybackControls] Track changed, activating visibility.");
       activateTemporaryVisibility();
     }
   }, [currentTrack?.id]);
@@ -47,17 +51,17 @@ export function PlaybackControls({
   }, []);
 
   const handleMouseEnter = () => {
-    if (!isHovered) console.log("[PlaybackControls] Mouse Enter");
+    // if (!isHovered) console.log("[PlaybackControls] Mouse Enter");
     setIsHovered(true);
     setTempVisible(true); // Keep it visible without timeout while hovered
     if (hideTimeoutRef.current) {
-      console.log("[PlaybackControls] Clearing timer due to hover");
+      // console.log("[PlaybackControls] Clearing timer due to hover");
       clearTimeout(hideTimeoutRef.current);
     }
   };
 
   const handleMouseLeave = () => {
-    console.log("[PlaybackControls] Mouse Leave");
+    // console.log("[PlaybackControls] Mouse Leave");
     setIsHovered(false);
     activateTemporaryVisibility(); // Start timeout once mouse leaves
   };
@@ -72,17 +76,10 @@ export function PlaybackControls({
     }
   }, [shouldShow, onVisibilityChange]);
 
-  // Debug Log
-  useEffect(() => {
-    if (isCinemaMode) {
-      console.log(`[PlaybackControls] State: Cinema=${isCinemaMode}, Hover=${isHovered}, Temp=${tempVisible} => Show=${shouldShow}`);
-    }
-  }, [isCinemaMode, isHovered, tempVisible, shouldShow]);
-
   // Handle window blur (e.g. clicking into iframe) as a "leave" event
   useEffect(() => {
     const handleWindowBlur = () => {
-      console.log(`[PlaybackControls] Window Blur. isHovered=${isHovered}`);
+      // console.log(`[PlaybackControls] Window Blur. isHovered=${isHovered}`);
       if (isHovered) {
         handleMouseLeave();
       }
@@ -106,7 +103,7 @@ export function PlaybackControls({
 
         // If neither is hovered according to the browser, but React thinks we are, force a leave.
         if (!footerHover && !overlayHover) {
-          console.log("[PlaybackControls] Safety Check: Browser says NO HOVER. Forcing leave.");
+          // console.log("[PlaybackControls] Safety Check: Browser says NO HOVER. Forcing leave.");
           handleMouseLeave();
           // Clear interval immediately to prevent spamming while waiting for state update
           clearInterval(interval);
@@ -115,6 +112,25 @@ export function PlaybackControls({
     }
     return () => clearInterval(interval);
   }, [isHovered, isCinemaMode]);
+
+  const handleSeekClick = (e) => {
+    if (!isOwner || !onSeek) return;
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = rect.width;
+    const percentage = Math.max(0, Math.min(100, (x / width) * 100));
+    onSeek(percentage);
+  };
+
+  // Dragging support could be added here with mouse move logic, 
+  // but click-to-seek is often sufficient and cleaner for this context. 
+  // Adding simple drag support:
+  const handleMouseMove = (e) => {
+    if (e.buttons === 1) { // Left Button Pressed
+      handleSeekClick(e);
+    }
+  }
+
 
   return (
     <>
@@ -133,11 +149,22 @@ export function PlaybackControls({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+        {/* Progress Bar */}
+        <div
+          ref={progressBarRef}
+          className={`w-full bg-neutral-900 rounded-full h-2 overflow-hidden relative ${isOwner ? 'cursor-pointer group' : ''}`}
+          onClick={handleSeekClick}
+          onMouseMove={isOwner ? handleMouseMove : undefined}
+        >
           <div
-            className="h-2 bg-gradient-to-r from-orange-400 to-orange-600 transition-all"
+            className="h-2 bg-gradient-to-r from-orange-400 to-orange-600 transition-all relative"
             style={{ width: `${progress}%` }}
-          ></div>
+          >
+            {/* Handle for owners */}
+            {isOwner && (
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 shadow-sm transition-opacity" />
+            )}
+          </div>
         </div>
 
         <div className="flex items-center justify-between">
@@ -217,4 +244,6 @@ PlaybackControls.propTypes = {
   isCinemaMode: PropTypes.bool,
   onToggleCinemaMode: PropTypes.func,
   onVisibilityChange: PropTypes.func,
+  isOwner: PropTypes.bool,
+  onSeek: PropTypes.func,
 };
