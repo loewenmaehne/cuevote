@@ -131,7 +131,7 @@ export function Header({
       ref={headerRef}
       className="p-2 md:p-4 flex flex-col items-center gap-3 w-full"
     >
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full gap-2 md:gap-4">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full gap-2 lg:gap-4">
         <div className="flex items-center gap-3 justify-start min-w-0">
           <div className="flex items-center flex-shrink-0 transition-all duration-300">
             {user ? (
@@ -215,7 +215,7 @@ export function Header({
           </button>
         </div>
 
-        <div className="flex items-center justify-end gap-2 md:gap-4 min-w-0">
+        <div className="flex items-center justify-end gap-2 lg:gap-4 min-w-0">
           <button
             onClick={(event) => {
               event.stopPropagation();
@@ -227,7 +227,7 @@ export function Header({
             title={activeChannel}
           >
             <Radio size={22} className="flex-shrink-0" />
-            <div className={`hidden md:block overflow-hidden whitespace-nowrap transition-all duration-300 ${activeChannel.length > 15 ? "w-[120px] xl:w-[200px] mask-linear-fade" : "max-w-[120px] xl:max-w-[200px]"}`}>
+            <div className={`hidden md:block overflow-hidden whitespace-nowrap transition-all duration-300 ${activeChannel.length > 15 ? "w-[90px] lg:w-[120px] xl:w-[200px] mask-linear-fade" : "max-w-[90px] lg:max-w-[120px] xl:max-w-[200px]"}`}>
               {activeChannel.length > 15 ? (
                 <div className="w-full overflow-hidden">
                   <span
