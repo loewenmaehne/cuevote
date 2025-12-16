@@ -288,6 +288,7 @@ function App() {
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const volumeRef = useRef(volume);
   const isMutedRef = useRef(isMuted);
+  const isPlayingRef = useRef(isPlaying); // Track latest server state for event handlers
 
   useEffect(() => {
     volumeRef.current = volume;
@@ -296,6 +297,10 @@ function App() {
   useEffect(() => {
     isMutedRef.current = isMuted;
   }, [isMuted]);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
 
   // YouTube API Loading
@@ -341,7 +346,16 @@ function App() {
             const state = event.data;
             if (state === YouTubeState.PLAYING) {
               setIsLocallyPaused(false);
-              setIsLocallyPlaying(true);
+
+              // Only set override if the SERVER is not currently playing.
+              // If Server IS playing, then this event is likely just a sync result, so we are synced (local=false).
+              // If Server is PAUSED (!isPlaying), and we play, it's a manual override.
+              if (!isPlayingRef.current) {
+                setIsLocallyPlaying(true);
+              } else {
+                setIsLocallyPlaying(false);
+              }
+
               setAutoplayBlocked(false);
               const duration = event.target.getDuration();
               if (duration && duration > 0) {
