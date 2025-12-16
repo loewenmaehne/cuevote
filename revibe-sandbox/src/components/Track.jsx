@@ -126,7 +126,7 @@ export function Track({
                 Add to Queue
               </button>
             )}
-            {onPreview && !readOnly && !isActive && (
+            {onPreview && !isActive && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
