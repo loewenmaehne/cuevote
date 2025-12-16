@@ -13,6 +13,7 @@ import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
 import { Toast } from "./components/Toast";
+import { isTV } from "./utils/deviceDetection";
 
 const YouTubeState = {
   UNSTARTED: -1,
@@ -241,7 +242,7 @@ function App() {
   const [showSuggest, setShowSuggest] = useState(false);
   const [showPendingPage, setShowPendingPage] = useState(false);
   const [showBannedPage, setShowBannedPage] = useState(false); // Added this
-  const [isCinemaMode, setIsCinemaMode] = useState(false);
+  const [isCinemaMode, setIsCinemaMode] = useState(isTV());
   const [volume, setVolume] = useState(80);
   // minimized state removed
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
@@ -258,17 +259,21 @@ function App() {
   // Handle Escape Key for App-level modals
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape') {
+      // Allow "Back" or "Escape" on TV to exit Cinema Mode
+      if (isCinemaMode && (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'ArrowLeft')) {
+        // Special handling: if ArrowLeft, only exit if no specialized UI is focused?
+        // Safer to just use Escape/Backspace (standard Android TV Back)
+      }
+
+      if (e.key === 'Escape' || e.key === 'Backspace') {
         if (showPendingPage) setShowPendingPage(false);
-        if (showBannedPage) setShowBannedPage(false);
-        if (showSuggest) setShowSuggest(false);
-        if (showQRModal) setShowQRModal(false);
-        if (showChannelLibrary) setShowChannelLibrary(false);
-        // Password Modal is tricky - usually mandatory but if user wants to cancel joining, maybe? 
-        // Logic in View was: Cancel -> navigate('/'). So we can replicate that?
-        if (showPasswordModal) {
-          // Optional: Uncomment if Escape should effectively "Cancel" the join
-          // navigate('/'); 
+        else if (showBannedPage) setShowBannedPage(false);
+        else if (showSuggest) setShowSuggest(false);
+        else if (showQRModal) setShowQRModal(false);
+        else if (showChannelLibrary) setShowChannelLibrary(false);
+        else if (showPasswordModal) { /* navigate('/'); */ }
+        else if (isCinemaMode) {
+          setIsCinemaMode(false); // <--- Add this!
         }
       }
     };
