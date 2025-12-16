@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from "react-router-dom";
-import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale } from "lucide-react";
+import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale, ChevronLeft, ChevronRight } from "lucide-react";
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { useGoogleLogin } from '@react-oauth/google';
 
@@ -33,6 +33,10 @@ export function Lobby() {
     const isScrolling = useRef(false);
     // Default to 4 for lg screens
     const [searchQuery, setSearchQuery] = useState("");
+
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 18;
 
     const login = useGoogleLogin({
         onSuccess: (tokenResponse) => {
@@ -98,6 +102,31 @@ export function Lobby() {
         room.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Reset page to 1 when filter changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, channelType]);
+
+    // Calculate Pagination
+    // Total virtual items = 1 (Create Button) + filteredRooms.length
+    const totalItemsCount = 1 + filteredRooms.length;
+    const totalPages = Math.ceil(totalItemsCount / ITEMS_PER_PAGE);
+
+    // Get indices for current page
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+
+    // Determine if Create Button is on this page
+    const showCreateButton = startIndex === 0;
+
+    // Calculate which rooms to show
+    // If showCreateButton is true, we need to take items from filteredRooms starting at 0 to (ITEMS_PER_PAGE - 1)
+    // If showCreateButton is false, we take from (startIndex - 1) to (endIndex - 1)
+    const roomSliceStart = showCreateButton ? 0 : startIndex - 1;
+    const roomSliceEnd = showCreateButton ? ITEMS_PER_PAGE - 1 : endIndex - 1;
+
+    const visibleRooms = filteredRooms.slice(roomSliceStart, roomSliceEnd);
+
     // Handle Keyboard Navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -123,8 +152,9 @@ export function Lobby() {
                 return; // Let user type in search
             }
 
-            // Total items = create button (1) + filtered rooms
-            const totalItems = 1 + filteredRooms.length;
+            // Total items on THIS page
+            const currentItemsCount = (showCreateButton ? 1 : 0) + visibleRooms.length;
+            const totalItems = currentItemsCount;
 
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
@@ -177,8 +207,17 @@ export function Lobby() {
                         // Create Room (Index 0)
                         handleCreateRoomClick();
                     } else {
-                        // Join Room (Index > 0, so mapped to filteredRooms[index - 1])
-                        const roomToJoin = filteredRooms[focusedIndex - 1];
+                        // Join Room (Index > 0 on page 1, or any index on other pages)
+                        // If showCreateButton is true: index 0 is create, 1..N are rooms
+                        // If showCreateButton is false: index 0..N are rooms
+
+                        let roomToJoin;
+                        if (showCreateButton) {
+                            roomToJoin = visibleRooms[focusedIndex - 1]; // Index 0 is safe-guarded above
+                        } else {
+                            roomToJoin = visibleRooms[focusedIndex];
+                        }
+
                         if (roomToJoin) {
                             handleRoomClick(roomToJoin);
                         }
@@ -193,12 +232,12 @@ export function Lobby() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [filteredRooms, columns, focusedIndex, isCreatingRoom, showPasswordModal, navigate]);
+    }, [visibleRooms, columns, focusedIndex, isCreatingRoom, showPasswordModal, navigate, showCreateButton]);
 
     // Reset focused index when filtered rooms change
     useEffect(() => {
         setFocusedIndex(0);
-    }, [filteredRooms.length]);
+    }, [visibleRooms.length, currentPage]);
 
     // Detect scrolling to prevent accidental mouse selection
     useEffect(() => {
@@ -400,32 +439,34 @@ export function Lobby() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                        {/* Create Room Button - Always First */}
-                        <button
-                            id="lobby-item-0"
-                            onClick={() => {
-                                handleCreateRoomClick();
-                                setFocusedIndex(0);
-                            }}
-                            onMouseEnter={() => {
-                                if (!isScrolling.current) setFocusedIndex(0);
-                            }}
-                            onMouseMove={() => {
-                                if (!isScrolling.current && focusedIndex !== 0) setFocusedIndex(0);
-                            }}
-                            className={`scroll-mt-56 scroll-mb-24 rounded-2xl border p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
-                                ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
-                                : user
-                                    ? "border-neutral-800 text-neutral-500 cursor-pointer"
-                                    : "border-neutral-900 text-neutral-700 cursor-not-allowed"
-                                }`}
-                            title={user ? "Create a new channel" : "Log in to create a channel"}
-                        >
-                            <Sparkles size={32} className={focusedIndex === 0 ? "text-orange-500" : ""} />
-                            <span className={`font-medium ${focusedIndex === 0 ? "text-white" : ""}`}>
-                                {user ? "Create Channel" : "Log in to Create"}
-                            </span>
-                        </button>
+                        {/* Create Room Button - Only on First Page */}
+                        {showCreateButton && (
+                            <button
+                                id="lobby-item-0"
+                                onClick={() => {
+                                    handleCreateRoomClick();
+                                    setFocusedIndex(0);
+                                }}
+                                onMouseEnter={() => {
+                                    if (!isScrolling.current) setFocusedIndex(0);
+                                }}
+                                onMouseMove={() => {
+                                    if (!isScrolling.current && focusedIndex !== 0) setFocusedIndex(0);
+                                }}
+                                className={`scroll-mt-56 scroll-mb-24 rounded-2xl border p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
+                                    ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
+                                    : user
+                                        ? "border-neutral-800 text-neutral-500 cursor-pointer"
+                                        : "border-neutral-900 text-neutral-700 cursor-not-allowed"
+                                    }`}
+                                title={user ? "Create a new channel" : "Log in to create a channel"}
+                            >
+                                <Sparkles size={32} className={focusedIndex === 0 ? "text-orange-500" : ""} />
+                                <span className={`font-medium ${focusedIndex === 0 ? "text-white" : ""}`}>
+                                    {user ? "Create Channel" : "Log in to Create"}
+                                </span>
+                            </button>
+                        )}
 
                         {/* Filtered Rooms */}
                         {filteredRooms.length === 0 && searchQuery && (
@@ -435,9 +476,11 @@ export function Lobby() {
                             </div>
                         )}
 
-                        {filteredRooms.map((channel, i) => {
-                            // Adjust index for mapping because Create Button is 0
-                            const actualIndex = i + 1;
+                        {visibleRooms.map((channel, i) => {
+                            // Adjust index:
+                            // If create button is shown, first room is index 1.
+                            // If not, first room is index 0.
+                            const actualIndex = showCreateButton ? i + 1 : i;
 
                             return (
                                 <div
@@ -508,8 +551,32 @@ export function Lobby() {
                             );
                         })}
                     </div>
-                )
-                }
+                )}
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-4 mt-8">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        >
+                            <ChevronLeft size={20} />
+                        </button>
+
+                        <div className="text-sm font-medium text-neutral-400">
+                            Page <span className="text-white">{currentPage}</span> of <span className="text-white">{totalPages}</span>
+                        </div>
+
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        >
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
+                )}
             </main>
 
             {/* Create Room Modal */}
