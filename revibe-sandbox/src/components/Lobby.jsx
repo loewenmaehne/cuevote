@@ -4,10 +4,25 @@ import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, G
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { useGoogleLogin } from '@react-oauth/google';
 
+import { isTV } from "../utils/deviceDetection";
+
 export function Lobby() {
     const navigate = useNavigate();
     const { sendMessage, lastMessage, isConnected, lastError, lastErrorCode, user, handleLoginSuccess, handleLogout, clearMessage, state } = useWebSocketContext();
     const [rooms, setRooms] = useState([]);
+
+    /* 
+    // TV Auto-Redirect - DISABLED so user sees Lobby first
+    useEffect(() => {
+        if (isTV() && rooms.length > 0) {
+            const tvRoom = rooms.find(r => r.name === "TV") || rooms.find(r => r.id === "tv-a56dfad8") || rooms[0];
+            if (tvRoom) {
+                console.log("[Lobby] TV Detected. Auto-joining:", tvRoom.name);
+                navigate(`/room/${tvRoom.id}`);
+            }
+        }
+    }, [rooms, navigate]);
+    */
 
     // Creation State
     const [isCreatingRoom, setIsCreatingRoom] = useState(false);
