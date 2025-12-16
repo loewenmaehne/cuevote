@@ -47,24 +47,7 @@ function App() {
     handleLoginSuccess,
   } = useWebSocketContext();
 
-  const [toast, setToast] = useState(null);
 
-  useEffect(() => {
-    if (lastError && !showSuggest) {
-      setToast({ message: lastError.message || "An error occurred", type: "error" });
-    }
-  }, [lastError, lastErrorTimestamp]);
-
-  useEffect(() => {
-    if (lastMessage && !showSuggest) {
-      if (lastMessage.type === 'info') setToast({ message: lastMessage.message, type: "info" });
-      else if (lastMessage.type === 'success') {
-        if (lastMessage.message === "Added") return; // Suppress redundant "Success" popup for song additions
-        setToast({ message: lastMessage.payload || "Success", type: "success" });
-      }
-      else if (lastMessage.type === 'error') setToast({ message: lastMessage.message, type: "error" });
-    }
-  }, [lastMessage]);
 
   console.log("Server State:", serverState);
 
@@ -242,6 +225,35 @@ function App() {
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
+
+  // Fix: Use Ref to track showSuggeststate to suppress global toasts when bar is open
+  const showSuggestRef = useRef(showSuggest);
+  useEffect(() => { showSuggestRef.current = showSuggest; }, [showSuggest]);
+
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    // If Suggest Bar is open, suppress global toasts (errors/messages shown inline)
+    if (showSuggestRef.current) return;
+
+    if (lastError) {
+      setToast({ message: lastError.message || "An error occurred", type: "error" });
+    }
+  }, [lastError, lastErrorTimestamp]); // showSuggestRef is stable
+
+  useEffect(() => {
+    // If Suggest Bar is open, suppress global toasts
+    if (showSuggestRef.current) return;
+
+    if (lastMessage) {
+      if (lastMessage.type === 'info') setToast({ message: lastMessage.message, type: "info" });
+      else if (lastMessage.type === 'success') {
+        if (lastMessage.message === "Added") return; // Suppress redundant "Success" popup for song additions
+        setToast({ message: lastMessage.payload || "Success", type: "success" });
+      }
+      else if (lastMessage.type === 'error') setToast({ message: lastMessage.message, type: "error" });
+    }
+  }, [lastMessage]);
   const [showPendingPage, setShowPendingPage] = useState(false);
   const [showBannedPage, setShowBannedPage] = useState(false); // Added this
   const [isCinemaMode, setIsCinemaMode] = useState(isTV());
