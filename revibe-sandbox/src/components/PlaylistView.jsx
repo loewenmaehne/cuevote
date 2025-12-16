@@ -19,6 +19,7 @@ export function PlaylistView({
     votesEnabled = true,
     onPreview,
     onExit,
+    onDelete, // New prop
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -143,6 +144,7 @@ export function PlaylistView({
                                 onToggleExpand={handleToggleExpand}
                                 readOnly={true}
                                 votesEnabled={votesEnabled}
+                                onDelete={onDelete} // Pass delete enabled here too? Usually current track can be deleted (skipped)
                             />
                         </div>
                     )}
@@ -166,6 +168,7 @@ export function PlaylistView({
                                     readOnly={false}
                                     votesEnabled={votesEnabled}
                                     onPreview={onPreview}
+                                    onDelete={onDelete} // Pass onDelete
                                 />
                             ))}
                         </div>
