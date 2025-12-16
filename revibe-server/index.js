@@ -385,6 +385,7 @@ wss.on("connection", (ws, req) => {
                     const roomList = [];
                     // 1. Get from Memory (Active)
                     for (const room of rooms.values()) {
+                        if (room.deleted) continue; // Skip deleted rooms
                         if (showMyChannels) {
                             if (room.metadata.owner_id === ws.user.id) {
                                 roomList.push(room.getSummary());
