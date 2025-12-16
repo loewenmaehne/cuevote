@@ -129,9 +129,9 @@ export function Header({
   return (
     <header
       ref={headerRef}
-      className="p-4 flex flex-col items-center gap-3 w-full"
+      className="p-2 md:p-4 flex flex-col items-center gap-3 w-full"
     >
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full gap-4">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full gap-2 md:gap-4">
         <div className="flex items-center gap-3 justify-start min-w-0">
           <div className="flex items-center flex-shrink-0 transition-all duration-300">
             {user ? (
@@ -171,44 +171,49 @@ export function Header({
             >
               <Scale size={20} />
             </a>
-            {/* Playlist View Toggle - Next to User Widget */}
-            {!(playlistViewMode && !isOwner) && (
-              <button
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onTogglePlaylistView();
-                  setShowSettings(false);
-                  onShowSuggest(false);
-                }}
-                className="flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors ml-2"
-                title="Playlist View"
-              >
-                <List size={22} />
-                <span className="hidden md:block text-sm font-medium whitespace-nowrap">Playlist</span>
-              </button>
-            )}
-            {/* Channel Library Toggle */}
-            <button
-              onClick={(event) => {
-                event.stopPropagation();
-                if (onToggleChannelLibrary) onToggleChannelLibrary();
-                setShowSettings(false);
-                onShowSuggest(false);
-              }}
-              className="flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors ml-2"
-              title="Channel Library"
-            >
-              <Library size={22} />
-              <span className="hidden md:block text-sm font-medium whitespace-nowrap">Library</span>
-            </button>
+
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap text-center">
-          ReVibe Music
-        </h1>
+        <div className="flex items-center gap-1 md:gap-3 justify-center min-w-0">
+          {/* Playlist View Toggle - Left of Logo */}
+          {!(playlistViewMode && !isOwner) && (
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                onTogglePlaylistView();
+                setShowSettings(false);
+                onShowSuggest(false);
+              }}
+              className="flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
+              title="Playlist View"
+            >
+              <List size={20} className="md:w-[22px] md:h-[22px]" />
+              <span className="hidden lg:block text-sm font-medium whitespace-nowrap">Playlist</span>
+            </button>
+          )}
 
-        <div className="flex items-center justify-end gap-4 min-w-0">
+          <h1 className="text-lg md:text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap text-center">
+            ReVibe Music
+          </h1>
+
+          {/* Channel Library Toggle - Right of Logo */}
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              if (onToggleChannelLibrary) onToggleChannelLibrary();
+              setShowSettings(false);
+              onShowSuggest(false);
+            }}
+            className="flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
+            title="Channel Library"
+          >
+            <Library size={20} className="md:w-[22px] md:h-[22px]" />
+            <span className="hidden lg:block text-sm font-medium whitespace-nowrap">Library</span>
+          </button>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 md:gap-4 min-w-0">
           <button
             onClick={(event) => {
               event.stopPropagation();
@@ -216,12 +221,12 @@ export function Header({
               setExitConfirmIndex(0); // Default to "Cancel" for safety
               setShowSettings(false);
             }}
-            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors flex-shrink-0 max-w-[160px] overflow-hidden"
+            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors flex-shrink min-w-0 max-w-[120px] sm:max-w-[160px] overflow-hidden"
             title={activeChannel}
           >
             <Radio size={22} className="flex-shrink-0" />
             {activeChannel.length > 15 ? (
-              <div className="overflow-hidden whitespace-nowrap w-full mask-linear-fade">
+              <div className="hidden sm:block overflow-hidden whitespace-nowrap w-full mask-linear-fade">
                 <span
                   className="animate-marquee inline-block pl-0"
                   style={{ animationDuration: `${Math.max(10, activeChannel.length * 0.4)}s` }}
@@ -230,11 +235,24 @@ export function Header({
                 </span>
               </div>
             ) : (
-              <span className="hidden md:inline truncate">{activeChannel}</span>
+              <span className="hidden sm:inline truncate">{activeChannel}</span>
             )}
           </button>
 
 
+
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              onShowQRCode(true);
+              setShowSettings(false);
+              onShowSuggest(false);
+            }}
+            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
+            title="Share Channel"
+          >
+            <QrCode size={20} />
+          </button>
 
           {/* Suggest Button */}
           {(() => {
@@ -249,29 +267,16 @@ export function Header({
                   onShowSuggest((prev) => !prev);
                   setShowSettings(false);
                 }}
-                className={`keep-open flex items-center gap-2 transition-colors truncate ${isDisabled
+                className={`keep-open flex items-center gap-2 transition-colors flex-shrink-0 ${isDisabled
                   ? "text-neutral-600 hover:text-neutral-500"
                   : "text-orange-500 hover:text-orange-400"
                   }`}
                 title={isDisabled ? "Suggestions disabled by owner (View Only)" : "Suggest a Song"}
               >
-                <Send size={18} /> <span className="hidden sm:inline">Suggest</span>
+                <Send size={18} /> <span>Suggest</span>
               </button>
             );
           })()}
-
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
-              onShowQRCode(true);
-              setShowSettings(false);
-              onShowSuggest(false);
-            }}
-            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
-            title="Share Channel"
-          >
-            <QrCode size={20} />
-          </button>
 
 
 
@@ -657,8 +662,8 @@ export function Header({
                   }
                 }}
                 className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all ${deleteChannelText === "Delete this channel forever"
-                    ? "bg-red-600 text-white hover:bg-red-500 shadow-lg shadow-red-900/20"
-                    : "bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700"
+                  ? "bg-red-600 text-white hover:bg-red-500 shadow-lg shadow-red-900/20"
+                  : "bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700"
                   }`}
               >
                 Delete
@@ -759,17 +764,7 @@ export function Header({
                 </button>
               </div>
 
-              {/* Channel Library Button */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (onToggleChannelLibrary) onToggleChannelLibrary();
-                }}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white transition-all ml-2"
-                title="Channel Library"
-              >
-                <Library size={20} />
-              </button>
+
 
               <button
                 onClick={() => onShowQRCode(false)}
