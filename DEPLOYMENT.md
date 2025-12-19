@@ -29,7 +29,7 @@ sudo npm install -g pm2
 
 Clone the repository to your preferred location (e.g., `/var/www/cuevote` or `/home/user/cuevote`).
 ```bash
-git clone https://github.com/loewenmaehne/revibe-music.git cuevote
+git clone https://github.com/loewenmaehne/cuevote.git cuevote
 cd cuevote
 ```
 
