@@ -1,7 +1,10 @@
+
 import React from 'react';
 import { Check, X, Clock, ArrowLeft, Ban, Headphones } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function PendingRequests({ requests, onApprove, onReject, onBan, onPreview, onClose }) {
+	const { t } = useLanguage();
 	if (!requests || requests.length === 0) return null;
 
 	return (
@@ -9,7 +12,7 @@ export function PendingRequests({ requests, onApprove, onReject, onBan, onPrevie
 			<div className="bg-neutral-800/50 p-3 border-b border-neutral-700 flex justify-between items-center">
 				<h3 className="font-bold text-white flex items-center gap-2">
 					<Clock size={16} className="text-orange-500" />
-					Pending Review ({requests.length})
+					{t('pending.pendingReview')} ({requests.length})
 				</h3>
 				<button
 					onClick={onClose}
@@ -32,7 +35,7 @@ export function PendingRequests({ requests, onApprove, onReject, onBan, onPrevie
 							<p className="text-sm font-medium text-white line-clamp-2 leading-tight" title={track.title}>{track.title}</p>
 							<p className="text-xs text-neutral-400 line-clamp-1">{track.artist}</p>
 							<p className="text-xs text-neutral-500 mt-0.5 line-clamp-1">
-								By <span className="text-neutral-300">{track.suggestedByUsername || 'Unknown'}</span>
+								{t('pending.by')} <span className="text-neutral-300">{track.suggestedByUsername || t('pending.unknown')}</span>
 							</p>
 						</div>
 
@@ -40,28 +43,28 @@ export function PendingRequests({ requests, onApprove, onReject, onBan, onPrevie
 							<button
 								onClick={() => onPreview && onPreview(track)}
 								className="p-1.5 rounded-full bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
-								title="Preview"
+								title={t('pending.preview')}
 							>
 								<Headphones size={16} />
 							</button>
 							<button
 								onClick={() => onBan(track.id)}
 								className="p-1.5 rounded-full bg-neutral-800 text-neutral-400 hover:bg-red-900 hover:text-red-400 transition-colors"
-								title="Ban Song"
+								title={t('pending.ban')}
 							>
 								<Ban size={16} />
 							</button>
 							<button
 								onClick={() => onReject(track.id)}
 								className="p-1.5 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
-								title="Reject"
+								title={t('pending.decline')}
 							>
 								<X size={16} />
 							</button>
 							<button
 								onClick={() => onApprove(track.id)}
 								className="p-1.5 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-colors"
-								title="Approve"
+								title={t('pending.accept')}
 							>
 								<Check size={16} />
 							</button>
@@ -74,6 +77,7 @@ export function PendingRequests({ requests, onApprove, onReject, onBan, onPrevie
 }
 
 export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onManageBanned, onPreview, onClose }) {
+	const { t } = useLanguage();
 	return (
 		<div className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm flex flex-col animate-in fade-in">
 			<div className="p-6 border-b border-neutral-800 flex items-center justify-between bg-black">
@@ -86,7 +90,7 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onMa
 					</button>
 					<h1 className="text-2xl font-bold text-white flex items-center gap-3">
 						<Clock className="text-orange-500" />
-						Pending Requests
+						{t('pending.title')}
 						<span className="text-lg font-normal text-neutral-500">
 							({requests.length} pending)
 						</span>
@@ -97,15 +101,15 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onMa
 					className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors border border-neutral-700 font-medium"
 				>
 					<Ban size={18} className="text-red-500" />
-					<span>Banned Songs</span>
+					<span>{t('pending.bannedSongs')}</span>
 				</button>
 			</div>
 
 			<div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
 				{(!requests || requests.length === 0) ? (
 					<div className="text-center text-neutral-500 mt-20">
-						<p className="text-xl">No pending requests</p>
-						<p className="text-sm mt-2">New suggestions requiring approval will appear here.</p>
+						<p className="text-xl">{t('pending.empty')}</p>
+						<p className="text-sm mt-2">{t('pending.emptySubtitle')}</p>
 					</div>
 				) : (
 					<div className="grid gap-4">
@@ -122,7 +126,7 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onMa
 										<h3 className="text-sm sm:text-lg font-bold text-white line-clamp-2 leading-tight" title={track.title}>{track.title}</h3>
 										<p className="text-xs sm:text-base text-neutral-400 truncate">{track.artist}</p>
 										<p className="text-xs sm:text-sm text-neutral-500 mt-0.5 sm:mt-1 flex items-center gap-1">
-											<span className="hidden sm:inline">Suggested by</span> <span className="text-neutral-300 font-medium truncate">{track.suggestedByUsername || 'Unknown'}</span>
+											<span className="hidden sm:inline">{t('pending.suggestedBy')}</span> <span className="text-neutral-300 font-medium truncate">{track.suggestedByUsername || t('pending.unknown')}</span>
 										</p>
 									</div>
 								</div>
@@ -131,30 +135,30 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onMa
 									<button
 										onClick={() => onPreview && onPreview(track)}
 										className="p-2 sm:px-4 sm:py-2 rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors font-medium flex items-center gap-2"
-										title="Preview Song"
+										title={t('pending.preview')}
 									>
-										<Headphones size={18} /> <span className="hidden sm:inline">Preview</span>
+										<Headphones size={18} /> <span className="hidden sm:inline">{t('pending.preview')}</span>
 									</button>
 									<button
 										onClick={() => onBan(track.id)}
 										className="p-2 sm:px-4 sm:py-2 rounded-lg bg-neutral-800 text-neutral-400 hover:bg-red-900/30 hover:text-red-400 transition-colors font-medium flex items-center gap-2"
-										title="Ban Song"
+										title={t('pending.ban')}
 									>
-										<Ban size={18} /> <span className="hidden sm:inline">Ban</span>
+										<Ban size={18} /> <span className="hidden sm:inline">{t('pending.ban')}</span>
 									</button>
 									<button
 										onClick={() => onReject(track.id)}
 										className="p-2 sm:px-4 sm:py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors font-medium flex items-center gap-2"
-										title="Decline"
+										title={t('pending.decline')}
 									>
-										<X size={18} /> <span className="hidden sm:inline">Decline</span>
+										<X size={18} /> <span className="hidden sm:inline">{t('pending.decline')}</span>
 									</button>
 									<button
 										onClick={() => onApprove(track.id)}
 										className="p-2 sm:px-4 sm:py-2 rounded-lg bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-colors font-medium flex items-center gap-2"
-										title="Accept"
+										title={t('pending.accept')}
 									>
-										<Check size={18} /> <span className="hidden sm:inline">Accept</span>
+										<Check size={18} /> <span className="hidden sm:inline">{t('pending.accept')}</span>
 									</button>
 								</div>
 							</div>

@@ -10,22 +10,25 @@ import { LegalPage } from './components/LegalPage.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
 
 import { ConsentProvider } from './contexts/ConsentContext.jsx';
+import { LanguageProvider } from './contexts/LanguageContext.jsx';
 import { ConditionalGoogleOAuthProvider } from './components/ConditionalGoogleOAuthProvider.jsx';
 
 createRoot(document.getElementById('root')).render(
   <ErrorBoundary>
     <ConsentProvider>
-      <BrowserRouter>
-        <ConditionalGoogleOAuthProvider>
-          <WebSocketProvider>
-            <Routes>
-              <Route path="/room/:roomId" element={<App />} />
-              <Route path="/legal" element={<LegalPage />} />
-              <Route path="/" element={<Lobby />} />
-            </Routes>
-          </WebSocketProvider>
-        </ConditionalGoogleOAuthProvider>
-      </BrowserRouter>
+      <LanguageProvider>
+        <BrowserRouter>
+          <ConditionalGoogleOAuthProvider>
+            <WebSocketProvider>
+              <Routes>
+                <Route path="/room/:roomId" element={<App />} />
+                <Route path="/legal" element={<LegalPage />} />
+                <Route path="/" element={<Lobby />} />
+              </Routes>
+            </WebSocketProvider>
+          </ConditionalGoogleOAuthProvider>
+        </BrowserRouter>
+      </LanguageProvider>
     </ConsentProvider>
   </ErrorBoundary>,
 )

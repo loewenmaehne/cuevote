@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Volume2, VolumeX, ArrowLeft, Lock, X } from "lucide-react";
 import { useConsent } from './contexts/ConsentContext';
+import { useLanguage } from './contexts/LanguageContext';
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
@@ -34,6 +35,7 @@ function App() {
   const [localPlaylistView, setLocalPlaylistView] = useState(false);
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
   const { hasConsent } = useConsent();
+  const { t } = useLanguage();
 
   // console.log("App Component MOUNTED, Room:", activeRoomId);
 
@@ -625,13 +627,13 @@ function App() {
   if (roomNotFound) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
-        <h2 className="text-3xl font-bold text-red-500 mb-4">Channel does not exist</h2>
-        <p className="text-neutral-400 mb-8">The channel you are looking for ({activeRoomId}) could not be found.</p>
+        <h2 className="text-3xl font-bold text-red-500 mb-4">{t('app.channelNotFound')}</h2>
+        <p className="text-neutral-400 mb-8">{t('app.notFoundMessage', { roomId: activeRoomId })}</p>
         <button
           onClick={() => navigate("/")}
           className="px-6 py-3 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white font-semibold transition-colors flex items-center gap-2"
         >
-          <ArrowLeft size={20} /> Go to Lobby
+          <ArrowLeft size={20} /> {t('app.goToLobby')}
         </button>
       </div>
     );
@@ -655,7 +657,7 @@ function App() {
       <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold text-white flex items-center gap-2">
-            <Lock size={20} className="text-orange-500" /> Private Channel
+            <Lock size={20} className="text-orange-500" /> {t('app.privateChannel')}
           </h3>
           <button onClick={() => navigate('/')} className="text-neutral-500 hover:text-white transition-colors">
             <X size={24} />
@@ -663,7 +665,7 @@ function App() {
         </div>
 
         <div className="mb-4 text-neutral-400 text-sm">
-          This channel is password protected. Please enter the password to join.
+          {t('app.lockedMessage')}
         </div>
 
         <form onSubmit={submitPasswordJoin} className="space-y-4">
@@ -672,7 +674,7 @@ function App() {
               type="password"
               value={passwordInput}
               onChange={(e) => setPasswordInput(e.target.value)}
-              placeholder="Enter password..."
+              placeholder={t('lobby.passwordInputPlaceholder')}
               className={`w-full bg-[#050505] border ${passwordError ? 'border-red-500 focus:border-red-500' : 'border-neutral-800 focus:border-orange-500'} rounded-xl px-4 py-3 text-white focus:outline-none transition-colors`}
               autoFocus
             />
@@ -689,13 +691,13 @@ function App() {
               onClick={() => navigate('/')}
               className="flex-1 px-4 py-3 rounded-xl border border-neutral-700 text-neutral-300 font-medium hover:bg-neutral-800 transition-all"
             >
-              Cancel
+              {t('lobby.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-400 hover:to-orange-500 transition-all"
             >
-              Unlock
+              {t('app.unlock')}
             </button>
           </div>
         </form>
@@ -707,7 +709,7 @@ function App() {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
-          <h2 className="text-2xl font-bold mb-4">Switching Channels...</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('app.switching')}</h2>
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
         </div>
         {passwordModalContent}
