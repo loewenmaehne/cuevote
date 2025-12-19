@@ -79,6 +79,16 @@ npm install
 Create a `.env` file **inside the `cuevote-client` directory** (`nano .env`):
 ```ini
 VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
+
+# Legal & Contact Info (Optional - for Legal Page)
+# If omitted, KVK/VAT sections will be hidden.
+VITE_LEGAL_NAME="Your Official Name"
+VITE_LEGAL_ADDRESS_LINE1="Street Address 123"
+VITE_LEGAL_ADDRESS_LINE2="1000 AB Amsterdam"
+VITE_LEGAL_EMAIL="privacy@cuevote.com"
+VITE_LEGAL_PHONE="+31 6 12345678"
+# VITE_LEGAL_KVK="12345678"
+# VITE_LEGAL_VAT="NL123456789B01"
 ```
 
 ### Build Client
