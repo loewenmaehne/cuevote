@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale, ChevronLeft, ChevronRight } from "lucide-react";
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
-import { useGoogleLogin } from '@react-oauth/google';
+import { GoogleAuthButton } from "./GoogleAuthButton";
 
 import { isTV } from "../utils/deviceDetection";
 
@@ -53,12 +53,14 @@ export function Lobby() {
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 18;
 
+    /* 
     const login = useGoogleLogin({
         onSuccess: (tokenResponse) => {
             handleLoginSuccess(tokenResponse);
         },
         onError: () => console.log('Login Failed'),
     });
+    */
 
     // Handle Messages
     useEffect(() => {
@@ -384,15 +386,22 @@ export function Lobby() {
                         </div>
                     </button>
                 ) : (
-                    <button
-                        onClick={() => login()}
-                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white font-medium transition-all active:scale-95"
-                    >
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
-                        </svg>
-                        Sign in with Google
-                    </button>
+                    <GoogleAuthButton
+                        onLoginSuccess={handleLoginSuccess}
+                        render={(performLogin, disabled) => (
+                            <button
+                                onClick={() => !disabled && performLogin()}
+                                disabled={disabled}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? 'bg-neutral-900/50 text-neutral-600 border-neutral-800 cursor-not-allowed opacity-50 grayscale' : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'}`}
+                                title={disabled ? "Accept cookies to sign in" : ""}
+                            >
+                                <svg className={`w-5 h-5 ${disabled ? 'text-neutral-600' : ''}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
+                                </svg>
+                                Sign in with Google
+                            </button>
+                        )}
+                    />
                 )}
             </header>
 

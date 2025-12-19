@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Volume2, VolumeX, ArrowLeft, Lock, X } from "lucide-react";
+import { useConsent } from './contexts/ConsentContext';
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
@@ -27,8 +28,12 @@ const YouTubeState = {
 function App() {
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const activeRoomId = roomId || "synthwave";
+
   const [localPlaylistView, setLocalPlaylistView] = useState(false);
+  // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
+  const { hasConsent } = useConsent();
 
   // console.log("App Component MOUNTED, Room:", activeRoomId);
 
@@ -135,7 +140,7 @@ function App() {
   // console.log(`[CLIENT TRACE] App Render.Active: ${activeRoomId}, Server: ${serverRoomId}, Stale ? ${serverState && serverRoomId && (serverRoomId.toString().trim().toLowerCase() !== activeRoomId.toString().trim().toLowerCase())} `);
 
   // Join Room on Connect or Room Change
-  const location = useLocation();
+  // const location = useLocation();
 
   // Password Modal State
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -330,6 +335,8 @@ function App() {
   // YouTube API Loading
   const loadYouTubeAPI = useCallback(() => {
     return new Promise((resolve, reject) => {
+      if (!hasConsent) return reject("No Consent"); // Gate API Load
+
       if (window.YT && window.YT.Player) {
         return resolve(window.YT);
       }
@@ -341,10 +348,11 @@ function App() {
       script.onerror = reject;
       document.head.appendChild(script);
     });
-  }, []);
+  }, [hasConsent]);
 
   // Player Initialization
   const initializePlayer = useCallback((container) => {
+    if (!hasConsent) return; // Gate Initialization
     // console.log("[Player] Initializing...", container);
     loadYouTubeAPI().then((YT) => {
       // console.log("[Player] YT loaded, creating player instance");
@@ -399,9 +407,10 @@ function App() {
         },
       });
     });
-  }, [loadYouTubeAPI, sendMessage]);
+  }, [loadYouTubeAPI, sendMessage, hasConsent]);
 
   const playerContainerRef = useCallback(node => {
+    if (!hasConsent) return; // Gate Ref Handling
     console.log("[Player] Container ref called", node);
     if (node !== null) {
       initializePlayer(node);
@@ -908,9 +917,21 @@ function App() {
               <div className="absolute inset-0">
                 <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
                   <PlayerErrorBoundary>
-                    <Player
-                      playerContainerRef={playerContainerRef}
-                    />
+                    {hasConsent ? (
+                      <Player
+                        playerContainerRef={playerContainerRef}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900/50 text-center p-6">
+                        <div className="p-4 bg-neutral-800 rounded-full mb-4">
+                          <VolumeX className="w-8 h-8 text-neutral-500" />
+                        </div>
+                        <h3 className="text-white font-bold mb-2">Player Disabled</h3>
+                        <p className="text-neutral-400 text-sm max-w-xs">
+                          We need your consent to load the YouTube Player. Please accept cookies below.
+                        </p>
+                      </div>
+                    )}
                   </PlayerErrorBoundary>
                   {/* <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Player Disabled for Debug</div> */}
                 </div>
@@ -1021,6 +1042,7 @@ function App() {
           onClose={() => setToast(null)}
         />
       )}
+      {/* CookieConsent handled globally in main.jsx */}
       {passwordModalContent}
     </div >
   );

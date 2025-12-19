@@ -9,18 +9,23 @@ import { Lobby } from './components/Lobby.jsx'
 import { LegalPage } from './components/LegalPage.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
 
+import { ConsentProvider } from './contexts/ConsentContext.jsx';
+import { ConditionalGoogleOAuthProvider } from './components/ConditionalGoogleOAuthProvider.jsx';
+
 createRoot(document.getElementById('root')).render(
   <ErrorBoundary>
-    <BrowserRouter>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <WebSocketProvider>
-          <Routes>
-            <Route path="/room/:roomId" element={<App />} />
-            <Route path="/legal" element={<LegalPage />} />
-            <Route path="/" element={<Lobby />} />
-          </Routes>
-        </WebSocketProvider>
-      </GoogleOAuthProvider>
-    </BrowserRouter>
+    <ConsentProvider>
+      <BrowserRouter>
+        <ConditionalGoogleOAuthProvider>
+          <WebSocketProvider>
+            <Routes>
+              <Route path="/room/:roomId" element={<App />} />
+              <Route path="/legal" element={<LegalPage />} />
+              <Route path="/" element={<Lobby />} />
+            </Routes>
+          </WebSocketProvider>
+        </ConditionalGoogleOAuthProvider>
+      </BrowserRouter>
+    </ConsentProvider>
   </ErrorBoundary>,
 )
