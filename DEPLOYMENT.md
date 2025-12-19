@@ -27,16 +27,17 @@ sudo npm install -g pm2
 
 ## 2. Project Setup
 
-Clone the repository to your preferred location. 
-
-If using `/var/www` (recommended), you must set permissions first:
+If using `/var/www`, use `sudo` to clone and then fix permissions:
 
 ```bash
-cd /var/www
-sudo mkdir cuevote
-sudo chown $USER:$USER cuevote
-git clone https://github.com/loewenmaehne/cuevote.git cuevote
-cd cuevote
+# Clone directly to /var/www/cuevote
+sudo git clone https://github.com/loewenmaehne/cuevote.git /var/www/cuevote
+
+# Fix permissions so you own it
+sudo chown -R $USER:$USER /var/www/cuevote
+
+# Enter directory
+cd /var/www/cuevote
 ```
 
 ## 3. Backend Setup (cuevote-server)
