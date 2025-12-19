@@ -22,6 +22,12 @@ ALLOWED_ORIGINS=https://cuevote.com
 ### Client Build
 The client is a static Vite app. You must build it before serving.
 
+You must create a `.env` file in `cuevote-client/` with your Google Client ID:
+```bash
+VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
+```
+
+Then build:
 ```bash
 cd cuevote-client
 npm install
