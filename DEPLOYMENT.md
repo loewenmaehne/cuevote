@@ -40,11 +40,7 @@ sudo chown -R $USER:$USER /var/www/cuevote
 cd /var/www/cuevote
 ```
 
-> [!TIP]
-> If you encounter errors like "destination path already exists" or "no such file," you may need to clean up a partial installation first:
-> ```bash
-> sudo rm -rf /var/www/cuevote
-> ```
+
 
 ## 3. Backend Setup (cuevote-server)
 
