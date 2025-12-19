@@ -114,17 +114,17 @@ export function LegalPage() {
                                 {activeTab === 'terms' && (
                                     <>
                                         <p className="lead text-lg text-neutral-300">
-                                            Welcome to ReVibe Music. These terms govern your use of our platform. By accessing ReVibe, you agree to these terms and the YouTube Terms of Service.
+                                            Welcome to CueVote. These terms govern your use of our platform. By accessing CueVote, you agree to these terms and the YouTube Terms of Service.
                                         </p>
 
                                         <h3>1. Service & Usage</h3>
                                         <p>
-                                            ReVibe Music is a social interface for consuming content via third-party APIs (primarily YouTube). We do not host, store, or distribute media files. Use of the service is personal, non-commercial, and subject to available API quotas.
+                                            CueVote is a social interface for consuming content via third-party APIs (primarily YouTube). We do not host, store, or distribute media files. Use of the service is personal, non-commercial, and subject to available API quotas.
                                         </p>
 
                                         <h3>2. Integration with YouTube</h3>
                                         <p>
-                                            Our service relies on YouTube API Services. By using ReVibe, you explicitly agree to be bound by the <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Terms of Service</a>. We have no control over YouTube content and assume no liability for its availability or nature.
+                                            Our service relies on YouTube API Services. By using CueVote, you explicitly agree to be bound by the <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Terms of Service</a>. We have no control over YouTube content and assume no liability for its availability or nature.
                                         </p>
 
                                         <h3>3. User Responsibilities</h3>
@@ -136,7 +136,7 @@ export function LegalPage() {
 
                                         <h3>4. Disclaimer & Liability</h3>
                                         <p>
-                                            The service is provided "as is". ReVibe Music disclaims all warranties. To the fullest extent permitted by Dutch law, we shall not be liable for any indirect damages arising from your use of the service.
+                                            The service is provided "as is". CueVote disclaims all warranties. To the fullest extent permitted by Dutch law, we shall not be liable for any indirect damages arising from your use of the service.
                                         </p>
 
                                         <h3>5. Google Privacy Policy</h3>
@@ -161,10 +161,10 @@ export function LegalPage() {
                                         <h3>1. Who We Are</h3>
                                         <p>
                                             Data Controller:<br />
-                                            <strong>ReVibe Digital</strong><br />
+                                            <strong>CueVote Digital</strong><br />
                                             [Street Address]<br />
                                             [Postcode City], The Netherlands<br />
-                                            Contact: <a href="mailto:privacy@revibe.music">privacy@revibe.music</a>
+                                            Contact: <a href="mailto:privacy@cuevote.com">privacy@cuevote.com</a>
                                         </p>
 
                                         <h3>2. Data Collection & Purpose</h3>
@@ -176,7 +176,7 @@ export function LegalPage() {
                                             </li>
                                             <li className="pl-4 border-l-2 border-white/10">
                                                 <strong className="block text-white">Usage Statistics</strong>
-                                                <span className="text-sm">We log room history and voted songs to improve recommendations. This data is internal to ReVibe. Legal basis: Legitimate Interest (Art. 6.1.f GDPR).</span>
+                                                <span className="text-sm">We log room history and voted songs to improve recommendations. This data is internal to CueVote. Legal basis: Legitimate Interest (Art. 6.1.f GDPR).</span>
                                             </li>
                                             <li className="pl-4 border-l-2 border-white/10">
                                                 <strong className="block text-white">YouTube API Data</strong>
@@ -213,7 +213,7 @@ export function LegalPage() {
                                     <div className="not-prose space-y-8">
                                         <div className="grid md:grid-cols-2 gap-8">
                                             <div className="space-y-4">
-                                                <h3 className="text-white font-bold text-lg border-b border-white/10 pb-2">ReVibe Digital</h3>
+                                                <h3 className="text-white font-bold text-lg border-b border-white/10 pb-2">CueVote Digital</h3>
                                                 <div className="text-sm text-neutral-400 space-y-1">
                                                     <p>[Street Name] [Number]</p>
                                                     <p>[Postal Code] [City]</p>
@@ -230,7 +230,7 @@ export function LegalPage() {
                                                 <ul className="space-y-3 text-sm">
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Mail size={16} />
-                                                        <a href="mailto:hello@revibe.music" className="text-orange-500 hover:text-white transition-colors">hello@revibe.music</a>
+                                                        <a href="mailto:hello@cuevote.com" className="text-orange-500 hover:text-white transition-colors">hello@cuevote.com</a>
                                                     </li>
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Phone size={16} />
@@ -238,7 +238,7 @@ export function LegalPage() {
                                                     </li>
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Globe size={16} />
-                                                        <a href="https://revibe.music" className="text-neutral-300 hover:text-white transition-colors">www.revibe.music</a>
+                                                        <a href="https://cuevote.com" className="text-neutral-300 hover:text-white transition-colors">www.cuevote.com</a>
                                                     </li>
                                                 </ul>
                                             </div>
