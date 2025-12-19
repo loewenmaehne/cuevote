@@ -46,7 +46,7 @@ Create a `.env` file (`nano .env`) with the following content:
 PORT=8080
 YOUTUBE_API_KEY=your_actual_youtube_api_key
 GOOGLE_CLIENT_ID=your_actual_google_client_id
-ALLOWED_ORIGINS=https://your-domain.com
+ALLOWED_ORIGINS=https://cuevote.com,https://queuevote.com
 ```
 
 ### Start Backend

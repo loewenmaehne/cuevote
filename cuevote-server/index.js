@@ -21,7 +21,27 @@ function logToFile(msg) {
     console.log(msg);
 }
 
-const wss = new WebSocket.Server({ port: process.env.PORT || 8080, host: '0.0.0.0' });
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : [];
+
+const wss = new WebSocket.Server({
+    port: process.env.PORT || 8080,
+    host: '0.0.0.0',
+    verifyClient: (info, cb) => {
+        // If no origins configured, allow all (dev mode)
+        if (ALLOWED_ORIGINS.length === 0) {
+            return cb(true);
+        }
+
+        const origin = info.origin;
+        // Check if origin is allowed
+        if (ALLOWED_ORIGINS.includes(origin)) {
+            return cb(true);
+        }
+
+        console.log(`[Security] Blocked connection from unauthorized origin: ${origin}`);
+        return cb(false, 403, 'Forbidden');
+    }
+});
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
