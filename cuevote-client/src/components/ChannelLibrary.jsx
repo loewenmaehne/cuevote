@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { X, Search, Library, Music2 } from "lucide-react";
+import { useLanguage } from '../contexts/LanguageContext';
 import { Track } from "./Track";
 
 export function ChannelLibrary({
@@ -14,6 +15,7 @@ export function ChannelLibrary({
 }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [expandedTrackId, setExpandedTrackId] = useState(null);
+	const { t } = useLanguage();
 
 	const handleToggleExpand = (trackId) => {
 		setExpandedTrackId((prev) => (prev === trackId ? null : trackId));
@@ -61,14 +63,14 @@ export function ChannelLibrary({
 					<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" size={18} />
 					<input
 						type="text"
-						placeholder="Search library..."
+						placeholder={t('library.searchPlaceholder')}
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
 						className="w-full bg-neutral-900 border border-neutral-800 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-orange-500 transition-colors"
 					/>
 				</div>
 				<p className="text-xs text-neutral-500 text-center mt-3 font-medium">
-					<span className="text-orange-500">{filteredSongs.length}</span> {filteredSongs.length === 1 ? 'song' : 'songs'} in library
+					<span className="text-orange-500">{filteredSongs.length}</span> {t('header.songs')} {t('library.inLibrary')}
 				</p>
 			</div>
 
@@ -76,13 +78,8 @@ export function ChannelLibrary({
 			<div className="flex-1 overflow-y-auto custom-scrollbar p-4">
 				{!searchQuery && (
 					<div className="mb-6 max-w-lg mx-auto bg-neutral-900/40 p-4 rounded-xl border border-neutral-800/50">
-						<p className="text-sm text-neutral-400 text-center leading-relaxed">
-							This library displays unique songs played in the last <strong>28 days</strong>.
-						</p>
-						<p className="text-xs text-neutral-500 text-center mt-2 leading-relaxed px-4">
-							Older songs are hidden to ensure metadata freshness, but they are <strong>never deleted</strong>.
-							The <strong>Auto Refill</strong> feature still remembers your entire history and will automatically bring older songs back into the queue (and this list) when needed!
-						</p>
+						<p className="text-sm text-neutral-400 text-center leading-relaxed" dangerouslySetInnerHTML={{ __html: t('library.info1') }}></p>
+						<p className="text-xs text-neutral-500 text-center mt-2 leading-relaxed px-4" dangerouslySetInnerHTML={{ __html: t('library.info2') }}></p>
 					</div>
 				)}
 
@@ -109,7 +106,7 @@ export function ChannelLibrary({
 					) : (
 						<div className="flex flex-col items-center justify-center py-20 text-neutral-600 gap-4">
 							<Music2 size={48} className="opacity-20" />
-							<p>No songs found</p>
+							<p>{t('library.empty')}</p>
 						</div>
 					)}
 				</div>
