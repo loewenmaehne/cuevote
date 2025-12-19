@@ -364,7 +364,7 @@ export function Lobby() {
         <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center p-8">
             <header className="w-full max-w-5xl flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold text-orange-500 tracking-tight">
-                    ReVibe Music
+                    CueVote
                 </h1>
                 {user ? (
                     <button
