@@ -60,6 +60,9 @@ PORT=8080
 YOUTUBE_API_KEY=your_actual_youtube_api_key
 GOOGLE_CLIENT_ID=your_actual_google_client_id
 ALLOWED_ORIGINS=https://cuevote.com
+# Optional Configuration
+LOAD_ACTIVE_CHANNELS=true
+ACTIVE_CHANNEL_DAYS=60
 ```
 
 ### Start Backend
