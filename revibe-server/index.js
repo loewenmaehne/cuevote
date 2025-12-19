@@ -58,7 +58,7 @@ function loadRooms() {
     try {
         db.upsertUser({
             id: 'system',
-            email: 'system@revibe.music',
+            email: 'system@cuevote.com',
             name: 'System',
             picture: ''
         });
