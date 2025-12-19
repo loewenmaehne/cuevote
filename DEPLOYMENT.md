@@ -111,7 +111,8 @@ server {
     listen 80;
     server_name your-domain.com;
 
-    root /path/to/cuevote/cuevote-client/dist;
+    # Root pointing to the built frontend files
+    root /var/www/cuevote/cuevote-client/dist;
     index index.html;
 
     location / {
