@@ -14,7 +14,7 @@ const getWebSocketUrl = () => {
   }
 
   // Production (cuevote.com): Use same host, standard ports (handled by Nginx/Proxy)
-  return `${protocol}//${hostname}`;
+  return `${protocol}//${hostname}/ws`;
 };
 
 const WEBSOCKET_URL = getWebSocketUrl();
