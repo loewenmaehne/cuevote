@@ -109,18 +109,12 @@ server {
     }
 
     # Proxy WebSocket connections
-    location / {
-        try_files $uri $uri/ /index.html;
-        
+    location /ws {
+        proxy_pass http://localhost:8080;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";
         proxy_set_header Host $host;
-        
-        # Only proxy if it's a websocket upgrade request
-        if ($http_upgrade = "websocket") {
-             proxy_pass http://localhost:8080;
-        }
     }
 }
 ```
