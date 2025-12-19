@@ -162,9 +162,9 @@ export function LegalPage() {
                                         <p>
                                             Data Controller:<br />
                                             <strong>CueVote Digital</strong><br />
-                                            [Street Address]<br />
-                                            [Postcode City], The Netherlands<br />
-                                            Contact: <a href="mailto:privacy@cuevote.com">privacy@cuevote.com</a>
+                                            {import.meta.env.VITE_LEGAL_ADDRESS_LINE1 || "[Street Address]"}<br />
+                                            {import.meta.env.VITE_LEGAL_ADDRESS_LINE2 || "[City, Country]"}, The Netherlands<br />
+                                            Contact: <a href={`mailto:${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}`}>{import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}</a>
                                         </p>
 
                                         <h3>2. Data Collection & Purpose</h3>
@@ -215,13 +215,13 @@ export function LegalPage() {
                                             <div className="space-y-4">
                                                 <h3 className="text-white font-bold text-lg border-b border-white/10 pb-2">CueVote Digital</h3>
                                                 <div className="text-sm text-neutral-400 space-y-1">
-                                                    <p>[Street Name] [Number]</p>
-                                                    <p>[Postal Code] [City]</p>
+                                                    <p>{import.meta.env.VITE_LEGAL_ADDRESS_LINE1 || "[Street Address]"}</p>
+                                                    <p>{import.meta.env.VITE_LEGAL_ADDRESS_LINE2 || "[City, Country]"}</p>
                                                     <p>The Netherlands</p>
                                                 </div>
                                                 <div className="pt-4 text-sm">
                                                     <p className="text-neutral-500 mb-1">Managed by</p>
-                                                    <p className="text-white font-medium">[Director Name]</p>
+                                                    <p className="text-white font-medium">{import.meta.env.VITE_LEGAL_NAME || "[Director Name]"}</p>
                                                 </div>
                                             </div>
 
@@ -230,11 +230,13 @@ export function LegalPage() {
                                                 <ul className="space-y-3 text-sm">
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Mail size={16} />
-                                                        <a href="mailto:hello@cuevote.com" className="text-orange-500 hover:text-white transition-colors">hello@cuevote.com</a>
+                                                        <a href={`mailto:${import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}`} className="text-orange-500 hover:text-white transition-colors">
+                                                            {import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}
+                                                        </a>
                                                     </li>
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Phone size={16} />
-                                                        <span>+31 (0) 6 12345678</span>
+                                                        <span>{import.meta.env.VITE_LEGAL_PHONE || "+31 (0) 6 12345678"}</span>
                                                     </li>
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Globe size={16} />
@@ -244,18 +246,24 @@ export function LegalPage() {
                                             </div>
                                         </div>
 
-                                        <div className="p-6 rounded-xl bg-neutral-900 border border-white/5 space-y-4 text-sm">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <span className="block text-neutral-500 text-xs uppercase tracking-wider mb-1">KVK (Chamber of Commerce)</span>
-                                                    <span className="font-mono text-neutral-300">[12345678]</span>
-                                                </div>
-                                                <div>
-                                                    <span className="block text-neutral-500 text-xs uppercase tracking-wider mb-1">BTW (VAT ID)</span>
-                                                    <span className="font-mono text-neutral-300">[NL876543210B01]</span>
+                                        {(import.meta.env.VITE_LEGAL_KVK || import.meta.env.VITE_LEGAL_VAT) && (
+                                            <div className="p-6 rounded-xl bg-neutral-900 border border-white/5 space-y-4 text-sm">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {import.meta.env.VITE_LEGAL_KVK && (
+                                                        <div>
+                                                            <span className="block text-neutral-500 text-xs uppercase tracking-wider mb-1">KVK (Chamber of Commerce)</span>
+                                                            <span className="font-mono text-neutral-300">{import.meta.env.VITE_LEGAL_KVK}</span>
+                                                        </div>
+                                                    )}
+                                                    {import.meta.env.VITE_LEGAL_VAT && (
+                                                        <div>
+                                                            <span className="block text-neutral-500 text-xs uppercase tracking-wider mb-1">BTW (VAT ID)</span>
+                                                            <span className="font-mono text-neutral-300">{import.meta.env.VITE_LEGAL_VAT}</span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-                                        </div>
+                                        )}
 
                                         <div className="text-xs text-neutral-500 leading-relaxed border-t border-white/5 pt-6 space-y-4">
                                             <p>
