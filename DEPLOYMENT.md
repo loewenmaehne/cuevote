@@ -54,7 +54,7 @@ npm install
 ```
 
 ### Environment Configuration
-Create a `.env` file (`nano .env`) with the following content:
+Create a `.env` file **inside the `cuevote-server` directory** (`nano .env`):
 ```ini
 PORT=8080
 YOUTUBE_API_KEY=your_actual_youtube_api_key
@@ -77,7 +77,7 @@ npm install
 ```
 
 ### Environment Configuration
-Create a `.env` file (`nano .env`) with the following content:
+Create a `.env` file **inside the `cuevote-client` directory** (`nano .env`):
 ```ini
 VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
 ```
