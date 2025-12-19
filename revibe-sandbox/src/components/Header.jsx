@@ -196,7 +196,7 @@ export function Header({
           )}
 
           <h1 className="text-lg md:text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap text-center">
-            ReVibe Music
+            CueVote
           </h1>
 
           {/* Channel Library Toggle - Right of Logo */}
