@@ -1,144 +1,85 @@
-# A modern, community-driven jukebox built for the YouTube era.
+# CueVote - The Democratic Jukebox
 
-<p align="center"><img src="DemoImages/demo2.png" width="400" alt="Appdemo Top menu"></p>
+<p align="center"><img src="DemoImages/demo2.png" width="600" alt="CueVote App Demo"></p>
 
-## 1. Core Idea
+**CueVote** is a modern, community-driven social jukebox built for the YouTube era. It democratizes music selection by allowing everyone in the room to suggest songs and vote on the queue in real-time.
 
-A **social, democratic music experience** built on top of YouTube.
-
-Users join **Host Channels**.  
-The main feature is the **Suggest & Vote system**:
-
-- Participants submit songs.  
-- Moderators review them (if required).  
-- The community votes songs up or down.  
-- The playlist dynamically updates based on these votes.  
-
-Playback happens either **centrally on a shared screen** (bars, parties, venues) or **individually via Watch-Together mode**.
-
-**Goal:** Make music selection communal, fair, and fun — a modern jukebox powered by YouTube.
+Whether you're hosting a house party, running a bar, or just hanging out online, CueVote ensures the best songs play next — decided by the crowd, not an algorithm.
 
 ---
 
-## 2. Playback Modes
+## 🚀 Core Features
 
-### Suggest & Vote (Default & Core Mode)
-- Phones are used to suggest songs, vote, and browse the queue.  
-- Playback happens on the central screen (TV, projector, or host’s device).  
-- Primary mode for bars, parties, and shared spaces.
+### 🎧 Social Jukebox
+*   **Democratic Queue:** Users vote songs up (Like) or down (Dislike). The highest-rated songs jump to the top.
+*   **Collaborative Suggestions:** Anyone can search and add songs from YouTube.
+*   **Real-Time Sync:** Queue updates, votes, and playback state sync instantly across all devices.
 
-### Watch-Together (Optional Side Feature)
-- Everyone watches/listens on their own device, synced in real time.
+### 🏛️ Lobby & Discovery
+*   **Public & Private Channels:** Create open rooms for everyone or password-protected private rooms for friends.
+*   **Search & Filters:** Easily find active parties or filter by your own created channels.
+*   **Personalized Experience:** Sign in with Google to track your history, favorite songs, and managed channels.
 
----
+### 🧠 Smart Queue System
+*   **Vote-Based Sorting:** The queue dynamically reorders itself based on live votes.
+*   **Auto-Refill (Auto-DJ):** When the queue runs dry, the system intelligently picks songs from the room's history to keep the vibe going.
+*   **Smart Replacement:** If the queue is full, new high-quality suggestions can replace the lowest-voted track automatically (optional).
+*   **Duplicate Prevention:** Intelligent checks prevent the same song (or title) from being played too frequently.
 
-## 3. Roles & Permissions
+### 📺 Playback Modes
+*   **Host Mode (Venue/TV):** The "Main Screen" experience. Connect a laptop, TV, or projector to play the music and video.
+    *   *Cinema Mode:* Full-screen immersive experience.
+    *   *Venue Mode:* Specialized view for TVs that shows the playlist/QR code instead of just the video.
+*   **Guest Mode:** Users join on their phones to view the queue, vote, and suggest without interrupting playback.
+*   **Prelisten:** Guests can privately preview a song on their own device before voting it up.
 
-### Defaults
+### 🛡️ Moderation & Controls
+*   **Owner Powers:**
+    *   **Skip/Pause/Seek:** Full playback control.
+    *   **Force Play:** Jump a specific song to "Now Playing" immediately.
+    *   **Banning:** Ban specific songs from the session.
+    *   **Manual Approval:** Switch to "Manual Mode" to review every suggestion before it hits the queue.
+*   **System Integrity:**
+    *   **Spam Protection:** Rate limits and duplicate cooldowns.
+    *   **Content Filters:** Option to restrict to "Music Only" categories or limit song duration.
 
-**Admin / Host**
-- Creates and configures the channel.  
-- Assigns Moderators and Supporters.  
-- Creates and assigns **custom roles** with tailored permissions.
+### 📚 Channel Library
+*   **Track History:** The channel automatically remembers songs played in the past.
+*   **Quick Add:** Easily re-add previously played songs to the queue without searching.
 
-**Moderator (default powers)**
-- Can Direct-Play (skip queue and start a chosen song).  
-- Can open or close suggestions at any time.  
-- Can delete or blacklist songs.
-
-**Supporter (default powers)**
-- Can approve songs.
-
----
-
-## 4. Queue & User Interaction Features
-
-**Suggest & Vote System:**  
-The central mechanic; users push songs into the queue, others vote them up or down.
-
-**Queue Item Functions:**  
-Tapping a song reveals options such as:
-- Song lyrics.  
-- Prelisten.  
-- Save to personal playlist.
-
-**Toggle Prelisten:**  
-Users can preview a short snippet of a song before voting.
-
-**Auto-Approve Option:**  
-Already accepted songs can bypass approval in future sessions.
-
-**Queue Continuity:**  
-If empty, fallback to autoplay or history, depending on admin setting.
+### ⚖️ Legal & Privacy
+*   **GDPR Compliant:** Users have full control to request account deletion and data removal directly within the app.
+*   **Transparency:** Dedicated Legal Center with Terms of Service, Privacy Policy, and Colophon.
+*   **YouTube Compliance:** Uses the official YouTube iFrame API to ensure creators get views and ad revenue (if applicable).
 
 ---
 
-## 5. User Features
+## 🛠️ Technical Stack
 
-- **Real-time Queue:** Visible to everyone on their phone.  
-- **Voting Dynamics:** Songs rise or fall with community votes.  
-- **History & Favorites:**
-  - Track what was played and when.  
-  - Mark favorites for reuse.  
-- **Save to Personal Playlist:** Keep your favorite picks from any session.  
-- **View Lyrics:** Read along while listening.  
-- **Multi-device:** Central screen playback in venues + mobile control interface.  
-- **Watch-Together (optional):** Everyone streams in sync individually.
+*   **Frontend:** React, Tailwind CSS, Lucide Icons.
+*   **Backend:** Node.js, WebSocket (`ws`), SQLite3.
+*   **Database:** SQLite with WAL mode for high-performance, concurrent read/write operations.
+*   **API:** YouTube Data API v3 for robust video metadata verification.
 
 ---
 
-## 6. Example Scenarios
+## 📦 Deployment (Brief)
 
-Picture it:
+CueVote is designed to be self-hosted or deployed on platforms like DigitalOcean, Heroku, or Railway.
 
-The lights are low, the crowd hums, and a playlist takes shape — not by a DJ, but by everyone in the room.  
-Phones glow as votes ripple through the queue; the next track is a collective decision, not a request shouted over music.  
-One city’s bar, another’s living room, a hundred online rooms — all beating to the same rhythm of shared discovery.  
+1.  **Clone the repo**
+2.  **Install dependencies:** `npm install` (root), `cd cuevote-server && npm install`, `cd cuevote-client && npm install`
+3.  **Configure `.env`:** Add your `YOUTUBE_API_KEY` and `GOOGLE_CLIENT_ID`.
+4.  **Build & Run:** `npm run build` and `npm start`.
 
-> It’s not radio.  
-> It’s not a playlist.  
-> It’s a living, breathing soundtrack built by people, not algorithms.
-
----
-
-## 7. Technical Overview
-
-- **YouTube iFrame Player API** for compliant playback.  
-- **Realtime Backend (WebSockets)** to sync votes, queue, and playback state.  
-- **Queue Algorithm** weighted by votes, roles, and permissions.  
-- **Fallback Logic** for empty queues (autoplay or history).  
-- **Scalability & Abuse Prevention:** rate limits, bot detection, venue-only modes.
+*See `DEPLOYMENT.md` for full instructions.*
 
 ---
 
-## 8. Value Proposition
-
-### For Users
-- Fun, interactive way to shape music in a group or at a party.  
-- Creates a fair, democratic space for discovering and sharing YouTube music together.  
-- Works seamlessly with official YouTube playback — preserving video quality, ads, and creator support.  
-- Optional perks (like advanced voting weight or cosmetic rewards) can enhance participation without paywalls.
-
-### For Venues
-- Transforms any venue into a living, crowd-powered jukebox.  
-- Encourages guests to engage longer and feel part of the playlist experience.  
-- Operates within YouTube’s legal framework when using official embeds.  
-- Venues remain responsible for public performance licenses (e.g. GEMA, Buma/Stemra/Sena), as with traditional background music systems.
-
-### For YouTube / Google
-- Increases total watch time, ad impressions, and community retention.  
-- Expands YouTube’s footprint into social, real-world, and hybrid events.  
-- Demonstrates responsible third-party innovation using YouTube’s APIs.  
-- Creates future opportunities for monetization through partnerships, venue integrations, or premium channel models.
-
----
-
-## Credits
+## 📜 Credits
 
 Created by **Julian Zienert**  
 jzienert@student.codam.nl  
 Concept & Documentation © 2025
-
----
 
 **Where community meets rhythm — every vote changes the beat.**

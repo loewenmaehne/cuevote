@@ -124,7 +124,7 @@ export function WebSocketProvider({ children }) {
                 setLastErrorCode(null);
               }, 5000);
             } else if (message.type === "INFO") {
-              console.log("[CLIENT TRACE] <<< INFO:", message.payload);
+              // console.log("[CLIENT TRACE] <<< INFO:", message.payload);
             }
           }
         } catch (error) {
