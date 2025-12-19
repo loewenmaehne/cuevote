@@ -3,16 +3,18 @@ import { WebSocketContext } from './WebSocketContext';
 
 const getWebSocketUrl = () => {
   const envUrl = import.meta.env.VITE_WS_URL;
+  if (envUrl) return envUrl;
+
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const hostname = window.location.hostname;
 
-  // If we am running on a network address (not localhost), prioritize that hostname.
-  // This fixes issues where .env has 'ws://localhost:8080' but we are accessing via 10.0.2.2 or LAN IP.
-  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-    return `ws://${hostname}:8080`;
+  // Development / Localhost: Default to port 8080
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `${protocol}//${hostname}:8080`;
   }
 
-  if (envUrl) return envUrl;
-  return `ws://${hostname}:8080`;
+  // Production (cuevote.com): Use same host, standard ports (handled by Nginx/Proxy)
+  return `${protocol}//${hostname}`;
 };
 
 const WEBSOCKET_URL = getWebSocketUrl();

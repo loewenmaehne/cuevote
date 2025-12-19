@@ -353,7 +353,7 @@ function App() {
         playerVars: {
           autoplay: 0,
           controls: 0,
-          origin: 'http://localhost:5173',
+          origin: window.location.origin,
         },
         events: {
           onReady: (event) => {
