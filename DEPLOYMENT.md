@@ -80,6 +80,7 @@ npm install
 Create a `.env` file **inside the `cuevote-client` directory** (`nano .env`):
 ```ini
 VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
+# VITE_WS_URL is auto-detected in production. Do NOT set it to localhost.
 ```
 
 ### Build Client
