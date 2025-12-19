@@ -26,10 +26,10 @@ export function WebSocketProvider({ children }) {
   const [lastMessage, setLastMessage] = useState(null);
   const [user, setUser] = useState(null);
   const [clientId] = useState(() => {
-    let id = localStorage.getItem("revibe_client_id");
+    let id = localStorage.getItem("cuevote_client_id");
     if (!id) {
       id = crypto.randomUUID ? crypto.randomUUID() : `user-${Date.now()}-${Math.random()}`;
-      localStorage.setItem("revibe_client_id", id);
+      localStorage.setItem("cuevote_client_id", id);
     }
     return id;
   });
@@ -48,10 +48,10 @@ export function WebSocketProvider({ children }) {
   }, [sendMessage]);
 
   const handleLogout = useCallback(() => {
-    const token = localStorage.getItem("revibe_auth_token");
+    const token = localStorage.getItem("cuevote_auth_token");
     if (token) {
       sendMessage({ type: "LOGOUT", payload: { token } });
-      localStorage.removeItem("revibe_auth_token");
+      localStorage.removeItem("cuevote_auth_token");
     }
     setUser(null);
   }, [sendMessage]);
@@ -63,11 +63,11 @@ export function WebSocketProvider({ children }) {
         console.log("Backend Login Success:", lastMessage.payload.user);
         setUser(lastMessage.payload.user);
         if (lastMessage.payload.sessionToken) {
-          localStorage.setItem("revibe_auth_token", lastMessage.payload.sessionToken);
+          localStorage.setItem("cuevote_auth_token", lastMessage.payload.sessionToken);
         }
       } else if (lastMessage.type === "SESSION_INVALID") {
         console.warn("Session Invalid/Expired");
-        localStorage.removeItem("revibe_auth_token");
+        localStorage.removeItem("cuevote_auth_token");
         setUser(null);
       }
     }
@@ -87,7 +87,7 @@ export function WebSocketProvider({ children }) {
         console.log("WebSocket connected");
         setIsConnected(true);
         // Try to resume session on connect
-        const token = localStorage.getItem("revibe_auth_token");
+        const token = localStorage.getItem("cuevote_auth_token");
         if (token) {
           socket.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token } }));
         }
