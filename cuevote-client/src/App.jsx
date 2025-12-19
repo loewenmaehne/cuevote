@@ -30,7 +30,7 @@ function App() {
   const activeRoomId = roomId || "synthwave";
   const [localPlaylistView, setLocalPlaylistView] = useState(false);
 
-  console.log("App Component MOUNTED, Room:", activeRoomId);
+  // console.log("App Component MOUNTED, Room:", activeRoomId);
 
   // WebSocket connection (Shared)
   const {
@@ -49,7 +49,7 @@ function App() {
 
 
 
-  console.log("Server State:", serverState);
+  // console.log("Server State:", serverState);
 
   // Handle Delete Account Success (Moved up to avoid conditional hook call error)
   useEffect(() => {
@@ -132,7 +132,7 @@ function App() {
   };
 
   // Trace Render Cycle
-  console.log(`[CLIENT TRACE] App Render.Active: ${activeRoomId}, Server: ${serverRoomId}, Stale ? ${serverState && serverRoomId && (serverRoomId.toString().trim().toLowerCase() !== activeRoomId.toString().trim().toLowerCase())} `);
+  // console.log(`[CLIENT TRACE] App Render.Active: ${activeRoomId}, Server: ${serverRoomId}, Stale ? ${serverState && serverRoomId && (serverRoomId.toString().trim().toLowerCase() !== activeRoomId.toString().trim().toLowerCase())} `);
 
   // Join Room on Connect or Room Change
   const location = useLocation();
@@ -345,9 +345,9 @@ function App() {
 
   // Player Initialization
   const initializePlayer = useCallback((container) => {
-    console.log("[Player] Initializing...", container);
+    // console.log("[Player] Initializing...", container);
     loadYouTubeAPI().then((YT) => {
-      console.log("[Player] YT loaded, creating player instance");
+      // console.log("[Player] YT loaded, creating player instance");
       playerRef.current = new YT.Player(container, {
         host: 'https://www.youtube-nocookie.com',
         playerVars: {
@@ -357,7 +357,7 @@ function App() {
         },
         events: {
           onReady: (event) => {
-            console.log("[Player] YouTube Player onReady fired");
+            // console.log("[Player] YouTube Player onReady fired");
             setIsPlayerReady(true);
             event.target.setVolume(volumeRef.current);
             if (isMutedRef.current) {
@@ -406,7 +406,7 @@ function App() {
     if (node !== null) {
       initializePlayer(node);
     } else {
-      console.log("[Player] Container ref null (unmount)");
+      // console.log("[Player] Container ref null (unmount)");
       // Cleanup on unmount
       if (playerRef.current && typeof playerRef.current.destroy === 'function') {
         try {
