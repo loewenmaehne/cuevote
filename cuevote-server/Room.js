@@ -73,7 +73,8 @@ class Room {
             description: this.metadata.description,
             color: this.metadata.color,
             listeners: this.clients.size,
-            currentTrack: this.state.currentTrack
+            currentTrack: this.state.currentTrack,
+            isActive: true
         };
     }
 

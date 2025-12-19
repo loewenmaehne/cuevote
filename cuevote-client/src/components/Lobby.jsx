@@ -117,9 +117,30 @@ export function Lobby() {
     }, []);
 
     // Filter rooms based on search
-    const filteredRooms = rooms.filter(room =>
-        room.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredRooms = useMemo(() => {
+        let result = rooms.filter(room =>
+            room.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        // Sort: Active First -> Most Listeners -> Alphabetical
+        result.sort((a, b) => {
+            // 1. Active vs Inactive
+            if (a.isActive && !b.isActive) return -1;
+            if (!a.isActive && b.isActive) return 1;
+
+            // 2. Viewer Count (Descending)
+            const listenersA = a.listeners || 0;
+            const listenersB = b.listeners || 0;
+            if (listenersB !== listenersA) {
+                return listenersB - listenersA;
+            }
+
+            // 3. Name (Alphabetical)
+            return a.name.localeCompare(b.name);
+        });
+
+        return result;
+    }, [rooms, searchQuery]);
 
     // Reset page to 1 when filter changes
     useEffect(() => {
