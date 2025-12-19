@@ -3,14 +3,17 @@ import { useNavigate, Link } from "react-router-dom";
 import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale, ChevronLeft, ChevronRight } from "lucide-react";
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { GoogleAuthButton } from "./GoogleAuthButton";
-import { useConsent } from '../contexts/ConsentContext'; // Added import
+import { useConsent } from '../contexts/ConsentContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 import { isTV } from "../utils/deviceDetection";
 
 export function Lobby() {
     const navigate = useNavigate();
     const { sendMessage, lastMessage, isConnected, lastError, lastErrorCode, user, handleLoginSuccess, handleLogout, clearMessage, state } = useWebSocketContext();
-    const { hasConsent } = useConsent(); // Added hook usage
+    const { hasConsent } = useConsent();
+    const { t, language, setLanguage } = useLanguage();
     const [rooms, setRooms] = useState([]);
 
     /* 
@@ -336,9 +339,9 @@ export function Lobby() {
     const handleCreateRoomClick = () => {
         if (!user) {
             if (!hasConsent) {
-                alert("Please accept cookies (bottom of screen) and sign in with Google to create a channel!");
+                alert(t('lobby.acceptCookies') + "!");
             } else {
-                alert("Please sign in (top right corner) to create a channel!");
+                alert(t('lobby.loginToCreate') + "!");
             }
             return;
         }
@@ -392,9 +395,15 @@ export function Lobby() {
     return (
         <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center p-8">
             <header className="w-full max-w-5xl flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold text-orange-500 tracking-tight">
-                    CueVote
-                </h1>
+                <div className="flex items-center gap-4">
+                    <h1 className="text-3xl font-bold text-orange-500 tracking-tight">
+                        CueVote
+                    </h1>
+
+                    {/* Language Switcher */}
+                    <LanguageSwitcher />
+                </div>
+
                 {user ? (
                     <button
                         onClick={() => setShowProfileModal(true)}
@@ -409,7 +418,7 @@ export function Lobby() {
                                     {user.name?.charAt(0)}
                                 </div>
                             )}
-                            <span className="text-neutral-300 font-medium group-hover:text-white transition-colors">Welcome, {user.name}</span>
+                            <span className="text-neutral-300 font-medium group-hover:text-white transition-colors">{t('lobby.welcome')}, {user.name}</span>
                         </div>
                     </button>
                 ) : (
@@ -420,12 +429,12 @@ export function Lobby() {
                                 onClick={() => !disabled && performLogin()}
                                 disabled={disabled}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? 'bg-neutral-900/50 text-neutral-600 border-neutral-800 cursor-not-allowed opacity-50 grayscale' : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'}`}
-                                title={disabled ? "Accept cookies to sign in" : ""}
+                                title={disabled ? t('lobby.acceptCookies') : ""}
                             >
                                 <svg className={`w-5 h-5 ${disabled ? 'text-neutral-600' : ''}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
                                 </svg>
-                                Sign in with Google
+                                {t('lobby.signInGoogle')}
                             </button>
                         )}
                     />
@@ -444,26 +453,26 @@ export function Lobby() {
             <main className="w-full max-w-5xl">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                     <div className="flex items-center gap-4">
-                        <h2 className="text-2xl font-semibold">Browse Channels</h2>
+                        <h2 className="text-2xl font-semibold">{t('lobby.browseChannels')}</h2>
                         <div className="flex bg-neutral-900 rounded-lg p-1.5 gap-2 border border-neutral-800">
                             <button
                                 onClick={() => setChannelType('public')}
                                 className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'public' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -2 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
                             >
-                                <Globe size={14} /> Public
+                                <Globe size={14} /> {t('lobby.public')}
                             </button>
                             <button
                                 onClick={() => setChannelType('private')}
                                 className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'private' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -1 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
                             >
-                                <Lock size={14} /> Private
+                                <Lock size={14} /> {t('lobby.private')}
                             </button>
                             {user && (
                                 <button
                                     onClick={() => setChannelType('my_channels')}
                                     className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'my_channels' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -4 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
                                 >
-                                    <Sparkles size={14} /> My Channels
+                                    <Sparkles size={14} /> {t('lobby.myChannels')}
                                 </button>
                             )}
                         </div>
@@ -478,7 +487,7 @@ export function Lobby() {
                             id="channel-search"
                             type="text"
                             className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-10 p-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-neutral-500 transition-all"
-                            placeholder="Search channels..."
+                            placeholder={t('lobby.searchPlaceholder')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -488,7 +497,7 @@ export function Lobby() {
                 {!isConnected ? (
                     <div className="flex flex-col items-center gap-4 text-neutral-500 animate-pulse">
                         <Radio className="w-12 h-12" />
-                        <span>Connecting to server...</span>
+                        <span>{t('lobby.connecting')}</span>
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -512,11 +521,11 @@ export function Lobby() {
                                         ? "border-neutral-800 text-neutral-500 cursor-pointer"
                                         : "border-neutral-900 text-neutral-700 cursor-not-allowed"
                                     }`}
-                                title={user ? "Create a new channel" : (!hasConsent ? "Accept cookies to enable sign in" : "Log in to create a channel")}
+                                title={user ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
                             >
                                 <Sparkles size={32} className={focusedIndex === 0 ? "text-orange-500" : ""} />
                                 <span className={`font-medium ${focusedIndex === 0 ? "text-white" : ""}`}>
-                                    {user ? "Create Channel" : (!hasConsent ? "Accept Cookies" : "Log in to Create")}
+                                    {user ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
                                 </span>
                             </button>
                         )}
@@ -525,7 +534,7 @@ export function Lobby() {
                         {filteredRooms.length === 0 && searchQuery && (
                             <div className="col-span-full text-center text-neutral-500 py-12 flex flex-col items-center">
                                 <Search className="w-8 h-8 mb-2 opacity-50" />
-                                <p>No channels found matching "{searchQuery}"</p>
+                                <p>{t('lobby.noChannelsFound')} "{searchQuery}"</p>
                             </div>
                         )}
 
@@ -595,7 +604,7 @@ export function Lobby() {
 
                                         <div className="flex items-center gap-2 pt-4 text-xs font-medium text-neutral-500 uppercase tracking-wider justify-between">
                                             <div className="flex items-center gap-2">
-                                                <Users size={14} /> <span>{channel.listeners || 0} Live</span>
+                                                <Users size={14} /> <span>{channel.listeners || 0} {t('lobby.live')}</span>
                                             </div>
                                             {channel.is_protected && <Lock size={14} className="text-orange-500" />}
                                         </div>
@@ -604,33 +613,36 @@ export function Lobby() {
                             );
                         })}
                     </div>
-                )}
+                )
+                }
 
                 {/* Pagination Controls */}
-                {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-4 mt-8">
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
-                            className="p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
+                {
+                    totalPages > 1 && (
+                        <div className="flex items-center justify-center gap-4 mt-8">
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                className="p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            >
+                                <ChevronLeft size={20} />
+                            </button>
 
-                        <div className="text-sm font-medium text-neutral-400">
-                            Page <span className="text-white">{currentPage}</span> of <span className="text-white">{totalPages}</span>
+                            <div className="text-sm font-medium text-neutral-400">
+                                Page <span className="text-white">{currentPage}</span> of <span className="text-white">{totalPages}</span>
+                            </div>
+
+                            <button
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                className="p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            >
+                                <ChevronRight size={20} />
+                            </button>
                         </div>
-
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                            disabled={currentPage === totalPages}
-                            className="p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                        >
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
-                )}
-            </main>
+                    )
+                }
+            </main >
 
             {/* Create Room Modal */}
             {
@@ -638,7 +650,7 @@ export function Lobby() {
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                         <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-md p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-bold text-white">Create New Channel</h3>
+                                <h3 className="text-xl font-bold text-white">{t('lobby.createNewChannel')}</h3>
                                 <button onClick={() => setIsCreatingRoom(false)} className="text-neutral-500 hover:text-white transition-colors">
                                     <X size={24} />
                                 </button>
@@ -647,12 +659,12 @@ export function Lobby() {
                             <form onSubmit={submitCreateRoom}>
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-neutral-400 mb-1">Channel Name</label>
+                                        <label className="block text-sm font-medium text-neutral-400 mb-1">{t('lobby.channelName')}</label>
                                         <input
                                             type="text"
                                             value={newRoomName}
                                             onChange={(e) => setNewRoomName(e.target.value.slice(0, 100))}
-                                            placeholder="e.g. Late Night Vibes"
+                                            placeholder={t('lobby.channelNamePlaceholder')}
                                             maxLength={100}
                                             className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
                                             autoFocus
@@ -665,33 +677,33 @@ export function Lobby() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-neutral-400 mb-1">Privacy</label>
+                                        <label className="block text-sm font-medium text-neutral-400 mb-1">{t('lobby.privacy')}</label>
                                         <div className="flex gap-4">
                                             <button
                                                 type="button"
                                                 onClick={() => setIsPrivate(false)}
                                                 className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${!isPrivate ? 'bg-orange-500/10 border-orange-500 text-orange-500' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
                                             >
-                                                <Globe size={18} /> Public
+                                                <Globe size={18} /> {t('lobby.public')}
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setIsPrivate(true)}
                                                 className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${isPrivate ? 'bg-orange-500/10 border-orange-500 text-orange-500' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
                                             >
-                                                <Lock size={18} /> Private
+                                                <Lock size={18} /> {t('lobby.private')}
                                             </button>
                                         </div>
                                     </div>
 
                                     {isPrivate && (
                                         <div className="animate-in fade-in slide-in-from-top-2 duration-200">
-                                            <label className="block text-sm font-medium text-neutral-400 mb-1">Password (Optional)</label>
+                                            <label className="block text-sm font-medium text-neutral-400 mb-1">{t('lobby.passwordOptional')}</label>
                                             <input
                                                 type="text"
                                                 value={createPassword}
                                                 onChange={(e) => setCreatePassword(e.target.value)}
-                                                placeholder="Leave empty for unlisted channel"
+                                                placeholder={t('lobby.passwordPlaceholder')}
                                                 className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
                                             />
                                         </div>
@@ -704,14 +716,14 @@ export function Lobby() {
                                         onClick={() => setIsCreatingRoom(false)}
                                         className="px-4 py-2 rounded-xl text-neutral-400 hover:text-white transition-colors font-medium"
                                     >
-                                        Cancel
+                                        {t('lobby.cancel')}
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={!newRoomName.trim()}
                                         className="px-6 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-400 hover:to-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                     >
-                                        Create Channel
+                                        {t('lobby.createChannel')}
                                     </button>
                                 </div>
                             </form>
@@ -735,12 +747,12 @@ export function Lobby() {
 
                             <form onSubmit={submitPasswordJoin} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-neutral-400 mb-1">Enter Password</label>
+                                    <label className="block text-sm font-medium text-neutral-400 mb-1">{t('lobby.enterPassword')}</label>
                                     <input
                                         type="password"
                                         value={passwordInput}
                                         onChange={(e) => setPasswordInput(e.target.value)}
-                                        placeholder="Channel password..."
+                                        placeholder={t('lobby.passwordInputPlaceholder')}
                                         className={`w-full bg-[#050505] border ${passwordError ? 'border-red-500 focus:border-red-500' : 'border-neutral-800 focus:border-orange-500'} rounded-xl px-4 py-3 text-white focus:outline-none transition-colors`}
                                         autoFocus
                                     />
@@ -755,7 +767,7 @@ export function Lobby() {
                                     type="submit"
                                     className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold hover:from-orange-400 hover:to-orange-500 transition-all mt-2"
                                 >
-                                    Unlock & Join
+                                    {t('lobby.unlockJoin')}
                                 </button>
                             </form>
                         </div>
@@ -795,7 +807,7 @@ export function Lobby() {
                                         }}
                                         className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-medium transition-colors border border-black/20"
                                     >
-                                        <LogOut size={18} /> Sign Out
+                                        <LogOut size={18} /> {t('lobby.signOut')}
                                     </button>
 
                                     <div className="pt-4 border-t border-neutral-800 mt-4">
@@ -803,27 +815,25 @@ export function Lobby() {
                                             onClick={() => setShowDeleteConfirm(true)}
                                             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-red-900/30 text-red-500 hover:bg-red-950/30 hover:border-red-900/50 transition-colors text-sm font-medium"
                                         >
-                                            Delete Account
+                                            {t('lobby.deleteAccount')}
                                         </button>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="text-center animate-in fade-in slide-in-from-bottom-2">
-                                    <h4 className="text-lg font-bold text-red-500 mb-2">Are you absolutely sure?</h4>
-                                    <p className="text-sm text-neutral-400 mb-4 leading-relaxed">
-                                        This action cannot be undone. It will permanently delete your account and <strong>all channels</strong> you have created.
-                                    </p>
+                                    <h4 className="text-lg font-bold text-red-500 mb-2">{t('lobby.deleteAccountConfirm')}</h4>
+                                    <p className="text-sm text-neutral-400 mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: t('lobby.deleteAccountWarning') }} />
 
                                     <div className="mb-6">
                                         <label className="block text-xs text-neutral-500 mb-2 font-medium">
-                                            Type <span className="text-neutral-300 font-bold select-none">Delete this account and all my channels forever</span> to confirm
+                                            {t('lobby.deleteAccountType')} <span className="text-neutral-300 font-bold select-none">{t('lobby.deleteAccountPhrase')}</span> {t('lobby.deleteAccountToConfirm')}
                                         </label>
                                         <input
                                             type="text"
                                             value={deleteConfirmationText}
                                             onChange={(e) => setDeleteConfirmationText(e.target.value)}
                                             className="w-full bg-black/30 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors placeholder-neutral-700 font-mono"
-                                            placeholder="Type the confirmation phrase..."
+                                            placeholder={t('lobby.deleteAccountType') + "..."}
                                             autoFocus
                                         />
                                     </div>
@@ -836,7 +846,7 @@ export function Lobby() {
                                             }}
                                             className="flex-1 px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-medium transition-colors"
                                         >
-                                            Cancel
+                                            {t('lobby.cancel')}
                                         </button>
                                         <button
                                             onClick={() => {
@@ -844,10 +854,10 @@ export function Lobby() {
                                                 // Modal will close via useEffect on success
                                                 setDeleteConfirmationText("");
                                             }}
-                                            disabled={deleteConfirmationText !== "Delete this account and all my channels forever"}
+                                            disabled={deleteConfirmationText !== t('lobby.deleteAccountPhrase')}
                                             className="flex-1 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold transition-colors shadow-lg shadow-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-800 disabled:text-neutral-500 disabled:shadow-none"
                                         >
-                                            Delete
+                                            {t('lobby.delete')}
                                         </button>
                                     </div>
                                 </div>
@@ -860,7 +870,7 @@ export function Lobby() {
             <footer className="w-full max-w-5xl mt-12 py-6 border-t border-neutral-800 flex justify-center">
                 <Link to="/legal" className="text-neutral-500 hover:text-orange-500 transition-colors text-sm font-medium flex items-center gap-2">
                     <Scale size={16} />
-                    <span>Terms & Legal</span>
+                    <span>{t('lobby.terms')}</span>
                 </Link>
             </footer>
         </div >

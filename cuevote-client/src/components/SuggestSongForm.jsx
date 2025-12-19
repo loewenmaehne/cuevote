@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { CheckCircle, Send, Clock } from "lucide-react";
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, serverMessage, isOwner, suggestionsEnabled, suggestionMode }) {
   const [songSuggestion, setSongSuggestion] = useState("");
@@ -8,6 +9,7 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
   const [suggestionError, setSuggestionError] = useState("");
   const [infoMessage, setInfoMessage] = useState("");
   const [isSubmittingSuggestion, setIsSubmittingSuggestion] = useState(false);
+  const { t } = useLanguage();
 
 
   // Clear local error when user types
@@ -21,7 +23,7 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
     const input = songSuggestion.trim();
 
     if (!input) {
-      setSuggestionError("Please enter a YouTube link or song name.");
+      setSuggestionError(t('suggest.error'));
       return;
     }
 
@@ -105,7 +107,7 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
 
-          placeholder={!suggestionsEnabled && !isOwner ? "Suggestions disabled by owner" : "Type a song name..."}
+          placeholder={!suggestionsEnabled && !isOwner ? t('suggest.disabledPlaceholder') : t('suggest.placeholder')}
           disabled={isSubmittingSuggestion || (!suggestionsEnabled && !isOwner)}
           className="keep-open flex-1 px-5 py-2 rounded-full bg-[#121212] text-white border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-orange-500 text-base disabled:opacity-60 disabled:cursor-not-allowed"
         />              <button
@@ -122,11 +124,11 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
           {submissionSuccess ? (
             <>
               {infoMessage ? <Clock size={18} /> : <CheckCircle size={18} />}
-              {infoMessage || "Added"}
+              {infoMessage || t('suggest.added')}
             </>
           ) : (
             <>
-              <Send size={18} /> {isSubmittingSuggestion ? "Adding..." : "Submit"}
+              <Send size={18} /> {isSubmittingSuggestion ? t('suggest.adding') : t('suggest.submit')}
             </>
           )}
         </button>

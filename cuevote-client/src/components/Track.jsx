@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { ThumbsUp, ThumbsDown, Headphones, Trash2 } from "lucide-react";
+import { useLanguage } from '../contexts/LanguageContext';
 
 const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;
 const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
@@ -21,6 +22,7 @@ export function Track({
   // Check prioritized status
   const isPriority = track.isOwnerPriority;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <div
@@ -55,7 +57,7 @@ export function Track({
             </h3>
             <p className="text-sm text-neutral-400 truncate">
               {track.artist}
-              {isActive ? " • Playing" : ""}
+              {isActive ? " • " + t('track.playing') : ""}
             </p>
           </div>
         </div>
@@ -106,7 +108,7 @@ export function Track({
           {(isActive || (readOnly && isActive)) && (
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-xs font-bold text-green-500 uppercase tracking-wider">Now</span>
+              <span className="text-xs font-bold text-green-500 uppercase tracking-wider">{t('track.now')}</span>
             </div>
           )}
         </div>
@@ -123,7 +125,7 @@ export function Track({
                 }}
                 className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-all shadow-lg shadow-orange-900/20"
               >
-                Add to Queue
+                {t('track.add')}
               </button>
             )}
             {onPreview && !isActive && (
@@ -135,7 +137,7 @@ export function Track({
                 className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-colors"
               >
                 <Headphones size={20} className="text-green-400" />
-                Preview Song
+                {t('track.preview')}
               </button>
             )}
             {onDelete && (
@@ -148,7 +150,7 @@ export function Track({
                     }}
                     className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white py-3 rounded-xl font-semibold transition-colors"
                   >
-                    Cancel
+                    {t('track.cancel')}
                   </button>
                   <button
                     onClick={(e) => {
@@ -157,7 +159,7 @@ export function Track({
                     }}
                     className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/50 py-3 rounded-xl font-semibold transition-colors"
                   >
-                    Confirm Delete
+                    {t('track.confirmDelete')}
                   </button>
                 </div>
               ) : (
@@ -169,7 +171,7 @@ export function Track({
                   className="flex-1 bg-neutral-800 hover:bg-red-900/30 text-red-500 hover:text-red-400 py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-colors border border-transparent hover:border-red-500/30"
                 >
                   <Trash2 size={20} />
-                  Delete Song
+                  {t('track.delete')}
                 </button>
               )
             )}
@@ -184,7 +186,7 @@ export function Track({
             onClick={(event) => event.stopPropagation()}
             className="inline-flex items-center gap-2 text-orange-400 text-sm hover:text-orange-300 transition-colors"
           >
-            Watch on YouTube
+            {t('track.watch')}
           </a>
         </div>
       )}
