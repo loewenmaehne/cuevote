@@ -14,7 +14,35 @@ export function LanguageSwitcher({ minimized = false, className = "" }) {
 		{ code: 'fr', label: 'Français' },
 		{ code: 'es', label: 'Español' },
 		{ code: 'it', label: 'Italiano' },
-		{ code: 'pt', label: 'Português' }
+		{ code: 'pt', label: 'Português' },
+		{ code: 'zh-CN', label: '简体中文' },
+		{ code: 'zh-TW', label: '繁體中文' },
+		{ code: 'ja', label: '日本語' },
+		{ code: 'ko', label: '한국어' },
+		{ code: 'hi', label: 'हिन्दी' },
+		{ code: 'th', label: 'ไทย' },
+		{ code: 'vi', label: 'Tiếng Việt' },
+		{ code: 'id', label: 'Bahasa Indonesia' },
+		{ code: 'ms', label: 'Bahasa Melayu' },
+		{ code: 'tl', label: 'Tagalog' },
+		{ code: 'pl', label: 'Polski' },
+		{ code: 'sv', label: 'Svenska' },
+		{ code: 'da', label: 'Dansk' },
+		{ code: 'no', label: 'Norsk' },
+		{ code: 'fi', label: 'Suomi' },
+		{ code: 'tr', label: 'Türkçe' },
+		{ code: 'el', label: 'Ελληνικά' },
+		{ code: 'ru', label: 'Русский' },
+		{ code: 'uk', label: 'Українська' },
+		{ code: 'cs', label: 'Čeština' },
+		{ code: 'hu', label: 'Magyar' },
+		{ code: 'ro', label: 'Română' },
+		{ code: 'bg', label: 'Български' },
+		{ code: 'hr', label: 'Hrvatski' },
+		{ code: 'sr', label: 'Српски' },
+		{ code: 'sk', label: 'Slovenčina' },
+		{ code: 'ar', label: 'العربية' },
+		{ code: 'he', label: 'עברית' }
 	];
 
 	useEffect(() => {
@@ -42,7 +70,7 @@ export function LanguageSwitcher({ minimized = false, className = "" }) {
 			</button>
 
 			{isOpen && (
-				<div className="absolute right-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl overflow-hidden py-1 z-[100] animate-in fade-in zoom-in-95 duration-200">
+				<div className="absolute right-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl overflow-hidden py-1 z-[100] animate-in fade-in zoom-in-95 duration-200 max-h-80 overflow-y-auto">
 					{languages.map((lang) => (
 						<button
 							key={lang.code}
