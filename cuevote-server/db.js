@@ -1,5 +1,5 @@
 const Database = require('better-sqlite3');
-const db = new Database('revibe.db'); // Creates the file if missing
+const db = new Database('cuevote.db'); // Creates the file if missing
 
 // Enable WAL mode for better concurrency
 db.pragma('journal_mode = WAL');
