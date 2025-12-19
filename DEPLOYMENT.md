@@ -102,7 +102,6 @@ This creates a `dist` directory with the static files.
 Create a new configuration file:
 ```bash
 sudo nano /etc/nginx/sites-available/cuevote
-# Tip: Use CTRL+K in nano to clear old lines before pasting!
 ```
 
 Paste the following configuration (replace `your-domain.com`):
