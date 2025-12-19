@@ -144,3 +144,26 @@ install certbot:
 sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d your-domain.com
 ```
+
+## 7. Firewall Setup (UFW)
+
+It is highly recommended to enable a firewall.
+
+```bash
+# Install UFW (Uncomplicated Firewall)
+sudo apt install ufw
+
+# 1. ALLOW SSH FIRST (Critical, otherwise you lock yourself out!)
+sudo ufw allow ssh
+
+# 2. Allow Web Traffic (HTTP & HTTPS)
+sudo ufw allow "Nginx Full"
+
+# 3. Enable Firewall
+sudo ufw enable
+```
+
+Check status with:
+```bash
+sudo ufw status
+```
