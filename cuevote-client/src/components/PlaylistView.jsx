@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { ArrowDown, ArrowUp, X } from "lucide-react";
+import { useLanguage } from '../contexts/LanguageContext';
 import { Track } from "./Track";
 
 export function PlaylistView({
@@ -25,6 +26,7 @@ export function PlaylistView({
     const [expandedTrackId, setExpandedTrackId] = useState(null);
     const [showJumpToNow, setShowJumpToNow] = useState(false);
     const [jumpDirection, setJumpDirection] = useState("down");
+    const { t } = useLanguage();
 
     const handleToggleExpand = (trackId) => {
         setExpandedTrackId((prev) => (prev === trackId ? null : trackId));
@@ -96,7 +98,7 @@ export function PlaylistView({
                             onClick={onExit}
                             className="pointer-events-auto flex items-center gap-2 px-6 py-2.5 bg-black/80 backdrop-blur-md text-orange-500 rounded-full hover:bg-neutral-800 transition-all shadow-xl border border-white/10 hover:scale-105 active:scale-95 group"
                         >
-                            <span className="text-sm font-bold">Close Playlist</span>
+                            <span className="text-sm font-bold">{t('playlist.close')}</span>
                             <X size={18} />
                         </button>
                     </div>
@@ -107,9 +109,9 @@ export function PlaylistView({
                     {history.length > 0 && (
                         <div className="space-y-2 opacity-60 hover:opacity-100 transition-opacity duration-300">
                             <div className="flex items-center gap-2 px-2 pb-2 border-b border-neutral-800">
-                                <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">History</span>
+                                <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">{t('playlist.history')}</span>
                                 <span className="text-xs px-1.5 py-0.5 rounded-full bg-neutral-900 text-neutral-600 font-mono">
-                                    {history.length > 50 ? `Last 50 of ${history.length}` : history.length}
+                                    {history.length > 50 ? t('playlist.last50', { count: history.length }) : history.length}
                                 </span>
                             </div>
                             {history.slice(-50).map((track, i) => (
@@ -133,7 +135,7 @@ export function PlaylistView({
                         <div id="playlist-current-track" className="space-y-2 py-4">
                             <div className="flex items-center gap-2 px-2 pb-2">
                                 <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                                <span className="text-xs font-bold text-orange-500 uppercase tracking-widest">Now Playing</span>
+                                <span className="text-xs font-bold text-orange-500 uppercase tracking-widest">{t('playlist.nowPlaying')}</span>
                             </div>
                             <Track
                                 track={currentTrack}
@@ -144,7 +146,7 @@ export function PlaylistView({
                                 onToggleExpand={handleToggleExpand}
                                 readOnly={true}
                                 votesEnabled={votesEnabled}
-                                onDelete={onDelete} // Pass delete enabled here too? Usually current track can be deleted (skipped)
+                                onDelete={onDelete}
                             />
                         </div>
                     )}
@@ -153,7 +155,7 @@ export function PlaylistView({
                     {filteredQueue.length > 0 ? (
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 px-2 pb-2 border-b border-neutral-800 mt-4">
-                                <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Up Next</span>
+                                <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">{t('playlist.upNext')}</span>
                                 <span className="text-xs px-1.5 py-0.5 rounded-full bg-neutral-800 text-neutral-400 font-mono">{filteredQueue.length}</span>
                             </div>
                             {filteredQueue.map((track) => (
@@ -168,14 +170,14 @@ export function PlaylistView({
                                     readOnly={false}
                                     votesEnabled={votesEnabled}
                                     onPreview={onPreview}
-                                    onDelete={onDelete} // Pass onDelete
+                                    onDelete={onDelete}
                                 />
                             ))}
                         </div>
                     ) : (
                         !currentTrack && (
                             <div className="flex h-64 w-full items-center justify-center text-neutral-500 bg-[#0a0a0a]">
-                                <span className="text-lg">Queue empty</span>
+                                <span className="text-lg">{t('playlist.queueEmpty')}</span>
                             </div>
                         )
                     )}
@@ -189,7 +191,7 @@ export function PlaylistView({
                         onClick={() => scrollToCurrent(true)}
                         className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 hover:shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0 font-medium text-sm"
                     >
-                        <span>Back to Now</span>
+                        <span>{t('playlist.backToNow')}</span>
                         {jumpDirection === 'up' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
                     </button>
                 </div>,

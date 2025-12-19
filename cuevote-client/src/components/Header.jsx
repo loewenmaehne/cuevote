@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import { GoogleAuthButton } from "./GoogleAuthButton";
 import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, Library } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { useLanguage } from '../contexts/LanguageContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function Header({
   activeChannel,
@@ -51,6 +53,7 @@ export function Header({
   // const [showQRCode, setShowQRCode] = React.useState(false); // Removed local state
   const [copied, setCopied] = React.useState(false);
   const [deleteConfirmationText, setDeleteConfirmationText] = React.useState("");
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -131,7 +134,7 @@ export function Header({
               <button
                 onClick={() => setShowProfileModal(true)}
                 className="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border border-transparent transition-all group cursor-pointer"
-                title="Profile & Settings"
+                title={t('header.profileSettings')}
               >
                 <div className="flex items-center gap-2">
                   {user.picture ? (
@@ -153,7 +156,7 @@ export function Header({
                       onClick={() => !disabled && performLogin()}
                       disabled={disabled}
                       className={`group flex items-center justify-center w-9 h-9 rounded-full border border-neutral-700 bg-neutral-800/50 transition-all shadow-sm ${disabled ? 'opacity-40 grayscale cursor-not-allowed' : 'hover:bg-neutral-700 hover:border-neutral-500 active:scale-95'}`}
-                      title={disabled ? "Accept cookies to sign in" : "Sign in with Google"}
+                      title={disabled ? t('header.acceptCookies') : t('header.signIn')}
                     >
                       <svg className={`w-5 h-5 transition-colors ${disabled ? 'text-neutral-600' : 'text-neutral-400 group-hover:text-white'}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
@@ -166,7 +169,7 @@ export function Header({
             <a
               href="/legal"
               className="flex items-center justify-center p-2 text-neutral-400 hover:text-white transition-colors ml-1"
-              title="Legal Information"
+              title={t('header.legal')}
             >
               <Scale size={20} />
             </a>
@@ -190,7 +193,7 @@ export function Header({
               title="Playlist View"
             >
               <List size={20} className="md:w-[22px] md:h-[22px]" />
-              <span className="hidden xl:block text-sm font-medium whitespace-nowrap">Playlist</span>
+              <span className="hidden xl:block text-sm font-medium whitespace-nowrap">{t('header.playlist')}</span>
             </button>
           )}
 
@@ -210,7 +213,7 @@ export function Header({
             title="Channel Library"
           >
             <Library size={20} className="md:w-[22px] md:h-[22px]" />
-            <span className="hidden xl:block text-sm font-medium whitespace-nowrap">Library</span>
+            <span className="hidden xl:block text-sm font-medium whitespace-nowrap">{t('header.library')}</span>
           </button>
         </div>
 
@@ -253,7 +256,7 @@ export function Header({
               onShowSuggest(false);
             }}
             className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
-            title="Share Channel"
+            title={t('header.share')}
           >
             <QrCode size={20} />
           </button>
@@ -275,9 +278,9 @@ export function Header({
                   ? "text-neutral-600 hover:text-neutral-500"
                   : "text-orange-500 hover:text-orange-400"
                   }`}
-                title={isDisabled ? "Suggestions disabled by owner (View Only)" : "Suggest a Song"}
+                title={isDisabled ? t('header.suggestionsDisabled') : t('header.suggestSong')}
               >
-                <Send size={18} /> <span>Suggest</span>
+                <Send size={18} /> <span>{t('header.suggest')}</span>
               </button>
             );
           })()}
@@ -294,14 +297,14 @@ export function Header({
                   onShowSuggest(false);
                 }}
                 className={`keep-open p-2 rounded-full transition-colors ${showSettings ? "text-orange-500 bg-neutral-800" : "text-neutral-400 hover:text-white"}`}
-                title="Channel Settings"
+                title={t('header.settings')}
               >
                 <Settings size={20} />
               </button>
 
               {showSettings && (
                 <div className="keep-open absolute right-0 top-full mt-2 w-64 max-h-[60vh] overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl p-4 animate-in fade-in slide-in-from-top-2 z-[100]">
-                  <h3 className="text-sm font-bold text-neutral-400 mb-3 uppercase tracking-wider">Channel Settings</h3>
+                  <h3 className="text-sm font-bold text-neutral-400 mb-3 uppercase tracking-wider">{t('header.settings')}</h3>
 
                   {(pendingCount > 0 || suggestionMode === 'manual') && (
                     <button
@@ -312,13 +315,13 @@ export function Header({
                       }}
                       className="w-full mb-3 flex items-center justify-between p-2 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500/20 transition-colors border border-orange-500/20"
                     >
-                      <span className="text-sm font-medium">Review Requests</span>
+                      <span className="text-sm font-medium">{t('header.reviewRequests')}</span>
                       <span className="text-xs font-bold bg-orange-500 text-black px-1.5 rounded-full">{pendingCount}</span>
                     </button>
                   )}
 
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-white">Allow Suggestions</label>
+                    <label className="text-sm font-medium text-white">{t('header.allowSuggestions')}</label>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -335,7 +338,7 @@ export function Header({
                   {suggestionsEnabled && (
                     <>
                       <div className="flex items-center justify-between mt-3 pl-2 border-l-2 border-neutral-700 ml-1">
-                        <label className="text-sm font-medium text-neutral-300">Manual Review</label>
+                        <label className="text-sm font-medium text-neutral-300">{t('header.manualReview')}</label>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -351,11 +354,11 @@ export function Header({
 
                       <div className="flex items-center justify-between mt-3 pl-2 border-l-2 border-neutral-700 ml-1">
                         <div className="flex items-center gap-2">
-                          <label className="text-sm font-medium text-neutral-300">Approve known</label>
+                          <label className="text-sm font-medium text-neutral-300">{t('header.approveKnown')}</label>
                           <div className="group relative flex items-center">
                             <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
                             <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
-                              Automatically approve songs that have been approved before
+                              {t('header.approveKnownTooltip')}
                             </div>
                           </div>
                         </div>
@@ -377,7 +380,7 @@ export function Header({
 
 
                   <div className="flex items-center justify-between mt-3">
-                    <label className="text-sm font-medium text-white">Music Only</label>
+                    <label className="text-sm font-medium text-white">{t('header.musicOnly')}</label>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -392,63 +395,63 @@ export function Header({
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
-                    <label className="text-sm font-medium text-white">Max Length</label>
+                    <label className="text-sm font-medium text-white">{t('header.maxLength')}</label>
                     <select
                       value={maxDuration}
                       onChange={(e) => onUpdateSettings({ maxDuration: Number(e.target.value) })}
                       onClick={(e) => e.stopPropagation()}
                       className="bg-neutral-800 text-white text-sm rounded-lg px-2 py-1 border border-neutral-700 focus:outline-none focus:border-orange-500"
                     >
-                      <option value={0}>No Limit</option>
-                      <option value={300}>5 Mins</option>
-                      <option value={600}>10 Mins</option>
-                      <option value={900}>15 Mins</option>
-                      <option value={1800}>30 Mins</option>
+                      <option value={0}>{t('header.noLimit')}</option>
+                      <option value={300}>5 {t('header.mins')}</option>
+                      <option value={600}>10 {t('header.mins')}</option>
+                      <option value={900}>15 {t('header.mins')}</option>
+                      <option value={1800}>30 {t('header.mins')}</option>
                     </select>
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
-                    <label className="text-sm font-medium text-white">Max Queue Size</label>
+                    <label className="text-sm font-medium text-white">{t('header.maxQueueSize')}</label>
                     <select
                       value={maxQueueSize}
                       onChange={(e) => onUpdateSettings({ maxQueueSize: Number(e.target.value) })}
                       onClick={(e) => e.stopPropagation()}
                       className="bg-neutral-800 text-white text-sm rounded-lg px-2 py-1 border border-neutral-700 focus:outline-none focus:border-orange-500"
                     >
-                      <option value={0}>No Limit</option>
-                      <option value={10}>10 Songs</option>
-                      <option value={25}>25 Songs</option>
-                      <option value={50}>50 Songs</option>
-                      <option value={100}>100 Songs</option>
-                      <option value={250}>250 Songs</option>
-                      <option value={500}>500 Songs</option>
+                      <option value={0}>{t('header.noLimit')}</option>
+                      <option value={10}>10 {t('header.songs')}</option>
+                      <option value={25}>25 {t('header.songs')}</option>
+                      <option value={50}>50 {t('header.songs')}</option>
+                      <option value={100}>100 {t('header.songs')}</option>
+                      <option value={250}>250 {t('header.songs')}</option>
+                      <option value={500}>500 {t('header.songs')}</option>
                     </select>
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
-                    <label className="text-sm font-medium text-white">Prevent Repetition</label>
+                    <label className="text-sm font-medium text-white">{t('header.preventRepetition')}</label>
                     <select
                       value={duplicateCooldown ?? 10}
                       onChange={(e) => onUpdateSettings({ duplicateCooldown: Number(e.target.value) })}
                       onClick={(e) => e.stopPropagation()}
                       className="bg-neutral-800 text-white text-sm rounded-lg px-2 py-1 border border-neutral-700 focus:outline-none focus:border-orange-500"
                     >
-                      <option value={0}>No Limit</option>
-                      <option value={5}>5 Songs</option>
-                      <option value={10}>10 Songs</option>
-                      <option value={20}>20 Songs</option>
-                      <option value={50}>50 Songs</option>
-                      <option value={100}>100 Songs</option>
+                      <option value={0}>{t('header.noLimit')}</option>
+                      <option value={5}>5 {t('header.songs')}</option>
+                      <option value={10}>10 {t('header.songs')}</option>
+                      <option value={20}>20 {t('header.songs')}</option>
+                      <option value={50}>50 {t('header.songs')}</option>
+                      <option value={100}>100 {t('header.songs')}</option>
                     </select>
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-white">Smart Queue</label>
+                      <label className="text-sm font-medium text-white">{t('header.smartQueue')}</label>
                       <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
                         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
-                          Replace downvoted songs when full
+                          {t('header.smartQueueTooltip')}
                         </div>
                       </div>
                     </div>
@@ -467,11 +470,11 @@ export function Header({
 
                   <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-white">Auto Refill</label>
+                      <label className="text-sm font-medium text-white">{t('header.autoRefill')}</label>
                       <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
                         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
-                          Automatically add songs from history when queue is empty. Starts at 5 songs.
+                          {t('header.autoRefillTooltip')}
                         </div>
                       </div>
                     </div>
@@ -492,11 +495,11 @@ export function Header({
 
                   <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-white">Venue Mode</label>
+                      <label className="text-sm font-medium text-white">{t('header.venueMode')}</label>
                       <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
                         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
-                          Guests see playlist only (No Video)
+                          {t('header.venueModeTooltip')}
                         </div>
                       </div>
                     </div>
@@ -514,7 +517,7 @@ export function Header({
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
-                    <label className="text-sm font-medium text-white">Allow Prelisten</label>
+                    <label className="text-sm font-medium text-white">{t('header.allowPrelisten')}</label>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -529,7 +532,7 @@ export function Header({
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
-                    <label className="text-sm font-medium text-white">Allow Voting</label>
+                    <label className="text-sm font-medium text-white">{t('header.allowVoting')}</label>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -546,11 +549,11 @@ export function Header({
                   {/* Owner Bypass Rules */}
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-700">
                     <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-white">Owner Bypass Rules</label>
+                      <label className="text-sm font-medium text-white">{t('header.ownerBypassRules')}</label>
                       <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
                         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
-                          Ignore filters/limits
+                          {t('header.ownerBypassRulesTooltip')}
                         </div>
                       </div>
                     </div>
@@ -569,11 +572,11 @@ export function Header({
 
                   <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-white">Owner Bypass Queue</label>
+                      <label className="text-sm font-medium text-white">{t('header.ownerBypassQueue')}</label>
                       <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
                         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
-                          Owner songs play next (Top Priority)
+                          {t('header.ownerBypassQueueTooltip')}
                         </div>
                       </div>
                     </div>
@@ -592,7 +595,7 @@ export function Header({
 
                   {/* Popups Toggle */}
                   <div className="flex items-center justify-between mt-3">
-                    <label className="text-sm font-medium text-neutral-300">Popups</label>
+                    <label className="text-sm font-medium text-neutral-300">{t('header.popups')}</label>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -617,10 +620,10 @@ export function Header({
                       }}
                       className="w-full py-2.5 bg-red-900/10 text-red-500 border border-red-900/30 rounded-lg text-sm font-bold hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2"
                     >
-                      Delete Channel
+                      {t('header.deleteChannel')}
                     </button>
                     <p className="text-[10px] text-neutral-500 text-center mt-2">
-                      This action is permanent and cannot be undone.
+                      {t('header.deleteChannelWarning')}
                     </p>
                   </div>
 
@@ -635,10 +638,10 @@ export function Header({
       {showDeleteChannelConfirm && createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
-            <h3 className="text-xl font-bold text-white mb-2 text-center text-red-500">Delete Channel?</h3>
+            <h3 className="text-xl font-bold text-white mb-2 text-center text-red-500">{t('header.deleteChannelTitle')}</h3>
             <p className="text-neutral-400 mb-6 text-center text-sm">
-              This action cannot be undone. To confirm, please type <br />
-              <span className="font-mono text-white bg-neutral-950 px-2 py-1 rounded select-all border border-neutral-800 mt-2 inline-block">Delete this channel forever</span>
+              {t('header.deleteChannelWarning')} <br />
+              <span className="font-mono text-white bg-neutral-950 px-2 py-1 rounded select-all border border-neutral-800 mt-2 inline-block">{t('header.deleteChannelConfirmPhrase')}</span>
             </p>
 
             <input
@@ -646,7 +649,7 @@ export function Header({
               type="text"
               value={deleteChannelText}
               onChange={(e) => setDeleteChannelText(e.target.value)}
-              placeholder="Type confirmation phrase..."
+              placeholder={t('header.deleteChannelType')}
               className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition-all mb-6 text-sm font-mono text-center"
             />
 
@@ -655,22 +658,22 @@ export function Header({
                 onClick={() => setShowDeleteChannelConfirm(false)}
                 className="flex-1 px-4 py-3 rounded-xl border border-neutral-700 text-neutral-300 font-medium hover:bg-neutral-800 transition-all"
               >
-                Cancel
+                {t('lobby.cancel')}
               </button>
               <button
-                disabled={deleteChannelText !== "Delete this channel forever"}
+                disabled={deleteChannelText !== t('header.deleteChannelConfirmPhrase')}
                 onClick={() => {
-                  if (deleteChannelText === "Delete this channel forever") {
+                  if (deleteChannelText === t('header.deleteChannelConfirmPhrase')) {
                     onDeleteChannel();
                     setShowDeleteChannelConfirm(false);
                   }
                 }}
-                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all ${deleteChannelText === "Delete this channel forever"
+                className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all ${deleteChannelText === t('header.deleteChannelConfirmPhrase')
                   ? "bg-red-600 text-white hover:bg-red-500 shadow-lg shadow-red-900/20"
                   : "bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700"
                   }`}
               >
-                Delete
+                {t('lobby.delete')}
               </button>
             </div>
           </div>
@@ -682,8 +685,8 @@ export function Header({
         showExitConfirm && createPortal(
           <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200 text-center">
-              <h3 className="text-xl font-bold text-white mb-2">Leave Channel?</h3>
-              <p className="text-neutral-400 mb-6">Are you sure you want to return to the lobby?</p>
+              <h3 className="text-xl font-bold text-white mb-2">{t('header.leaveChannel')}</h3>
+              <p className="text-neutral-400 mb-6">{t('header.leaveChannelConfirm')}</p>
 
               <div className="flex gap-3 justify-center">
                 <button
@@ -699,7 +702,7 @@ export function Header({
                     }`}
                   onMouseEnter={() => setExitConfirmIndex(0)}
                 >
-                  Cancel
+                  {t('lobby.cancel')}
                 </button>
                 <button
                   type="button"
@@ -717,7 +720,7 @@ export function Header({
                     }`}
                   onMouseEnter={() => setExitConfirmIndex(1)}
                 >
-                  Leave
+                  {t('header.leave')}
                 </button>
               </div>
             </div>
@@ -736,7 +739,7 @@ export function Header({
               className="qr-code-modal bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200 text-center flex flex-col items-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-xl font-bold text-orange-500 mb-4">Share Channel</h3>
+              <h3 className="text-xl font-bold text-orange-500 mb-4">{t('header.share')}</h3>
               <div className="relative group">
                 <div className="relative bg-neutral-900 p-4 rounded-xl mb-4 border border-orange-500/50">
                   <QRCodeSVG
@@ -762,7 +765,7 @@ export function Header({
                     ? "bg-green-500/10 text-green-500"
                     : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700 hover:text-white"
                     }`}
-                  title="Copy URL"
+                  title={t('header.copyUrl')}
                 >
                   {copied ? <Check size={16} /> : <Copy size={16} />}
                 </button>
@@ -774,7 +777,7 @@ export function Header({
                 onClick={() => onShowQRCode(false)}
                 className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 text-orange-500 border border-orange-500/20 hover:border-orange-500/50 rounded-lg transition-all font-medium"
               >
-                Close
+                {t('header.close')}
               </button>
             </div>
           </div>,
@@ -791,6 +794,10 @@ export function Header({
               className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200"
               onClick={(e) => e.stopPropagation()}
             >
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1"></div>
+                <LanguageSwitcher minimized={false} />
+              </div>
               <div className="flex flex-col items-center mb-6">
                 {user?.picture ? (
                   <img src={user.picture} alt={user.name} className="w-20 h-20 rounded-full border-2 border-neutral-700 mb-4 shadow-xl" />
