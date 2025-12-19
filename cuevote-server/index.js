@@ -456,7 +456,8 @@ wss.on("connection", (ws, req) => {
                                 color: dbr.color,
                                 listeners: 0,
                                 currentTrack: null,
-                                is_protected: !!dbr.password // Hint for frontend
+                                is_protected: !!dbr.password, // Hint for frontend
+                                isActive: false
                             });
                         }
                     });
