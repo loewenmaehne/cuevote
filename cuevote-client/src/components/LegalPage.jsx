@@ -234,10 +234,12 @@ export function LegalPage() {
                                                             {import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}
                                                         </a>
                                                     </li>
-                                                    <li className="flex items-center gap-3 text-neutral-400">
-                                                        <Phone size={16} />
-                                                        <span>{import.meta.env.VITE_LEGAL_PHONE || "+31 (0) 6 12345678"}</span>
-                                                    </li>
+                                                    {import.meta.env.VITE_LEGAL_PHONE && (
+                                                        <li className="flex items-center gap-3 text-neutral-400">
+                                                            <Phone size={16} />
+                                                            <span>{import.meta.env.VITE_LEGAL_PHONE}</span>
+                                                        </li>
+                                                    )}
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Globe size={16} />
                                                         <a href="https://cuevote.com" className="text-neutral-300 hover:text-white transition-colors">www.cuevote.com</a>
