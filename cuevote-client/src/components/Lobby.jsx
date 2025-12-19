@@ -3,12 +3,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale, ChevronLeft, ChevronRight } from "lucide-react";
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { GoogleAuthButton } from "./GoogleAuthButton";
+import { useConsent } from '../contexts/ConsentContext'; // Added import
 
 import { isTV } from "../utils/deviceDetection";
 
 export function Lobby() {
     const navigate = useNavigate();
     const { sendMessage, lastMessage, isConnected, lastError, lastErrorCode, user, handleLoginSuccess, handleLogout, clearMessage, state } = useWebSocketContext();
+    const { hasConsent } = useConsent(); // Added hook usage
     const [rooms, setRooms] = useState([]);
 
     /* 
@@ -312,7 +314,11 @@ export function Lobby() {
 
     const handleCreateRoomClick = () => {
         if (!user) {
-            alert("Please sign in (top right corner of a room) to create a channel!");
+            if (!hasConsent) {
+                alert("Please accept cookies (bottom of screen) and sign in with Google to create a channel!");
+            } else {
+                alert("Please sign in (top right corner) to create a channel!");
+            }
             return;
         }
         setIsCreatingRoom(true);
@@ -485,11 +491,11 @@ export function Lobby() {
                                         ? "border-neutral-800 text-neutral-500 cursor-pointer"
                                         : "border-neutral-900 text-neutral-700 cursor-not-allowed"
                                     }`}
-                                title={user ? "Create a new channel" : "Log in to create a channel"}
+                                title={user ? "Create a new channel" : (!hasConsent ? "Accept cookies to enable sign in" : "Log in to create a channel")}
                             >
                                 <Sparkles size={32} className={focusedIndex === 0 ? "text-orange-500" : ""} />
                                 <span className={`font-medium ${focusedIndex === 0 ? "text-white" : ""}`}>
-                                    {user ? "Create Channel" : "Log in to Create"}
+                                    {user ? "Create Channel" : (!hasConsent ? "Accept Cookies" : "Log in to Create")}
                                 </span>
                             </button>
                         )}
