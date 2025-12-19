@@ -182,6 +182,6 @@ It works automatically out of the box for SSH.
 
 ### Use SSH Keys (Best Practice)
 For maximum security, disable password login entirely and use SSH keys.
-1. Generate a key on your Mac: `ssh-keygen -t ed25519`
+1. Generate a key on your local machine: `ssh-keygen -t ed25519`
 2. Copy it to server: `ssh-copy-id user@your-server-ip`
 3. Once verified working, disable `PasswordAuthentication` in `/etc/ssh/sshd_config`.
