@@ -4,14 +4,14 @@ const Database = require('better-sqlite3');
 const crypto = require('crypto');
 const path = require('path');
 
-const dbPath = path.join(__dirname, 'revibe.db');
+const dbPath = path.join(__dirname, 'cuevote.db');
 const db = new Database(dbPath);
 
 const TEST_USER_ID = 'test-security-user';
 const TEST_TOKEN = 'test-security-token';
 
 try {
-	db.prepare('INSERT OR REPLACE INTO users (id, email, name) VALUES (?, ?, ?)').run(TEST_USER_ID, 'test@security.com', 'Test User');
+	db.prepare('INSERT OR REPLACE INTO users (id, email, name) VALUES (?, ?, ?)').run(TEST_USER_ID, 'test@cuevote.com', 'Test User');
 	const expiresAt = Math.floor(Date.now() / 1000) + 3600;
 	db.prepare('INSERT OR REPLACE INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)').run(TEST_TOKEN, TEST_USER_ID, expiresAt);
 } catch (e) {
