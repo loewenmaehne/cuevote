@@ -163,7 +163,23 @@ sudo ufw allow "Nginx Full"
 sudo ufw enable
 ```
 
-Check status with:
-```bash
 sudo ufw status
 ```
+
+## 8. Security Hardening (Recommended)
+
+### Prevent Brute Force Attacks (Fail2Ban)
+Even with a strong password, bots will attack port 22. Install `fail2ban` to automatically ban them after too many failed attempts.
+
+```bash
+sudo apt install fail2ban
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+```
+It works automatically out of the box for SSH.
+
+### Use SSH Keys (Best Practice)
+For maximum security, disable password login entirely and use SSH keys.
+1. Generate a key on your Mac: `ssh-keygen -t ed25519`
+2. Copy it to server: `ssh-copy-id julian@your-server-ip`
+3. Once verified working, disable `PasswordAuthentication` in `/etc/ssh/sshd_config`.
