@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { X, Search, Library, Music2 } from "lucide-react";
 import { useLanguage } from '../contexts/LanguageContext';
@@ -16,6 +16,10 @@ export function ChannelLibrary({
 	const [searchQuery, setSearchQuery] = useState("");
 	const [expandedTrackId, setExpandedTrackId] = useState(null);
 	const { t } = useLanguage();
+
+	// Infinite Scroll State
+	const [displayedCount, setDisplayedCount] = useState(50);
+	const observerTarget = useRef(null);
 
 	const handleToggleExpand = (trackId) => {
 		setExpandedTrackId((prev) => (prev === trackId ? null : trackId));
@@ -54,6 +58,38 @@ export function ChannelLibrary({
 		return result;
 	}, [uniqueSongs, searchQuery]);
 
+	// Reset displayed count when search changes
+	useEffect(() => {
+		setDisplayedCount(50);
+	}, [searchQuery]);
+
+	const visibleSongs = useMemo(() => {
+		return filteredSongs.slice(0, displayedCount);
+	}, [filteredSongs, displayedCount]);
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting && displayedCount < filteredSongs.length) {
+					console.log("Loading more items...");
+					setDisplayedCount((prev) => prev + 50);
+				}
+			},
+			{ threshold: 0.1 } // Trigger when 10% of sentinel is visible
+		);
+
+		if (observerTarget.current) {
+			observer.observe(observerTarget.current);
+		}
+
+		return () => {
+			if (observerTarget.current) {
+				observer.unobserve(observerTarget.current);
+			}
+		};
+	}, [observerTarget, displayedCount, filteredSongs.length]);
+
+
 	return (
 		<div className="w-full h-full flex flex-col bg-[#0a0a0a] text-white md:animate-in md:fade-in md:slide-in-from-bottom-10 md:duration-300">
 
@@ -84,25 +120,29 @@ export function ChannelLibrary({
 				)}
 
 				<div className="space-y-2 max-w-3xl mx-auto">
-					{filteredSongs.length > 0 ? (
-						filteredSongs.map((track, i) => (
-							<Track
-								key={`lib-${track.videoId}-${i}`}
-								track={track}
-								isActive={false}
-								isExpanded={expandedTrackId === `lib-${track.videoId}-${i}`}
-								readOnly={true}
-								votesEnabled={false}
-								onToggleExpand={() => handleToggleExpand(`lib-${track.videoId}-${i}`)}
-								// Pass onAdd wrapped with logging and closure
-								onAdd={() => {
-									console.log("ChannelLibrary: Adding video", track.videoId);
-									if (onAdd) onAdd(track.videoId);
-								}}
-								onDelete={onDelete ? () => onDelete(track.videoId) : undefined}
-								onPreview={onPreview}
-							/>
-						))
+					{visibleSongs.length > 0 ? (
+						<>
+							{visibleSongs.map((track, i) => (
+								<Track
+									key={`lib-${track.videoId}-${i}`}
+									track={track}
+									isActive={false}
+									isExpanded={expandedTrackId === `lib-${track.videoId}-${i}`}
+									readOnly={true}
+									votesEnabled={false}
+									onToggleExpand={() => handleToggleExpand(`lib-${track.videoId}-${i}`)}
+									// Pass onAdd wrapped with logging and closure
+									onAdd={() => {
+										console.log("ChannelLibrary: Adding video", track.videoId);
+										if (onAdd) onAdd(track.videoId);
+									}}
+									onDelete={onDelete ? () => onDelete(track.videoId) : undefined}
+									onPreview={onPreview}
+								/>
+							))}
+							{/* Sentinel for Infinite Scroll */}
+							<div ref={observerTarget} className="h-4 w-full" />
+						</>
 					) : (
 						<div className="flex flex-col items-center justify-center py-20 text-neutral-600 gap-4">
 							<Music2 size={48} className="opacity-20" />
