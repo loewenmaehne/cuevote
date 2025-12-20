@@ -105,7 +105,8 @@ export const translations = {
 			privateChannel: "Private Channel",
 			lockedMessage: "This channel is password protected. Please enter the password to join.",
 			unlock: "Unlock",
-			listenMusic: "Listen to Music"
+			listenMusic: "Listen to Music",
+			unmuteAndPlay: "Unmute & Play"
 		},
 		track: {
 			playing: "Playing",
@@ -257,7 +258,8 @@ export const translations = {
 			privateChannel: "Privé Kanaal",
 			lockedMessage: "Dit kanaal is beveiligd. Voer het wachtwoord in om deel te nemen.",
 			unlock: "Ontgrendel",
-			listenMusic: "Muziek luisteren"
+			listenMusic: "Muziek luisteren",
+			unmuteAndPlay: "Geluid aan & Start"
 		},
 		track: {
 			playing: "Speelt nu",
@@ -409,7 +411,8 @@ export const translations = {
 			privateChannel: "Privater Kanal",
 			lockedMessage: "Dieser Kanal ist passwortgeschützt.",
 			unlock: "Entsperren",
-			listenMusic: "Musik hören"
+			listenMusic: "Musik hören",
+			unmuteAndPlay: "Ton an & Start"
 		},
 		track: {
 			playing: "Wiedergabe",
@@ -561,7 +564,8 @@ export const translations = {
 			privateChannel: "Chaîne Privée",
 			lockedMessage: "Cette chaîne est protégée par mot de passe.",
 			unlock: "Déverrouiller",
-			listenMusic: "Écouter de la musique"
+			listenMusic: "Écouter de la musique",
+			unmuteAndPlay: "Son & Lecture"
 		},
 		track: {
 			playing: "Lecture",
@@ -713,7 +717,8 @@ export const translations = {
 			privateChannel: "Canal Privado",
 			lockedMessage: "Este canal está protegido con contraseña.",
 			unlock: "Desbloquear",
-			listenMusic: "Escuchar música"
+			listenMusic: "Escuchar música",
+			unmuteAndPlay: "Sonido y Reproducir"
 		},
 		track: {
 			playing: "Reproduciendo",
@@ -1017,7 +1022,8 @@ export const translations = {
 			privateChannel: "Canal Privado",
 			lockedMessage: "Canal protegido por senha.",
 			unlock: "Desbloquear",
-			listenMusic: "Ouvir música"
+			listenMusic: "Ouvir música",
+			unmuteAndPlay: "Ativar Som e Tocar"
 		},
 		track: {
 			playing: "Tocando",
@@ -1169,7 +1175,8 @@ export const translations = {
 			privateChannel: "私密频道",
 			lockedMessage: "此频道受密码保护。",
 			unlock: "解锁",
-			listenMusic: "听音乐"
+			listenMusic: "听音乐",
+			unmuteAndPlay: "取消静音并播放"
 		},
 		track: {
 			playing: "正在播放",
@@ -1321,7 +1328,8 @@ export const translations = {
 			privateChannel: "私密頻道",
 			lockedMessage: "此頻道受密碼保護。",
 			unlock: "解鎖",
-			listenMusic: "聽音樂"
+			listenMusic: "聽音樂",
+			unmuteAndPlay: "取消靜音並播放"
 		},
 		track: {
 			playing: "正在播放",
@@ -1473,7 +1481,8 @@ export const translations = {
 			privateChannel: "プライベートチャンネル",
 			lockedMessage: "このチャンネルはパスワードで保護されています。",
 			unlock: "ロック解除",
-			listenMusic: "音楽を聴く"
+			listenMusic: "音楽を聴く",
+			unmuteAndPlay: "ミュート解除して再生"
 		},
 		track: {
 			playing: "再生中",
@@ -1775,7 +1784,8 @@ export const translations = {
 			privateChannel: "निजी चैनल",
 			lockedMessage: "यह चैनल पासवर्ड सुरक्षित है।",
 			unlock: "अनलॉक करें",
-			listenMusic: "संगीत सुनें"
+			listenMusic: "संगीत सुनें",
+			unmuteAndPlay: "अनम्यूट और बजाएं"
 		},
 		track: {
 			playing: "चल रहा है",
@@ -1926,7 +1936,8 @@ export const translations = {
 			privateChannel: "ช่องส่วนตัว",
 			lockedMessage: "ช่องนี้มีรหัสผ่านป้องกัน",
 			unlock: "ปลดล็อค",
-			listenMusic: "ฟังเพลง"
+			listenMusic: "ฟังเพลง",
+			unmuteAndPlay: "เปิดเสียง & เล่น"
 		},
 		track: {
 			playing: "กำลังเล่น",
@@ -2077,7 +2088,8 @@ export const translations = {
 			privateChannel: "Kênh Riêng tư",
 			lockedMessage: "Kênh này có mật khẩu bảo vệ.",
 			unlock: "Mở khóa",
-			listenMusic: "Nghe nhạc"
+			listenMusic: "Nghe nhạc",
+			unmuteAndPlay: "Bật tiếng & Phát"
 		},
 		track: {
 			playing: "Đang phát",
@@ -2228,7 +2240,8 @@ export const translations = {
 			privateChannel: "Kanal Pribadi",
 			lockedMessage: "Kanal ini dilindungi password.",
 			unlock: "Buka Kunci",
-			listenMusic: "Dengarkan Musik"
+			listenMusic: "Dengarkan Musik",
+			unmuteAndPlay: "Bunyikan & Putar"
 		},
 		track: {
 			playing: "Memutar",
@@ -2379,7 +2392,8 @@ export const translations = {
 			privateChannel: "Saluran Peribadi",
 			lockedMessage: "Saluran ini dilindungi kata laluan.",
 			unlock: "Buka Kunci",
-			listenMusic: "Dengar Muzik"
+			listenMusic: "Dengar Muzik",
+			unmuteAndPlay: "Nyahbisu & Main"
 		},
 		track: {
 			playing: "Sedang Main",
@@ -2530,7 +2544,8 @@ export const translations = {
 			privateChannel: "Pribadong Channel",
 			lockedMessage: "Ang channel na ito ay protektado ng password.",
 			unlock: "I-unlock",
-			listenMusic: "Makinig ng Musika"
+			listenMusic: "Makinig ng Musika",
+			unmuteAndPlay: "I-unmute at Mag-play"
 		},
 		track: {
 			playing: "Tumutugtog",
@@ -2681,7 +2696,8 @@ export const translations = {
 			privateChannel: "Prywatny kanał",
 			lockedMessage: "Ten kanał jest chroniony hasłem.",
 			unlock: "Odblokuj",
-			listenMusic: "Słuchaj muzyki"
+			listenMusic: "Słuchaj muzyki",
+			unmuteAndPlay: "Włącz dźwięk i graj"
 		},
 		track: {
 			playing: "Odtwarzanie",
@@ -2832,7 +2848,8 @@ export const translations = {
 			privateChannel: "Privat kanal",
 			lockedMessage: "Denna kanal är lösenordsskyddad.",
 			unlock: "Lås upp",
-			listenMusic: "Lyssna på musik"
+			listenMusic: "Lyssna på musik",
+			unmuteAndPlay: "Ljud på & Spela"
 		},
 		track: {
 			playing: "Spelar",
@@ -2983,7 +3000,8 @@ export const translations = {
 			privateChannel: "Privat kanal",
 			lockedMessage: "Denne kanal er beskyttet med adgangskode.",
 			unlock: "Lås op",
-			listenMusic: "Lyt til musik"
+			listenMusic: "Lyt til musik",
+			unmuteAndPlay: "Lyd til & Afspil"
 		},
 		track: {
 			playing: "Spiller",
@@ -3134,7 +3152,8 @@ export const translations = {
 			privateChannel: "Privat kanal",
 			lockedMessage: "Denne kanalen er passordbeskyttet.",
 			unlock: "Lås opp",
-			listenMusic: "Hør på musikk"
+			listenMusic: "Hør på musikk",
+			unmuteAndPlay: "Lyd på & Spill"
 		},
 		track: {
 			playing: "Spiller",
@@ -3285,7 +3304,8 @@ export const translations = {
 			privateChannel: "Yksityinen kanava",
 			lockedMessage: "Tämä kanava on suojattu salasanalla.",
 			unlock: "Avaa",
-			listenMusic: "Kuuntele musiikkia"
+			listenMusic: "Kuuntele musiikkia",
+			unmuteAndPlay: "Poista mykistys & Soita"
 		},
 		track: {
 			playing: "Soittaa",
@@ -3436,7 +3456,8 @@ export const translations = {
 			privateChannel: "Özel Kanal",
 			lockedMessage: "Bu kanal şifre korumalıdır.",
 			unlock: "Kilidi Aç",
-			listenMusic: "Müzik Dinle"
+			listenMusic: "Müzik Dinle",
+			unmuteAndPlay: "Sesi Aç & Oynat"
 		},
 		track: {
 			playing: "Çalıyor",
@@ -3587,7 +3608,8 @@ export const translations = {
 			privateChannel: "Ιδιωτικό Κανάλι",
 			lockedMessage: "Αυτό το κανάλι προστατεύεται με κωδικό.",
 			unlock: "Ξεκλείδωμα",
-			listenMusic: "Ακούστε μουσική"
+			listenMusic: "Ακούστε μουσική",
+			unmuteAndPlay: "Ήχος & Αναπαραγωγή"
 		},
 		track: {
 			playing: "Παίζει",
@@ -3738,7 +3760,8 @@ export const translations = {
 			privateChannel: "Частный канал",
 			lockedMessage: "Этот канал защищен паролем.",
 			unlock: "Разблокировать",
-			listenMusic: "Слушать музыку"
+			listenMusic: "Слушать музыку",
+			unmuteAndPlay: "Включить звук & Играть"
 		},
 		track: {
 			playing: "Играет",
@@ -3889,7 +3912,8 @@ export const translations = {
 			privateChannel: "Приватний канал",
 			lockedMessage: "Цей канал захищено паролем.",
 			unlock: "Розблокувати",
-			listenMusic: "Слухати музику"
+			listenMusic: "Слухати музику",
+			unmuteAndPlay: "Увімкнути звук & Грати"
 		},
 		track: {
 			playing: "Грає",
@@ -4040,7 +4064,8 @@ export const translations = {
 			privateChannel: "Soukromý Kanál",
 			lockedMessage: "Tento kanál je chráněn heslem.",
 			unlock: "Odemknout",
-			listenMusic: "Poslouchat hudbu"
+			listenMusic: "Poslouchat hudbu",
+			unmuteAndPlay: "Zapnout zvuk & Hrát"
 		},
 		track: {
 			playing: "Hraje",
@@ -4191,7 +4216,8 @@ export const translations = {
 			privateChannel: "Privát Csatorna",
 			lockedMessage: "Ez a csatorna jelszóval védett.",
 			unlock: "Feloldás",
-			listenMusic: "Zenehallgatás"
+			listenMusic: "Zenehallgatás",
+			unmuteAndPlay: "Hang & Lejátszás"
 		},
 		track: {
 			playing: "Lejátszás",
@@ -4342,7 +4368,8 @@ export const translations = {
 			privateChannel: "Canal Privat",
 			lockedMessage: "Acest canal este protejat cu parolă.",
 			unlock: "Deblochează",
-			listenMusic: "Ascultă muzică"
+			listenMusic: "Ascultă muzică",
+			unmuteAndPlay: "Sunet & Redare"
 		},
 		track: {
 			playing: "Cântă acum",
@@ -4493,7 +4520,8 @@ export const translations = {
 			privateChannel: "Частен канал",
 			lockedMessage: "Този канал е защитен с парола.",
 			unlock: "Отключи",
-			listenMusic: "Слушане на музика"
+			listenMusic: "Слушане на музика",
+			unmuteAndPlay: "Включи звук & Пусни"
 		},
 		track: {
 			playing: "Свири",
@@ -4644,7 +4672,8 @@ export const translations = {
 			privateChannel: "Privatni Kanal",
 			lockedMessage: "Ovaj kanal je zaštićen lozinkom.",
 			unlock: "Otključaj",
-			listenMusic: "Слушајте музику"
+			listenMusic: "Slušaj glazbu",
+			unmuteAndPlay: "Zvuk & Sviraj"
 		},
 		track: {
 			playing: "Svira",
@@ -4795,7 +4824,8 @@ export const translations = {
 			privateChannel: "Privatni Kanal",
 			lockedMessage: "Ovaj kanal je zaštićen lozinkom.",
 			unlock: "Otključaj",
-			listenMusic: "Slušaj glazbu"
+			listenMusic: "Slušaj muziku",
+			unmuteAndPlay: "Zvuk & Pusti"
 		},
 		track: {
 			playing: "Svira",
@@ -4946,7 +4976,8 @@ export const translations = {
 			privateChannel: "Súkromný Kanál",
 			lockedMessage: "Tento kanál je chránený heslom.",
 			unlock: "Odomknúť",
-			listenMusic: "Poúvať hudbu"
+			listenMusic: "Počúvať hudbu",
+			unmuteAndPlay: "Zvuk & Hrať"
 		},
 		track: {
 			playing: "Hrá",
@@ -5097,7 +5128,8 @@ export const translations = {
 			privateChannel: "قناة خاصة",
 			lockedMessage: "هذه القناة محمية بكلمة مرور.",
 			unlock: "فتح",
-			listenMusic: "الاستماع إلى الموسيقى"
+			listenMusic: "الاستماع إلى الموسيقى",
+			unmuteAndPlay: "صوت وتشغيل"
 		},
 		track: {
 			playing: "تشغيل",
@@ -5248,7 +5280,8 @@ export const translations = {
 			privateChannel: "ערוץ פרטי",
 			lockedMessage: "ערוץ זה מוגן בסיסמה.",
 			unlock: "פתח",
-			listenMusic: "האזנה למוזיקה"
+			listenMusic: "האזנה למוזיקה",
+			unmuteAndPlay: "שמע ונגן"
 		},
 		track: {
 			playing: "מנגן",

@@ -1059,7 +1059,7 @@ function App() {
           >
             <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <Volume2 size={48} className="relative z-10" />
-            <span className="relative z-10">UNMUTE & PLAY</span>
+            <span className="relative z-10">{t('app.unmuteAndPlay')}</span>
           </button>
         </div>
       )}
