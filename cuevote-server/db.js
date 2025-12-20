@@ -43,6 +43,7 @@ db.exec(`
     thumbnail TEXT,
     duration INTEGER,
     category_id TEXT,
+    language TEXT,
     fetched_at INTEGER DEFAULT (unixepoch())
   );
 
@@ -57,6 +58,13 @@ db.exec(`
 // Migration: Add captions_enabled if missing
 try {
   db.prepare("ALTER TABLE rooms ADD COLUMN captions_enabled INTEGER DEFAULT 0").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
+
+// Migration: Add language if missing
+try {
+  db.prepare("ALTER TABLE videos ADD COLUMN language TEXT").run();
 } catch (e) {
   // Ignore duplicate column error
 }
@@ -139,14 +147,15 @@ module.exports = {
   // Video Caching
   upsertVideo: (video) => {
     const stmt = db.prepare(`
-      INSERT INTO videos (id, title, artist, thumbnail, duration, category_id, fetched_at)
-      VALUES (@id, @title, @artist, @thumbnail, @duration, @category_id, unixepoch())
+      INSERT INTO videos (id, title, artist, thumbnail, duration, category_id, language, fetched_at)
+      VALUES (@id, @title, @artist, @thumbnail, @duration, @category_id, @language, unixepoch())
       ON CONFLICT(id) DO UPDATE SET
         title = @title,
         artist = @artist,
         thumbnail = @thumbnail,
         duration = @duration,
         category_id = @category_id,
+        language = @language,
         fetched_at = unixepoch()
     `);
     stmt.run(video);

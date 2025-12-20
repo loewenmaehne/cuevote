@@ -73,7 +73,7 @@ export function SettingsView({
 									e.stopPropagation();
 									onUpdateSettings({ suggestionsEnabled: !suggestionsEnabled });
 								}}
-								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${suggestionsEnabled ? 'bg-orange-500' : 'bg-neutral-600'}`}
+								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${suggestionsEnabled ? 'bg-orange-500' : 'bg-neutral-600'}`}
 							>
 								<span
 									className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${suggestionsEnabled ? 'translate-x-6' : 'translate-x-1'}`}
@@ -90,7 +90,7 @@ export function SettingsView({
 											e.stopPropagation();
 											onUpdateSettings({ suggestionMode: suggestionMode === 'manual' ? 'auto' : 'manual' });
 										}}
-										className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${suggestionMode === 'manual' ? 'bg-orange-500' : 'bg-neutral-600'}`}
+										className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${suggestionMode === 'manual' ? 'bg-orange-500' : 'bg-neutral-600'}`}
 									>
 										<span
 											className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${suggestionMode === 'manual' ? 'translate-x-6' : 'translate-x-1'}`}
@@ -113,7 +113,7 @@ export function SettingsView({
 											e.stopPropagation();
 											onUpdateSettings({ autoApproveKnown: !autoApproveKnown });
 										}}
-										className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autoApproveKnown ? 'bg-orange-500' : 'bg-neutral-600'}`}
+										className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${autoApproveKnown ? 'bg-orange-500' : 'bg-neutral-600'}`}
 									>
 										<span
 											className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoApproveKnown ? 'translate-x-6' : 'translate-x-1'}`}
@@ -135,7 +135,7 @@ export function SettingsView({
 									e.stopPropagation();
 									onUpdateSettings({ musicOnly: !musicOnly });
 								}}
-								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${musicOnly ? 'bg-orange-500' : 'bg-neutral-600'}`}
+								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${musicOnly ? 'bg-orange-500' : 'bg-neutral-600'}`}
 							>
 								<span
 									className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${musicOnly ? 'translate-x-6' : 'translate-x-1'}`}
@@ -209,7 +209,7 @@ export function SettingsView({
 									e.stopPropagation();
 									onUpdateSettings({ smartQueue: !smartQueue });
 								}}
-								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${smartQueue ? 'bg-orange-500' : 'bg-neutral-600'}`}
+								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${smartQueue ? 'bg-orange-500' : 'bg-neutral-600'}`}
 							>
 								<span
 									className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${smartQueue ? 'translate-x-6' : 'translate-x-1'}`}
@@ -232,7 +232,7 @@ export function SettingsView({
 									e.stopPropagation();
 									onUpdateSettings({ autoRefill: !autoRefill });
 								}}
-								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autoRefill ? 'bg-orange-500' : 'bg-neutral-600'}`}
+								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${autoRefill ? 'bg-orange-500' : 'bg-neutral-600'}`}
 							>
 								<span
 									className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoRefill ? 'translate-x-6' : 'translate-x-1'}`}
@@ -261,7 +261,7 @@ export function SettingsView({
 									e.stopPropagation();
 									onUpdateSettings({ playlistViewMode: !playlistViewMode });
 								}}
-								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${playlistViewMode ? 'bg-orange-500' : 'bg-neutral-600'}`}
+								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${playlistViewMode ? 'bg-orange-500' : 'bg-neutral-600'}`}
 							>
 								<span
 									className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${playlistViewMode ? 'translate-x-6' : 'translate-x-1'}`}
@@ -276,7 +276,7 @@ export function SettingsView({
 									e.stopPropagation();
 									onUpdateSettings({ allowPrelisten: !allowPrelisten });
 								}}
-								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${allowPrelisten ? 'bg-orange-500' : 'bg-neutral-600'}`}
+								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${allowPrelisten ? 'bg-orange-500' : 'bg-neutral-600'}`}
 							>
 								<span
 									className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${allowPrelisten ? 'translate-x-6' : 'translate-x-1'}`}
@@ -297,12 +297,10 @@ export function SettingsView({
 							<button
 								onClick={(e) => {
 									e.stopPropagation();
-									onUpdateSettings({
-										captionsEnabled: !captionsEnabled,
-										_debugClientValue: captionsEnabled
-									});
+									onUpdateSettings({ captionsEnabled: !captionsEnabled });
 								}}
-								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${captionsEnabled ? 'bg-orange-500' : 'bg-neutral-600'}`}
+								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${captionsEnabled ? 'bg-orange-500' : 'bg-neutral-600'} z-50`}
+								style={{ pointerEvents: 'auto' }}
 							>
 								<span
 									className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${captionsEnabled ? 'translate-x-6' : 'translate-x-1'}`}
@@ -317,7 +315,7 @@ export function SettingsView({
 									e.stopPropagation();
 									onUpdateSettings({ votesEnabled: !votesEnabled });
 								}}
-								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${votesEnabled ? 'bg-orange-500' : 'bg-neutral-600'}`}
+								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${votesEnabled ? 'bg-orange-500' : 'bg-neutral-600'}`}
 							>
 								<span
 									className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${votesEnabled ? 'translate-x-6' : 'translate-x-1'}`}
@@ -343,7 +341,7 @@ export function SettingsView({
 										e.stopPropagation();
 										onUpdateSettings({ ownerBypass: !ownerBypass });
 									}}
-									className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${ownerBypass ? 'bg-orange-500' : 'bg-neutral-600'}`}
+									className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${ownerBypass ? 'bg-orange-500' : 'bg-neutral-600'}`}
 								>
 									<span
 										className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${ownerBypass ? 'translate-x-6' : 'translate-x-1'}`}
@@ -366,7 +364,7 @@ export function SettingsView({
 										e.stopPropagation();
 										onUpdateSettings({ ownerQueueBypass: !ownerQueueBypass });
 									}}
-									className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${ownerQueueBypass ? 'bg-orange-500' : 'bg-neutral-600'}`}
+									className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${ownerQueueBypass ? 'bg-orange-500' : 'bg-neutral-600'}`}
 								>
 									<span
 										className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${ownerQueueBypass ? 'translate-x-6' : 'translate-x-1'}`}
@@ -381,7 +379,7 @@ export function SettingsView({
 										e.stopPropagation();
 										onUpdateSettings({ ownerPopups: !ownerPopups });
 									}}
-									className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${ownerPopups ? 'bg-orange-500' : 'bg-neutral-600'}`}
+									className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${ownerPopups ? 'bg-orange-500' : 'bg-neutral-600'}`}
 								>
 									<span
 										className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${ownerPopups ? 'translate-x-6' : 'translate-x-1'}`}
