@@ -32,6 +32,7 @@ export const translations = {
 			deleteAccountPhrase: "Delete this account and all my channels forever",
 			deleteAccountToConfirm: "to confirm",
 			delete: "Delete",
+			startWithCaptions: "Start with Captions",
 			terms: "Terms & Legal"
 		},
 		cookie: {
@@ -190,6 +191,7 @@ export const translations = {
 			deleteAccountPhrase: "Verwijder dit account en al mijn kanalen voor altijd",
 			deleteAccountToConfirm: "om te bevestigen",
 			delete: "Verwijderen",
+			startWithCaptions: "Start met Ondertiteling",
 			terms: "Voorwaarden & Juridisch"
 		},
 		cookie: {
@@ -348,6 +350,7 @@ export const translations = {
 			deleteAccountPhrase: "Lösche dieses Konto und alle meine Kanäle für immer",
 			deleteAccountToConfirm: "zum Bestätigen",
 			delete: "Löschen",
+			startWithCaptions: "Mit Untertiteln starten",
 			terms: "Rechtliches"
 		},
 		cookie: {
@@ -506,6 +509,7 @@ export const translations = {
 			deleteAccountPhrase: "Supprimer ce compte et toutes mes chaînes pour toujours",
 			deleteAccountToConfirm: "pour confirmer",
 			delete: "Supprimer",
+			startWithCaptions: "Démarrer avec sous-titres",
 			terms: "Conditions & Légal"
 		},
 		cookie: {
@@ -664,6 +668,7 @@ export const translations = {
 			deleteAccountPhrase: "Eliminar esta cuenta y todos mis canales para siempre",
 			deleteAccountToConfirm: "para confirmar",
 			delete: "Eliminar",
+			startWithCaptions: "Comenzar con subtítulos",
 			terms: "Términos y Legal"
 		},
 		cookie: {

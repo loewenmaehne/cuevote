@@ -708,6 +708,7 @@ export function Lobby() {
                                             />
                                         </div>
                                     )}
+
                                 </div>
 
                                 <div className="flex justify-end gap-3 pt-4 border-t border-neutral-800 mt-6">
@@ -728,7 +729,7 @@ export function Lobby() {
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div >
                 )
             }
 

@@ -29,7 +29,8 @@ class Room {
             color: metadata.color || "from-gray-700 to-black",
             owner_id: metadata.owner_id,
             is_public: metadata.is_public !== undefined ? metadata.is_public : 1,
-            password: metadata.password || null
+            password: metadata.password || null,
+            captions_enabled: metadata.captions_enabled !== undefined ? metadata.captions_enabled : 0
         };
         this.clients = new Set();
         this.knownSongs = new Set(); // Stores videoIds of approved songs
@@ -59,6 +60,7 @@ class Room {
             duplicateCooldown: 10, // Default 10 songs
             autoApproveKnown: true, // Default true
             autoRefill: false, // Automated Refill
+            captionsEnabled: !!(metadata.captions_enabled), // Initialize from metadata
             bannedSongs: [], // List of banned songs { videoId, title, artist, ... }
         };
 
@@ -111,6 +113,7 @@ class Room {
     }
 
     broadcastState() {
+        console.log("[DEBUG] Broadcasting State:", JSON.stringify({ captionsEnabled: this.state.captionsEnabled }));
         const message = JSON.stringify({ type: "state", payload: this.state });
         this.broadcast(message);
     }
@@ -427,6 +430,7 @@ class Room {
                 }
                 break;
             case "UPDATE_SETTINGS":
+                console.log("[DEBUG] UPDATE_SETTINGS message. Payload:", message.payload, "Owner?", isOwner(this, ws));
                 if (isOwner(this, ws)) {
                     this.handleUpdateSettings(message.payload);
                 }
@@ -920,7 +924,8 @@ class Room {
         this.updateState(newState);
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled }) {
+        console.log("[DEBUG] handleUpdateSettings called with:", { captionsEnabled });
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
@@ -934,14 +939,21 @@ class Room {
         if (suggestionMode === 'auto' || suggestionMode === 'manual') updates.suggestionMode = suggestionMode;
         if (typeof duplicateCooldown === 'number') updates.duplicateCooldown = duplicateCooldown;
         if (typeof ownerQueueBypass === 'boolean') updates.ownerQueueBypass = ownerQueueBypass;
-        if (typeof ownerQueueBypass === 'boolean') updates.ownerQueueBypass = ownerQueueBypass;
-        if (typeof votesEnabled === 'boolean') updates.votesEnabled = votesEnabled;
         if (typeof votesEnabled === 'boolean') updates.votesEnabled = votesEnabled;
         if (typeof autoApproveKnown === 'boolean') updates.autoApproveKnown = autoApproveKnown;
         if (typeof autoRefill === 'boolean') updates.autoRefill = autoRefill;
+        if (typeof captionsEnabled === 'boolean') updates.captionsEnabled = captionsEnabled;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
+
+            // Persist DB Settings (captions_enabled)
+            if (updates.captionsEnabled !== undefined) {
+                this.metadata.captions_enabled = updates.captionsEnabled ? 1 : 0; // Update memory metadata
+                try {
+                    db.updateRoomSettings(this.id, { captions_enabled: updates.captionsEnabled });
+                } catch (e) { console.error("Failed to persist room settings", e); }
+            }
 
             // Trigger Auto-Refill if enabled and queue is empty
             if (updates.autoRefill === true && this.state.queue.length === 0 && this.state.history.length >= 5) {

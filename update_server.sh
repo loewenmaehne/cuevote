@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# exit immediately if a command exits with a non-zero status
+set -e
+
+# Configuration
+SERVER_DIR="cuevote-server"
+CLIENT_DIR="cuevote-client"
+PM2_PROCESS_NAME="cuevote-server"
+
+echo "==== Starting CueVote Server Update ===="
+
+# 0. Check for PM2
+if ! command -v pm2 &> /dev/null; then
+    echo "Error: pm2 is not installed or not in PATH."
+    echo "This script is intended for the production server environment."
+    exit 1
+fi
+
+# 1. Pull latest changes
+echo "[1/4] Pulling latest changes from git..."
+git pull
+if [ $? -ne 0 ]; then
+    echo "Error: git pull failed."
+    exit 1
+fi
+
+# 2. Update Client (Frontend) - Build First to minimize downtime impact
+echo "[2/4] Updating Client (Frontend)..."
+cd "$CLIENT_DIR"
+
+echo "  -> Installing client dependencies..."
+npm install --silent
+
+echo "  -> Building client..."
+npm run build
+if [ $? -ne 0 ]; then
+    echo "Error: Client build failed."
+    exit 1
+fi
+echo "  -> Client build successful."
+cd ..
+
+# 3. Update Server (Backend)
+echo "[3/4] Updating Server (Backend)..."
+cd "$SERVER_DIR"
+
+echo "  -> Installing server dependencies..."
+npm install --silent
+
+# 4. Restart Server Process
+echo "[4/4] Restarting Server Process..."
+# Try to reload for zero-downtime, fallback to restart if it's not running or fails
+if pm2 reload "$PM2_PROCESS_NAME"; then
+    echo "  -> PM2 reload successful."
+else
+    echo "  -> PM2 reload failed or process not found, attempting restart..."
+    pm2 restart "$PM2_PROCESS_NAME"
+fi
+
+cd ..
+
+echo "==== Update Completed Successfully ===="
+echo "The server is now running the latest version."
