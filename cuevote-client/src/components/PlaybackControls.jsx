@@ -32,7 +32,7 @@ export function PlaybackControls({
     hideTimeoutRef.current = setTimeout(() => {
       // console.log("[PlaybackControls] Timer expired. Setting tempVisible = false");
       setTempVisible(false);
-    }, 3000);
+    }, 5000);
   };
 
   // Show temporarily when track changes
@@ -137,7 +137,7 @@ export function PlaybackControls({
       {isCinemaMode && (
         <div
           ref={overlayRef}
-          className="fixed bottom-0 left-0 w-full h-24 z-[60] bg-transparent"
+          className="fixed bottom-0 left-0 w-full h-6 z-[60] bg-transparent"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         />
