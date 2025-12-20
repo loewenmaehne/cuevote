@@ -36,7 +36,7 @@ export function CookieBlockedPlaceholder() {
 							className="mt-4 px-8 py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-colors shadow-lg active:scale-95 transform duration-100 flex items-center gap-2 mx-auto"
 						>
 							<Cookie size={18} className="text-orange-600" />
-							{t('cookie.accept')} & {t('app.listenMusic', 'Muziek luisteren')}
+							{t('cookie.accept')}
 						</button>
 					</div>
 				</div>
