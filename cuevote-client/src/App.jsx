@@ -1044,6 +1044,26 @@ function App() {
           onClose={() => setToast(null)}
         />
       )}
+      {/* TV Unmute Overlay */}
+      {isTV() && isMuted && isPlayerReady && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-500">
+          <button
+            onClick={() => {
+              handleMuteToggle();
+              const isEffectivelyPlaying = (isPlaying || isLocallyPlaying) && !isLocallyPaused;
+              if (!isEffectivelyPlaying) {
+                handlePlayPause();
+              }
+            }}
+            className="group relative bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full px-12 py-6 text-3xl font-bold flex items-center gap-6 shadow-2xl hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all duration-300"
+          >
+            <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Volume2 size={48} className="relative z-10" />
+            <span className="relative z-10">UNMUTE & PLAY</span>
+          </button>
+        </div>
+      )}
+
       {/* CookieConsent handled globally in main.jsx */}
       {passwordModalContent}
     </div >
