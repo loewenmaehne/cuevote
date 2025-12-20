@@ -108,6 +108,7 @@ function App() {
     autoApproveKnown = true,
     autoRefill = false,
     bannedSongs = [], // Added this
+    captionsEnabled = false
   } = serverState || {};
 
 
@@ -367,6 +368,7 @@ function App() {
           autoplay: 0,
           controls: 0,
           origin: window.location.origin,
+          cc_load_policy: captionsEnabled ? 1 : 0
         },
         events: {
           onReady: (event) => {
@@ -412,7 +414,7 @@ function App() {
         },
       });
     });
-  }, [loadYouTubeAPI, sendMessage, hasConsent]);
+  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled]);
 
   const playerContainerRef = useCallback(node => {
     if (!hasConsent) return; // Gate Ref Handling
@@ -825,6 +827,7 @@ function App() {
               setShowSettings(!showSettings);
               if (!showSettings) setShowSuggest(false); // Close suggest if opening settings
             }}
+            captionsEnabled={captionsEnabled}
           />
           {showSuggest && (
             <div className="px-6 pb-4">

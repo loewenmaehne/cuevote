@@ -335,7 +335,7 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "CREATE_ROOM": {
-                    const { name, description, color, isPrivate, password } = parsedMessage.payload;
+                    const { name, description, color, isPrivate, password, captionsEnabled } = parsedMessage.payload;
                     if (!ws.user) {
                         ws.send(JSON.stringify({ type: "error", message: "You must be logged in to create a room." }));
                         return;
@@ -361,7 +361,8 @@ wss.on("connection", (ws, req) => {
                                 owner_id: ws.user.id,
                                 color: color || "from-gray-700 to-black",
                                 is_public: isPrivate ? 0 : 1,
-                                password: (isPrivate && password) ? password : null
+                                password: (isPrivate && password) ? password : null,
+                                captions_enabled: captionsEnabled ? 1 : 0
                             };
 
                             db.createRoom(roomData);
