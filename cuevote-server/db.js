@@ -32,6 +32,7 @@ db.exec(`
     last_active_at INTEGER DEFAULT (unixepoch()),
     created_at INTEGER DEFAULT (unixepoch()),
     color TEXT DEFAULT 'from-gray-700 to-black',
+    captions_enabled INTEGER DEFAULT 0,
     FOREIGN KEY(owner_id) REFERENCES users(id)
   );
 
@@ -52,6 +53,13 @@ db.exec(`
     FOREIGN KEY(video_id) REFERENCES videos(id)
   );
 `);
+
+// Migration: Add captions_enabled if missing
+try {
+  db.prepare("ALTER TABLE rooms ADD COLUMN captions_enabled INTEGER DEFAULT 0").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
 
 module.exports = {
   getUser: (id) => db.prepare('SELECT * FROM users WHERE id = ?').get(id),
@@ -85,9 +93,12 @@ module.exports = {
   // Room Management
   createRoom: (room) => {
     const stmt = db.prepare(`
-        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password)
-        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password)
+        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled)
+        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled)
     `);
+    // Ensure default
+    if (room.captions_enabled === undefined) room.captions_enabled = 0;
+
     stmt.run(room);
     return db.prepare('SELECT * FROM rooms WHERE id = ?').get(room.id);
   },
@@ -109,6 +120,20 @@ module.exports = {
   },
   updateRoomActivity: (id) => {
     db.prepare('UPDATE rooms SET last_active_at = unixepoch() WHERE id = ?').run(id);
+  },
+  updateRoomSettings: (id, settings) => {
+    const updates = [];
+    const values = [];
+
+    if (settings.captions_enabled !== undefined) {
+      updates.push("captions_enabled = ?");
+      values.push(settings.captions_enabled ? 1 : 0);
+    }
+
+    if (updates.length > 0) {
+      values.push(id);
+      db.prepare(`UPDATE rooms SET ${updates.join(', ')} WHERE id = ?`).run(...values);
+    }
   },
 
   // Video Caching
