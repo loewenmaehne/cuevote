@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Cookie, X } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export function CookieConsent({ onAccept }) {
+	const { t } = useLanguage();
+
 	return (
 		<div className="fixed bottom-4 left-6 right-6 md:left-auto md:right-6 md:w-[400px] z-[100] animate-in slide-in-from-bottom-4 fade-in duration-500">
 			<div className="bg-[#111] border border-white/10 p-6 rounded-2xl shadow-2xl shadow-black/50 backdrop-blur-xl relative overflow-hidden group">
@@ -13,18 +16,18 @@ export function CookieConsent({ onAccept }) {
 					</div>
 					<div className="space-y-3">
 						<div>
-							<h3 className="text-white font-bold text-lg mb-1">Privacy & Playback</h3>
+							<h3 className="text-white font-bold text-lg mb-1">{t('cookie.title')}</h3>
 							<p className="text-neutral-400 text-sm leading-relaxed">
-								To play music, we need to load the YouTube Player. This connects to Google's servers.
+								{t('cookie.description')}
 								<br />
-								<a href="/legal" target="_blank" className="text-orange-500 hover:text-orange-400 underline underline-offset-2">Read our Privacy Policy</a>.
+								<a href="/legal" target="_blank" className="text-orange-500 hover:text-orange-400 underline underline-offset-2">{t('cookie.policy')}</a>.
 							</p>
 						</div>
 						<button
 							onClick={onAccept}
 							className="w-full py-2.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-colors shadow-lg active:scale-95 transform duration-100"
 						>
-							Accept & Play Music
+							{t('cookie.accept')}
 						</button>
 					</div>
 				</div>
