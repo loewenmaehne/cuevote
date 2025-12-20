@@ -935,7 +935,7 @@ function App() {
                         />
                       </PlayerErrorBoundary>
                     </div>
-                    {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
+                    {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">{t('playlist.queueEmpty')}</div>}
                   </>
                 )}
               </div>
