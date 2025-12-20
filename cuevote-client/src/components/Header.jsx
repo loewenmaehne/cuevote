@@ -337,7 +337,7 @@ export function Header({
 
                   {suggestionsEnabled && (
                     <>
-                      <div className="flex items-center justify-between mt-3 pl-2 border-l-2 border-neutral-700 ml-1">
+                      <div className="flex items-center justify-between mt-3 pl-2 border-l-2 border-neutral-700 ml-1 gap-4">
                         <label className="text-sm font-medium text-neutral-300">{t('header.manualReview')}</label>
                         <button
                           onClick={(e) => {
@@ -352,12 +352,12 @@ export function Header({
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between mt-3 pl-2 border-l-2 border-neutral-700 ml-1">
+                      <div className="flex items-center justify-between mt-3 pl-2 border-l-2 border-neutral-700 ml-1 gap-4">
                         <div className="flex items-center gap-2">
                           <label className="text-sm font-medium text-neutral-300">{t('header.approveKnown')}</label>
                           <div className="group relative flex items-center">
                             <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
-                            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+                            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-40 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
                               {t('header.approveKnownTooltip')}
                             </div>
                           </div>
@@ -379,7 +379,7 @@ export function Header({
 
 
 
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <label className="text-sm font-medium text-white">{t('header.musicOnly')}</label>
                     <button
                       onClick={(e) => {
@@ -394,7 +394,7 @@ export function Header({
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <label className="text-sm font-medium text-white">{t('header.maxLength')}</label>
                     <select
                       value={maxDuration}
@@ -410,7 +410,7 @@ export function Header({
                     </select>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <label className="text-sm font-medium text-white">{t('header.maxQueueSize')}</label>
                     <select
                       value={maxQueueSize}
@@ -428,7 +428,7 @@ export function Header({
                     </select>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <label className="text-sm font-medium text-white">{t('header.preventRepetition')}</label>
                     <select
                       value={duplicateCooldown ?? 10}
@@ -445,12 +445,12 @@ export function Header({
                     </select>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-white">{t('header.smartQueue')}</label>
                       <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
-                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-40 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
                           {t('header.smartQueueTooltip')}
                         </div>
                       </div>
@@ -468,12 +468,12 @@ export function Header({
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-white">{t('header.autoRefill')}</label>
                       <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
-                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-40 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
                           {t('header.autoRefillTooltip')}
                         </div>
                       </div>
@@ -493,12 +493,12 @@ export function Header({
 
 
 
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-white">{t('header.venueMode')}</label>
                       <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
-                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-40 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
                           {t('header.venueModeTooltip')}
                         </div>
                       </div>
@@ -516,7 +516,7 @@ export function Header({
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <label className="text-sm font-medium text-white">{t('header.allowPrelisten')}</label>
                     <button
                       onClick={(e) => {
@@ -531,7 +531,7 @@ export function Header({
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <label className="text-sm font-medium text-white">{t('header.allowVoting')}</label>
                     <button
                       onClick={(e) => {
@@ -552,7 +552,7 @@ export function Header({
                       <label className="text-sm font-medium text-white">{t('header.ownerBypassRules')}</label>
                       <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
-                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-40 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
                           {t('header.ownerBypassRulesTooltip')}
                         </div>
                       </div>
@@ -570,12 +570,12 @@ export function Header({
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-white">{t('header.ownerBypassQueue')}</label>
                       <div className="group relative flex items-center">
                         <HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
-                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-40 p-2 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
                           {t('header.ownerBypassQueueTooltip')}
                         </div>
                       </div>
@@ -594,7 +594,7 @@ export function Header({
                   </div>
 
                   {/* Popups Toggle */}
-                  <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center justify-between mt-3 gap-4">
                     <label className="text-sm font-medium text-neutral-300">{t('header.popups')}</label>
                     <button
                       onClick={(e) => {
