@@ -547,7 +547,7 @@ export function Header({
                   </div>
 
                   {/* Owner Bypass Rules */}
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-700">
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-neutral-700 gap-4">
                     <div className="flex items-center gap-2">
                       <label className="text-sm font-medium text-white">{t('header.ownerBypassRules')}</label>
                       <div className="group relative flex items-center">
