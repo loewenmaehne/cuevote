@@ -51,11 +51,14 @@ npm install --silent
 # 4. Restart Server Process
 echo "[4/4] Restarting Server Process..."
 # Try to reload for zero-downtime, fallback to restart if it's not running or fails
-if pm2 reload "$PM2_PROCESS_NAME"; then
-    echo "  -> PM2 reload successful."
+if pm2 describe "$PM2_PROCESS_NAME" > /dev/null 2>&1; then
+    echo "  -> Process found, attempting reload..."
+    # Try reload, fallback to restart
+    pm2 reload "$PM2_PROCESS_NAME" || pm2 restart "$PM2_PROCESS_NAME"
 else
-    echo "  -> PM2 reload failed or process not found, attempting restart..."
-    pm2 restart "$PM2_PROCESS_NAME"
+    echo "  -> Process not found in PM2, starting new instance..."
+    pm2 start index.js --name "$PM2_PROCESS_NAME"
+    pm2 save
 fi
 
 cd ..
