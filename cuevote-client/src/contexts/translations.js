@@ -415,6 +415,38 @@ export const translations = {
 			confirmDelete: "Bestätigen",
 			delete: "Löschen",
 			watch: "Auf YouTube"
+		},
+		library: {
+			searchPlaceholder: "Bibliothek durchsuchen...",
+			songsCount: "{count} Song",
+			songsCountPlural: "{count} Songs",
+			inLibrary: "in der Bibliothek",
+			info1: "Diese Bibliothek zeigt einzigartige Songs, die in den letzten <strong>28 Tagen</strong> gespielt wurden.",
+			info2: "Ältere Songs werden ausgeblendet, um die Aktualität der Metadaten zu gewährleisten, aber sie werden <strong>niemals gelöscht</strong>. Die <strong>Auto-Fill</strong>-Funktion merkt sich weiterhin deinen gesamten Verlauf und bringt ältere Songs bei Bedarf automatisch zurück in die Warteschlange (und diese Liste)!",
+			empty: "Keine Songs gefunden"
+		},
+		pending: {
+			title: "Ausstehende Anfragen",
+			pendingReview: "Ausstehende Prüfung",
+			bannedSongs: "Gesperrte Songs",
+			empty: "Keine ausstehenden Anfragen",
+			emptySubtitle: "Neue Vorschläge, die genehmigt werden müssen, erscheinen hier.",
+			suggestedBy: "Vorgeschlagen von",
+			unknown: "Unbekannt",
+			by: "Von",
+			preview: "Vorschau",
+			ban: "Sperren",
+			decline: "Ablehnen",
+			accept: "Akzeptieren"
+		},
+		playlist: {
+			close: "Playlist schließen",
+			history: "Verlauf",
+			last50: "Letzte 50 von {count}",
+			nowPlaying: "Jetzt gespielt",
+			upNext: "Als nächstes",
+			queueEmpty: "Warteschlange leer",
+			backToNow: "Zurück zum Aktuellen"
 		}
 	},
 	fr: {
@@ -533,6 +565,38 @@ export const translations = {
 			confirmDelete: "Confirmer",
 			delete: "Supprimer",
 			watch: "Sur YouTube"
+		},
+		library: {
+			searchPlaceholder: "Chercher dans la bibliothèque...",
+			songsCount: "{count} chanson",
+			songsCountPlural: "{count} chansons",
+			inLibrary: "dans la bibliothèque",
+			info1: "Cette bibliothèque affiche les chansons uniques jouées au cours des <strong>28 derniers jours</strong>.",
+			info2: "Les anciennes chansons sont masquées pour garantir la fraîcheur des métadonnées, mais elles ne sont <strong>jamais supprimées</strong>. La fonction <strong>Remplissage Auto</strong> se souvient de tout votre historique et ramènera automatiquement les anciennes chansons dans la file d'attente (et cette liste) si nécessaire !",
+			empty: "Aucune chanson trouvée"
+		},
+		pending: {
+			title: "Demandes en attente",
+			pendingReview: "En attente d'examen",
+			bannedSongs: "Chansons bannies",
+			empty: "Aucune demande en attente",
+			emptySubtitle: "Les nouvelles suggestions nécessitant une approbation apparaîtront ici.",
+			suggestedBy: "Suggéré par",
+			unknown: "Inconnu",
+			by: "Par",
+			preview: "Aperçu",
+			ban: "Bannir",
+			decline: "Refuser",
+			accept: "Accepter"
+		},
+		playlist: {
+			close: "Fermer la playlist",
+			history: "Historique",
+			last50: "Derniers 50 sur {count}",
+			nowPlaying: "Lecture en cours",
+			upNext: "À suivre",
+			queueEmpty: "File d'attente vide",
+			backToNow: "Retour au direct"
 		}
 	},
 	es: {
@@ -651,6 +715,38 @@ export const translations = {
 			confirmDelete: "Confirmar",
 			delete: "Eliminar",
 			watch: "En YouTube"
+		},
+		library: {
+			searchPlaceholder: "Buscar en biblioteca...",
+			songsCount: "{count} canción",
+			songsCountPlural: "{count} canciones",
+			inLibrary: "en biblioteca",
+			info1: "Esta biblioteca muestra canciones únicas reproducidas en los últimos <strong>28 días</strong>.",
+			info2: "Las canciones más antiguas se ocultan para garantizar la frescura de los metadatos, pero <strong>nunca se eliminan</strong>. ¡La función de <strong>Relleno Automático</strong> recuerda todo tu historial y traerá automáticamente las canciones antiguas a la cola (y a esta lista) cuando sea necesario!",
+			empty: "No se encontraron canciones"
+		},
+		pending: {
+			title: "Solicitudes pendientes",
+			pendingReview: "Pendiente de revisión",
+			bannedSongs: "Canciones prohibidas",
+			empty: "No hay solicitudes pendientes",
+			emptySubtitle: "Las nuevas sugerencias que requieran aprobación aparecerán aquí.",
+			suggestedBy: "Sugerido por",
+			unknown: "Desconocido",
+			by: "Por",
+			preview: "Vista previa",
+			ban: "Prohibir",
+			decline: "Rechazar",
+			accept: "Aceptar"
+		},
+		playlist: {
+			close: "Cerrar lista",
+			history: "Historial",
+			last50: "Últimas 50 de {count}",
+			nowPlaying: "Reproduciendo ahora",
+			upNext: "A continuación",
+			queueEmpty: "Cola vacía",
+			backToNow: "Volver al actual"
 		}
 	},
 	it: {
@@ -769,6 +865,38 @@ export const translations = {
 			confirmDelete: "Conferma",
 			delete: "Elimina",
 			watch: "Su YouTube"
+		},
+		library: {
+			searchPlaceholder: "Cerca nella libreria...",
+			songsCount: "{count} canzone",
+			songsCountPlural: "{count} canzoni",
+			inLibrary: "nella libreria",
+			info1: "Questa libreria mostra brani unici riprodotti negli ultimi <strong>28 giorni</strong>.",
+			info2: "I brani più vecchi sono nascosti per garantire la freschezza dei metadati, ma non vengono <strong>mai eliminati</strong>. La funzione <strong>Riempimento Automatico</strong> ricorda l'intera cronologia e riporterà automaticamente i vecchi brani nella coda (e in questo elenco) quando necessario!",
+			empty: "Nessun brano trovato"
+		},
+		pending: {
+			title: "Richieste in sospeso",
+			pendingReview: "In attesa di revisione",
+			bannedSongs: "Brani bannati",
+			empty: "Nessuna richiesta in sospeso",
+			emptySubtitle: "Le nuove proposte che richiedono approvazione appariranno qui.",
+			suggestedBy: "Suggerito da",
+			unknown: "Sconosciuto",
+			by: "Da",
+			preview: "Anteprima",
+			ban: "Banna",
+			decline: "Rifiuta",
+			accept: "Accetta"
+		},
+		playlist: {
+			close: "Chiudi playlist",
+			history: "Cronologia",
+			last50: "Ultime 50 di {count}",
+			nowPlaying: "In riproduzione",
+			upNext: "In coda",
+			queueEmpty: "Coda vuota",
+			backToNow: "Torna a ora"
 		}
 	},
 	pt: {
@@ -887,6 +1015,38 @@ export const translations = {
 			confirmDelete: "Confirmar",
 			delete: "Excluir",
 			watch: "No YouTube"
+		},
+		library: {
+			searchPlaceholder: "Buscar na biblioteca...",
+			songsCount: "{count} música",
+			songsCountPlural: "{count} músicas",
+			inLibrary: "na biblioteca",
+			info1: "Esta biblioteca exibe músicas únicas tocadas nos últimos <strong>28 dias</strong>.",
+			info2: "Músicas mais antigas são ocultadas para garantir a atualização dos metadados, mas <strong>nunca são excluídas</strong>. O recurso de <strong>Preenchimento Automático</strong> lembra de todo o seu histórico e trará automaticamente músicas antigas de volta para a fila (e para esta lista) quando necessário!",
+			empty: "Nenhuma música encontrada"
+		},
+		pending: {
+			title: "Solicitações pendentes",
+			pendingReview: "Revisão pendente",
+			bannedSongs: "Músicas banidas",
+			empty: "Nenhuma solicitação pendente",
+			emptySubtitle: "Novas sugestões aguardando aprovação aparecerão aqui.",
+			suggestedBy: "Sugerido por",
+			unknown: "Desconhecido",
+			by: "Por",
+			preview: "Prévia",
+			ban: "Banir",
+			decline: "Recusar",
+			accept: "Aceitar"
+		},
+		playlist: {
+			close: "Fechar playlist",
+			history: "Histórico",
+			last50: "Últimas 50 de {count}",
+			nowPlaying: "Tocando agora",
+			upNext: "A seguir",
+			queueEmpty: "Fila vazia",
+			backToNow: "Voltar para atual"
 		}
 	},
 	"zh-CN": {
