@@ -104,7 +104,8 @@ export const translations = {
 			goToLobby: "Go to Lobby",
 			privateChannel: "Private Channel",
 			lockedMessage: "This channel is password protected. Please enter the password to join.",
-			unlock: "Unlock"
+			unlock: "Unlock",
+			listenMusic: "Listen to Music"
 		},
 		track: {
 			playing: "Playing",
@@ -146,7 +147,8 @@ export const translations = {
 			nowPlaying: "Now Playing",
 			upNext: "Up Next",
 			queueEmpty: "Queue empty",
-			backToNow: "Back to Now"
+			backToNow: "Back to Now",
+			addSongs: "Add songs to start playback"
 		}
 	},
 	nl: {
@@ -254,7 +256,8 @@ export const translations = {
 			goToLobby: "Ga naar Lobby",
 			privateChannel: "Privé Kanaal",
 			lockedMessage: "Dit kanaal is beveiligd. Voer het wachtwoord in om deel te nemen.",
-			unlock: "Ontgrendel"
+			unlock: "Ontgrendel",
+			listenMusic: "Muziek luisteren"
 		},
 		track: {
 			playing: "Speelt nu",
@@ -296,7 +299,8 @@ export const translations = {
 			nowPlaying: "Nu Spelend",
 			upNext: "Volgende",
 			queueEmpty: "Wachtrij leeg",
-			backToNow: "Terug naar Nu"
+			backToNow: "Terug naar Nu",
+			addSongs: "Voeg nummers toe om af te spelen"
 		}
 	},
 	de: {
@@ -404,7 +408,8 @@ export const translations = {
 			goToLobby: "Zur Lobby",
 			privateChannel: "Privater Kanal",
 			lockedMessage: "Dieser Kanal ist passwortgeschützt.",
-			unlock: "Entsperren"
+			unlock: "Entsperren",
+			listenMusic: "Musik hören"
 		},
 		track: {
 			playing: "Wiedergabe",
@@ -446,7 +451,8 @@ export const translations = {
 			nowPlaying: "Jetzt gespielt",
 			upNext: "Als nächstes",
 			queueEmpty: "Warteschlange leer",
-			backToNow: "Zurück zum Aktuellen"
+			backToNow: "Zurück zum Aktuellen",
+			addSongs: "Füge Songs hinzu, um zu starten"
 		}
 	},
 	fr: {
@@ -554,7 +560,8 @@ export const translations = {
 			goToLobby: "Aller au Lobby",
 			privateChannel: "Chaîne Privée",
 			lockedMessage: "Cette chaîne est protégée par mot de passe.",
-			unlock: "Déverrouiller"
+			unlock: "Déverrouiller",
+			listenMusic: "Écouter de la musique"
 		},
 		track: {
 			playing: "Lecture",
@@ -596,7 +603,8 @@ export const translations = {
 			nowPlaying: "Lecture en cours",
 			upNext: "À suivre",
 			queueEmpty: "File d'attente vide",
-			backToNow: "Retour au direct"
+			backToNow: "Retour au direct",
+			addSongs: "Ajoutez des chansons pour commencer"
 		}
 	},
 	es: {
@@ -704,7 +712,8 @@ export const translations = {
 			goToLobby: "Ir al Lobby",
 			privateChannel: "Canal Privado",
 			lockedMessage: "Este canal está protegido con contraseña.",
-			unlock: "Desbloquear"
+			unlock: "Desbloquear",
+			listenMusic: "Escuchar música"
 		},
 		track: {
 			playing: "Reproduciendo",
@@ -746,7 +755,8 @@ export const translations = {
 			nowPlaying: "Reproduciendo ahora",
 			upNext: "A continuación",
 			queueEmpty: "Cola vacía",
-			backToNow: "Volver al actual"
+			backToNow: "Volver al actual",
+			addSongs: "Añade canciones para empezar"
 		}
 	},
 	it: {
@@ -854,7 +864,8 @@ export const translations = {
 			goToLobby: "Vai alla Lobby",
 			privateChannel: "Canale Privato",
 			lockedMessage: "Canale protetto da password.",
-			unlock: "Sblocca"
+			unlock: "Sblocca",
+			listenMusic: "Ascolta musica"
 		},
 		track: {
 			playing: "In riproduzione",
@@ -896,7 +907,8 @@ export const translations = {
 			nowPlaying: "In riproduzione",
 			upNext: "In coda",
 			queueEmpty: "Coda vuota",
-			backToNow: "Torna a ora"
+			backToNow: "Torna a ora",
+			addSongs: "Aggiungi brani per iniziare"
 		}
 	},
 	pt: {
@@ -1004,7 +1016,8 @@ export const translations = {
 			goToLobby: "Ir ao Lobby",
 			privateChannel: "Canal Privado",
 			lockedMessage: "Canal protegido por senha.",
-			unlock: "Desbloquear"
+			unlock: "Desbloquear",
+			listenMusic: "Ouvir música"
 		},
 		track: {
 			playing: "Tocando",
@@ -1046,7 +1059,8 @@ export const translations = {
 			nowPlaying: "Tocando agora",
 			upNext: "A seguir",
 			queueEmpty: "Fila vazia",
-			backToNow: "Voltar para atual"
+			backToNow: "Voltar para atual",
+			addSongs: "Adicione músicas para começar"
 		}
 	},
 	"zh-CN": {
@@ -1154,7 +1168,8 @@ export const translations = {
 			goToLobby: "返回大厅",
 			privateChannel: "私密频道",
 			lockedMessage: "此频道受密码保护。",
-			unlock: "解锁"
+			unlock: "解锁",
+			listenMusic: "听音乐"
 		},
 		track: {
 			playing: "正在播放",
@@ -1196,7 +1211,8 @@ export const translations = {
 			nowPlaying: "正在播放",
 			upNext: "即将播放",
 			queueEmpty: "队列为空",
-			backToNow: "回到当前"
+			backToNow: "回到当前",
+			addSongs: "添加歌曲以开始播放"
 		}
 	},
 	"zh-TW": {
@@ -1304,7 +1320,8 @@ export const translations = {
 			goToLobby: "返回大廳",
 			privateChannel: "私密頻道",
 			lockedMessage: "此頻道受密碼保護。",
-			unlock: "解鎖"
+			unlock: "解鎖",
+			listenMusic: "聽音樂"
 		},
 		track: {
 			playing: "正在播放",
@@ -1346,7 +1363,8 @@ export const translations = {
 			nowPlaying: "正在播放",
 			upNext: "即將播放",
 			queueEmpty: "佇列為空",
-			backToNow: "回到目前"
+			backToNow: "回到目前",
+			addSongs: "新增歌曲以開始播放"
 		}
 	},
 	ja: {
@@ -1454,7 +1472,8 @@ export const translations = {
 			goToLobby: "ロビーへ",
 			privateChannel: "プライベートチャンネル",
 			lockedMessage: "このチャンネルはパスワードで保護されています。",
-			unlock: "ロック解除"
+			unlock: "ロック解除",
+			listenMusic: "音楽を聴く"
 		},
 		track: {
 			playing: "再生中",
@@ -1604,7 +1623,8 @@ export const translations = {
 			goToLobby: "로비로 이동",
 			privateChannel: "비공개 채널",
 			lockedMessage: "이 채널은 비밀번호로 보호되어 있습니다.",
-			unlock: "잠금 해제"
+			unlock: "잠금 해제",
+			listenMusic: "음악 듣기"
 		},
 		track: {
 			playing: "재생 중",
@@ -1754,7 +1774,8 @@ export const translations = {
 			goToLobby: "लॉबी में जाएं",
 			privateChannel: "निजी चैनल",
 			lockedMessage: "यह चैनल पासवर्ड सुरक्षित है।",
-			unlock: "अनलॉक करें"
+			unlock: "अनलॉक करें",
+			listenMusic: "संगीत सुनें"
 		},
 		track: {
 			playing: "चल रहा है",
@@ -1904,7 +1925,8 @@ export const translations = {
 			goToLobby: "ไปที่ล็อบบี้",
 			privateChannel: "ช่องส่วนตัว",
 			lockedMessage: "ช่องนี้มีรหัสผ่านป้องกัน",
-			unlock: "ปลดล็อค"
+			unlock: "ปลดล็อค",
+			listenMusic: "ฟังเพลง"
 		},
 		track: {
 			playing: "กำลังเล่น",
@@ -2054,7 +2076,8 @@ export const translations = {
 			goToLobby: "Về Sảnh chờ",
 			privateChannel: "Kênh Riêng tư",
 			lockedMessage: "Kênh này có mật khẩu bảo vệ.",
-			unlock: "Mở khóa"
+			unlock: "Mở khóa",
+			listenMusic: "Nghe nhạc"
 		},
 		track: {
 			playing: "Đang phát",
@@ -2204,7 +2227,8 @@ export const translations = {
 			goToLobby: "Ke Lobi",
 			privateChannel: "Kanal Pribadi",
 			lockedMessage: "Kanal ini dilindungi password.",
-			unlock: "Buka Kunci"
+			unlock: "Buka Kunci",
+			listenMusic: "Dengarkan Musik"
 		},
 		track: {
 			playing: "Memutar",
@@ -2354,7 +2378,8 @@ export const translations = {
 			goToLobby: "Ke Lobi",
 			privateChannel: "Saluran Peribadi",
 			lockedMessage: "Saluran ini dilindungi kata laluan.",
-			unlock: "Buka Kunci"
+			unlock: "Buka Kunci",
+			listenMusic: "Dengar Muzik"
 		},
 		track: {
 			playing: "Sedang Main",
@@ -2504,7 +2529,8 @@ export const translations = {
 			goToLobby: "Pumunta sa Lobby",
 			privateChannel: "Pribadong Channel",
 			lockedMessage: "Ang channel na ito ay protektado ng password.",
-			unlock: "I-unlock"
+			unlock: "I-unlock",
+			listenMusic: "Makinig ng Musika"
 		},
 		track: {
 			playing: "Tumutugtog",
@@ -2654,7 +2680,8 @@ export const translations = {
 			goToLobby: "Idź do lobby",
 			privateChannel: "Prywatny kanał",
 			lockedMessage: "Ten kanał jest chroniony hasłem.",
-			unlock: "Odblokuj"
+			unlock: "Odblokuj",
+			listenMusic: "Słuchaj muzyki"
 		},
 		track: {
 			playing: "Odtwarzanie",
@@ -2804,7 +2831,8 @@ export const translations = {
 			goToLobby: "Gå till lobbyn",
 			privateChannel: "Privat kanal",
 			lockedMessage: "Denna kanal är lösenordsskyddad.",
-			unlock: "Lås upp"
+			unlock: "Lås upp",
+			listenMusic: "Lyssna på musik"
 		},
 		track: {
 			playing: "Spelar",
@@ -2954,7 +2982,8 @@ export const translations = {
 			goToLobby: "Gå til lobby",
 			privateChannel: "Privat kanal",
 			lockedMessage: "Denne kanal er beskyttet med adgangskode.",
-			unlock: "Lås op"
+			unlock: "Lås op",
+			listenMusic: "Lyt til musik"
 		},
 		track: {
 			playing: "Spiller",
@@ -3104,7 +3133,8 @@ export const translations = {
 			goToLobby: "Gå til lobby",
 			privateChannel: "Privat kanal",
 			lockedMessage: "Denne kanalen er passordbeskyttet.",
-			unlock: "Lås opp"
+			unlock: "Lås opp",
+			listenMusic: "Hør på musikk"
 		},
 		track: {
 			playing: "Spiller",
@@ -3254,7 +3284,8 @@ export const translations = {
 			goToLobby: "Mene aulaan",
 			privateChannel: "Yksityinen kanava",
 			lockedMessage: "Tämä kanava on suojattu salasanalla.",
-			unlock: "Avaa"
+			unlock: "Avaa",
+			listenMusic: "Kuuntele musiikkia"
 		},
 		track: {
 			playing: "Soittaa",
@@ -3404,7 +3435,8 @@ export const translations = {
 			goToLobby: "Lobiye Git",
 			privateChannel: "Özel Kanal",
 			lockedMessage: "Bu kanal şifre korumalıdır.",
-			unlock: "Kilidi Aç"
+			unlock: "Kilidi Aç",
+			listenMusic: "Müzik Dinle"
 		},
 		track: {
 			playing: "Çalıyor",
@@ -3554,7 +3586,8 @@ export const translations = {
 			goToLobby: "Μετάβαση στο Λόμπι",
 			privateChannel: "Ιδιωτικό Κανάλι",
 			lockedMessage: "Αυτό το κανάλι προστατεύεται με κωδικό.",
-			unlock: "Ξεκλείδωμα"
+			unlock: "Ξεκλείδωμα",
+			listenMusic: "Ακούστε μουσική"
 		},
 		track: {
 			playing: "Παίζει",
@@ -3704,7 +3737,8 @@ export const translations = {
 			goToLobby: "В лобби",
 			privateChannel: "Частный канал",
 			lockedMessage: "Этот канал защищен паролем.",
-			unlock: "Разблокировать"
+			unlock: "Разблокировать",
+			listenMusic: "Слушать музыку"
 		},
 		track: {
 			playing: "Играет",
@@ -3854,7 +3888,8 @@ export const translations = {
 			goToLobby: "До лобі",
 			privateChannel: "Приватний канал",
 			lockedMessage: "Цей канал захищено паролем.",
-			unlock: "Розблокувати"
+			unlock: "Розблокувати",
+			listenMusic: "Слухати музику"
 		},
 		track: {
 			playing: "Грає",
@@ -4004,7 +4039,8 @@ export const translations = {
 			goToLobby: "Jít do Lobby",
 			privateChannel: "Soukromý Kanál",
 			lockedMessage: "Tento kanál je chráněn heslem.",
-			unlock: "Odemknout"
+			unlock: "Odemknout",
+			listenMusic: "Poslouchat hudbu"
 		},
 		track: {
 			playing: "Hraje",
@@ -4154,7 +4190,8 @@ export const translations = {
 			goToLobby: "Vissza a Lobbyba",
 			privateChannel: "Privát Csatorna",
 			lockedMessage: "Ez a csatorna jelszóval védett.",
-			unlock: "Feloldás"
+			unlock: "Feloldás",
+			listenMusic: "Zenehallgatás"
 		},
 		track: {
 			playing: "Lejátszás",
@@ -4304,7 +4341,8 @@ export const translations = {
 			goToLobby: "Mergi la Lobby",
 			privateChannel: "Canal Privat",
 			lockedMessage: "Acest canal este protejat cu parolă.",
-			unlock: "Deblochează"
+			unlock: "Deblochează",
+			listenMusic: "Ascultă muzică"
 		},
 		track: {
 			playing: "Cântă acum",
@@ -4454,7 +4492,8 @@ export const translations = {
 			goToLobby: "Към Лобито",
 			privateChannel: "Частен канал",
 			lockedMessage: "Този канал е защитен с парола.",
-			unlock: "Отключи"
+			unlock: "Отключи",
+			listenMusic: "Слушане на музика"
 		},
 		track: {
 			playing: "Свири",
@@ -4604,7 +4643,8 @@ export const translations = {
 			goToLobby: "Idi u Predvorje",
 			privateChannel: "Privatni Kanal",
 			lockedMessage: "Ovaj kanal je zaštićen lozinkom.",
-			unlock: "Otključaj"
+			unlock: "Otključaj",
+			listenMusic: "Слушајте музику"
 		},
 		track: {
 			playing: "Svira",
@@ -4754,7 +4794,8 @@ export const translations = {
 			goToLobby: "Idi u Lobi",
 			privateChannel: "Privatni Kanal",
 			lockedMessage: "Ovaj kanal je zaštićen lozinkom.",
-			unlock: "Otključaj"
+			unlock: "Otključaj",
+			listenMusic: "Slušaj glazbu"
 		},
 		track: {
 			playing: "Svira",
@@ -4904,7 +4945,8 @@ export const translations = {
 			goToLobby: "Ísť do Lobby",
 			privateChannel: "Súkromný Kanál",
 			lockedMessage: "Tento kanál je chránený heslom.",
-			unlock: "Odomknúť"
+			unlock: "Odomknúť",
+			listenMusic: "Poúvať hudbu"
 		},
 		track: {
 			playing: "Hrá",
@@ -5054,7 +5096,8 @@ export const translations = {
 			goToLobby: "الذهاب إلى الردهة",
 			privateChannel: "قناة خاصة",
 			lockedMessage: "هذه القناة محمية بكلمة مرور.",
-			unlock: "فتح"
+			unlock: "فتح",
+			listenMusic: "الاستماع إلى الموسيقى"
 		},
 		track: {
 			playing: "تشغيل",
@@ -5204,7 +5247,8 @@ export const translations = {
 			goToLobby: "לך ללובי",
 			privateChannel: "ערוץ פרטי",
 			lockedMessage: "ערוץ זה מוגן בסיסמה.",
-			unlock: "פתח"
+			unlock: "פתח",
+			listenMusic: "האזנה למוזיקה"
 		},
 		track: {
 			playing: "מנגן",
