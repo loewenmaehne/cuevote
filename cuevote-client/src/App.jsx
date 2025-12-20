@@ -337,6 +337,17 @@ function App() {
     isPlayingRef.current = isPlaying;
   }, [isPlaying]);
 
+  const currentTrackRef = useRef(currentTrack);
+  useEffect(() => {
+    currentTrackRef.current = currentTrack;
+    if (isPlayerReady && playerRef.current && currentTrack?.language) {
+      try {
+        console.log("[Player] Setting Caption Language:", currentTrack.language);
+        playerRef.current.setOption && playerRef.current.setOption('captions', 'track', { languageCode: currentTrack.language });
+      } catch (e) { console.error("Failed to set caption language", e); }
+    }
+  }, [currentTrack, isPlayerReady]);
+
 
   // YouTube API Loading
   const loadYouTubeAPI = useCallback(() => {
@@ -368,7 +379,8 @@ function App() {
           autoplay: 0,
           controls: 0,
           origin: window.location.origin,
-          cc_load_policy: captionsEnabled ? 1 : 0
+          cc_load_policy: captionsEnabled ? 1 : 0,
+          cc_lang_pref: currentTrackRef.current?.language
         },
         events: {
           onReady: (event) => {
@@ -773,6 +785,7 @@ function App() {
           ownerQueueBypass={serverState?.ownerQueueBypass}
           ownerPopups={ownerPopups}
           onDeleteChannel={handleDeleteChannel}
+          captionsEnabled={captionsEnabled}
         />
       </div>
     );
