@@ -42,6 +42,10 @@ export const translations = {
 			youtubeConsent: "We need your consent to load the YouTube Player. Please accept cookies below."
 		},
 		header: {
+			back: "Back",
+			suggestions: "Suggestions",
+			queuePlayback: "Queue & Playback",
+			features: "Features",
 			profileSettings: "Profile & Settings",
 			signIn: "Sign in with Google",
 			acceptCookies: "Accept cookies to sign in",
@@ -73,6 +77,7 @@ export const translations = {
 			venueModeTooltip: "Guests see playlist only (No Video)",
 			allowPrelisten: "Allow Prelisten",
 			allowVoting: "Allow Voting",
+			ownerTools: "Owner Tools",
 			ownerBypassRules: "Owner Bypass Rules",
 			ownerBypassRulesTooltip: "Ignore filters/limits",
 			ownerBypassQueue: "Owner Bypass Queue",
@@ -195,6 +200,10 @@ export const translations = {
 			youtubeConsent: "We hebben je toestemming nodig om de YouTube-speler te laden. Accepteer hieronder cookies."
 		},
 		header: {
+			back: "Terug",
+			suggestions: "Suggesties",
+			queuePlayback: "Wachtrij & Afspelen",
+			features: "Functies",
 			profileSettings: "Profiel & Instellingen",
 			signIn: "Inloggen met Google",
 			acceptCookies: "Accepteer cookies om in te loggen",
@@ -226,6 +235,7 @@ export const translations = {
 			venueModeTooltip: "Gasten zien alleen afspeellijst (Geen Video)",
 			allowPrelisten: "Voorluisteren Toestaan",
 			allowVoting: "Stemmen Toestaan",
+			ownerTools: "Eigenaar Tools",
 			ownerBypassRules: "Eigenaar Negeert Regels",
 			ownerBypassRulesTooltip: "Negeer filters/limieten",
 			ownerBypassQueue: "Eigenaar Negeert Wachtrij",
@@ -348,6 +358,10 @@ export const translations = {
 			youtubeConsent: "Wir benötigen Ihre Zustimmung, um den YouTube-Player zu laden. Bitte akzeptieren Sie unten Cookies."
 		},
 		header: {
+			back: "Zurück",
+			suggestions: "Vorschläge",
+			queuePlayback: "Warteschlange & Wiedergabe",
+			features: "Funktionen",
 			profileSettings: "Profil & Einstellungen",
 			signIn: "Mit Google Anmelden",
 			acceptCookies: "Cookies akzeptieren zum Anmelden",
@@ -379,6 +393,7 @@ export const translations = {
 			venueModeTooltip: "Gäste sehen nur Playlist (Kein Video)",
 			allowPrelisten: "Vorhören Erlauben",
 			allowVoting: "Abstimmen Erlauben",
+			ownerTools: "Besitzer Tools",
 			ownerBypassRules: "Besitzer ignoriert Regeln",
 			ownerBypassRulesTooltip: "Filter/Limits ignorieren",
 			ownerBypassQueue: "Besitzer ignoriert Warteschlange",
@@ -501,6 +516,10 @@ export const translations = {
 			youtubeConsent: "Nous avons besoin de votre consentement pour charger les lecteur YouTube. Veuillez accepter les cookies ci-dessous."
 		},
 		header: {
+			back: "Retour",
+			suggestions: "Suggestions",
+			queuePlayback: "File & Lecture",
+			features: "Fonctionnalités",
 			profileSettings: "Profil & Paramètres",
 			signIn: "Se connecter avec Google",
 			acceptCookies: "Accepter les cookies pour se connecter",
@@ -532,6 +551,7 @@ export const translations = {
 			venueModeTooltip: "Les invités voient playlist seulement (Pas de Vidéo)",
 			allowPrelisten: "Pré-écoute",
 			allowVoting: "Votes",
+			ownerTools: "Outils Propriétaire",
 			ownerBypassRules: "Propriétaire ignore règles",
 			ownerBypassRulesTooltip: "Ignorer filtres/limites",
 			ownerBypassQueue: "Propriétaire ignore file",
@@ -654,6 +674,10 @@ export const translations = {
 			youtubeConsent: "Necesitamos tu consentimiento para cargar el reproductor de YouTube. Por favor acepta las cookies abajo."
 		},
 		header: {
+			back: "Atrás",
+			suggestions: "Sugerencias",
+			queuePlayback: "Cola y Reproducción",
+			features: "Funciones",
 			profileSettings: "Perfil y Configuración",
 			signIn: "Iniciar sesión con Google",
 			acceptCookies: "Aceptar cookies para entrar",
@@ -685,6 +709,7 @@ export const translations = {
 			venueModeTooltip: "Invitados solo ven lista (Sin Video)",
 			allowPrelisten: "Permitir Pre-escucha",
 			allowVoting: "Permitir Votos",
+			ownerTools: "Herramientas de Dueño",
 			ownerBypassRules: "Dueño ignora reglas",
 			ownerBypassRulesTooltip: "Ignorar filtros/límites",
 			ownerBypassQueue: "Dueño ignora cola",
@@ -807,6 +832,10 @@ export const translations = {
 			youtubeConsent: "Abbiamo bisogno del tuo consenso per caricare il player di YouTube. Accetta i cookie qui sotto."
 		},
 		header: {
+			back: "Indietro",
+			suggestions: "Suggerimenti",
+			queuePlayback: "Coda e Riproduzione",
+			features: "Funzionalità",
 			profileSettings: "Profilo & Impostazioni",
 			signIn: "Accedi con Google",
 			acceptCookies: "Accetta cookie per accedere",
@@ -838,6 +867,7 @@ export const translations = {
 			venueModeTooltip: "Ospiti vedono solo playlist (No Video)",
 			allowPrelisten: "Pre-ascolto",
 			allowVoting: "Voto",
+			ownerTools: "Strumenti Proprietario",
 			ownerBypassRules: "Propr. ignora regole",
 			ownerBypassRulesTooltip: "Ignora filtri/limiti",
 			ownerBypassQueue: "Propr. ignora coda",
@@ -959,6 +989,10 @@ export const translations = {
 			youtubeConsent: "Precisamos do seu consentimento para carregar o player do YouTube. Aceite os cookies abaixo."
 		},
 		header: {
+			back: "Voltar",
+			suggestions: "Sugestões",
+			queuePlayback: "Fila e Reprodução",
+			features: "Recursos",
 			profileSettings: "Perfil & Configurações",
 			signIn: "Entrar com Google",
 			acceptCookies: "Aceitar cookies para entrar",
@@ -990,6 +1024,7 @@ export const translations = {
 			venueModeTooltip: "Convidados veem só playlist (Sem Vídeo)",
 			allowPrelisten: "Pré-escuta",
 			allowVoting: "Votação",
+			ownerTools: "Ferramentas do Dono",
 			ownerBypassRules: "Dono ignora regras",
 			ownerBypassRulesTooltip: "Ignorar filtros/limites",
 			ownerBypassQueue: "Dono ignora fila",
