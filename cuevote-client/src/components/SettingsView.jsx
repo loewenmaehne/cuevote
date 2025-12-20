@@ -44,7 +44,7 @@ export function SettingsView({
 					<h2 className="text-xl font-bold text-neutral-400">{t('header.settings')}</h2>
 				</div>
 
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 					{/* Column 1: Requests & Suggestions */}
 					<div className="space-y-4">
 						<h4 className="text-xs font-semibold text-neutral-500 uppercase">{t('header.suggestions')}</h4>
