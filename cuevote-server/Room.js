@@ -113,7 +113,6 @@ class Room {
     }
 
     broadcastState() {
-        console.log("[DEBUG] Broadcasting State:", JSON.stringify({ captionsEnabled: this.state.captionsEnabled }));
         const message = JSON.stringify({ type: "state", payload: this.state });
         this.broadcast(message);
     }
@@ -430,7 +429,6 @@ class Room {
                 }
                 break;
             case "UPDATE_SETTINGS":
-                console.log("[DEBUG] UPDATE_SETTINGS message. Payload:", message.payload, "Owner?", isOwner(this, ws));
                 if (isOwner(this, ws)) {
                     this.handleUpdateSettings(message.payload);
                 }
@@ -654,7 +652,8 @@ class Room {
                 score: 0,
                 voters: {},
                 suggestedBy: userId,
-                suggestedByUsername: ws.user.name
+                suggestedByUsername: ws.user.name,
+                language: cachedVideo.language // Restore language from cache
             };
 
         } else if (this.apiKey) {
@@ -716,7 +715,8 @@ class Room {
                         score: 0,
                         voters: {},
                         suggestedBy: userId,
-                        suggestedByUsername: ws.user.name
+                        suggestedByUsername: ws.user.name,
+                        language: videoData.snippet.defaultAudioLanguage || videoData.snippet.defaultLanguage
                     };
 
                     // Cache to DB
@@ -726,7 +726,8 @@ class Room {
                         artist: track.artist,
                         thumbnail: track.thumbnail,
                         duration: track.duration,
-                        category_id: videoData.snippet.categoryId
+                        category_id: videoData.snippet.categoryId,
+                        language: track.language
                     });
                 }
             } catch (apiError) {
@@ -925,7 +926,6 @@ class Room {
     }
 
     handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled }) {
-        console.log("[DEBUG] handleUpdateSettings called with:", { captionsEnabled });
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
