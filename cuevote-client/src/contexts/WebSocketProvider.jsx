@@ -9,7 +9,7 @@ const getWebSocketUrl = () => {
   const hostname = window.location.hostname;
 
   // Development / Localhost: Default to port 8080
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '10.0.2.2') {
     return `${protocol}//${hostname}:8080`;
   }
 

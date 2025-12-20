@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Volume2, VolumeX, ArrowLeft, Lock, X } from "lucide-react";
 import { useConsent } from './contexts/ConsentContext';
+import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
 import { useLanguage } from './contexts/LanguageContext';
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
@@ -821,9 +822,11 @@ function App() {
         <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
           <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
             <PlayerErrorBoundary>
-              <Player
-                playerContainerRef={playerContainerRef}
-              />
+              {hasConsent ? (
+                <Player
+                  playerContainerRef={playerContainerRef}
+                />
+              ) : <CookieBlockedPlaceholder />}
             </PlayerErrorBoundary>
           </div>
         </div>
@@ -869,9 +872,11 @@ function App() {
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
                 <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
                   <PlayerErrorBoundary>
-                    <Player
-                      playerContainerRef={playerContainerRef}
-                    />
+                    {hasConsent ? (
+                      <Player
+                        playerContainerRef={playerContainerRef}
+                      />
+                    ) : <CookieBlockedPlaceholder />}
                   </PlayerErrorBoundary>
                 </div>
               </div>
@@ -904,9 +909,11 @@ function App() {
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
                 <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
                   <PlayerErrorBoundary>
-                    <Player
-                      playerContainerRef={playerContainerRef}
-                    />
+                    {hasConsent ? (
+                      <Player
+                        playerContainerRef={playerContainerRef}
+                      />
+                    ) : <CookieBlockedPlaceholder />}
                   </PlayerErrorBoundary>
                 </div>
               </div>
@@ -917,27 +924,20 @@ function App() {
           <>
             {!showPendingPage && !showBannedPage && (
               <div className="absolute inset-0">
-                <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
-                  <PlayerErrorBoundary>
-                    {hasConsent ? (
-                      <Player
-                        playerContainerRef={playerContainerRef}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900/50 text-center p-6">
-                        <div className="p-4 bg-neutral-800 rounded-full mb-4">
-                          <VolumeX className="w-8 h-8 text-neutral-500" />
-                        </div>
-                        <h3 className="text-white font-bold mb-2">Player Disabled</h3>
-                        <p className="text-neutral-400 text-sm max-w-xs">
-                          {t('cookie.youtubeConsent')}
-                        </p>
-                      </div>
-                    )}
-                  </PlayerErrorBoundary>
-                  {/* <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Player Disabled for Debug</div> */}
-                </div>
-                {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
+                {!hasConsent ? (
+                  <CookieBlockedPlaceholder />
+                ) : (
+                  <>
+                    <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
+                      <PlayerErrorBoundary>
+                        <Player
+                          playerContainerRef={playerContainerRef}
+                        />
+                      </PlayerErrorBoundary>
+                    </div>
+                    {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">Queue empty</div>}
+                  </>
+                )}
               </div>
             )}
 
