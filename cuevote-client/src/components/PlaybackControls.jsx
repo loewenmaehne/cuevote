@@ -122,7 +122,7 @@ export function PlaybackControls({
       {isCinemaMode && (
         <div
           ref={overlayRef}
-          className="fixed bottom-0 left-0 w-full h-10 z-[60] bg-transparent"
+          className="fixed bottom-0 left-0 w-full h-2 z-[60] bg-transparent"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         />
