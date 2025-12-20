@@ -6,7 +6,33 @@ const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
 	const [language, setLanguage] = useState(() => {
-		return localStorage.getItem('cuevote_language') || 'en';
+		// 1. Check Local Storage
+		const saved = localStorage.getItem('cuevote_language');
+		if (saved && translations[saved]) {
+			return saved;
+		}
+
+		// 2. Check Browser Language
+		const browserLang = navigator.language || navigator.userLanguage; // e.g., "en-US", "zh-CN", "fr"
+
+		// Special handling for Chinese variants
+		if (browserLang) {
+			if (browserLang.toLowerCase() === 'zh-cn' || browserLang.toLowerCase() === 'zh-sg') {
+				if (translations['zh-CN']) return 'zh-CN';
+			}
+			if (browserLang.toLowerCase() === 'zh-tw' || browserLang.toLowerCase() === 'zh-hk') {
+				if (translations['zh-TW']) return 'zh-TW';
+			}
+
+			// General handling: take first 2 chars
+			const code = browserLang.split('-')[0];
+			if (translations[code]) {
+				return code;
+			}
+		}
+
+		// 3. Fallback
+		return 'en';
 	});
 
 	useEffect(() => {
