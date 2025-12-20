@@ -9,6 +9,7 @@ import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
 import { PlaylistView } from "./components/PlaylistView"; // Added this import
+import { SettingsView } from "./components/SettingsView";
 import { PendingRequests, PendingRequestsPage } from "./components/PendingRequests";
 import { BannedSongsPage } from "./components/BannedSongs"; // Added this import
 import { ChannelLibrary } from "./components/ChannelLibrary"; // Added this import
@@ -34,6 +35,7 @@ function App() {
   const activeRoomId = roomId || "synthwave";
 
   const [localPlaylistView, setLocalPlaylistView] = useState(false);
+  const [showSettings, setShowSettings] = useState(false); // Refactored state from Header
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
   const { hasConsent } = useConsent();
   const { t } = useLanguage();
@@ -742,6 +744,38 @@ function App() {
     }
   };
 
+  if (showSettings) {
+    return (
+      <div className="w-full h-screen bg-[#1a1a1a] text-white overflow-hidden">
+        <SettingsView
+          onClose={() => setShowSettings(false)}
+          pendingCount={pendingSuggestions.length}
+          suggestionMode={suggestionMode}
+          onManageRequests={() => {
+            setShowPendingPage(true);
+            setShowSettings(false);
+          }}
+          onUpdateSettings={handleUpdateSettings}
+          suggestionsEnabled={suggestionsEnabled}
+          autoApproveKnown={autoApproveKnown}
+          musicOnly={musicOnly}
+          maxDuration={maxDuration}
+          maxQueueSize={maxQueueSize}
+          duplicateCooldown={duplicateCooldown}
+          smartQueue={smartQueue}
+          autoRefill={autoRefill}
+          playlistViewMode={playlistViewMode}
+          allowPrelisten={allowPrelisten}
+          votesEnabled={serverState?.votesEnabled ?? true}
+          ownerBypass={ownerBypass}
+          ownerQueueBypass={serverState?.ownerQueueBypass}
+          ownerPopups={ownerPopups}
+          onDeleteChannel={handleDeleteChannel}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView || showChannelLibrary ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
       {!isCinemaMode && (
@@ -786,6 +820,11 @@ function App() {
               setShowChannelLibrary(!showChannelLibrary);
             }}
             onDeleteChannel={handleDeleteChannel}
+            showSettings={showSettings}
+            onToggleSettings={() => {
+              setShowSettings(!showSettings);
+              if (!showSettings) setShowSuggest(false); // Close suggest if opening settings
+            }}
           />
           {showSuggest && (
             <div className="px-6 pb-4">
@@ -955,7 +994,7 @@ function App() {
         )}
       </div>
 
-      <div className="pb-4">
+      <div className="pb-4 min-h-0 flex-1">
         {isAnyPlaylistView || isCinemaMode || showChannelLibrary ? null : ( // Hide queue if playlistViewMode/isCinemaMode/ChannelLibrary is active
           <Queue
             tracks={queue}
