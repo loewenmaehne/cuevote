@@ -930,7 +930,7 @@ function App() {
                         </div>
                         <h3 className="text-white font-bold mb-2">Player Disabled</h3>
                         <p className="text-neutral-400 text-sm max-w-xs">
-                          We need your consent to load the YouTube Player. Please accept cookies below.
+                          {t('cookie.youtubeConsent')}
                         </p>
                       </div>
                     )}
