@@ -34,6 +34,13 @@ export const translations = {
 			delete: "Delete",
 			terms: "Terms & Legal"
 		},
+		cookie: {
+			title: "Privacy & Playback",
+			description: "To play music, we need to load the YouTube Player. This connects to Google's servers.",
+			policy: "Read our Privacy Policy",
+			accept: "Accept & Play Music",
+			youtubeConsent: "We need your consent to load the YouTube Player. Please accept cookies below."
+		},
 		header: {
 			profileSettings: "Profile & Settings",
 			signIn: "Sign in with Google",
@@ -176,6 +183,13 @@ export const translations = {
 			deleteAccountToConfirm: "om te bevestigen",
 			delete: "Verwijderen",
 			terms: "Voorwaarden & Juridisch"
+		},
+		cookie: {
+			title: "Privacy & Afspelen",
+			description: "Om muziek af te spelen, moeten we de YouTube-speler laden. Dit maakt verbinding met Google-servers.",
+			policy: "Lees ons privacybeleid",
+			accept: "Accepteren & Muziek luisteren",
+			youtubeConsent: "We hebben je toestemming nodig om de YouTube-speler te laden. Accepteer hieronder cookies."
 		},
 		header: {
 			profileSettings: "Profiel & Instellingen",
@@ -320,6 +334,13 @@ export const translations = {
 			delete: "Löschen",
 			terms: "Rechtliches"
 		},
+		cookie: {
+			title: "Datenschutz & Wiedergabe",
+			description: "Um Musik abzuspielen, müssen wir den YouTube-Player laden. Dies stellt eine Verbindung zu Google-Servern her.",
+			policy: "Datenschutzerklärung lesen",
+			accept: "Akzeptieren & Musik abspielen",
+			youtubeConsent: "Wir benötigen Ihre Zustimmung, um den YouTube-Player zu laden. Bitte akzeptieren Sie unten Cookies."
+		},
 		header: {
 			profileSettings: "Profil & Einstellungen",
 			signIn: "Mit Google Anmelden",
@@ -430,6 +451,13 @@ export const translations = {
 			deleteAccountToConfirm: "pour confirmer",
 			delete: "Supprimer",
 			terms: "Conditions & Légal"
+		},
+		cookie: {
+			title: "Confidentialité & Lecture",
+			description: "Pour lire la musique, nous devons charger le lecteur YouTube. Cela se connecte aux serveurs de Google.",
+			policy: "Lire notre politique de confidentialité",
+			accept: "Accepter & Lire la musique",
+			youtubeConsent: "Nous avons besoin de votre consentement pour charger les lecteur YouTube. Veuillez accepter les cookies ci-dessous."
 		},
 		header: {
 			profileSettings: "Profil & Paramètres",
@@ -542,6 +570,13 @@ export const translations = {
 			delete: "Eliminar",
 			terms: "Términos y Legal"
 		},
+		cookie: {
+			title: "Privacidad y Reproducción",
+			description: "Para reproducir música, necesitamos cargar el reproductor de YouTube. Esto conecta con los servidores de Google.",
+			policy: "Leer política de privacidad",
+			accept: "Aceptar y Escuchar Música",
+			youtubeConsent: "Necesitamos tu consentimiento para cargar el reproductor de YouTube. Por favor acepta las cookies abajo."
+		},
 		header: {
 			profileSettings: "Perfil y Configuración",
 			signIn: "Iniciar sesión con Google",
@@ -652,6 +687,13 @@ export const translations = {
 			deleteAccountToConfirm: "per confermare",
 			delete: "Elimina",
 			terms: "Termini & Legale"
+		},
+		cookie: {
+			title: "Privacy e Riproduzione",
+			description: "Per riprodurre musica, dobbiamo caricare il player di YouTube. Questo si connette ai server di Google.",
+			policy: "Leggi la nostra Privacy Policy",
+			accept: "Accetta e Riproduci Musica",
+			youtubeConsent: "Abbiamo bisogno del tuo consenso per caricare il player di YouTube. Accetta i cookie qui sotto."
 		},
 		header: {
 			profileSettings: "Profilo & Impostazioni",
@@ -764,6 +806,13 @@ export const translations = {
 			delete: "Excluir",
 			terms: "Termos & Legal"
 		},
+		cookie: {
+			title: "Privacidade e Reprodução",
+			description: "Para tocar música, precisamos carregar o player do YouTube. Isso conecta aos servidores do Google.",
+			policy: "Ler Política de Privacidade",
+			accept: "Aceitar e Tocar Música",
+			youtubeConsent: "Precisamos do seu consentimento para carregar o player do YouTube. Aceite os cookies abaixo."
+		},
 		header: {
 			profileSettings: "Perfil & Configurações",
 			signIn: "Entrar com Google",
@@ -874,6 +923,13 @@ export const translations = {
 			deleteAccountToConfirm: "以确认",
 			delete: "删除",
 			terms: "条款与法律"
+		},
+		cookie: {
+			title: "隐私与播放",
+			description: "为了播放音乐，我们需要加载 YouTube 播放器。这将连接到 Google 服务器。",
+			policy: "阅读我们的隐私政策",
+			accept: "接受并播放音乐",
+			youtubeConsent: "我们需要您的同意才能加载 YouTube 播放器。请在下方接受 Cookie。"
 		},
 		header: {
 			profileSettings: "个人资料与设置",
@@ -1018,6 +1074,13 @@ export const translations = {
 			delete: "刪除",
 			terms: "條款與法律"
 		},
+		cookie: {
+			title: "隱私與播放",
+			description: "為了播放音樂，我們需要加載 YouTube 播放器。這將連接到 Google 服務器。",
+			policy: "閱讀我們的隱私政策",
+			accept: "接受並播放音樂",
+			youtubeConsent: "我們需要您的同意才能加載 YouTube 播放器。請在下方接受 Cookie。"
+		},
 		header: {
 			profileSettings: "個人資料與設定",
 			signIn: "透過 Google 登入",
@@ -1160,6 +1223,13 @@ export const translations = {
 			deleteAccountToConfirm: "確認のため",
 			delete: "削除",
 			terms: "利用規約"
+		},
+		cookie: {
+			title: "プライバシーと再生",
+			description: "音楽を再生するには、YouTubeプレーヤーを読み込む必要があります。これはGoogleのサーバーに接続します。",
+			policy: "プライバシーポリシーを読む",
+			accept: "同意して音楽を再生",
+			youtubeConsent: "YouTubeプレーヤーを読み込むには、お客様の同意が必要です。以下でCookieを許可してください。"
 		},
 		header: {
 			profileSettings: "プロフィール設定",
@@ -1304,6 +1374,13 @@ export const translations = {
 			delete: "삭제",
 			terms: "이용약관"
 		},
+		cookie: {
+			title: "개인정보 및 재생",
+			description: "음악을 재생하려면 YouTube 플레이어를 로드해야 합니다. 이는 Google 서버에 연결됩니다.",
+			policy: "개인정보 처리방침 읽기",
+			accept: "수락 및 음악 재생",
+			youtubeConsent: "YouTube 플레이어를 로드하려면 귀하의 동의가 필요합니다. 아래 쿠키를 수락하십시오."
+		},
 		header: {
 			profileSettings: "프로필 및 설정",
 			signIn: "Google로 로그인",
@@ -1446,6 +1523,13 @@ export const translations = {
 			deleteAccountToConfirm: "पुष्टि करने के लिए",
 			delete: "हटाएं",
 			terms: "शर्तें और कानूनी"
+		},
+		cookie: {
+			title: "गोपनीयता और प्लेबैक",
+			description: "संगीत चलाने के लिए, हमें YouTube प्लेयर लोड करना होगा। यह Google के सर्वर से कनेक्ट होता है।",
+			policy: "हमारी गोपनीयता नीति पढ़ें",
+			accept: "स्वीकार करें और संगीत चलाएं",
+			youtubeConsent: "YouTube प्लेयर लोड करने के लिए हमें आपकी सहमति की आवश्यकता है। कृपया नीचे कुकीज़ स्वीकार करें।"
 		},
 		header: {
 			profileSettings: "प्रोफ़ाइल और सेटिंग्स",
@@ -1590,6 +1674,13 @@ export const translations = {
 			delete: "ลบ",
 			terms: "เงื่อนไขและกฎหมาย"
 		},
+		cookie: {
+			title: "ความเป็นส่วนตัวและการเล่น",
+			description: "เพื่อเล่นเพลง เราจำเป็นต้องโหลดเครื่องเล่น YouTube ซึ่งจะเชื่อมต่อกับเซิร์ฟเวอร์ของ Google",
+			policy: "อ่านนโยบายความเป็นส่วนตัวของเรา",
+			accept: "ยอมรับและเล่นเพลง",
+			youtubeConsent: "เราต้องการความยินยอมจากคุณเพื่อโหลดเครื่องเล่น YouTube โปรดยอมรับคุกกี้ด้านล่าง"
+		},
 		header: {
 			profileSettings: "โปรไฟล์และการตั้งค่า",
 			signIn: "เข้าสู่ระบบด้วย Google",
@@ -1732,6 +1823,13 @@ export const translations = {
 			deleteAccountToConfirm: "để xác nhận",
 			delete: "Xóa",
 			terms: "Điều khoản & Pháp lý"
+		},
+		cookie: {
+			title: "Quyền riêng tư & Phát lại",
+			description: "Để phát nhạc, chúng tôi cần tải trình phát YouTube. Điều này kết nối với máy chủ của Google.",
+			policy: "Đọc Chính sách bảo mật của chúng tôi",
+			accept: "Chấp nhận & Phát nhạc",
+			youtubeConsent: "Chúng tôi cần sự đồng ý của bạn để tải trình phát YouTube. Vui lòng chấp nhận cookie bên dưới."
 		},
 		header: {
 			profileSettings: "Hồ sơ & Cài đặt",
@@ -1876,6 +1974,13 @@ export const translations = {
 			delete: "Hapus",
 			terms: "Syarat & Hukum"
 		},
+		cookie: {
+			title: "Privasi & Pemutaran",
+			description: "Untuk memutar musik, kami perlu memuat Pemutar YouTube. Ini terhubung ke server Google.",
+			policy: "Baca Kebijakan Privasi kami",
+			accept: "Terima & Putar Musik",
+			youtubeConsent: "Kami memerlukan persetujuan Anda untuk memuat Pemutar YouTube. Harap terima cookie di bawah ini."
+		},
 		header: {
 			profileSettings: "Profil & Pengaturan",
 			signIn: "Masuk dengan Google",
@@ -2018,6 +2123,13 @@ export const translations = {
 			deleteAccountToConfirm: "untuk sahkan",
 			delete: "Padam",
 			terms: "Terma & Undang-undang"
+		},
+		cookie: {
+			title: "Privasi & Main Semula",
+			description: "Untuk memainkan muzik, kami perlu memuatkan Pemain YouTube. Ini bersambung ke pelayan Google.",
+			policy: "Baca Dasar Privasi kami",
+			accept: "Terima & Mainkan Muzik",
+			youtubeConsent: "Kami memerlukan persetujuan anda untuk memuatkan Pemain YouTube. Sila terima kuki di bawah."
 		},
 		header: {
 			profileSettings: "Profil & Tetapan",
@@ -2162,6 +2274,13 @@ export const translations = {
 			delete: "Tanggalin",
 			terms: "Mga Tuntunin at Legal"
 		},
+		cookie: {
+			title: "Privacy at Playback",
+			description: "Upang magpatugtog ng musika, kailangan naming i-load ang YouTube Player. Kumokonekta ito sa mga server ng Google.",
+			policy: "Basahin ang aming Patakaran sa Privacy",
+			accept: "Tanggapin at Magpatugtog ng Musika",
+			youtubeConsent: "Kailangan namin ang iyong pahintulot upang i-load ang YouTube Player. Mangyaring tanggapin ang cookies sa ibaba."
+		},
 		header: {
 			profileSettings: "Profile at Mga Setting",
 			signIn: "Mag-sign in gamit ang Google",
@@ -2304,6 +2423,13 @@ export const translations = {
 			deleteAccountToConfirm: "aby potwierdzić",
 			delete: "Usuń",
 			terms: "Warunki i informacje prawne"
+		},
+		cookie: {
+			title: "Prywatność i Odtwarzanie",
+			description: "Aby odtwarzać muzykę, musimy załadować odtwarzacz YouTube. Łączy się to z serwerami Google.",
+			policy: "Przeczytaj naszą Politykę Prywatności",
+			accept: "Zaakceptuj i Odtwarzaj",
+			youtubeConsent: "Potrzebujemy Twojej zgody na załadowanie odtwarzacza YouTube. Zaakceptuj pliki cookie poniżej."
 		},
 		header: {
 			profileSettings: "Profil i ustawienia",
@@ -2448,6 +2574,13 @@ export const translations = {
 			delete: "Ta bort",
 			terms: "Villkor & Lagligt"
 		},
+		cookie: {
+			title: "Sekretess & Uppspelning",
+			description: "För att spela musik måste vi ladda YouTube-spelaren. Detta ansluter till Googles servrar.",
+			policy: "Läs vår integritetspolicy",
+			accept: "Acceptera & Spela musik",
+			youtubeConsent: "Vi behöver ditt samtycke för att ladda YouTube-spelaren. Acceptera cookies nedan."
+		},
 		header: {
 			profileSettings: "Profil & Inställningar",
 			signIn: "Logga in med Google",
@@ -2590,6 +2723,13 @@ export const translations = {
 			deleteAccountToConfirm: "for at bekræfte",
 			delete: "Slet",
 			terms: "Vilkår & Juridisk"
+		},
+		cookie: {
+			title: "Privatliv & Afspilning",
+			description: "For at afspille musik skal vi indlæse YouTube-afspilleren. Dette opretter forbindelse til Googles servere.",
+			policy: "Læs vores fortrolighedspolitik",
+			accept: "Accepter & Spil musik",
+			youtubeConsent: "Vi har brug for dit samtykke til at indlæse YouTube-afspilleren. Accepter cookies nedenfor."
 		},
 		header: {
 			profileSettings: "Profil & Indstillinger",
@@ -2734,6 +2874,13 @@ export const translations = {
 			delete: "Slett",
 			terms: "Vilkår og juridisk"
 		},
+		cookie: {
+			title: "Personvern & Avspilling",
+			description: "For å spille musikk må vi laste inn YouTube-spilleren. Dette kobler til Googles servere.",
+			policy: "Les våre personvernregler",
+			accept: "Godta & Spill musikk",
+			youtubeConsent: "Vi trenger ditt samtykke for å laste inn YouTube-spilleren. Godta informasjonskapsler nedenfor."
+		},
 		header: {
 			profileSettings: "Profil og innstillinger",
 			signIn: "Logg inn med Google",
@@ -2876,6 +3023,13 @@ export const translations = {
 			deleteAccountToConfirm: "vahvistaaksesi",
 			delete: "Poista",
 			terms: "Ehdot & Lait"
+		},
+		cookie: {
+			title: "Tietosuoja & Toisto",
+			description: "Musiikin toistamiseksi meidän on ladattava YouTube-soitin. Tämä muodostaa yhteyden Googlen palvelimiin.",
+			policy: "Lue tietosuojakäytäntömme",
+			accept: "Hyväksy & Soita musiikkia",
+			youtubeConsent: "Tarvitsemme suostumuksesi YouTube-soittimen lataamiseen. Hyväksy evästeet alta."
 		},
 		header: {
 			profileSettings: "Profiili & Asetukset",
@@ -3020,6 +3174,13 @@ export const translations = {
 			delete: "Sil",
 			terms: "Şartlar & Yasal"
 		},
+		cookie: {
+			title: "Gizlilik & Oynatma",
+			description: "Müzik çalmak için YouTube Oynatıcısını yüklememiz gerekiyor. Bu, Google sunucularına bağlanır.",
+			policy: "Gizlilik Politikamızı okuyun",
+			accept: "Kabul Et & Müzik Çal",
+			youtubeConsent: "YouTube Oynatıcısını yüklemek için izninize ihtiyacımız var. Lütfen aşağıdan çerezleri kabul edin."
+		},
 		header: {
 			profileSettings: "Profil & Ayarlar",
 			signIn: "Google ile Giriş Yap",
@@ -3162,6 +3323,13 @@ export const translations = {
 			deleteAccountToConfirm: "για επιβεβαίωση",
 			delete: "Διαγραφή",
 			terms: "Όροι & Νομικά"
+		},
+		cookie: {
+			title: "Απόρρητο & Αναπαραγωγή",
+			description: "Για την αναπαραγωγή μουσικής, πρέπει να φορτώσουμε το YouTube Player. Αυτό συνδέεται με διακομιστές της Google.",
+			policy: "Διαβάστε την Πολιτική Απορρήτου",
+			accept: "Αποδοχή & Αναπαραγωγή",
+			youtubeConsent: "Χρειαζόμαστε τη συγκατάθεσή σας για τη φόρτωση του YouTube Player. Παρακαλούμε αποδεχτείτε τα cookies παρακάτω."
 		},
 		header: {
 			profileSettings: "Προφίλ & Ρυθμίσεις",
@@ -3306,6 +3474,13 @@ export const translations = {
 			delete: "Удалить",
 			terms: "Условия и юр. инфо"
 		},
+		cookie: {
+			title: "Конфиденциальность и воспроизведение",
+			description: "Для воспроизведения музыки нам нужно загрузить плеер YouTube. Это соединяет с серверами Google.",
+			policy: "Читайте нашу Политику конфиденциальности",
+			accept: "Принять и играть музыку",
+			youtubeConsent: "Нам нужно ваше согласие для загрузки плеера YouTube. Пожалуйста, примите файлы cookie ниже."
+		},
 		header: {
 			profileSettings: "Профиль и настройки",
 			signIn: "Войти через Google",
@@ -3448,6 +3623,13 @@ export const translations = {
 			deleteAccountToConfirm: "для підтвердження",
 			delete: "Видалити",
 			terms: "Умови та юр. інфо"
+		},
+		cookie: {
+			title: "Конфіденційність та відтворення",
+			description: "Щоб відтворити музику, нам потрібно завантажити плеєр YouTube. Це з'єднує з серверами Google.",
+			policy: "Читайте нашу Політику конфіденційності",
+			accept: "Прийняти і грати музику",
+			youtubeConsent: "Нам потрібна ваша згода для завантаження плеєра YouTube. Будь ласка, прийміть файли cookie нижче."
 		},
 		header: {
 			profileSettings: "Профіль та налаштування",
@@ -3592,6 +3774,13 @@ export const translations = {
 			delete: "Smazat",
 			terms: "Podmínky a Právní"
 		},
+		cookie: {
+			title: "Soukromí a přehrávání",
+			description: "Pro přehrávání hudby musíme načíst přehrávač YouTube. To se připojuje k serverům Google.",
+			policy: "Přečtěte si naše zásady ochrany osobních údajů",
+			accept: "Přijmout a hrát hudbu",
+			youtubeConsent: "Potřebujeme váš souhlas s načtením přehrávače YouTube. Přijměte prosím soubory cookie níže."
+		},
 		header: {
 			profileSettings: "Profil a Nastavení",
 			signIn: "Přihlásit přes Google",
@@ -3734,6 +3923,13 @@ export const translations = {
 			deleteAccountToConfirm: "a megerősítéshez",
 			delete: "Törlés",
 			terms: "Feltételek és Jogi"
+		},
+		cookie: {
+			title: "Adatvédelem és Lejátszás",
+			description: "A zene lejátszásához be kell töltenünk a YouTube lejátszót. Ez csatlakozik a Google szervereihez.",
+			policy: "Olvassa el Adatvédelmi irányelveinket",
+			accept: "Elfogadás és Zenelejátszás",
+			youtubeConsent: "A YouTube lejátszó betöltéséhez az Ön hozzájárulása szükséges. Kérjük, fogadja el a sütiket alább."
 		},
 		header: {
 			profileSettings: "Profil és Beállítások",
@@ -3878,6 +4074,13 @@ export const translations = {
 			delete: "Șterge",
 			terms: "Termeni și Legal"
 		},
+		cookie: {
+			title: "Confidențialitate și Redare",
+			description: "Pentru a reda muzică, trebuie să încărcăm playerul YouTube. Acesta se conectează la serverele Google.",
+			policy: "Citiți Politica noastră de Confidențialitate",
+			accept: "Acceptă și Redă Muzica",
+			youtubeConsent: "Avem nevoie de consimțământul dvs. pentru a încărca playerul YouTube. Vă rugăm să acceptați cookie-urile de mai jos."
+		},
 		header: {
 			profileSettings: "Profil și Setări",
 			signIn: "Autentificare cu Google",
@@ -4020,6 +4223,13 @@ export const translations = {
 			deleteAccountToConfirm: "за потвърждение",
 			delete: "Изтрий",
 			terms: "Условия и Правни"
+		},
+		cookie: {
+			title: "Поверителност и възпроизвеждане",
+			description: "За да пуснем музика, трябва да заредим YouTube плейъра. Това се свързва със сървърите на Google.",
+			policy: "Прочетете нашата Политика за поверителност",
+			accept: "Приеми и пусни музика",
+			youtubeConsent: "Нуждаем се от вашето съгласие, за да заредим YouTube плейъра. Моля, приемете бисквитките по-долу."
 		},
 		header: {
 			profileSettings: "Профил и настройки",
@@ -4164,6 +4374,13 @@ export const translations = {
 			delete: "Izbriši",
 			terms: "Uvjeti i Pravno"
 		},
+		cookie: {
+			title: "Privatnost i reprodukcija",
+			description: "Za reprodukciju glazbe moramo učitati YouTube player. Ovo se povezuje s Googleovim poslužiteljima.",
+			policy: "Pročitajte našu Politiku privatnosti",
+			accept: "Prihvati i reproduciraj",
+			youtubeConsent: "Trebamo vaš pristanak za učitavanje YouTube playera. Prihvatite kolačiće u nastavku."
+		},
 		header: {
 			profileSettings: "Profil i Postavke",
 			signIn: "Prijavi se putem Googlea",
@@ -4306,6 +4523,13 @@ export const translations = {
 			deleteAccountToConfirm: "za potvrdu",
 			delete: "Obriši",
 			terms: "Uslovi i Pravno"
+		},
+		cookie: {
+			title: "Privatnost i reprodukcija",
+			description: "Za reprodukciju muzike moramo učitati YouTube plejer. Ovo se povezuje sa Google-ovim serverima.",
+			policy: "Pročitajte našu Politiku privatnosti",
+			accept: "Prihvati i pusti muziku",
+			youtubeConsent: "Potrebna nam je vaša saglasnost za učitavanje YouTube plejera. Prihvatite kolačiće ispod."
 		},
 		header: {
 			profileSettings: "Profil i Podešavanja",
@@ -4450,6 +4674,13 @@ export const translations = {
 			delete: "Zmazať",
 			terms: "Podmienky a Právne"
 		},
+		cookie: {
+			title: "Súkromie a prehrávanie",
+			description: "Na prehrávanie hudby musíme načítať prehrávač YouTube. Toto sa pripája k serverom Google.",
+			policy: "Prečítajte si naše Zásady ochrany osobných údajov",
+			accept: "Prijať a prehrať hudbu",
+			youtubeConsent: "Potrebujeme váš súhlas na načítanie prehrávača YouTube. Prijmite súbory cookie nižšie."
+		},
 		header: {
 			profileSettings: "Profil a Nastavenia",
 			signIn: "Prihlásiť cez Google",
@@ -4593,6 +4824,13 @@ export const translations = {
 			delete: "حذف",
 			terms: "الشروط والقانونية"
 		},
+		cookie: {
+			title: "الخصوصية والتشغيل",
+			description: "لتشغيل الموسيقى، نحتاج إلى تحميل مشغل YouTube. هذا يتصل بخوادم Google.",
+			policy: "اقرأ سياسة الخصوصية الخاصة بنا",
+			accept: "قبول وتشغيل الموسيقى",
+			youtubeConsent: "نحتاج إلى موافقتك لتحميل مشغل YouTube. يرجى قبول ملفات تعريف الارتباط أدناه."
+		},
 		header: {
 			profileSettings: "الملف الشخصي والإعدادات",
 			signIn: "تسجيل الدخول باستخدام Google",
@@ -4735,6 +4973,13 @@ export const translations = {
 			deleteAccountToConfirm: "כדי לאשר",
 			delete: "מחק",
 			terms: "תנאים ומשפטי"
+		},
+		cookie: {
+			title: "פרטיות וניגון",
+			description: "כדי לנגן מוזיקה, עלינו לטעון את נגן YouTube. זה מתחבר לשרתים של Google.",
+			policy: "קרא את מדיניות הפרטיות שלנו",
+			accept: "אשר ונגן מוזיקה",
+			youtubeConsent: "אנו זקוקים להסכמתך לטעינת נגן YouTube. אנא אשר את העוגיות למטה."
 		},
 		header: {
 			profileSettings: "פרופיל והגדרות",
