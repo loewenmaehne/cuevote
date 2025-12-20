@@ -5,7 +5,7 @@ import { GoogleAuthButton } from "./GoogleAuthButton";
 import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, Library, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useLanguage } from '../contexts/LanguageContext';
-import { LanguageSwitcher } from './LanguageSwitcher';
+
 
 export function Header({
   activeChannel,
@@ -434,10 +434,7 @@ export function Header({
               className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl scale-100 animate-in zoom-in-95 duration-200"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex-1"></div>
-                <LanguageSwitcher minimized={false} />
-              </div>
+
               <div className="flex flex-col items-center mb-6">
                 {user?.picture ? (
                   <img src={user.picture} alt={user.name} className="w-20 h-20 rounded-full border-2 border-neutral-700 mb-4 shadow-xl" />
@@ -459,7 +456,7 @@ export function Header({
                     }}
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-medium transition-colors border border-black/20"
                   >
-                    <LogOut size={18} /> Sign Out
+                    <LogOut size={18} /> {t('lobby.signOut')}
                   </button>
 
                   <div className="pt-4 border-t border-neutral-800 mt-4">
@@ -467,27 +464,25 @@ export function Header({
                       onClick={() => setShowDeleteConfirm(true)}
                       className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-red-900/30 text-red-500 hover:bg-red-950/30 hover:border-red-900/50 transition-colors text-sm font-medium"
                     >
-                      Delete Account
+                      {t('lobby.deleteAccount')}
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="text-center animate-in fade-in slide-in-from-bottom-2">
-                  <h4 className="text-lg font-bold text-red-500 mb-2">Are you absolutely sure?</h4>
-                  <p className="text-sm text-neutral-400 mb-4 leading-relaxed">
-                    This action cannot be undone. It will permanently delete your account and <strong>all channels</strong> you have created.
-                  </p>
+                  <h4 className="text-lg font-bold text-red-500 mb-2">{t('lobby.deleteAccountConfirm')}</h4>
+                  <p className="text-sm text-neutral-400 mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: t('lobby.deleteAccountWarning') }} />
 
                   <div className="mb-6">
                     <label className="block text-xs text-neutral-500 mb-2 font-medium">
-                      Type <span className="text-neutral-300 font-bold select-none">Delete this account and all my channels forever</span> to confirm
+                      {t('lobby.deleteAccountType')} <span className="text-neutral-300 font-bold select-none">{t('lobby.deleteAccountPhrase')}</span> {t('lobby.deleteAccountToConfirm')}
                     </label>
                     <input
                       type="text"
                       value={deleteConfirmationText}
                       onChange={(e) => setDeleteConfirmationText(e.target.value)}
                       className="w-full bg-black/30 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors placeholder-neutral-700 font-mono"
-                      placeholder="Type the confirmation phrase..."
+                      placeholder={t('header.deleteChannelType')}
                       autoFocus
                     />
                   </div>
@@ -500,7 +495,7 @@ export function Header({
                       }}
                       className="flex-1 px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-medium transition-colors"
                     >
-                      Cancel
+                      {t('lobby.cancel')}
                     </button>
                     <button
                       onClick={() => {
@@ -510,10 +505,10 @@ export function Header({
                         setShowDeleteConfirm(false);
                         setDeleteConfirmationText("");
                       }}
-                      disabled={deleteConfirmationText !== "Delete this account and all my channels forever"}
+                      disabled={deleteConfirmationText !== t('lobby.deleteAccountPhrase')}
                       className="flex-1 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold transition-colors shadow-lg shadow-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-800 disabled:text-neutral-500 disabled:shadow-none"
                     >
-                      Delete
+                      {t('lobby.delete')}
                     </button>
                   </div>
                 </div>
