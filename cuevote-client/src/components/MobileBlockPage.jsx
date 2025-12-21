@@ -56,8 +56,8 @@ export const MobileBlockPage = () => {
 				{/* Primary Call to Action */}
 				<div className="w-full space-y-4 pt-4">
 					<a
-						href="https://github.com/loewenmaehne/cuevote/releases/latest/download/app-release.apk"
-						download
+						href="https://github.com/loewenmaehne/cuevote/releases/download/v1.0.0/app-release.apk"
+						download="CueVote-App.apk"
 						target="_blank"
 						rel="noopener noreferrer"
 						className="group relative w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-lg shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 overflow-hidden"
@@ -81,6 +81,8 @@ export const MobileBlockPage = () => {
 				<div className="pt-8 opacity-40 hover:opacity-100 transition-opacity">
 					<p className="text-[10px] text-neutral-600 font-mono break-all px-4 select-all">
 						UA: {navigator.userAgent}
+						<br />
+						Wrapper: {typeof window.CueVoteAndroid}
 					</p>
 					<div className="mt-2">
 						<a href="/legal" className="text-xs text-neutral-500 hover:text-orange-400 underline underline-offset-4 transition-colors">
