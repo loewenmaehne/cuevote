@@ -6,6 +6,7 @@ import { useConsent } from '../contexts/ConsentContext';
 
 import { useLanguage } from '../contexts/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { GoogleAuthButton } from './GoogleAuthButton';
 
 import { isTV } from "../utils/deviceDetection";
 
