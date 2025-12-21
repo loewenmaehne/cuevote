@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.webkit.JavascriptInterface
 
+import androidx.annotation.Keep
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
@@ -23,7 +25,9 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         // Create WebView programmatically
+
         webView = WebView(this)
+        WebView.setWebContentsDebuggingEnabled(true) // Enable Debugging
         setContentView(webView)
 
         // Configure Settings
@@ -77,6 +81,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+@Keep
 class WebAppInterface(private val mContext: Context) {
     @JavascriptInterface
     fun isNative(): Boolean {
