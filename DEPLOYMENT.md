@@ -109,11 +109,19 @@ Paste the following configuration (replace `your-domain.com`):
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;
+    server_name your-domain.com; # Replace with your actual domain
 
-    # Root pointing to the built frontend files
+    # Security: Point root to the built artifacts directory (dist)
+    # ensuring source files are not exposed.
     root /var/www/cuevote/cuevote-client/dist;
     index index.html;
+
+    # Security: Deny access to all hidden files (starting with .)
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
 
     location / {
         try_files $uri $uri/ /index.html;
