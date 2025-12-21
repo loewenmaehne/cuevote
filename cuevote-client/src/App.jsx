@@ -703,6 +703,31 @@ function App() {
     return <MobileBlockPage />;
   }
 
+  // DEBUG OVERLAY (Temporary)
+  // Ensure we can see what the phone thinks it is
+  /*
+  const showDebug = true; 
+  if (showDebug) {
+    return (
+        <>
+            <div style={{position:'fixed', top:0, left: 0, right:0, zIndex: 9999, background: 'rgba(255,0,0,0.8)', color: 'white', padding: '10px', fontSize: '10px', wordBreak: 'break-all'}}>
+                UA: {userAgent} <br/>
+                Android: {isAndroid.toString()} | TV: {isTV().toString()} | Wrapper: {isWrapper.toString()}
+            </div>
+            { 
+               // Standard render below... 
+            }
+        </>
+    )
+  }
+  */
+  // Actually, let's just render it always at the bottom if it's NOT blocked, so we can see why.
+  const debugOverlay = (
+    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999, background: 'rgba(0,0,0,0.8)', color: '#00ff00', padding: '4px', fontSize: '8px', wordBreak: 'break-all', pointerEvents: 'none' }}>
+      DEBUG: {userAgent.substring(0, 50)}... | Android:{isAndroid ? 'Y' : 'N'} TV:{isTV() ? 'Y' : 'N'} Wrap:{isWrapper ? 'Y' : 'N'}
+    </div>
+  );
+
   // Strict Consent Blocking - "Friendlier Welcome Gate"
   if (!hasConsent) {
     return (
