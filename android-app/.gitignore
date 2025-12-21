@@ -9,3 +9,5 @@ build/
 .cxx
 *.apk
 *.ap_
+release/
+output-metadata.json
