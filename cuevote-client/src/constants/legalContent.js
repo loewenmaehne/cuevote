@@ -82,7 +82,8 @@ export const LEGAL_CONTENT = {
 					list: [
 						{ title: "Google Account Information", text: "When you login via Google, we verify your identity and store your email, name, and avatar URL to display your profile in rooms. Legal basis: Contract (Art. 6.1.b GDPR)." },
 						{ title: "Usage Statistics", text: "We log room history and voted songs to improve recommendations. This data is internal to CueVote. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." },
-						{ title: "YouTube API Data", text: "When you search or play songs, we send requests to YouTube's API. YouTube may collect data on your viewing behavior via their embedded player. Legal basis: Contract/Consent (via your use of YouTube)." }
+						{ title: "YouTube API Data", text: "When you search or play songs, we send requests to YouTube's API. YouTube may collect data on your viewing behavior via their embedded player. Legal basis: Contract/Consent (via your use of YouTube)." },
+						{ title: "Server Logs & Security", text: "To ensure the stability and security of our service (e.g., defense against DDoS attacks), we process technical connection data (IP address, timestamp, user agent). These logs are deleted automatically after 14 days. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." }
 					]
 				},
 				{
@@ -185,7 +186,8 @@ export const LEGAL_CONTENT = {
 					list: [
 						{ title: "Google Accountinformatie", text: "Wanneer u inlogt via Google, verifiëren wij uw identiteit en slaan uw e-mail, naam en avatar-URL op om uw profiel in kamers weer te geven. Rechtsgrond: Overeenkomst (Art. 6.1.b AVG)." },
 						{ title: "Gebruiksstatistieken", text: "Wij loggen kamergeschiedenis en gestemde nummers om aanbevelingen te verbeteren. Deze gegevens zijn intern voor CueVote. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." },
-						{ title: "YouTube API Gegevens", text: "Wanneer u zoekt of nummers afspeelt, sturen wij verzoeken naar de API van YouTube. YouTube kan gegevens verzamelen over uw kijkgedrag via hun embedded speler. Rechtsgrond: Overeenkomst/Toestemming (via uw gebruik van YouTube)." }
+						{ title: "YouTube API Gegevens", text: "Wanneer u zoekt of nummers afspeelt, sturen wij verzoeken naar de API van YouTube. YouTube kan gegevens verzamelen over uw kijkgedrag via hun embedded speler. Rechtsgrond: Overeenkomst/Toestemming (via uw gebruik van YouTube)." },
+						{ title: "Serverlogs & Beveiliging", text: "Om de stabiliteit en veiligheid van onze dienst te garanderen (bijv. verdediging tegen DDoS-aanvallen), verwerken wij technische verbindingsgegevens (IP-adres, tijdstempel, user agent). Deze logs worden automatisch verwijderd na 14 dagen. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." }
 					]
 				},
 				{
