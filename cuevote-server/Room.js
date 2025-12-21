@@ -577,7 +577,11 @@ class Room {
                 try {
                     // Fetch up to 5 results to find a non-livestream
                     const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=5&key=${this.apiKey}`;
-                    const searchRes = await fetch(searchUrl);
+                    const searchRes = await fetch(searchUrl, {
+                        headers: {
+                            'Referer': process.env.URL || 'https://cuevote.com'
+                        }
+                    });
                     const searchData = await searchRes.json();
 
                     if (searchData.items && searchData.items.length > 0) {
@@ -659,7 +663,11 @@ class Room {
         } else if (this.apiKey) {
             try {
                 const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,snippet,status&key=${this.apiKey}`;
-                const response = await fetch(apiUrl);
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        'Referer': process.env.URL || 'https://cuevote.com'
+                    }
+                });
                 const data = await response.json();
 
                 if (data.items && data.items.length > 0) {
@@ -729,6 +737,8 @@ class Room {
                         category_id: videoData.snippet.categoryId,
                         language: track.language
                     });
+                } else {
+                    console.log(`[DEBUG API] Video Details Response Missing Items. Status: ${response.status}. Body:`, JSON.stringify(data));
                 }
             } catch (apiError) {
                 console.error("YouTube API Check failed:", apiError);

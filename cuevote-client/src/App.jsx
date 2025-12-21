@@ -380,7 +380,8 @@ function App() {
           controls: 0,
           origin: window.location.origin,
           cc_load_policy: captionsEnabled ? 1 : 0,
-          cc_lang_pref: currentTrackRef.current?.language
+          cc_lang_pref: currentTrackRef.current?.language,
+          hl: currentTrackRef.current?.language
         },
         events: {
           onReady: (event) => {
@@ -426,7 +427,7 @@ function App() {
         },
       });
     });
-  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled]);
+  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled, currentTrack?.language]);
 
   const playerContainerRef = useCallback(node => {
     if (!hasConsent) return; // Gate Ref Handling
