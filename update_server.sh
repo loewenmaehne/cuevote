@@ -40,17 +40,17 @@ if [ $? -ne 0 ]; then
 fi
 echo "  -> Client build successful."
 
-# PERSISTENCE: Link/Copy Android APK from storage if it exists
-# This ensures the APK survives the 'dist' wipe that happens during build.
-APK_STORAGE="/var/www/cuevote/storage/android"
-DIST_ANDROID="dist/android"
+# PERSISTENCE: Copy Android APK from source to dist
+# Since we are now tracking the APK in git, we just copy it from the repo folder.
+APK_SOURCE="android-app/app/release/app-release.apk"
+DIST_ANDROID="cuevote-client/dist/android"
 
-if [ -f "$APK_STORAGE/app-release.apk" ]; then
-    echo "  -> Restoring Android APK from storage..."
+if [ -f "$APK_SOURCE" ]; then
+    echo "  -> Deploying Android APK..."
     mkdir -p "$DIST_ANDROID"
-    cp "$APK_STORAGE/app-release.apk" "$DIST_ANDROID/"
+    cp "$APK_SOURCE" "$DIST_ANDROID/"
 else
-    echo "  -> No persistent APK found at $APK_STORAGE (First time setup?)"
+    echo "  -> No Android APK found in repository at $APK_SOURCE"
 fi
 
 cd ..
