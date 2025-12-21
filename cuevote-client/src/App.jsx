@@ -18,8 +18,7 @@ import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
 import { Toast } from "./components/Toast";
 
-import { isTV } from "./utils/deviceDetection";
-import { MobileBlockPage } from "./components/MobileBlockPage";
+
 
 const YouTubeState = {
   UNSTARTED: -1,
@@ -31,17 +30,9 @@ const YouTubeState = {
 };
 
 function App() {
-  // FAST FAIL: Check Mobile Block *Before* Hooks
-  // This ensures we don't wait for Sockets/Contexts if we are just going to block anyway.
-  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  const isAndroid = /android/i.test(userAgent);
-  const isWrapper = userAgent.includes("CueVoteWrapper");
-
-  if ((isAndroid || isTV()) && !isWrapper) {
-    return <MobileBlockPage />;
-  }
 
   const { roomId } = useParams();
+
   const navigate = useNavigate();
   const location = useLocation();
   const activeRoomId = roomId || "synthwave";
