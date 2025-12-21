@@ -908,6 +908,8 @@ export const translations = {
 			error: "Inserisci link YouTube o titolo."
 		},
 		app: {
+			noInternet: "Nessuna connessione internet",
+			retry: "Riprova connessione",
 			switching: "Cambio Canale...",
 			channelNotFound: "Canale inesistente",
 			notFoundMessage: "Il canale cercato ({roomId}) non è stato trovato.",
@@ -1065,6 +1067,8 @@ export const translations = {
 			error: "Insira link YouTube ou título."
 		},
 		app: {
+			noInternet: "Sem conexão com a internet",
+			retry: "Tentar novamente",
 			switching: "Trocando Canal...",
 			channelNotFound: "Canal não existe",
 			notFoundMessage: "O canal procurado ({roomId}) não foi encontrado.",
@@ -1218,6 +1222,8 @@ export const translations = {
 			error: "请输入 YouTube 链接或标题。"
 		},
 		app: {
+			noInternet: "无网络连接",
+			retry: "重试连接",
 			switching: "切换频道...",
 			channelNotFound: "频道不存在",
 			notFoundMessage: "未找到您查找的频道 ({roomId})。",
@@ -1371,6 +1377,8 @@ export const translations = {
 			error: "請輸入 YouTube 連結或標題。"
 		},
 		app: {
+			noInternet: "無網際網路連線",
+			retry: "重試連線",
 			switching: "切換頻道...",
 			channelNotFound: "頻道不存在",
 			notFoundMessage: "未找到您搜尋的頻道 ({roomId})。",
@@ -1524,6 +1532,8 @@ export const translations = {
 			error: "YouTubeリンクかタイトルを入力してください。"
 		},
 		app: {
+			noInternet: "インターネット接続がありません",
+			retry: "接続を再試行",
 			switching: "チャンネル切り替え中...",
 			channelNotFound: "チャンネルが存在しません",
 			notFoundMessage: "お探しのチャンネル ({roomId}) は見つかりませんでした。",
@@ -1676,6 +1686,8 @@ export const translations = {
 			error: "YouTube 링크나 제목을 입력하세요."
 		},
 		app: {
+			noInternet: "인터넷에 연결되지 않음",
+			retry: "연결 재시도",
 			switching: "채널 변경 중...",
 			channelNotFound: "채널이 없습니다",
 			notFoundMessage: "찾으시는 채널 ({roomId})을 찾을 수 없습니다.",
@@ -1827,6 +1839,8 @@ export const translations = {
 			error: "कृपया YouTube लिंक या शीर्षक दर्ज करें।"
 		},
 		app: {
+			noInternet: "कोई इंटरनेट कनेक्शन नहीं",
+			retry: "कनेक्शन पुनः प्रयास करें",
 			switching: "चैनल बदल रहा है...",
 			channelNotFound: "चैनल मौजूद नहीं है",
 			notFoundMessage: "वह चैनल ({roomId}) नहीं मिला।",
@@ -1979,6 +1993,8 @@ export const translations = {
 			error: "โปรดใส่ลิงก์ YouTube หรือชื่อเพลง"
 		},
 		app: {
+			noInternet: "ไม่มีการเชื่อมต่ออินเทอร์เน็ต",
+			retry: "ลองเชื่อมต่ออีกครั้ง",
 			switching: "กำลังเปลี่ยนช่อง...",
 			channelNotFound: "ไม่มีช่องนี้",
 			notFoundMessage: "ไม่พบช่องที่คุณค้นหา ({roomId})",
@@ -2131,6 +2147,8 @@ export const translations = {
 			error: "Vui lòng nhập link YouTube hoặc tiêu đề."
 		},
 		app: {
+			noInternet: "Không có kết nối internet",
+			retry: "Thử lại kết nối",
 			switching: "Đang chuyển kênh...",
 			channelNotFound: "Kênh không tồn tại",
 			notFoundMessage: "Không tìm thấy kênh ({roomId}).",
@@ -2283,6 +2301,8 @@ export const translations = {
 			error: "Masukkan link YouTube atau judul."
 		},
 		app: {
+			noInternet: "Tidak ada koneksi internet",
+			retry: "Coba lagi koneksi",
 			switching: "Ganti Kanal...",
 			channelNotFound: "Kanal tidak ada",
 			notFoundMessage: "Kanal ({roomId}) tidak ditemukan.",
@@ -2435,6 +2455,8 @@ export const translations = {
 			error: "Sila masukkan pautan YouTube atau tajuk."
 		},
 		app: {
+			noInternet: "Tiada sambungan internet",
+			retry: "Cuba semula sambungan",
 			switching: "Menukar Saluran...",
 			channelNotFound: "Saluran tidak wujud",
 			notFoundMessage: "Saluran ({roomId}) tidak ditemui.",
@@ -2587,6 +2609,8 @@ export const translations = {
 			error: "Mangyaring maglagay ng link sa YouTube o pamagat."
 		},
 		app: {
+			noInternet: "Walang Koneksyon sa Internet",
+			retry: "Subukan Muli ang Koneksyon",
 			switching: "Nagpapalit ng Channel...",
 			channelNotFound: "Wala ang channel",
 			notFoundMessage: "Hindi nahanap ang channel ({roomId}).",
@@ -2739,6 +2763,8 @@ export const translations = {
 			error: "Wprowadź link do YouTube lub tytuł."
 		},
 		app: {
+			noInternet: "Brak połączenia z internetem",
+			retry: "Ponów połączenie",
 			switching: "Przełączanie kanału...",
 			channelNotFound: "Kanał nie istnieje",
 			notFoundMessage: "Szukany kanał ({roomId}) nie został znalezion.",
@@ -2891,6 +2917,8 @@ export const translations = {
 			error: "Ange en YouTube-länk eller titel."
 		},
 		app: {
+			noInternet: "Ingen internetanslutning",
+			retry: "Försök ansluta igen",
 			switching: "Byter kanal...",
 			channelNotFound: "Kanalen finns inte",
 			notFoundMessage: "Kanalen du söker ({roomId}) hittades inte.",
@@ -3043,6 +3071,8 @@ export const translations = {
 			error: "Indtast venligst et YouTube-link eller titel."
 		},
 		app: {
+			noInternet: "Ingen internetforbindelse",
+			retry: "Prøv forbindelse igen",
 			switching: "Skifter kanal...",
 			channelNotFound: "Kanal eksisterer ikke",
 			notFoundMessage: "Kanalen du leder efter ({roomId}) blev ikke fundet.",
@@ -3195,6 +3225,8 @@ export const translations = {
 			error: "Vennligst skriv inn en YouTube-lenke eller tittel."
 		},
 		app: {
+			noInternet: "Ingen internettforbindelse",
+			retry: "Prøv tilkobling på nytt",
 			switching: "Bytter kanal...",
 			channelNotFound: "Kanalen finnes ikke",
 			notFoundMessage: "Kanalen du leter etter ({roomId}) ble ikke funnet.",
@@ -3347,6 +3379,8 @@ export const translations = {
 			error: "Syötä YouTube-linkki tai otsikko."
 		},
 		app: {
+			noInternet: "Ei internetyhteyttä",
+			retry: "Yritä yhteyttä uudelleen",
 			switching: "Vaihdetaan kanavaa...",
 			channelNotFound: "Kanavaa ei ole",
 			notFoundMessage: "Etsimääsi kanavaa ({roomId}) ei löytynyt.",
@@ -3499,6 +3533,8 @@ export const translations = {
 			error: "Lütfen bir YouTube bağlantısı veya başlık girin."
 		},
 		app: {
+			noInternet: "İnternet bağlantısı yok",
+			retry: "Bağlantıyı tekrar dene",
 			switching: "Kanal Değiştiriliyor...",
 			channelNotFound: "Kanal mevcut değil",
 			notFoundMessage: "Aradığınız kanal ({roomId}) bulunamadı.",
@@ -3651,6 +3687,8 @@ export const translations = {
 			error: "Παρακαλώ εισάγετε σύνδεσμο YouTube ή τίτλο."
 		},
 		app: {
+			noInternet: "Χωρίς σύνδεση στο διαδίκτυο",
+			retry: "Επαναпроσπάθεια σύνδεσης",
 			switching: "Αλλαγή Καναλιού...",
 			channelNotFound: "Το κανάλι δεν υπάρχει",
 			notFoundMessage: "Το κανάλι που ψάχνετε ({roomId}) δεν βρέθηκε.",
@@ -3803,6 +3841,8 @@ export const translations = {
 			error: "Введите ссылку YouTube или название."
 		},
 		app: {
+			noInternet: "Нет подключения к интернету",
+			retry: "Повторить попытку подключения",
 			switching: "Переключение канала...",
 			channelNotFound: "Канал не существует",
 			notFoundMessage: "Канал, который вы ищете ({roomId}), не найден.",
@@ -3955,6 +3995,8 @@ export const translations = {
 			error: "Будь ласка, введіть посилання на YouTube або назву."
 		},
 		app: {
+			noInternet: "Немає підключення до інтернету",
+			retry: "Повторити спробу підключення",
 			switching: "Перемикання каналу...",
 			channelNotFound: "Канал не існує",
 			notFoundMessage: "Канал, який ви шукаєте ({roomId}), не знайдено.",
@@ -4107,6 +4149,8 @@ export const translations = {
 			error: "Zadejte odkaz na YouTube nebo název."
 		},
 		app: {
+			noInternet: "Žádné připojení k internetu",
+			retry: "Zkusit připojení znovu",
 			switching: "Přepínání Kanálu...",
 			channelNotFound: "Kanál neexistuje",
 			notFoundMessage: "Hledaný kanál ({roomId}) nebyl nalezen.",
@@ -4259,6 +4303,8 @@ export const translations = {
 			error: "Kérlek adj meg egy YouTube linket vagy címet."
 		},
 		app: {
+			noInternet: "Nincs internetkapcsolat",
+			retry: "Kapcsolat újrapróbálása",
 			switching: "Csatorna Váltása...",
 			channelNotFound: "A csatorna nem létezik",
 			notFoundMessage: "A keresett csatorna ({roomId}) nem található.",
@@ -4411,6 +4457,8 @@ export const translations = {
 			error: "Te rog introdu un link YouTube sau titlu."
 		},
 		app: {
+			noInternet: "Fără conexiune la internet",
+			retry: "Reîncearcă conexiunea",
 			switching: "Schimbare Canal...",
 			channelNotFound: "Canalul nu există",
 			notFoundMessage: "Canalul căutat ({roomId}) nu a fost găsit.",
@@ -4563,6 +4611,8 @@ export const translations = {
 			error: "Моля, въведете YouTube връзка или заглавие."
 		},
 		app: {
+			noInternet: "Няма интернет връзка",
+			retry: "Опитайте отново връзката",
 			switching: "Смяна на канал...",
 			channelNotFound: "Каналът не съществува",
 			notFoundMessage: "Търсеният канал ({roomId}) не беше намерен.",
@@ -4715,6 +4765,8 @@ export const translations = {
 			error: "Molimo unesite YouTube poveznicu ili naslov."
 		},
 		app: {
+			noInternet: "Nema internetske veze",
+			retry: "Pokušaj ponovno povezivanje",
 			switching: "Promjena Kanala...",
 			channelNotFound: "Kanal ne postoji",
 			notFoundMessage: "Kanal koji tražite ({roomId}) nije pronađen.",
@@ -4867,6 +4919,8 @@ export const translations = {
 			error: "Molimo unesite YouTube link ili naslov."
 		},
 		app: {
+			noInternet: "Nema internet veze",
+			retry: "Pokušaj ponovo povezivanje",
 			switching: "Promena Kanala...",
 			channelNotFound: "Kanal ne postoji",
 			notFoundMessage: "Kanal koji tražite ({roomId}) nije pronađen.",
@@ -5019,6 +5073,8 @@ export const translations = {
 			error: "Zadajte odkaz na YouTube alebo názov."
 		},
 		app: {
+			noInternet: "Žiadne pripojenie na internet",
+			retry: "Skúsiť pripojenie znova",
 			switching: "Prepínanie Kanála...",
 			channelNotFound: "Kanál neexistuje",
 			notFoundMessage: "Hľadaný kanál ({roomId}) nebol nájdený.",
@@ -5171,6 +5227,8 @@ export const translations = {
 			error: "يرجى إدخال رابط YouTube أو عنوان."
 		},
 		app: {
+			noInternet: "لا يوجد اتصال بالإنترنت",
+			retry: "أعد محاولة الاتصال",
 			switching: "جارٍ تبديل القناة...",
 			channelNotFound: "القناة غير موجودة",
 			notFoundMessage: "لم يتم العثور على القناة التي تبحث عنها ({roomId}).",
@@ -5323,6 +5381,8 @@ export const translations = {
 			error: "אנא הכנס קישור YouTube או כותרת."
 		},
 		app: {
+			noInternet: "אין חיבור לאינטרנט",
+			retry: "נסה להתחבר שוב",
 			switching: "מחליף ערוץ...",
 			channelNotFound: "ערוץ לא קיים",
 			notFoundMessage: "הערוץ שחיפשת ({roomId}) לא נמצא.",
