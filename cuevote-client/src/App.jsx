@@ -657,6 +657,29 @@ function App() {
     );
   }
 
+  // Strict Consent Blocking - "Block everything until user accepts"
+  if (!hasConsent) {
+    return (
+      <div className="flex flex-col h-[100dvh] bg-[#050505] items-center justify-center p-6 relative overflow-hidden select-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-800/20 via-[#050505] to-[#050505] pointer-events-none" />
+        <div className="relative z-10 max-w-lg text-center space-y-8 animate-in fade-in zoom-in-95 duration-500">
+          <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-orange-600 tracking-tighter">
+            CueVote
+          </h1>
+          <div className="space-y-4">
+            <div className="w-20 h-20 rounded-full bg-neutral-900/80 border border-neutral-800 flex items-center justify-center mx-auto mb-6 shadow-2xl">
+              <Lock size={32} className="text-neutral-500" />
+            </div>
+            <h2 className="text-2xl font-bold text-white">Privacy Action Required</h2>
+            <p className="text-neutral-400 leading-relaxed max-w-md mx-auto">
+              Access to this channel is restricted. Please accept cookies below to enable YouTube playback, view the playlist, and participate.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Compute user's votes from the queue data
   const userVotes = {};
   if (clientId) {
