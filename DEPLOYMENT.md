@@ -117,7 +117,8 @@ server {
     index index.html;
 
     # Security: Deny access to all hidden files (starting with .)
-    location ~ /\. {
+    # Exception: Allow .well-known (for SSL challenges)
+    location ~ /\.(?!well-known) {
         deny all;
         access_log off;
         log_not_found off;
