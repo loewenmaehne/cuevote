@@ -53,57 +53,40 @@ export const MobileBlockPage = () => {
 					</div>
 				</div>
 
-				{/* Installation Steps */}
-				<div className="w-full space-y-6 pt-2">
+				{/* Primary Call to Action */}
+				<div className="w-full space-y-4 pt-4">
+					<a
+						href="/android/app-release.apk"
+						download="CueVote-App.apk"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="group relative w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-lg shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 overflow-hidden"
+					>
+						<div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+						<Download size={24} className="fill-current animate-bounce-subtle" />
+						<span className="relative z-10">Download {isTvDevice ? "TV App" : "Android App"}</span>
+					</a>
 
-					{/* Step 1: Download */}
-					<div className="space-y-3">
-						<div className="flex items-center gap-2 px-1">
-							<span className="bg-orange-500/20 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-orange-500/20">Step 1</span>
-							<span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Get the App</span>
-						</div>
-						<a
-							href="/android/app-release.apk"
-							download="CueVote-App.apk"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="group relative w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-lg shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 overflow-hidden"
-						>
-							<div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-							<Download size={24} className="fill-current animate-bounce-subtle" />
-							<span className="relative z-10">Download {isTvDevice ? "TV App" : "Android App"}</span>
-						</a>
+					<div className="text-center space-y-1">
+						<p className="text-xs text-neutral-500 font-medium">
+							Requires Android 7.0+
+						</p>
+						<p className="text-xs text-neutral-400">
+							<span className="opacity-70">If download fails:</span> Settings &gt; Enable <strong>"Install Unknown Apps"</strong>
+						</p>
 					</div>
-
-					{/* Step 2: Install */}
-					<div className="space-y-3">
-						<div className="flex items-center gap-2 px-1">
-							<span className="bg-neutral-800 text-neutral-400 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-white/5">Step 2</span>
-							<span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Allow Access</span>
-						</div>
-
-						<div className="relative group/hint overflow-hidden rounded-xl bg-neutral-900/40 border border-white/5 p-4 flex items-center gap-4 transition-colors hover:bg-neutral-900/60 hover:border-orange-500/20">
-							<div className="p-2 rounded-full bg-neutral-800 text-orange-500/80 group-hover/hint:text-orange-500 group-hover/hint:bg-orange-500/10 transition-colors">
-								<Settings size={18} />
-							</div>
-							<div className="text-left">
-								<p className="text-xs text-neutral-400 font-medium mb-0.5">
-									Settings &gt; Enable
-								</p>
-								<p className="text-sm text-neutral-200 font-bold group-hover/hint:text-orange-400 transition-colors">
-									"Install Unknown Apps"
-								</p>
-							</div>
-						</div>
-					</div>
-
 				</div>
 
-				{/* Footer / Legal */}
-				<div className="pt-8 opacity-60 hover:opacity-100 transition-opacity">
-					<a href="/legal" className="text-xs text-neutral-500 hover:text-orange-400 underline underline-offset-4 transition-colors">
-						Privacy Policy & Legal
-					</a>
+				{/* DEBUG: User Agent Display */}
+				<div className="pt-8 opacity-40 hover:opacity-100 transition-opacity">
+					<p className="text-[10px] text-neutral-600 font-mono break-all px-4 select-all">
+						UA: {navigator.userAgent}
+					</p>
+					<div className="mt-2">
+						<a href="/legal" className="text-xs text-neutral-500 hover:text-orange-400 underline underline-offset-4 transition-colors">
+							Privacy Policy & Legal
+						</a>
+					</div>
 				</div>
 
 			</div>
