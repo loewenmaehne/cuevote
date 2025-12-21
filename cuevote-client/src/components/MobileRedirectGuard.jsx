@@ -10,6 +10,11 @@ export const MobileRedirectGuard = ({ children }) => {
 	const isWrapper = userAgent.includes("CueVoteWrapper");
 
 	if ((isAndroid || isTV()) && !isWrapper) {
+		// Whitelist Legal Page
+		if (window.location.pathname.startsWith('/legal')) {
+			return children;
+		}
+
 		console.log("[MobileRedirectGuard] Blocking access - Android/TV detected", { userAgent, isAndroid, isWrapper });
 		return <MobileBlockPage />;
 	}

@@ -20,7 +20,7 @@ export const MobileBlockPage = () => {
 							CueVote
 						</h1>
 						<div className="h-1 w-24 bg-gradient-to-r from-orange-600 to-orange-400 rounded-full mb-4" />
-						<p className="text-xl font-bold tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500 drop-shadow-sm">
+						<p className="text-xl font-bold tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400 drop-shadow-sm">
 							The Democratic Jukebox
 						</p>
 					</div>
@@ -57,7 +57,7 @@ export const MobileBlockPage = () => {
 				<div className="w-full space-y-4">
 					<a
 						href="/android/app-release.apk"
-						className="group relative w-full py-4 rounded-xl bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold text-lg shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 overflow-hidden"
+						className="group relative w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-lg shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 overflow-hidden"
 					>
 						<div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
 						<Download size={24} className="fill-current animate-bounce-subtle" />
