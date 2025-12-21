@@ -194,7 +194,7 @@ export function Header({
                 setShowSettings(false);
                 onShowSuggest(false);
               }}
-              className="flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
+              className="hidden md:flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
               title="Playlist View"
             >
               <List size={20} className="md:w-[22px] md:h-[22px]" />
@@ -214,7 +214,7 @@ export function Header({
               setShowSettings(false);
               onShowSuggest(false);
             }}
-            className="flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
+            className="hidden md:flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
             title="Channel Library"
           >
             <Library size={20} className="md:w-[22px] md:h-[22px]" />
@@ -230,7 +230,7 @@ export function Header({
               setExitConfirmIndex(0); // Default to "Cancel" for safety
               setShowSettings(false);
             }}
-            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
+            className="hidden md:flex keep-open items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
             title={activeChannel}
           >
             <Radio size={22} className="flex-shrink-0" />
@@ -260,7 +260,7 @@ export function Header({
               setShowSettings(false);
               onShowSuggest(false);
             }}
-            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
+            className="hidden md:flex keep-open items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
             title={t('header.share')}
           >
             <QrCode size={20} />
