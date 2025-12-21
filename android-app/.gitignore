@@ -10,3 +10,5 @@ build/
 *.apk
 *.ap_
 
+output-metadata.json
+baselineProfiles/
