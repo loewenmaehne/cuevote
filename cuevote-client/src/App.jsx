@@ -16,8 +16,7 @@ import { BannedSongsPage } from "./components/BannedSongs"; // Added this import
 import { ChannelLibrary } from "./components/ChannelLibrary"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
-import { PlaybackControls } from "./components/PlaybackControls";
-import { useWebSocketContext } from "./hooks/useWebSocketContext";
+
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
 import { Toast } from "./components/Toast";
 import { LoadingScreen } from "./components/LoadingScreen";
