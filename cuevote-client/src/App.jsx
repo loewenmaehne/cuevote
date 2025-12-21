@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { Volume2, VolumeX, ArrowLeft, Lock, X } from "lucide-react";
+import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2 } from "lucide-react";
 import { useConsent } from './contexts/ConsentContext';
 import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
 import { useLanguage } from './contexts/LanguageContext';
@@ -37,7 +37,7 @@ function App() {
   const [localPlaylistView, setLocalPlaylistView] = useState(false);
   const [showSettings, setShowSettings] = useState(false); // Refactored state from Header
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
-  const { hasConsent } = useConsent();
+  const { hasConsent, giveConsent } = useConsent();
   const { t } = useLanguage();
 
   // console.log("App Component MOUNTED, Room:", activeRoomId);
@@ -280,6 +280,22 @@ function App() {
   const [showQRModal, setShowQRModal] = useState(false); // <--- Added this
   const [showChannelLibrary, setShowChannelLibrary] = useState(false); // <--- Added this
   const [controlsVisible, setControlsVisible] = useState(true); // Track footer visibility
+  const [isWindowTooSmall, setIsWindowTooSmall] = useState(false);
+
+  // Monitor Window Size for TOS Compliance
+  useEffect(() => {
+    const checkSize = () => {
+      // Minimum dimensions: 360x400 to ensure player isn't obscured by bars
+      const tooSmall = window.innerWidth < 360 || window.innerHeight < 400;
+      setIsWindowTooSmall(tooSmall);
+    };
+
+    // Check initially
+    checkSize();
+
+    window.addEventListener('resize', checkSize);
+    return () => window.removeEventListener('resize', checkSize);
+  }, []);
 
   // Handle Escape Key for App-level modals
   useEffect(() => {
@@ -657,22 +673,61 @@ function App() {
     );
   }
 
-  // Strict Consent Blocking - "Block everything until user accepts"
+  // TOS Compliance: Window Size Blocker
+  if (isWindowTooSmall) {
+    return (
+      <div className="flex flex-col h-screen w-full bg-black items-center justify-center p-6 text-center z-[100] relative overflow-hidden">
+        <div className="absolute inset-0 bg-neutral-900/50" />
+        <div className="relative z-10 max-w-sm space-y-6">
+          <div className="mx-auto w-16 h-16 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 animate-bounce">
+            <Maximize2 size={32} />
+          </div>
+          <h2 className="text-2xl font-bold text-white">Window Too Small</h2>
+          <p className="text-neutral-400">
+            Please resize your window to continue using CueVote. We need a bit more space to show the video player correctly.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Strict Consent Blocking - "Friendlier Welcome Gate"
   if (!hasConsent) {
     return (
       <div className="flex flex-col h-[100dvh] bg-[#050505] items-center justify-center p-6 relative overflow-hidden select-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-800/20 via-[#050505] to-[#050505] pointer-events-none" />
+        {/* Background */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-orange-900/20 via-[#050505] to-[#050505] pointer-events-none" />
+
         <div className="relative z-10 max-w-lg text-center space-y-8 animate-in fade-in zoom-in-95 duration-500">
-          <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-orange-400 to-orange-600 tracking-tighter">
-            CueVote
-          </h1>
-          <div className="space-y-4">
-            <div className="w-20 h-20 rounded-full bg-neutral-900/80 border border-neutral-800 flex items-center justify-center mx-auto mb-6 shadow-2xl">
-              <Lock size={32} className="text-neutral-500" />
+          <div className="space-y-2">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-white">
+              Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400">CueVote</span>
+            </h1>
+            <p className="text-xl text-neutral-400 font-medium">The Democratic Jukebox</p>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-neutral-900/50 border border-white/5 backdrop-blur-xl shadow-2xl space-y-6">
+            <div className="mx-auto w-16 h-16 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 mb-4">
+              <Music size={32} />
             </div>
-            <h2 className="text-2xl font-bold text-white">Privacy Action Required</h2>
-            <p className="text-neutral-400 leading-relaxed max-w-md mx-auto">
-              Access to this channel is restricted. Please accept cookies below to enable YouTube playback, view the playlist, and participate.
+
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold text-white">Enable Audio & Video</h2>
+              <p className="text-neutral-400 text-sm leading-relaxed">
+                To play music from YouTube and participate in the playlist, we need to use cookies.
+              </p>
+            </div>
+
+            <button
+              onClick={giveConsent}
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              <PlayCircle size={24} className="fill-current" />
+              Enable & Join Party
+            </button>
+
+            <p className="text-xs text-neutral-600">
+              By joining, you agree to our <a href="/legal" target="_blank" className="underline hover:text-neutral-400">Privacy Policy</a>.
             </p>
           </div>
         </div>

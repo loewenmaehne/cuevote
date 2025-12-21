@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Cookie, X } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useLocation } from "react-router-dom";
 
 export function CookieConsent({ onAccept }) {
 	const { t } = useLanguage();
+	const location = useLocation();
+
+	if (location.pathname.startsWith("/room/")) return null;
 
 	return (
 		<div className="fixed bottom-0 left-0 right-0 md:bottom-4 md:left-auto md:right-6 md:w-[400px] z-[100] animate-in slide-in-from-bottom-4 fade-in duration-500">
