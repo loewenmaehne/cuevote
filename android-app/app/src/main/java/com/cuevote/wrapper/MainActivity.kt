@@ -38,6 +38,9 @@ class MainActivity : AppCompatActivity() {
             
             // Cache settings (Optional, good for PWA feel)
             cacheMode = WebSettings.LOAD_DEFAULT
+
+            // Custom User Agent for detection
+            userAgentString += " CueVoteWrapper/1.0"
         }
 
         // Web Client to keep links internal
