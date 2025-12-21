@@ -40,18 +40,7 @@ if [ $? -ne 0 ]; then
 fi
 echo "  -> Client build successful."
 
-# PERSISTENCE: Copy Android APK from source to dist
-# Since we are now tracking the APK in git, we just copy it from the repo folder.
-APK_SOURCE="android-app/app/release/app-release.apk"
-DIST_ANDROID="cuevote-client/dist/android"
 
-if [ -f "$APK_SOURCE" ]; then
-    echo "  -> Deploying Android APK..."
-    mkdir -p "$DIST_ANDROID"
-    cp "$APK_SOURCE" "$DIST_ANDROID/"
-else
-    echo "  -> No Android APK found in repository at $APK_SOURCE"
-fi
 
 cd ..
 
