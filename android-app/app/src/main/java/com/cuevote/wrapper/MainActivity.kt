@@ -9,6 +9,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.webkit.JavascriptInterface
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,7 +42,9 @@ class MainActivity : AppCompatActivity() {
             cacheMode = WebSettings.LOAD_DEFAULT
 
             // Custom User Agent for detection
-            userAgentString += " CueVoteWrapper/1.0"
+            // We explicitly get the default, append our tag, and set it back.
+            val defaultUserAgent = userAgentString
+            userAgentString = "$defaultUserAgent CueVoteWrapper/1.0"
         }
 
         // Web Client to keep links internal
@@ -52,6 +56,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         webView.webChromeClient = WebChromeClient()
+
+        // Inject JS Interface for Detection
+        webView.addJavascriptInterface(WebAppInterface(this), "CueVoteAndroid")
 
         // Load the production URL
         webView.loadUrl("https://cuevote.com")
@@ -67,5 +74,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+}
+
+class WebAppInterface(private val mContext: Context) {
+    @JavascriptInterface
+    fun isNative(): Boolean {
+        return true
     }
 }
