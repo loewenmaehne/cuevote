@@ -54,8 +54,10 @@ class MainActivity : AppCompatActivity() {
 
             // Custom User Agent for detection
             // We explicitly get the default, append our tag, and set it back.
+            // IMPORTANT: Remove "; wv" to avoid Google's "Disallowed User Agent" block
             val defaultUserAgent = userAgentString
-            userAgentString = "$defaultUserAgent CueVoteWrapper/1.0"
+            val sanitizedUserAgent = defaultUserAgent.replace("; wv", "")
+            userAgentString = "$sanitizedUserAgent CueVoteWrapper/1.0"
         }
 
         // Web Client to keep links internal
