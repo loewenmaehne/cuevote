@@ -1,6 +1,6 @@
 # CueVote - The Democratic Jukebox
 
-<p align="center"><img src="DemoImages/demo2.png" width="600" alt="CueVote App Demo"></p>
+<p align="center"><img src="DemoImages/channel_top.png" width="600" alt="CueVote App Demo"></p>
 
 **CueVote** is a modern, community-driven social jukebox built for the YouTube era. It democratizes music selection by allowing everyone in the room to suggest songs and vote on the queue in real-time.
 
