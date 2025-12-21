@@ -21,17 +21,17 @@ createRoot(document.getElementById('root')).render(
     <ConsentProvider>
       <LanguageProvider>
         <BrowserRouter>
-          <ConditionalGoogleOAuthProvider>
-            <WebSocketProvider>
-              <MobileRedirectGuard>
+          <MobileRedirectGuard>
+            <ConditionalGoogleOAuthProvider>
+              <WebSocketProvider>
                 <Routes>
                   <Route path="/room/:roomId" element={<App />} />
                   <Route path="/legal" element={<LegalPage />} />
                   <Route path="/" element={<Lobby />} />
                 </Routes>
-              </MobileRedirectGuard>
-            </WebSocketProvider>
-          </ConditionalGoogleOAuthProvider>
+              </WebSocketProvider>
+            </ConditionalGoogleOAuthProvider>
+          </MobileRedirectGuard>
         </BrowserRouter>
       </LanguageProvider>
     </ConsentProvider>
