@@ -7,7 +7,8 @@ export const MobileRedirectGuard = ({ children }) => {
 	// This ensures we dont wait for Sockets/Contexts if we are just going to block anyway.
 	const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 	const isAndroid = /android/i.test(userAgent);
-	const isWrapper = userAgent.includes("CueVoteWrapper");
+	// Check for User Agent OR the Injected Javascript Interface
+	const isWrapper = userAgent.includes("CueVoteWrapper") || (typeof window.CueVoteAndroid !== 'undefined');
 
 	if ((isAndroid || isTV()) && !isWrapper) {
 		// Whitelist Legal Page
