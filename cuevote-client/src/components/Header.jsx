@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { GoogleAuthButton } from "./GoogleAuthButton";
-import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, Library, X } from "lucide-react";
+import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, Library, X, ChevronLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -134,7 +134,18 @@ export function Header({
     >
       <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full gap-2 lg:gap-4">
         <div className="flex items-center gap-3 justify-start min-w-0">
-          <div className="flex items-center flex-shrink-0 transition-all duration-300">
+          <div className="flex items-center flex-shrink-0 transition-all duration-300 gap-2">
+            <button
+              onClick={() => {
+                setShowExitConfirm(true);
+                setExitConfirmIndex(0);
+                setShowSettings(false);
+              }}
+              className="p-2 -ml-2 text-neutral-400 hover:text-white transition-colors rounded-full hover:bg-neutral-800"
+              title={t('header.leave')}
+            >
+              <ChevronLeft size={24} />
+            </button>
             {user ? (
               <button
                 onClick={() => setShowProfileModal(true)}
@@ -171,13 +182,7 @@ export function Header({
                 />
               </div>
             )}
-            <a
-              href="/legal"
-              className="flex items-center justify-center p-2 text-neutral-400 hover:text-white transition-colors ml-1"
-              title={t('header.legal')}
-            >
-              <Scale size={20} />
-            </a>
+            {/* Legal Link Removed from Header - Moved to Profile Menu */}
 
 
 
@@ -223,14 +228,8 @@ export function Header({
         </div>
 
         <div className="flex items-center justify-end gap-2 lg:gap-4 min-w-0">
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
-              setShowExitConfirm(true);
-              setExitConfirmIndex(0); // Default to "Cancel" for safety
-              setShowSettings(false);
-            }}
-            className="hidden md:flex keep-open items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
+          <div
+            className="hidden md:flex items-center gap-2 text-orange-500 select-none"
             title={activeChannel}
           >
             <Radio size={22} className="flex-shrink-0" />
@@ -248,7 +247,7 @@ export function Header({
                 <span className="truncate block">{activeChannel}</span>
               )}
             </div>
-          </button>
+          </div>
 
 
 
@@ -459,7 +458,14 @@ export function Header({
                     <LogOut size={18} /> {t('lobby.signOut')}
                   </button>
 
-                  <div className="pt-4 border-t border-neutral-800 mt-4">
+                  <div className="pt-4 border-t border-neutral-800 mt-4 space-y-3">
+                    <a
+                      href="/legal"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white font-medium transition-colors border border-black/20 text-sm"
+                    >
+                      <Scale size={18} /> {t('header.legal')}
+                    </a>
+
                     <button
                       onClick={() => setShowDeleteConfirm(true)}
                       className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-red-900/30 text-red-500 hover:bg-red-950/30 hover:border-red-900/50 transition-colors text-sm font-medium"
