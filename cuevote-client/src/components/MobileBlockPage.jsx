@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Monitor, Smartphone, Tv } from 'lucide-react';
+import { Download, Monitor, Smartphone, Tv, AlertTriangle } from 'lucide-react';
 import { isTV } from '../utils/deviceDetection';
 
 export const MobileBlockPage = () => {
@@ -67,12 +67,13 @@ export const MobileBlockPage = () => {
 						<span className="relative z-10">Download {isTvDevice ? "TV App" : "Android App"}</span>
 					</a>
 
-					<div className="space-y-1">
-						<p className="text-xs text-neutral-500 font-medium tracking-wide uppercase">
-							Requires Android 7.0+
-						</p>
-						<p className="text-xs text-neutral-600">
-							Settings &gt; Enable "Install Unknown Apps"
+					<div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 w-full backdrop-blur-sm">
+						<div className="flex items-center gap-2 mb-1 justify-center text-yellow-500">
+							<AlertTriangle size={16} className="shrink-0" />
+							<p className="text-xs font-bold uppercase tracking-wide">Action Required</p>
+						</div>
+						<p className="text-xs text-yellow-200/80 leading-snug">
+							Settings &gt; Enable <span className="text-yellow-100 font-bold">"Install Unknown Apps"</span>
 						</p>
 					</div>
 				</div>
