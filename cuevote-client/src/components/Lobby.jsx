@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale, ChevronLeft, ChevronRight } from "lucide-react";
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
-import { GoogleAuthButton } from "./GoogleAuthButton";
 import { useConsent } from '../contexts/ConsentContext';
+
 import { useLanguage } from '../contexts/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -606,7 +606,7 @@ export function Lobby() {
                                         }`}
                                 >
                                     <div className="absolute inset-0">
-                                        {channel.currentTrack?.thumbnail ? (
+                                        {channel.currentTrack?.thumbnail && hasConsent ? (
                                             <>
                                                 <img
                                                     src={channel.currentTrack.thumbnail}
