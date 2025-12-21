@@ -90,7 +90,7 @@ export const LEGAL_CONTENT = {
 					content: `We engage trusted third parties to operate our infrastructure. We ensure they are GDPR compliant.`,
 					listSimple: [
 						`<strong>Google/YouTube</strong> (Auth & Content API) - USA. <br /><span class="text-sm">See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.</span>`,
-						`<strong>Hosting Provider</strong> (Server Infrastructure) - EU/USA`,
+						`<strong>Hosting Provider</strong> (Server Infrastructure) - Germany/France (EU)`,
 						`<strong>Database Provider</strong> (Data Storage) - EU/USA`
 					]
 				},
@@ -193,7 +193,7 @@ export const LEGAL_CONTENT = {
 					content: `Wij schakelen vertrouwde derden in om onze infrastructuur te beheren. Wij zorgen ervoor dat zij AVG-compliant zijn.`,
 					listSimple: [
 						`<strong>Google/YouTube</strong> (Auth & Content API) - VS. <br /><span class="text-sm">Zie <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacybeleid</a>.</span>`,
-						`<strong>Hosting Provider</strong> (Server Infrastructuur) - EU/VS`,
+						`<strong>Hosting Provider</strong> (Server Infrastructuur) - Duitsland/Frankrijk (EU)`,
 						`<strong>Database Provider</strong> (Gegevensopslag) - EU/VS`
 					]
 				},
