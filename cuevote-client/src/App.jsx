@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { isTV } from './utils/deviceDetection';
 import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2 } from "lucide-react";
 import { useConsent } from './contexts/ConsentContext';
 import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
