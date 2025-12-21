@@ -31,6 +31,16 @@ const YouTubeState = {
 };
 
 function App() {
+  // FAST FAIL: Check Mobile Block *Before* Hooks
+  // This ensures we don't wait for Sockets/Contexts if we are just going to block anyway.
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const isAndroid = /android/i.test(userAgent);
+  const isWrapper = userAgent.includes("CueVoteWrapper");
+
+  if ((isAndroid || isTV()) && !isWrapper) {
+    return <MobileBlockPage />;
+  }
+
   const { roomId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -693,15 +703,7 @@ function App() {
     );
   }
 
-  // Mobile / TV Block Logic
-  // Definition: If it is Android/TV AND NOT our native wrapper -> Block.
-  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  const isAndroid = /android/i.test(userAgent);
-  const isWrapper = userAgent.includes("CueVoteWrapper");
 
-  if ((isAndroid || isTV()) && !isWrapper) {
-    return <MobileBlockPage />;
-  }
 
   // DEBUG OVERLAY (Temporary)
   // Ensure we can see what the phone thinks it is
@@ -721,12 +723,12 @@ function App() {
     )
   }
   */
-  // Actually, let's just render it always at the bottom if it's NOT blocked, so we can see why.
-  const debugOverlay = (
-    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999, background: 'rgba(0,0,0,0.8)', color: '#00ff00', padding: '4px', fontSize: '8px', wordBreak: 'break-all', pointerEvents: 'none' }}>
-      DEBUG: {userAgent.substring(0, 50)}... | Android:{isAndroid ? 'Y' : 'N'} TV:{isTV() ? 'Y' : 'N'} Wrap:{isWrapper ? 'Y' : 'N'}
-    </div>
-  );
+  // actually, let's remove the previous react-based debug overlay to avoid confusion
+  /* 
+  const debugOverlay = ... 
+  */
+
+
 
   // Strict Consent Blocking - "Friendlier Welcome Gate"
   if (!hasConsent) {
