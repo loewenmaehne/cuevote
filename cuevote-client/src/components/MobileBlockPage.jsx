@@ -56,8 +56,8 @@ export const MobileBlockPage = () => {
 				{/* Primary Call to Action */}
 				<div className="w-full space-y-4 pt-4">
 					<a
-						href="/android/app-release.apk"
-						download="CueVote-App.apk"
+						href="https://github.com/loewenmaehne/cuevote/releases/latest/download/app-release.apk"
+						download
 						target="_blank"
 						rel="noopener noreferrer"
 						className="group relative w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-lg shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 overflow-hidden"
