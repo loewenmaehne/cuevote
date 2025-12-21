@@ -511,7 +511,7 @@ export function Lobby() {
 
                     {/* Filters - Scrollable on mobile */}
                     <div className="overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none">
-                        <div className="flex bg-neutral-900 rounded-lg p-1.5 gap-2 border border-neutral-800 w-max min-w-full sm:min-w-0 sm:w-auto">
+                        <div className="flex bg-neutral-900 rounded-lg p-1.5 gap-2 border border-neutral-800 w-full sm:w-fit">
                             <button
                                 onClick={() => setChannelType('public')}
                                 className={`flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap ${channelType === 'public' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -2 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
