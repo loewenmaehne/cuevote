@@ -17,7 +17,9 @@ import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
 import { Toast } from "./components/Toast";
+
 import { isTV } from "./utils/deviceDetection";
+import { MobileBlockPage } from "./components/MobileBlockPage";
 
 const YouTubeState = {
   UNSTARTED: -1,
@@ -673,8 +675,8 @@ function App() {
     );
   }
 
-  // TOS Compliance: Window Size Blocker
-  if (isWindowTooSmall) {
+  // TOS Compliance: Window Size Blocker (Desktop only, if not blocked by mobile check)
+  if (isWindowTooSmall && !isTV()) { // Adjusted to ignore TV as TV might report weird sizes but is trusted
     return (
       <div className="flex flex-col h-screen w-full bg-black items-center justify-center p-6 text-center z-[100] relative overflow-hidden">
         <div className="absolute inset-0 bg-neutral-900/50" />
@@ -689,6 +691,16 @@ function App() {
         </div>
       </div>
     );
+  }
+
+  // Mobile / TV Block Logic
+  // Definition: If it is Android/TV AND NOT our native wrapper -> Block.
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const isAndroid = /android/i.test(userAgent);
+  const isWrapper = userAgent.includes("CueVoteWrapper");
+
+  if ((isAndroid || isTV()) && !isWrapper) {
+    return <MobileBlockPage />;
   }
 
   // Strict Consent Blocking - "Friendlier Welcome Gate"
