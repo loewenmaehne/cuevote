@@ -14,6 +14,9 @@ import android.webkit.JavascriptInterface
 
 import androidx.annotation.Keep
 
+import android.os.Message
+import android.app.Dialog
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
@@ -42,6 +45,10 @@ class MainActivity : AppCompatActivity() {
             loadWithOverviewMode = true
             setSupportZoom(false)
             
+            // Popup settings
+            javaScriptCanOpenWindowsAutomatically = true
+            setSupportMultipleWindows(true)
+            
             // Cache settings (Optional, good for PWA feel)
             cacheMode = WebSettings.LOAD_DEFAULT
 
@@ -59,7 +66,44 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        webView.webChromeClient = WebChromeClient()
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onCreateWindow(
+                view: WebView?,
+                isDialog: Boolean,
+                isUserGesture: Boolean,
+                resultMsg: Message?
+            ): Boolean {
+                val newWebView = WebView(this@MainActivity)
+                newWebView.settings.javaScriptEnabled = true
+                newWebView.settings.domStorageEnabled = true
+                newWebView.settings.userAgentString = view?.settings?.userAgentString
+                
+                val dialog = Dialog(this@MainActivity)
+                dialog.setContentView(newWebView)
+                dialog.window?.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT, 
+                    WindowManager.LayoutParams.MATCH_PARENT
+                )
+                dialog.show()
+                
+                newWebView.webChromeClient = object : WebChromeClient() {
+                    override fun onCloseWindow(window: WebView?) {
+                        dialog.dismiss()
+                    }
+                }
+                
+                newWebView.webViewClient = object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                        return false
+                    }
+                }
+
+                val transport = resultMsg?.obj as WebView.WebViewTransport
+                transport.webView = newWebView
+                resultMsg.sendToTarget()
+                return true
+            }
+        }
 
         // Inject JS Interface for Detection
         webView.addJavascriptInterface(WebAppInterface(this), "CueVoteAndroid")
