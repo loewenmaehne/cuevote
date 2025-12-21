@@ -1072,7 +1072,7 @@ function App() {
             </div>
           </div>
         ) : (
-          !isAnyPlaylistView && !showChannelLibrary && !showPendingPage && (
+          !isAnyPlaylistView && !showChannelLibrary && !showPendingPage && hasConsent && (
             <PlaybackControls
               isPlaying={(isPlaying || isLocallyPlaying) && !isLocallyPaused}
               onPlayPause={handlePlayPause}
