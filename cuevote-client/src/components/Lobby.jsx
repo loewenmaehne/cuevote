@@ -394,51 +394,89 @@ export function Lobby() {
 
     return (
         <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center p-8">
-            <header className="w-full max-w-5xl flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                    <h1 className="text-3xl font-bold text-orange-500 tracking-tight">
-                        CueVote
-                    </h1>
+            <header className="w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 gap-4">
+                <div className="flex items-center justify-between w-full sm:w-auto gap-4">
+                    <div className="flex items-center gap-4">
+                        <h1 className="text-3xl font-bold text-orange-500 tracking-tight">
+                            CueVote
+                        </h1>
 
-                    {/* Language Switcher */}
-                    <LanguageSwitcher />
+                        {/* Language Switcher */}
+                        <LanguageSwitcher />
+                    </div>
+
+                    {/* Mobile User Profile (Visible only on small screens) */}
+                    <div className="sm:hidden">
+                        {user ? (
+                            <button
+                                onClick={() => setShowProfileModal(true)}
+                                className="flex items-center gap-2"
+                            >
+                                {user.picture ? (
+                                    <img src={user.picture} className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
+                                        {user.name?.charAt(0)}
+                                    </div>
+                                )}
+                            </button>
+                        ) : (
+                            <GoogleAuthButton
+                                onLoginSuccess={handleLoginSuccess}
+                                render={(performLogin, disabled) => (
+                                    <button
+                                        onClick={() => !disabled && performLogin()}
+                                        disabled={disabled}
+                                        className={`p-2 rounded-full border border-neutral-700 bg-neutral-800 text-white ${disabled ? 'opacity-50' : ''}`}
+                                    >
+                                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
+                                        </svg>
+                                    </button>
+                                )}
+                            />
+                        )}
+                    </div>
                 </div>
 
-                {user ? (
-                    <button
-                        onClick={() => setShowProfileModal(true)}
-                        className="flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border border-transparent transition-all group cursor-pointer"
-                        title="Profile & Settings"
-                    >
-                        <div className="flex items-center gap-2">
-                            {user.picture ? (
-                                <img src={user.picture} className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
-                            ) : (
-                                <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
-                                    {user.name?.charAt(0)}
-                                </div>
+                {/* Desktop User Profile */}
+                <div className="hidden sm:block">
+                    {user ? (
+                        <button
+                            onClick={() => setShowProfileModal(true)}
+                            className="flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border border-transparent transition-all group cursor-pointer"
+                            title="Profile & Settings"
+                        >
+                            <div className="flex items-center gap-2">
+                                {user.picture ? (
+                                    <img src={user.picture} className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
+                                        {user.name?.charAt(0)}
+                                    </div>
+                                )}
+                                <span className="text-neutral-300 font-medium group-hover:text-white transition-colors">{t('lobby.welcome')}, {user.name}</span>
+                            </div>
+                        </button>
+                    ) : (
+                        <GoogleAuthButton
+                            onLoginSuccess={handleLoginSuccess}
+                            render={(performLogin, disabled) => (
+                                <button
+                                    onClick={() => !disabled && performLogin()}
+                                    disabled={disabled}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? 'bg-neutral-900/50 text-neutral-600 border-neutral-800 cursor-not-allowed opacity-50 grayscale' : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'}`}
+                                    title={disabled ? t('lobby.acceptCookies') : ""}
+                                >
+                                    <svg className={`w-5 h-5 ${disabled ? 'text-neutral-600' : ''}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
+                                    </svg>
+                                    {t('lobby.signInGoogle')}
+                                </button>
                             )}
-                            <span className="text-neutral-300 font-medium group-hover:text-white transition-colors">{t('lobby.welcome')}, {user.name}</span>
-                        </div>
-                    </button>
-                ) : (
-                    <GoogleAuthButton
-                        onLoginSuccess={handleLoginSuccess}
-                        render={(performLogin, disabled) => (
-                            <button
-                                onClick={() => !disabled && performLogin()}
-                                disabled={disabled}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? 'bg-neutral-900/50 text-neutral-600 border-neutral-800 cursor-not-allowed opacity-50 grayscale' : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'}`}
-                                title={disabled ? t('lobby.acceptCookies') : ""}
-                            >
-                                <svg className={`w-5 h-5 ${disabled ? 'text-neutral-600' : ''}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
-                                </svg>
-                                {t('lobby.signInGoogle')}
-                            </button>
-                        )}
-                    />
-                )}
+                        />
+                    )}
+                </div>
             </header>
 
             {lastError && !showPasswordModal && (
@@ -451,46 +489,50 @@ export function Lobby() {
             )}
 
             <main className="w-full max-w-5xl">
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                    <div className="flex items-center gap-4">
-                        <h2 className="text-2xl font-semibold">{t('lobby.browseChannels')}</h2>
-                        <div className="flex bg-neutral-900 rounded-lg p-1.5 gap-2 border border-neutral-800">
+                <div className="flex flex-col gap-6 mb-8">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <h2 className="text-2xl font-semibold leading-tight">{t('lobby.browseChannels')}</h2>
+
+                        {/* Search Bar */}
+                        <div className="relative w-full md:w-72">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search className="h-4 w-4 text-neutral-500" />
+                            </div>
+                            <input
+                                id="channel-search"
+                                type="text"
+                                className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-10 p-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-neutral-500 transition-all"
+                                placeholder={t('lobby.searchPlaceholder')}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Filters - Scrollable on mobile */}
+                    <div className="overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none">
+                        <div className="flex bg-neutral-900 rounded-lg p-1.5 gap-2 border border-neutral-800 w-max min-w-full sm:min-w-0 sm:w-auto">
                             <button
                                 onClick={() => setChannelType('public')}
-                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'public' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -2 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
+                                className={`flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap ${channelType === 'public' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -2 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
                             >
                                 <Globe size={14} /> {t('lobby.public')}
                             </button>
                             <button
                                 onClick={() => setChannelType('private')}
-                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'private' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -1 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
+                                className={`flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap ${channelType === 'private' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -1 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
                             >
                                 <Lock size={14} /> {t('lobby.private')}
                             </button>
                             {user && (
                                 <button
                                     onClick={() => setChannelType('my_channels')}
-                                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${channelType === 'my_channels' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -4 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
+                                    className={`flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap ${channelType === 'my_channels' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -4 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
                                 >
                                     <Sparkles size={14} /> {t('lobby.myChannels')}
                                 </button>
                             )}
                         </div>
-                    </div>
-
-                    {/* Search Bar */}
-                    <div className="relative w-full md:w-72">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Search className="h-4 w-4 text-neutral-500" />
-                        </div>
-                        <input
-                            id="channel-search"
-                            type="text"
-                            className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-10 p-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-neutral-500 transition-all"
-                            placeholder={t('lobby.searchPlaceholder')}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
                     </div>
                 </div>
 
@@ -524,7 +566,7 @@ export function Lobby() {
                                 title={user ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
                             >
                                 <Sparkles size={32} className={focusedIndex === 0 ? "text-orange-500" : ""} />
-                                <span className={`font-medium ${focusedIndex === 0 ? "text-white" : ""}`}>
+                                <span className={`font-medium text-center ${focusedIndex === 0 ? "text-white" : ""}`}>
                                     {user ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
                                 </span>
                             </button>
