@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.CueVoteWrapper" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">#F97316</item> <!-- Orange 500 -->
+        <item name="colorPrimaryVariant">#EA580C</item> <!-- Orange 600 -->
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">#000000</item>
+    </style>
+</resources>
