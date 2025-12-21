@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { isTV } from './utils/deviceDetection';
-import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2 } from "lucide-react";
+import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw } from "lucide-react";
 import { useConsent } from './contexts/ConsentContext';
 import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
 import { useLanguage } from './contexts/LanguageContext';
@@ -16,8 +16,11 @@ import { BannedSongsPage } from "./components/BannedSongs"; // Added this import
 import { ChannelLibrary } from "./components/ChannelLibrary"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
+import { PlaybackControls } from "./components/PlaybackControls";
+import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
 import { Toast } from "./components/Toast";
+import { LoadingScreen } from "./components/LoadingScreen";
 
 
 
@@ -45,6 +48,18 @@ function App() {
   const { t } = useLanguage();
 
   // console.log("App Component MOUNTED, Room:", activeRoomId);
+
+  // Online Status Detection
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  useEffect(() => {
+    const handleStatusChange = () => setIsOnline(navigator.onLine);
+    window.addEventListener('online', handleStatusChange);
+    window.addEventListener('offline', handleStatusChange);
+    return () => {
+      window.removeEventListener('online', handleStatusChange);
+      window.removeEventListener('offline', handleStatusChange);
+    };
+  }, []);
 
   // WebSocket connection (Shared)
   const {
@@ -834,13 +849,10 @@ function App() {
 
   if ((!serverState || isStaleState)) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
-          <h2 className="text-2xl font-bold mb-4">{t('app.switching')}</h2>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-        </div>
+      <>
+        <LoadingScreen isOnline={isOnline} isConnected={isConnected} />
         {passwordModalContent}
-      </div>
+      </>
     );
   }
 

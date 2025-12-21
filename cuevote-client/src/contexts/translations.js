@@ -112,7 +112,9 @@ export const translations = {
 			lockedMessage: "This channel is password protected. Please enter the password to join.",
 			unlock: "Unlock",
 			listenMusic: "Listen to Music",
-			unmuteAndPlay: "Unmute & Play"
+			unmuteAndPlay: "Unmute & Play",
+			noInternet: "No Internet Connection",
+			retry: "Retry Connection"
 		},
 		track: {
 			playing: "Playing",
@@ -271,7 +273,9 @@ export const translations = {
 			lockedMessage: "Dit kanaal is beveiligd. Voer het wachtwoord in om deel te nemen.",
 			unlock: "Ontgrendel",
 			listenMusic: "Muziek luisteren",
-			unmuteAndPlay: "Geluid aan & Start"
+			unmuteAndPlay: "Geluid aan & Start",
+			noInternet: "Geen internetverbinding",
+			retry: "Opnieuw proberen"
 		},
 		track: {
 			playing: "Speelt nu",
@@ -430,7 +434,9 @@ export const translations = {
 			lockedMessage: "Dieser Kanal ist passwortgeschützt.",
 			unlock: "Entsperren",
 			listenMusic: "Musik hören",
-			unmuteAndPlay: "Ton an & Start"
+			unmuteAndPlay: "Ton an & Start",
+			noInternet: "Keine Internetverbindung",
+			retry: "Verbindung wiederholen"
 		},
 		track: {
 			playing: "Wiedergabe",
@@ -589,7 +595,9 @@ export const translations = {
 			lockedMessage: "Cette chaîne est protégée par mot de passe.",
 			unlock: "Déverrouiller",
 			listenMusic: "Écouter de la musique",
-			unmuteAndPlay: "Son & Lecture"
+			unmuteAndPlay: "Son & Lecture",
+			noInternet: "Pas de connexion internet",
+			retry: "Réessayer"
 		},
 		track: {
 			playing: "Lecture",
@@ -748,7 +756,9 @@ export const translations = {
 			lockedMessage: "Este canal está protegido con contraseña.",
 			unlock: "Desbloquear",
 			listenMusic: "Escuchar música",
-			unmuteAndPlay: "Sonido y Reproducir"
+			unmuteAndPlay: "Sonido y Reproducir",
+			noInternet: "Sin conexión a internet",
+			retry: "Reintentar"
 		},
 		track: {
 			playing: "Reproduciendo",
