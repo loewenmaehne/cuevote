@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Monitor, Smartphone, Tv, AlertTriangle } from 'lucide-react';
+import { Download, Monitor, Smartphone, Tv, Settings } from 'lucide-react';
 import { isTV } from '../utils/deviceDetection';
 
 export const MobileBlockPage = () => {
@@ -67,14 +67,17 @@ export const MobileBlockPage = () => {
 						<span className="relative z-10">Download {isTvDevice ? "TV App" : "Android App"}</span>
 					</a>
 
-					<div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 w-full backdrop-blur-sm">
-						<div className="flex items-center gap-2 mb-1 justify-center text-yellow-500">
-							<AlertTriangle size={16} className="shrink-0" />
-							<p className="text-xs font-bold uppercase tracking-wide">Action Required</p>
+					<div className="flex flex-col items-center gap-2 mt-4 opacity-70 hover:opacity-100 transition-opacity duration-300 group/hint">
+						<div className="flex items-center gap-3 text-[10px] font-bold text-neutral-600 uppercase tracking-[0.2em]">
+							<div className="h-px w-6 bg-neutral-800 group-hover/hint:bg-orange-900/40 transition-colors" />
+							<span>Installation</span>
+							<div className="h-px w-6 bg-neutral-800 group-hover/hint:bg-orange-900/40 transition-colors" />
 						</div>
-						<p className="text-xs text-yellow-200/80 leading-snug">
-							Settings &gt; Enable <span className="text-yellow-100 font-bold">"Install Unknown Apps"</span>
-						</p>
+
+						<div className="text-xs text-neutral-500 group-hover/hint:text-neutral-300 flex items-center gap-2 bg-neutral-900/30 px-4 py-2 rounded-full border border-white/5 transition-colors">
+							<Settings size={12} className="text-orange-600/70 group-hover/hint:text-orange-500 transition-colors" />
+							<span className="transition-colors">Enable <span className="text-neutral-400 group-hover/hint:text-orange-400 font-semibold transition-colors">"Install Unknown Apps"</span> in settings</span>
+						</div>
 					</div>
 				</div>
 
