@@ -13,6 +13,9 @@ import { ConsentProvider } from './contexts/ConsentContext.jsx';
 import { LanguageProvider } from './contexts/LanguageContext.jsx';
 import { ConditionalGoogleOAuthProvider } from './components/ConditionalGoogleOAuthProvider.jsx';
 
+import { MobileRedirectGuard } from './components/MobileRedirectGuard.jsx';
+// ... previous imports
+
 createRoot(document.getElementById('root')).render(
   <ErrorBoundary>
     <ConsentProvider>
@@ -20,11 +23,13 @@ createRoot(document.getElementById('root')).render(
         <BrowserRouter>
           <ConditionalGoogleOAuthProvider>
             <WebSocketProvider>
-              <Routes>
-                <Route path="/room/:roomId" element={<App />} />
-                <Route path="/legal" element={<LegalPage />} />
-                <Route path="/" element={<Lobby />} />
-              </Routes>
+              <MobileRedirectGuard>
+                <Routes>
+                  <Route path="/room/:roomId" element={<App />} />
+                  <Route path="/legal" element={<LegalPage />} />
+                  <Route path="/" element={<Lobby />} />
+                </Routes>
+              </MobileRedirectGuard>
             </WebSocketProvider>
           </ConditionalGoogleOAuthProvider>
         </BrowserRouter>
