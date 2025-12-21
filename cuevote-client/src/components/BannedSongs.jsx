@@ -31,11 +31,9 @@ export function BannedSongsPage({ bannedSongs, onUnban, onClose }) {
 						{bannedSongs.map((track) => (
 							<div key={track.videoId} className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 hover:border-neutral-700 transition-colors">
 								<div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
-									<img
-										src={track.thumbnail}
-										alt={track.title}
-										className="w-16 h-12 sm:w-24 sm:h-16 rounded-lg object-cover flex-shrink-0 shadow-sm grayscale opacity-70"
-									/>
+									<div className="w-16 h-12 sm:w-24 sm:h-16 rounded-lg bg-neutral-800 flex items-center justify-center flex-shrink-0 shadow-sm border border-neutral-700">
+										<Ban size={24} className="text-neutral-500" />
+									</div>
 
 									<div className="flex-1 min-w-0">
 										<h3 className="text-sm sm:text-lg font-bold text-white line-clamp-2 leading-tight" title={track.title}>{track.title}</h3>
