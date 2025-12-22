@@ -20,6 +20,7 @@ export function PlaybackControls({
   isOwner = false,
   onSeek,
   onHeightChange,
+  canShowControls = true,
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [tempVisible, setTempVisible] = useState(false);
@@ -84,7 +85,7 @@ export function PlaybackControls({
 
 
   // Calculate visibility before using it in effects
-  const shouldShow = !isCinemaMode || isHovered || tempVisible;
+  const shouldShow = (!isCinemaMode || isHovered || tempVisible) && canShowControls;
 
   // Notify parent of visibility changes
   useEffect(() => {
