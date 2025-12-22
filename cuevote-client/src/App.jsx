@@ -424,13 +424,21 @@ function App() {
   const currentTrackRef = useRef(currentTrack);
   useEffect(() => {
     currentTrackRef.current = currentTrack;
-    if (isPlayerReady && playerRef.current && currentTrack?.language) {
+    if (isPlayerReady && playerRef.current) {
       try {
-        console.log("[Player] Setting Caption Language:", currentTrack.language);
-        playerRef.current.setOption && playerRef.current.setOption('captions', 'track', { languageCode: currentTrack.language });
-      } catch (e) { console.error("Failed to set caption language", e); }
+        if (captionsEnabled && currentTrack?.language) {
+          console.log("[Player] Setting Caption Language:", currentTrack.language);
+          playerRef.current.setOption && playerRef.current.setOption('captions', 'track', { languageCode: currentTrack.language });
+        } else {
+          // Explicitly clear captions if disabled
+          console.log("[Player] Clearing Captions (Disabled)");
+          playerRef.current.setOption && playerRef.current.setOption('captions', 'track', {});
+        }
+      } catch (e) {
+        console.error("Failed to set/clear caption language", e);
+      }
     }
-  }, [currentTrack, isPlayerReady]);
+  }, [currentTrack, isPlayerReady, captionsEnabled]);
 
 
   // YouTube API Loading
