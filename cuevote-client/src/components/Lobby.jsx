@@ -174,7 +174,7 @@ export function Lobby() {
     // Handle Keyboard Navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (isCreatingRoom || showPasswordModal) return; // Don't navigate if modal is open
+            if (isCreatingRoom || showPasswordModal || showProfileModal || showDeleteConfirm) return; // Don't navigate if modal is open
 
             // Search Input Handling
             if (document.activeElement.tagName === 'INPUT') {
@@ -186,6 +186,12 @@ export function Lobby() {
                     e.preventDefault();
                     document.activeElement.blur();
                     setFocusedIndex(-1); // Move focus to Private Filter
+                    return;
+                }
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    document.activeElement.blur();
+                    setFocusedIndex(-10); // Move focus to Language Switcher
                     return;
                 }
                 if (e.key === 'ArrowLeft' && e.target.selectionStart === 0) {
@@ -204,7 +210,12 @@ export function Lobby() {
 
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
-                if (focusedIndex === -2) setFocusedIndex(-1); // Public -> Private
+                // Header Navigation
+                if (focusedIndex === -10) setFocusedIndex(-11); // Language -> Profile
+                else if (focusedIndex === -11) { /* Stay at Profile */ }
+
+                // Filter Navigation
+                else if (focusedIndex === -2) setFocusedIndex(-1); // Public -> Private
                 else if (focusedIndex === -1 && user) setFocusedIndex(-4); // Private -> My Channels
                 else if (focusedIndex === -1 && !user) {
                     // Private -> Search (if no My Channels)
@@ -216,54 +227,152 @@ export function Lobby() {
                     document.getElementById('channel-search')?.focus();
                     setFocusedIndex(-3);
                 }
-                else setFocusedIndex(prev => Math.min(prev + 1, totalItems - 1));
+
+                // Pagination Navigation
+                else if (focusedIndex === -30) setFocusedIndex(-31);
+                else if (focusedIndex === -31) { /* Stay */ }
+
+                // Grid Navigation
+                else if (focusedIndex >= 0 && focusedIndex < totalItems - 1) {
+                    setFocusedIndex(prev => prev + 1);
+                }
+
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
-                if (focusedIndex === -1) setFocusedIndex(-2); // Private -> Public
+                // Header Navigation
+                if (focusedIndex === -11) setFocusedIndex(-10); // Profile -> Language
+                else if (focusedIndex === -10) { /* Stay at Language */ }
+
+                // Filter Navigation
+                else if (focusedIndex === -1) setFocusedIndex(-2); // Private -> Public
                 else if (focusedIndex === -4) setFocusedIndex(-1); // My Channels -> Private
+                else if (focusedIndex === -3) { // Search -> Rightmost Filter (handled in INPUT block mostly, but if forced)
+                    if (user) setFocusedIndex(-4);
+                    else setFocusedIndex(-1);
+                }
                 else if (focusedIndex === -2) { /* stay */ }
-                else setFocusedIndex(prev => Math.max(prev - 1, 0));
+
+                // Pagination Navigation
+                else if (focusedIndex === -31) setFocusedIndex(-30);
+
+                // Grid Navigation
+                else if (focusedIndex > 0) {
+                    setFocusedIndex(prev => prev - 1);
+                }
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                if (focusedIndex < 0) setFocusedIndex(0); // Filters -> Grid Start
-                else {
-                    setFocusedIndex(prev => {
-                        return Math.min(prev + columns, totalItems - 1);
-                    });
+                // Header -> Search/Filters
+                if (focusedIndex === -10 || focusedIndex === -11) {
+                    // Default to Search or Public Filter? Let's go to Search first as it's often primary, or Filters. 
+                    document.getElementById('channel-search')?.focus();
+                    setFocusedIndex(-3);
+                }
+
+                // Filters -> Grid
+                else if (focusedIndex < 0 && focusedIndex >= -4) {
+                    setFocusedIndex(0); // Filters -> Grid Start
+                }
+                else if (focusedIndex === -3) { // Search -> Grid (if arrow down pressed while NOT in input, but focusedIndex says -3)
+                    setFocusedIndex(0);
+                }
+
+                // Grid -> Footer
+                else if (focusedIndex >= 0) {
+                    const nextIndex = focusedIndex + columns;
+                    if (nextIndex >= totalItems) {
+                        // End of grid
+                        if (totalPages > 1) setFocusedIndex(-30);
+                        else setFocusedIndex(-20);
+                    } else {
+                        setFocusedIndex(nextIndex);
+                    }
+                }
+
+                // Pagination -> Footer
+                else if (focusedIndex === -30 || focusedIndex === -31) {
+                    setFocusedIndex(-20);
                 }
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                if (focusedIndex < 0) { /* stay in filters */ }
-                else {
-                    // Logic to jump to Search Bar if in top row (User Request)
-                    if (focusedIndex < columns) {
-                        document.getElementById('channel-search')?.focus();
-                        setFocusedIndex(-3);
+
+                // Footer -> Grid (Last Item)
+                if (focusedIndex === -20) {
+                    if (totalPages > 1) setFocusedIndex(-30);
+                    else setFocusedIndex(totalItems - 1);
+                }
+
+                // Pagination -> Grid
+                else if (focusedIndex === -30 || focusedIndex === -31) {
+                    setFocusedIndex(totalItems - 1);
+                }
+
+                // Grid -> Filters
+                else if (focusedIndex >= 0) {
+                    const nextIndex = focusedIndex - columns;
+                    if (nextIndex < 0) {
+                        // Go to Filters -> Public
+                        setFocusedIndex(-2);
                     } else {
-                        setFocusedIndex(prev => prev - columns);
+                        setFocusedIndex(nextIndex);
                     }
                 }
+
+                // Filters -> Search
+                else if (focusedIndex === -1 || focusedIndex === -2 || focusedIndex === -4) {
+                    document.getElementById('channel-search')?.focus();
+                    setFocusedIndex(-3);
+                }
+
+                // Search -> Header 
+                else if (focusedIndex === -3) {
+                    setFocusedIndex(-10);
+                }
+
             } else if (e.key === 'Enter') {
-                e.preventDefault();
-                if (focusedIndex === -2) setChannelType('public');
-                else if (focusedIndex === -1) setChannelType('private');
-                else if (focusedIndex === -4) setChannelType('my_channels');
+                // Don't preventDefault globally here, might intervene with native clicks if not careful
+
+                if (focusedIndex === -10) {
+                    // Language Switcher - trigger visually focused element
+                    const btn = document.getElementById('lang-switcher-btn');
+                    // We need to dispatch a click or let the component handle logic if it observes focusedIndex?
+                    // But LanguageSwitcher component has its own internal state. 
+                    // We passed `id`.
+                    if (btn) btn.click();
+                }
+                else if (focusedIndex === -11) {
+                    e.preventDefault();
+                    // Profile / Login
+                    // Try both desktop IDs
+                    const btn = document.getElementById('profile-btn') || document.getElementById('profile-btn-mobile');
+                    if (btn) btn.click();
+                }
+                else if (focusedIndex === -20) {
+                    e.preventDefault();
+                    const link = document.getElementById('legal-link');
+                    if (link) link.click();
+                }
+                else if (focusedIndex === -30) {
+                    e.preventDefault();
+                    setCurrentPage(prev => Math.max(prev - 1, 1));
+                }
+                else if (focusedIndex === -31) {
+                    e.preventDefault();
+                    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                }
+                else if (focusedIndex === -2) { e.preventDefault(); setChannelType('public'); }
+                else if (focusedIndex === -1) { e.preventDefault(); setChannelType('private'); }
+                else if (focusedIndex === -4) { e.preventDefault(); setChannelType('my_channels'); }
                 else if (focusedIndex >= 0 && focusedIndex < totalItems) {
-                    if (focusedIndex === 0) {
-                        // Create Room (Index 0)
+                    e.preventDefault();
+                    if (focusedIndex === 0 && showCreateButton) {
                         handleCreateRoomClick();
                     } else {
-                        // Join Room (Index > 0 on page 1, or any index on other pages)
-                        // If showCreateButton is true: index 0 is create, 1..N are rooms
-                        // If showCreateButton is false: index 0..N are rooms
-
                         let roomToJoin;
                         if (showCreateButton) {
-                            roomToJoin = visibleRooms[focusedIndex - 1]; // Index 0 is safe-guarded above
+                            roomToJoin = visibleRooms[focusedIndex - 1];
                         } else {
                             roomToJoin = visibleRooms[focusedIndex];
                         }
-
                         if (roomToJoin) {
                             handleRoomClick(roomToJoin);
                         }
@@ -278,7 +387,7 @@ export function Lobby() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [visibleRooms, columns, focusedIndex, isCreatingRoom, showPasswordModal, navigate, showCreateButton]);
+    }, [visibleRooms, columns, focusedIndex, isCreatingRoom, showPasswordModal, showProfileModal, showDeleteConfirm, navigate, showCreateButton, user]);
 
     // Reset focused index when filtered rooms change
     useEffect(() => {
@@ -305,11 +414,20 @@ export function Lobby() {
 
     // Auto-scroll to focused item
     useEffect(() => {
-        if (focusedIndex >= 0) {
+        if (focusedIndex === -3) {
+            document.getElementById('channel-search')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (focusedIndex === -20) {
+            document.getElementById('legal-link')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (focusedIndex === -10 || focusedIndex === -11) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (focusedIndex >= 0) {
             const element = document.getElementById(`lobby-item-${focusedIndex}`);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
+        } else if (focusedIndex < 0 && focusedIndex >= -4) {
+            // Filters
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }, [focusedIndex]);
 
@@ -403,15 +521,18 @@ export function Lobby() {
                         </h1>
 
                         {/* Language Switcher */}
-                        <LanguageSwitcher />
+                        <div className={`rounded-full transition-all duration-200 ${focusedIndex === -10 ? 'ring-2 ring-orange-500 bg-neutral-800' : ''}`}>
+                            <LanguageSwitcher id="lang-switcher-btn" />
+                        </div>
                     </div>
 
                     {/* Mobile User Profile (Visible only on small screens) */}
                     <div className="sm:hidden">
                         {user ? (
                             <button
+                                id="profile-btn-mobile"
                                 onClick={() => setShowProfileModal(true)}
-                                className="flex items-center gap-2"
+                                className={`flex items-center gap-2 rounded-full p-1 transition-all ${focusedIndex === -11 ? 'ring-2 ring-orange-500' : ''}`}
                             >
                                 {user.picture ? (
                                     <img src={user.picture} className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
@@ -426,9 +547,10 @@ export function Lobby() {
                                 onLoginSuccess={handleLoginSuccess}
                                 render={(performLogin, disabled) => (
                                     <button
+                                        id="profile-btn-mobile"
                                         onClick={() => !disabled && performLogin()}
                                         disabled={disabled}
-                                        className={`p-2 rounded-full border border-neutral-700 bg-neutral-800 text-white ${disabled ? 'opacity-50' : ''}`}
+                                        className={`p-2 rounded-full border border-neutral-700 bg-neutral-800 text-white ${disabled ? 'opacity-50' : ''} ${focusedIndex === -11 ? 'ring-2 ring-orange-500' : ''}`}
                                     >
                                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
@@ -444,8 +566,9 @@ export function Lobby() {
                 <div className="hidden sm:block">
                     {user ? (
                         <button
+                            id="profile-btn"
                             onClick={() => setShowProfileModal(true)}
-                            className="flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border border-transparent transition-all group cursor-pointer"
+                            className={`flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border border-transparent transition-all group cursor-pointer ${focusedIndex === -11 ? 'ring-2 ring-orange-500 bg-neutral-800' : ''}`}
                             title="Profile & Settings"
                         >
                             <div className="flex items-center gap-2">
@@ -464,9 +587,10 @@ export function Lobby() {
                             onLoginSuccess={handleLoginSuccess}
                             render={(performLogin, disabled) => (
                                 <button
+                                    id="profile-btn"
                                     onClick={() => !disabled && performLogin()}
                                     disabled={disabled}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? 'bg-neutral-900/50 text-neutral-600 border-neutral-800 cursor-not-allowed opacity-50 grayscale' : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'}`}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? 'bg-neutral-900/50 text-neutral-600 border-neutral-800 cursor-not-allowed opacity-50 grayscale' : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'} ${focusedIndex === -11 ? 'ring-2 ring-orange-500' : ''}`}
                                     title={disabled ? t('lobby.acceptCookies') : ""}
                                 >
                                     <svg className={`w-5 h-5 ${disabled ? 'text-neutral-600' : ''}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -689,7 +813,7 @@ export function Lobby() {
                             <button
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
-                                className="p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className={`p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${focusedIndex === -30 ? 'ring-2 ring-orange-500 text-white' : ''}`}
                             >
                                 <ChevronLeft size={20} />
                             </button>
@@ -701,7 +825,7 @@ export function Lobby() {
                             <button
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
-                                className="p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className={`p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${focusedIndex === -31 ? 'ring-2 ring-orange-500 text-white' : ''}`}
                             >
                                 <ChevronRight size={20} />
                             </button>
@@ -935,7 +1059,11 @@ export function Lobby() {
             }
 
             <footer className="w-full max-w-5xl mt-12 py-6 border-t border-neutral-800 flex justify-center">
-                <Link to="/legal" className="text-neutral-500 hover:text-orange-500 transition-colors text-sm font-medium flex items-center gap-2">
+                <Link
+                    id="legal-link"
+                    to="/legal"
+                    className={`text-neutral-500 hover:text-orange-500 transition-colors text-sm font-medium flex items-center gap-2 px-3 py-2 rounded-lg ${focusedIndex === -20 ? 'ring-2 ring-orange-500 text-orange-500' : ''}`}
+                >
                     <Scale size={16} />
                     <span>{t('lobby.terms')}</span>
                 </Link>
