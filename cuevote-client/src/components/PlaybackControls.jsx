@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
 import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2 } from "lucide-react";
 import { isMobile } from '../utils/deviceDetection';
@@ -19,6 +19,7 @@ export function PlaybackControls({
   onVisibilityChange,
   isOwner = false,
   onSeek,
+  onHeightChange,
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [tempVisible, setTempVisible] = useState(false);
@@ -56,6 +57,7 @@ export function PlaybackControls({
   }, []);
 
   const handleMouseEnter = () => {
+    if (isMobile()) return; // Disable hover logic on mobile
     // if (!isHovered) console.log("[PlaybackControls] Mouse Enter");
     setIsHovered(true);
     isHoveredRef.current = true;
@@ -67,10 +69,16 @@ export function PlaybackControls({
   };
 
   const handleMouseLeave = () => {
+    if (isMobile()) return; // Disable hover logic on mobile
     // console.log("[PlaybackControls] Mouse Leave");
     setIsHovered(false);
     isHoveredRef.current = false;
     activateTemporaryVisibility(); // Start timeout once mouse leaves
+  };
+
+  const handleTouchInteraction = () => {
+    // On mobile, explicit touch resets the timer to keep controls visible
+    activateTemporaryVisibility();
   };
 
 
@@ -116,6 +124,27 @@ export function PlaybackControls({
   }
 
 
+  const footerRef = useRef(null);
+
+  // Measure Footer Height for App Layout
+  useLayoutEffect(() => {
+    if (!footerRef.current) return;
+
+    const updateHeight = () => {
+      if (footerRef.current && onHeightChange) {
+        onHeightChange(footerRef.current.offsetHeight);
+      }
+    };
+
+    // Initial measure
+    updateHeight();
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(footerRef.current);
+
+    return () => observer.disconnect();
+  }, [onHeightChange, shouldShow]); // Re-run if visibility changes to ensure 0 or full height is reported
+
   return (
     <>
 
@@ -126,12 +155,15 @@ export function PlaybackControls({
           className="fixed bottom-0 left-0 w-full h-2 z-[60] bg-transparent"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchInteraction}
         />
       )}
       <footer
+        ref={footerRef}
         className={`fixed bottom-0 left-0 w-full bg-[#050505]/95 backdrop-blur-md border-t border-neutral-900 px-6 py-3 flex flex-col gap-2 z-[70] select-none transition-transform duration-500 ease-in-out ${shouldShow ? 'translate-y-0' : 'translate-y-full'}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchInteraction}
       >
         {/* Progress Bar */}
         <div
@@ -234,4 +266,5 @@ PlaybackControls.propTypes = {
   onVisibilityChange: PropTypes.func,
   isOwner: PropTypes.bool,
   onSeek: PropTypes.func,
+  onHeightChange: PropTypes.func,
 };
