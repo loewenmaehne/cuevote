@@ -301,27 +301,29 @@ function App() {
   const [controlsVisible, setControlsVisible] = useState(true); // Track footer visibility
   const [isWindowTooSmall, setIsWindowTooSmall] = useState(false);
 
-  // Monitor Window Size for TOS Compliance
+  // Monitor Window Size for TOS Compliance & Reactive Layout
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
   useEffect(() => {
-    const checkSize = () => {
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+
       let tooSmall = false;
       if (isCinemaMode) {
         // Strict TOS Minimum in Cinema Mode (200x200)
-        // This allows phones in landscape (e.g. 412px height) to pass easily
         tooSmall = window.innerWidth < 200 || window.innerHeight < 200;
       } else {
         // Standard UI Minimum (360x400)
-        // Ensures standard view UI doesn't break
         tooSmall = window.innerWidth < 360 || window.innerHeight < 400;
       }
       setIsWindowTooSmall(tooSmall);
     };
 
     // Check initially
-    checkSize();
+    handleResize();
 
-    window.addEventListener('resize', checkSize);
-    return () => window.removeEventListener('resize', checkSize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [isCinemaMode]);
 
   // Mobile Auto-Fullscreen on Landscape
@@ -349,20 +351,15 @@ function App() {
 
   // Smart Bar Logic: Intercept visibility changes to enforce TOS
   // Smart Bar Logic: Intercept visibility changes to enforce TOS
+  // Smart Bar Logic: Reactive constraints
+  // If isCinemaMode, we only allow controls if window is tall enough (200px + bar height)
+  const canShowControls = !isCinemaMode || (windowHeight >= 200 + controlsHeight);
+
+  // Updated Handler: We blindly accept what the child tells us, 
+  // because the child now respects 'canShowControls' which we pass down.
   const handleVisibilityChange = useCallback((visible) => {
-    if (visible && isCinemaMode) {
-      // If showing the bar (using ACTUAL measured height) would reduce the player height below 200px...
-      // Then we MUST suppress the bar to stay compliant.
-      // 200px (Min Player) + controlsHeight (Bar) = safeHeight check
-      const safeHeight = 200 + controlsHeight;
-      if (window.innerHeight < safeHeight) {
-        // Suppress controls
-        setControlsVisible(false);
-        return;
-      }
-    }
     setControlsVisible(visible);
-  }, [isCinemaMode, controlsHeight]);
+  }, []);
 
   const handleControlsHeightChange = useCallback((height) => {
     setControlsHeight(height);
@@ -1263,6 +1260,7 @@ function App() {
               isOwner={isOwner}
               onSeek={handleSeek}
               onHeightChange={handleControlsHeightChange}
+              canShowControls={canShowControls}
             />
           )
         )
