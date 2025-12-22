@@ -303,8 +303,8 @@ function App() {
   // Monitor Window Size for TOS Compliance
   useEffect(() => {
     const checkSize = () => {
-      // Minimum dimensions: 200x200 (YouTube TOS Strict Minimum)
-      const tooSmall = window.innerWidth < 200 || window.innerHeight < 200;
+      // Minimum dimensions: 360x400 to ensure player isn't obscured by bars
+      const tooSmall = window.innerWidth < 360 || window.innerHeight < 400;
       setIsWindowTooSmall(tooSmall);
     };
 
@@ -1023,7 +1023,7 @@ function App() {
           ? "fixed inset-0 z-40 bg-black transition-all duration-500 ease-in-out"
           : (isAnyPlaylistView || showChannelLibrary
             ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
-            : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh] min-h-[200px]"
+            : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh]"
           )
         }
         style={{
