@@ -41,6 +41,7 @@ function App() {
   const activeRoomId = roomId || "synthwave";
 
   const [localPlaylistView, setLocalPlaylistView] = useState(false);
+  const [controlsHeight, setControlsHeight] = useState(96); // Default 6rem ~ 96px
   const [showSettings, setShowSettings] = useState(false); // Refactored state from Header
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
   const { hasConsent, giveConsent } = useConsent();
@@ -347,12 +348,13 @@ function App() {
   }, [isCinemaMode]); // Dependency on isCinemaMode to avoid loops if we check equality, but logic handles it safely.
 
   // Smart Bar Logic: Intercept visibility changes to enforce TOS
+  // Smart Bar Logic: Intercept visibility changes to enforce TOS
   const handleVisibilityChange = useCallback((visible) => {
     if (visible && isCinemaMode) {
-      // If showing the bar (estimated ~96px/6rem) would reduce the player height below 200px...
+      // If showing the bar (using ACTUAL measured height) would reduce the player height below 200px...
       // Then we MUST suppress the bar to stay compliant.
-      // 200px (Min Player) + 96px (Bar) = 296px check
-      const safeHeight = 296;
+      // 200px (Min Player) + controlsHeight (Bar) = safeHeight check
+      const safeHeight = 200 + controlsHeight;
       if (window.innerHeight < safeHeight) {
         // Suppress controls
         setControlsVisible(false);
@@ -360,7 +362,11 @@ function App() {
       }
     }
     setControlsVisible(visible);
-  }, [isCinemaMode]);
+  }, [isCinemaMode, controlsHeight]);
+
+  const handleControlsHeightChange = useCallback((height) => {
+    setControlsHeight(height);
+  }, []);
 
   // Handle Escape Key for App-level modals
   useEffect(() => {
@@ -1075,7 +1081,7 @@ function App() {
         }
         style={{
           // In Cinema Mode, lift the bottom if controls are visible to avoid overlay violation
-          bottom: (isCinemaMode && controlsVisible) ? "6rem" : "0px"
+          bottom: (isCinemaMode && controlsVisible) ? `${controlsHeight}px` : "0px"
         }}
       >
         <div className={`absolute inset - 0 border - 4 ${previewTrack ? "border-green-500" : "border-transparent"} transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
@@ -1256,6 +1262,7 @@ function App() {
               onVisibilityChange={handleVisibilityChange}
               isOwner={isOwner}
               onSeek={handleSeek}
+              onHeightChange={handleControlsHeightChange}
             />
           )
         )
