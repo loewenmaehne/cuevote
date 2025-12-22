@@ -35,3 +35,16 @@ export const isTV = () => {
 		userAgent.includes('large screen')   // Some TV browsers specifically state this
 	);
 };
+
+export const isMobile = () => {
+	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
+	const userAgent = navigator.userAgent.toLowerCase();
+
+	// Check for TV first, as TVs are often Android-based but require different UI
+	if (isTV()) return false;
+
+	return (
+		/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent) ||
+		(navigator.maxTouchPoints > 0 && window.innerWidth < 768) // Fallback for touch devices
+	);
+};

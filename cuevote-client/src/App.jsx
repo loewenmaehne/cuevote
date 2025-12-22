@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { isTV } from './utils/deviceDetection';
+import { isTV, isMobile } from './utils/deviceDetection';
 import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw } from "lucide-react";
 import { useConsent } from './contexts/ConsentContext';
 import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
@@ -303,8 +303,16 @@ function App() {
   // Monitor Window Size for TOS Compliance
   useEffect(() => {
     const checkSize = () => {
-      // Minimum dimensions: 360x400 to ensure player isn't obscured by bars
-      const tooSmall = window.innerWidth < 360 || window.innerHeight < 400;
+      let tooSmall = false;
+      if (isCinemaMode) {
+        // Strict TOS Minimum in Cinema Mode (200x200)
+        // This allows phones in landscape (e.g. 412px height) to pass easily
+        tooSmall = window.innerWidth < 200 || window.innerHeight < 200;
+      } else {
+        // Standard UI Minimum (360x400)
+        // Ensures standard view UI doesn't break
+        tooSmall = window.innerWidth < 360 || window.innerHeight < 400;
+      }
       setIsWindowTooSmall(tooSmall);
     };
 
@@ -313,7 +321,46 @@ function App() {
 
     window.addEventListener('resize', checkSize);
     return () => window.removeEventListener('resize', checkSize);
-  }, []);
+  }, [isCinemaMode]);
+
+  // Mobile Auto-Fullscreen on Landscape
+  useEffect(() => {
+    if (!isMobile()) return;
+
+    const handleOrientationCheck = () => {
+      const isLandscape = window.innerWidth > window.innerHeight;
+
+      // Auto-Enter Cinema Mode in Landscape
+      if (isLandscape && !isCinemaMode) {
+        setIsCinemaMode(true);
+      }
+      // Auto-Exit Cinema Mode in Portrait (optional but good UX for this layout)
+      else if (!isLandscape && isCinemaMode) {
+        setIsCinemaMode(false);
+      }
+    };
+
+    // Check initially and on resize/orientationchange
+    handleOrientationCheck();
+    window.addEventListener('resize', handleOrientationCheck);
+    return () => window.removeEventListener('resize', handleOrientationCheck);
+  }, [isCinemaMode]); // Dependency on isCinemaMode to avoid loops if we check equality, but logic handles it safely.
+
+  // Smart Bar Logic: Intercept visibility changes to enforce TOS
+  const handleVisibilityChange = useCallback((visible) => {
+    if (visible && isCinemaMode) {
+      // If showing the bar (estimated ~96px/6rem) would reduce the player height below 200px...
+      // Then we MUST suppress the bar to stay compliant.
+      // 200px (Min Player) + 96px (Bar) = 296px check
+      const safeHeight = 296;
+      if (window.innerHeight < safeHeight) {
+        // Suppress controls
+        setControlsVisible(false);
+        return;
+      }
+    }
+    setControlsVisible(visible);
+  }, [isCinemaMode]);
 
   // Handle Escape Key for App-level modals
   useEffect(() => {
@@ -1206,7 +1253,7 @@ function App() {
               onMinimizeToggle={null}
               isCinemaMode={isCinemaMode}
               onToggleCinemaMode={() => setIsCinemaMode(!isCinemaMode)}
-              onVisibilityChange={setControlsVisible}
+              onVisibilityChange={handleVisibilityChange}
               isOwner={isOwner}
               onSeek={handleSeek}
             />

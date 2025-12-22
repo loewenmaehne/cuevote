@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2 } from "lucide-react";
+import { isMobile } from '../utils/deviceDetection';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export function PlaybackControls({
@@ -186,27 +187,31 @@ export function PlaybackControls({
             >
               {isMuted ? <VolumeX /> : <Volume2 />}
             </button>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              step="1"
-              value={volume}
-              onChange={onVolumeChange}
-              className={`accent-orange-500 w-24 ${isMuted ? "opacity-50" : ""}`}
-              onClick={(event) => event.stopPropagation()}
-              disabled={!currentTrack}
-            />
-            <button
-              onClick={(event) => {
-                event.stopPropagation();
-                onToggleCinemaMode();
-              }}
-              className="hover:text-white transition-colors ml-2"
-              title={isCinemaMode ? "Exit Cinema Mode" : "Cinema Mode"}
-            >
-              {isCinemaMode ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
-            </button>
+            {!isMobile() && (
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value={volume}
+                onChange={onVolumeChange}
+                className={`accent-orange-500 w-24 ${isMuted ? "opacity-50" : ""}`}
+                onClick={(event) => event.stopPropagation()}
+                disabled={!currentTrack}
+              />
+            )}
+            {!isMobile() && (
+              <button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onToggleCinemaMode();
+                }}
+                className="hover:text-white transition-colors ml-2"
+                title={isCinemaMode ? "Exit Cinema Mode" : "Cinema Mode"}
+              >
+                {isCinemaMode ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+              </button>
+            )}
           </div>
         </div>
       </footer>
