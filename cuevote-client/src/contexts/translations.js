@@ -158,6 +158,21 @@ export const translations = {
 			queueEmpty: "Queue empty",
 			backToNow: "Back to Now",
 			addSongs: "Add songs to start playback"
+		},
+		mobile: {
+			tagline: "The Democratic Jukebox",
+			tvDescription: "Turn this screen into the ultimate Jukebox. Let your guests vote on the music.",
+			mobileDescription: "Vote on songs, build the playlist together, and let the best music win.",
+			tvFeatureTitle: "Cinema Mode",
+			mobileFeatureTitle: "Host the Party",
+			tvFeatureBody: "Install the TV App for the perfect shared player experience with Always-On screen.",
+			mobileFeatureBody: "Use our Android App to run the music player with seamless background playback and \"Always On\" screen.",
+			downloadTv: "Download TV App",
+			downloadMobile: "Download Android App",
+			requirement: "Requires Android 7.0+",
+			downloadFail: "If download fails:",
+			installInstruction: "Settings > Enable \"Install Unknown Apps\"",
+			privacyLegal: "Privacy Policy & Legal"
 		}
 	},
 	nl: {
@@ -319,6 +334,21 @@ export const translations = {
 			queueEmpty: "Wachtrij leeg",
 			backToNow: "Terug naar Nu",
 			addSongs: "Voeg nummers toe om af te spelen"
+		},
+		mobile: {
+			tagline: "De Democratische Jukebox",
+			tvDescription: "Maak van dit scherm de ultieme Jukebox. Laat je gasten stemmen op de muziek.",
+			mobileDescription: "Stem op nummers, bouw samen de playlist en laat de beste muziek winnen.",
+			tvFeatureTitle: "Bioscoopmodus",
+			mobileFeatureTitle: "Host de Party",
+			tvFeatureBody: "Installeer de TV App voor de perfecte gedeelde ervaring met Always-On scherm.",
+			mobileFeatureBody: "Gebruik onze Android App om de muziekspeler te draaien met naadloze achtergrondweergave en \"Always On\" scherm.",
+			downloadTv: "Download TV App",
+			downloadMobile: "Download Android App",
+			requirement: "Vereist Android 7.0+",
+			downloadFail: "Als download mislukt:",
+			installInstruction: "Instellingen > Activeer \"Onbekende apps installeren\"",
+			privacyLegal: "Privacybeleid & Juridisch"
 		}
 	},
 	de: {
@@ -407,7 +437,7 @@ export const translations = {
 			ownerBypassQueueTooltip: "Besitzer-Songs spielen als nächstes (Top Priorität)",
 			popups: "Popups",
 			deleteChannel: "Kanal Löschen",
-			deleteChannelWarning: "Diese Aktion ist dauerhaft.",
+			deleteChannelWarning: "Diese Aktion ist dauerhaft und kann nicht ungeschehen gemacht werden.",
 			deleteChannelTitle: "Kanal Löschen?",
 			deleteChannelConfirmPhrase: "Lösche diesen Kanal für immer",
 			deleteChannelType: "Bestätigungsphrase eingeben...",
@@ -431,7 +461,7 @@ export const translations = {
 			notFoundMessage: "Der gesuchte Kanal ({roomId}) wurde nicht gefunden.",
 			goToLobby: "Zur Lobby",
 			privateChannel: "Privater Kanal",
-			lockedMessage: "Dieser Kanal ist passwortgeschützt.",
+			lockedMessage: "Dieser Kanal ist passwortgeschützt. Bitte geben Sie das Passwort ein, um beizutreten.",
 			unlock: "Entsperren",
 			listenMusic: "Musik hören",
 			unmuteAndPlay: "Ton an & Start",
@@ -454,7 +484,7 @@ export const translations = {
 			songsCountPlural: "{count} Songs",
 			inLibrary: "in der Bibliothek",
 			info1: "Diese Bibliothek zeigt einzigartige Songs, die in den letzten <strong>28 Tagen</strong> gespielt wurden.",
-			info2: "Ältere Songs werden ausgeblendet, um die Aktualität der Metadaten zu gewährleisten, aber sie werden <strong>niemals gelöscht</strong>. Die <strong>Auto-Fill</strong>-Funktion merkt sich weiterhin deinen gesamten Verlauf und bringt ältere Songs bei Bedarf automatisch zurück in die Warteschlange (und diese Liste)!",
+			info2: "Ältere Songs werden ausgeblendet, um die Aktualität der Metadaten zu gewährleisten, aber sie werden <strong>niemals gelöscht</strong>. Die <strong>Auto-Fill</strong>-Funktion merkt sich weiterhin deinen gesamten Verlauf und bringt ältere Songs bei Bedarf automatisch zurück in die Warteschlange (und diese Liste) wenn nötig!",
 			empty: "Keine Songs gefunden"
 		},
 		pending: {
@@ -480,6 +510,21 @@ export const translations = {
 			queueEmpty: "Warteschlange leer",
 			backToNow: "Zurück zum Aktuellen",
 			addSongs: "Füge Songs hinzu, um zu starten"
+		},
+		mobile: {
+			tagline: "Die Demokratische Jukebox",
+			tvDescription: "Verwandle diesen Bildschirm in die ultimative Jukebox. Lass deine Gäste über die Musik abstimmen.",
+			mobileDescription: "Stimme über Songs ab, erstelle gemeinsam die Playlist und lass die beste Musik gewinnen.",
+			tvFeatureTitle: "Kinomodus",
+			mobileFeatureTitle: "Hoste die Party",
+			tvFeatureBody: "Installiere die TV-App für das perfekte gemeinsame Spielerlebnis mit Always-On-Bildschirm.",
+			mobileFeatureBody: "Nutze unsere Android-App für nahtlose Hintergrundwiedergabe und \"Always On\"-Bildschirm.",
+			downloadTv: "TV-App herunterladen",
+			downloadMobile: "Android-App herunterladen",
+			requirement: "Erfordert Android 7.0+",
+			downloadFail: "Falls der Download fehlschlägt:",
+			installInstruction: "Einstellungen > \"Unbekannte Apps installieren\" aktivieren",
+			privacyLegal: "Datenschutz & Rechtliches"
 		}
 	},
 	fr: {
@@ -641,6 +686,21 @@ export const translations = {
 			queueEmpty: "File d'attente vide",
 			backToNow: "Retour au direct",
 			addSongs: "Ajoutez des chansons pour commencer"
+		},
+		mobile: {
+			tagline: "Le Jukebox Démocratique",
+			tvDescription: "Transformez cet écran en Jukebox ultime. Laissez vos invités voter pour la musique.",
+			mobileDescription: "Votez pour des chansons, construisez la playlist ensemble et que la meilleure musique gagne.",
+			tvFeatureTitle: "Mode Cinéma",
+			mobileFeatureTitle: "Accueillir la Soirée",
+			tvFeatureBody: "Installez l'app TV pour une expérience partagée parfaite avec écran Always-On.",
+			mobileFeatureBody: "Utilisez notre app Android pour lire la musique en arrière-plan et écran \"Always On\".",
+			downloadTv: "Télécharger l'App TV",
+			downloadMobile: "Télécharger l'App Android",
+			requirement: "Nécessite Android 7.0+",
+			downloadFail: "Si le téléchargement échoue :",
+			installInstruction: "Paramètres > Activer \"Installation d'applis inconnues\"",
+			privacyLegal: "Confidentialité & Mentions Légales"
 		}
 	},
 	es: {
@@ -802,6 +862,21 @@ export const translations = {
 			queueEmpty: "Cola vacía",
 			backToNow: "Volver al actual",
 			addSongs: "Añade canciones para empezar"
+		},
+		mobile: {
+			tagline: "La Jukebox Democrática",
+			tvDescription: "Convierte esta pantalla en la Jukebox definitiva. Deja que tus invitados voten por la música.",
+			mobileDescription: "Vota por canciones, construye la lista juntos y que gane la mejor música.",
+			tvFeatureTitle: "Modo Cine",
+			mobileFeatureTitle: "Organiza la Fiesta",
+			tvFeatureBody: "Instala la App de TV para la experiencia compartida perfecta con pantalla Always-On.",
+			mobileFeatureBody: "Usa nuestra App Android para reproducción en segundo plano y pantalla \"Always On\".",
+			downloadTv: "Descargar App TV",
+			downloadMobile: "Descargar App Android",
+			requirement: "Requiere Android 7.0+",
+			downloadFail: "Si falla la descarga:",
+			installInstruction: "Ajustes > Activar \"Instalar aplicaciones desconocidas\"",
+			privacyLegal: "Privacidad y Legal"
 		}
 	},
 	it: {
@@ -961,6 +1036,21 @@ export const translations = {
 			queueEmpty: "Coda vuota",
 			backToNow: "Torna a ora",
 			addSongs: "Aggiungi brani per iniziare"
+		},
+		mobile: {
+			tagline: "Il Jukebox Democratico",
+			tvDescription: "Trasforma questo schermo nel Jukebox definitivo. Lascia che i tuoi ospiti votino la musica.",
+			mobileDescription: "Vota le canzoni, crea la playlist insieme e lascia che la musica migliore vinca.",
+			tvFeatureTitle: "Modalità Cinema",
+			mobileFeatureTitle: "Ospita la Festa",
+			tvFeatureBody: "Installa l'App TV per un'esperienza condivisa perfetta con schermo Always-On.",
+			mobileFeatureBody: "Usa la nostra App Android per la riproduzione in background e schermo \"Always On\".",
+			downloadTv: "Scarica App TV",
+			downloadMobile: "Scarica App Android",
+			requirement: "Richiede Android 7.0+",
+			downloadFail: "Se il download fallisce:",
+			installInstruction: "Impostazioni > Abilita \"Installa app sconosciute\"",
+			privacyLegal: "Privacy e Legale"
 		}
 	},
 	pt: {
@@ -1121,6 +1211,21 @@ export const translations = {
 			queueEmpty: "Fila vazia",
 			backToNow: "Voltar para atual",
 			addSongs: "Adicione músicas para começar"
+		},
+		mobile: {
+			tagline: "O Jukebox Democrático",
+			tvDescription: "Transforme esta tela no Jukebox definitivo. Deixe seus convidados votarem na música.",
+			mobileDescription: "Vote em músicas, construa a playlist juntos e deixe a melhor música vencer.",
+			tvFeatureTitle: "Modo Cinema",
+			mobileFeatureTitle: "Hospedar a Festa",
+			tvFeatureBody: "Instale o App de TV para a experiência compartilhada perfeita com tela Always-On.",
+			mobileFeatureBody: "Use nosso App Android para reprodução em segundo plano e tela \"Always On\".",
+			downloadTv: "Baixar App TV",
+			downloadMobile: "Baixar App Android",
+			requirement: "Requer Android 7.0+",
+			downloadFail: "Se o download falhar:",
+			installInstruction: "Configurações > Habilitar \"Instalar apps desconhecidos\"",
+			privacyLegal: "Privacidade e Legal"
 		}
 	},
 	"zh-CN": {
@@ -1276,6 +1381,21 @@ export const translations = {
 			queueEmpty: "队列为空",
 			backToNow: "回到当前",
 			addSongs: "添加歌曲以开始播放"
+		},
+		mobile: {
+			tagline: "民主的点唱机",
+			tvDescription: "将此屏幕变成终极点唱机。让您的客人为音乐投票。",
+			mobileDescription: "为歌曲投票，共同建立播放列表，让最好的音乐获胜。",
+			tvFeatureTitle: "电影模式",
+			tvFeatureBody: "安装 TV 应用，获得完美的全屏共享播放体验。",
+			mobileFeatureTitle: "举办派对",
+			mobileFeatureBody: "使用我们的 Android 应用在后台无缝播放音乐并保持屏幕“常亮”。",
+			downloadTv: "下载 TV 应用",
+			downloadMobile: "下载 Android 应用",
+			requirement: "需要 Android 7.0+",
+			downloadFail: "如果下载失败：",
+			installInstruction: "设置 > 启用“安装未知应用”",
+			privacyLegal: "隐私政策与法律信息"
 		}
 	},
 	"zh-TW": {
@@ -1431,6 +1551,21 @@ export const translations = {
 			queueEmpty: "佇列為空",
 			backToNow: "回到目前",
 			addSongs: "新增歌曲以開始播放"
+		},
+		mobile: {
+			tagline: "民主的點唱機",
+			tvDescription: "將此螢幕變成終極點唱機。讓您的客人為音樂投票。",
+			mobileDescription: "為歌曲投票，共同建立播放清單，讓最好的音樂獲勝。",
+			tvFeatureTitle: "電影模式",
+			tvFeatureBody: "安裝 TV 應用程式，獲得完美的全螢幕共享播放體驗。",
+			mobileFeatureTitle: "舉辦派對",
+			mobileFeatureBody: "使用我們的 Android 應用程式在後台無縫播放音樂並保持螢幕「常亮」。",
+			downloadTv: "下載 TV 應用程式",
+			downloadMobile: "下載 Android 應用程式",
+			requirement: "需要 Android 7.0+",
+			downloadFail: "如果下載失敗：",
+			installInstruction: "設定 > 啟用「安裝未知應用程式」",
+			privacyLegal: "隱私政策與法律資訊"
 		}
 	},
 	ja: {
@@ -1584,7 +1719,23 @@ export const translations = {
 			nowPlaying: "再生中",
 			upNext: "次へ",
 			queueEmpty: "キューは空です",
-			backToNow: "現在へ戻る"
+			backToNow: "現在へ戻る",
+			addSongs: "曲を追加して再生を開始"
+		},
+		mobile: {
+			tagline: "みんなのジュークボックス",
+			tvDescription: "この画面を究極のジュークボックスに。ゲストに音楽を投票してもらいましょう。",
+			mobileDescription: "曲に投票し、みんなでプレイリストを作り、最高の音楽を流しましょう。",
+			tvFeatureTitle: "シネマモード",
+			tvFeatureBody: "TVアプリをインストールして、常時オン画面で完璧な共有プレーヤー体験を。",
+			mobileFeatureTitle: "パーティーを主催",
+			mobileFeatureBody: "Androidアプリを使用して、シームレスなバックグラウンド再生と「常時オン」画面で音楽を再生します。",
+			downloadTv: "TVアプリをダウンロード",
+			downloadMobile: "Androidアプリをダウンロード",
+			requirement: "Android 7.0以降が必要",
+			downloadFail: "ダウンロードに失敗した場合：",
+			installInstruction: "設定 > 「不明なアプリのインストール」を有効にする",
+			privacyLegal: "プライバシーポリシーと法的情報"
 		}
 	},
 	ko: {
@@ -1737,7 +1888,23 @@ export const translations = {
 			nowPlaying: "현재 재생",
 			upNext: "다음 곡",
 			queueEmpty: "대기열 비었음",
-			backToNow: "현재로 이동"
+			backToNow: "현재로 이동",
+			addSongs: "노래를 추가하여 재생 시작"
+		},
+		mobile: {
+			tagline: "민주적인 주크박스",
+			tvDescription: "이 화면을 최고의 주크박스로 바꾸세요. 손님들이 음악에 투표하게 하십시오.",
+			mobileDescription: "곡에 투표하고, 함께 재생 목록을 만들고, 최고의 음악이 우승하게 하세요.",
+			tvFeatureTitle: "시네마 모드",
+			tvFeatureBody: "TV 앱을 설치하여 항상 켜진 화면으로 완벽한 공유 플레이어 경험을 즐기세요.",
+			mobileFeatureTitle: "파티 주최",
+			mobileFeatureBody: "Android 앱을 사용하여 끊김 없는 백그라운드 재생과 '항상 켜짐' 화면으로 음악을 재생하세요.",
+			downloadTv: "TV 앱 다운로드",
+			downloadMobile: "Android 앱 다운로드",
+			requirement: "Android 7.0+ 필요",
+			downloadFail: "다운로드 실패 시:",
+			installInstruction: "설정 > '알 수 없는 앱 설치' 허용",
+			privacyLegal: "개인정보 보호 및 법적 고지"
 		}
 	},
 	hi: {
@@ -1891,7 +2058,23 @@ export const translations = {
 			nowPlaying: "अब चल रहा है",
 			upNext: "अगला",
 			queueEmpty: "कतार खाली",
-			backToNow: "वापस अभी"
+			backToNow: "वापस अभी",
+			addSongs: "प्लेबैक शुरू करने के लिए गाने जोड़ें"
+		},
+		mobile: {
+			tagline: "लोकतांत्रिक ज्यूकबॉक्स",
+			tvDescription: "इस स्क्रीन को अल्टीमेट ज्यूकबॉक्स में बदलें। अपने मेहमानों को संगीत पर वोट करने दें।",
+			mobileDescription: "गानों पर वोट करें, एक साथ प्लेलिस्ट बनाएं और सबसे अच्छा संगीत जीतने दें।",
+			tvFeatureTitle: "सिनेमा मोड",
+			tvFeatureBody: "ऑलवेज़-ऑन स्क्रीन के साथ सही साझा प्लेयर अनुभव के लिए टीवी ऐप इंस्टॉल करें।",
+			mobileFeatureTitle: "पार्टी होस्ट करें",
+			mobileFeatureBody: "सहज पृष्ठभूमि प्लेबैक और \"ऑलवेज़ ऑन\" स्क्रीन के साथ संगीत प्लेयर चलाने के लिए हमारे एंड्रॉइड ऐप का उपयोग करें।",
+			downloadTv: "टीवी ऐप डाउनलोड करें",
+			downloadMobile: "एंड्रॉइड ऐप डाउनलोड करें",
+			requirement: "Android 7.0+ आवश्यक है",
+			downloadFail: "यदि डाउनलोड विफल होता है:",
+			installInstruction: "सेटिंग्स > \"अज्ञात ऐप्स इंस्टॉल करें\" सक्षम करें",
+			privacyLegal: "गोपनीयता और कानूनी"
 		}
 	},
 	th: {
@@ -2045,7 +2228,23 @@ export const translations = {
 			nowPlaying: "กำลังเล่น",
 			upNext: "ถัดไป",
 			queueEmpty: "คิวว่าง",
-			backToNow: "กลับไปปัจจุบัน"
+			backToNow: "กลับไปปัจจุบัน",
+			addSongs: "เพิ่มเพลงเพื่อเริ่มเล่น"
+		},
+		mobile: {
+			tagline: "ตู้เพลงประชาธิปไตย",
+			tvDescription: "เปลี่ยนหน้าจอนี้ให้เป็นตู้เพลงสุดล้ำ ให้แขกของคุณโหวตเพลง",
+			mobileDescription: "โหวตเพลง สร้างเพลย์ลิสต์ร่วมกัน และให้เพลงที่ดีที่สุดชนะ",
+			tvFeatureTitle: "โหมดภาพยนตร์",
+			tvFeatureBody: "ติดตั้งแอป TV เพื่อประสบการณ์การเล่นที่แชร์ได้อย่างสมบูรณ์แบบด้วยหน้าจอ Always-On",
+			mobileFeatureTitle: "จัดปาร์ตี้",
+			mobileFeatureBody: "ใช้แอป Android ของเราเพื่อเล่นเพลงด้วยการเล่นพื้นหลังที่ราบรื่นและหน้าจอ \"Always On\"",
+			downloadTv: "ดาวน์โหลดแอป TV",
+			downloadMobile: "ดาวน์โหลดแอป Android",
+			requirement: "ต้องการ Android 7.0+",
+			downloadFail: "หากการดาวน์โหลดล้มเหลว:",
+			installInstruction: "การตั้งค่า > เปิดใช้งาน \"ติดตั้งแอปที่ไม่รู้จัก\"",
+			privacyLegal: "ความเป็นส่วนตัวและกฎหมาย"
 		}
 	},
 	vi: {
@@ -2199,7 +2398,23 @@ export const translations = {
 			nowPlaying: "Đang phát",
 			upNext: "Tiếp theo",
 			queueEmpty: "Hàng đợi trống",
-			backToNow: "Về hiện tại"
+			backToNow: "Về hiện tại",
+			addSongs: "Thêm bài hát để bắt đầu phát"
+		},
+		mobile: {
+			tagline: "Jukebox Dân chủ",
+			tvDescription: "Biến màn hình này thành Jukebox tối thượng. Để khách của bạn bình chọn âm nhạc.",
+			mobileDescription: "Bình chọn bài hát, cùng nhau xây dựng danh sách phát và để âm nhạc hay nhất chiến thắng.",
+			tvFeatureTitle: "Chế độ Rạp chiếu phim",
+			tvFeatureBody: "Cài đặt Ứng dụng TV để có trải nghiệm trình phát chia sẻ hoàn hảo với màn hình Luôn Bật.",
+			mobileFeatureTitle: "Tổ chức Tiệc",
+			mobileFeatureBody: "Sử dụng Ứng dụng Android của chúng tôi để chạy trình phát nhạc với khả năng phát nền liền mạch và màn hình \"Luôn Bật\".",
+			downloadTv: "Tải xuống Ứng dụng TV",
+			downloadMobile: "Tải xuống Ứng dụng Android",
+			requirement: "Yêu cầu Android 7.0+",
+			downloadFail: "Nếu tải xuống thất bại:",
+			installInstruction: "Cài đặt > Bật \"Cài đặt ứng dụng không rõ nguồn gốc\"",
+			privacyLegal: "Quyền riêng tư & Pháp lý"
 		}
 	},
 	id: {
@@ -2353,7 +2568,23 @@ export const translations = {
 			nowPlaying: "Sedang Diputar",
 			upNext: "Berikutnya",
 			queueEmpty: "Antrean kosong",
-			backToNow: "Kembali ke Sekarang"
+			backToNow: "Kembali ke Sekarang",
+			addSongs: "Tambahkan lagu untuk mulai memutar"
+		},
+		mobile: {
+			tagline: "Jukebox Demokratis",
+			tvDescription: "Ubah layar ini menjadi Jukebox terbaik. Biarkan tamu Anda memilih musik.",
+			mobileDescription: "Pilih lagu, buat daftar putar bersama, dan biarkan musik terbaik menang.",
+			tvFeatureTitle: "Mode Bioskop",
+			tvFeatureBody: "Instal Aplikasi TV untuk pengalaman pemutar bersama yang sempurna dengan layar Selalu Aktif.",
+			mobileFeatureTitle: "Tuan Rumah Pesta",
+			mobileFeatureBody: "Gunakan Aplikasi Android kami untuk menjalankan pemutar musik dengan pemutaran latar belakang yang mulus dan layar \"Selalu Aktif\".",
+			downloadTv: "Unduh Aplikasi TV",
+			downloadMobile: "Unduh Aplikasi Android",
+			requirement: "Memerlukan Android 7.0+",
+			downloadFail: "Jika unduhan gagal:",
+			installInstruction: "Pengaturan > Aktifkan \"Instal aplikasi yang tidak dikenal\"",
+			privacyLegal: "Privasi & Hukum"
 		}
 	},
 	ms: {
@@ -2507,7 +2738,23 @@ export const translations = {
 			nowPlaying: "Sedang Main",
 			upNext: "Seterusnya",
 			queueEmpty: "Barisan kosong",
-			backToNow: "Kembali ke Sekarang"
+			backToNow: "Kembali ke Sekarang",
+			addSongs: "Tambah lagu untuk mulakan main balik"
+		},
+		mobile: {
+			tagline: "Jukebox Demokratik",
+			tvDescription: "Tukar skrin ini menjadi Jukebox terbaik. Biarkan tetamu anda mengundi muzik.",
+			mobileDescription: "Undi lagu, bina senarai main bersama-sama, dan biarkan muzik terbaik menang.",
+			tvFeatureTitle: "Mod Pawagam",
+			tvFeatureBody: "Pasang Apl TV untuk pengalaman pemain kongsi yang sempurna dengan skrin Sentiasa Hidup.",
+			mobileFeatureTitle: "Hos Parti",
+			mobileFeatureBody: "Gunakan Apl Android kami untuk menjalankan pemain muzik dengan main balik latar belakang yang lancar dan skrin \"Sentiasa Hidup\".",
+			downloadTv: "Muat turun Apl TV",
+			downloadMobile: "Muat turun Apl Android",
+			requirement: "Memerlukan Android 7.0+",
+			downloadFail: "Jika muat turun gagal:",
+			installInstruction: "Tetapan > Dayakan \"Pasang apl yang tidak diketahui\"",
+			privacyLegal: "Privasi & Undang-undang"
 		}
 	},
 	tl: {
@@ -2815,7 +3062,23 @@ export const translations = {
 			nowPlaying: "Teraz odtwarzane",
 			upNext: "Następne",
 			queueEmpty: "Kolejka pusta",
-			backToNow: "Wróć do teraz"
+			backToNow: "Wróć do teraz",
+			addSongs: "Dodaj utwory, aby rozpocząć"
+		},
+		mobile: {
+			tagline: "Demokratyczna Szafa Grająca",
+			tvDescription: "Zmień ten ekran w najlepszą szafę grającą. Pozwól gościom głosować na muzykę.",
+			mobileDescription: "Głosuj na utwory, wspólnie twórz listę odtwarzania i niech wygra najlepsza muzyka.",
+			tvFeatureTitle: "Tryb Kinowy",
+			mobileFeatureTitle: "Gospodarz Imprezy",
+			tvFeatureBody: "Zainstaluj aplikację TV, aby uzyskać idealne wspólne wrażenia z odtwarzacza dzięki ekranowi Always-On.",
+			mobileFeatureBody: "Użyj naszej aplikacji na Androida, aby uruchomić odtwarzacz muzyki z płynnym odtwarzaniem w tle i ekranem „Always On”.",
+			downloadTv: "Pobierz aplikację TV",
+			downloadMobile: "Pobierz aplikację na Androida",
+			requirement: "Wymaga Androida 7.0+",
+			downloadFail: "Jeśli pobieranie nie powiedzie się:",
+			installInstruction: "Ustawienia > Włącz „Zainstaluj nieznane aplikacje”",
+			privacyLegal: "Prywatność i informacje prawne"
 		}
 	},
 	"sv": {
@@ -2969,7 +3232,23 @@ export const translations = {
 			nowPlaying: "Spelas nu",
 			upNext: "Nästa",
 			queueEmpty: "Kön är tom",
-			backToNow: "Tillbaka till nu"
+			backToNow: "Tillbaka till nu",
+			addSongs: "Lägg till låtar för att börja"
+		},
+		mobile: {
+			tagline: "Den Demokratiska Jukeboxen",
+			tvDescription: "Förvandla den här skärmen till den ultimata Jukeboxen. Låt dina gäster rösta om musiken.",
+			mobileDescription: "Rösta på låtar, bygg spellistan tillsammans, och låt den bästa musiken vinna.",
+			tvFeatureTitle: "Bioläge",
+			mobileFeatureTitle: "Värd för Festen",
+			tvFeatureBody: "Installera TV-appen för den perfekta delade spelarupplevelsen med Always-On-skärm.",
+			mobileFeatureBody: "Använd vår Android-app för att köra musikspelaren med sömlös bakgrundsuppspelning och \"Always On\"-skärm.",
+			downloadTv: "Ladda ner TV-app",
+			downloadMobile: "Ladda ner Android-app",
+			requirement: "Kräver Android 7.0+",
+			downloadFail: "Om nedladdningen misslyckas:",
+			installInstruction: "Inställningar > Aktivera \"Installera okända appar\"",
+			privacyLegal: "Integritet & Juridik"
 		}
 	},
 	"dan": {
@@ -3123,7 +3402,23 @@ export const translations = {
 			nowPlaying: "Spiller nu",
 			upNext: "Næste",
 			queueEmpty: "Kø er tom",
-			backToNow: "Tilbage til nu"
+			backToNow: "Tilbage til nu",
+			addSongs: "Tilføj sange for at starte afspilning"
+		},
+		mobile: {
+			tagline: "Den Demokratiske Jukebox",
+			tvDescription: "Gør denne skærm til den ultimative Jukebox. Lad dine gæster stemme om musikken.",
+			mobileDescription: "Stem på sange, byg spillelisten sammen, og lad den bedste musik vinde.",
+			tvFeatureTitle: "Biograftilstand",
+			mobileFeatureTitle: "Vær Vært for Festen",
+			tvFeatureBody: "Installer TV-appen for den perfekte delte afspilleroplevelse med Always-On-skærm.",
+			mobileFeatureBody: "Brug vores Android-app til at køre musikafspilleren med problemfri baggrundsafspilning og \"Always On\"-skærm.",
+			downloadTv: "Download TV-app",
+			downloadMobile: "Download Android-app",
+			requirement: "Kræver Android 7.0+",
+			downloadFail: "Hvis overførslen mislykkes:",
+			installInstruction: "Indstillinger > Aktiver \"Installer ukendte apps\"",
+			privacyLegal: "Privatliv & Juridisk"
 		}
 	},
 	"no": {
@@ -3277,7 +3572,23 @@ export const translations = {
 			nowPlaying: "Spiller nå",
 			upNext: "Neste",
 			queueEmpty: "Køen er tom",
-			backToNow: "Tilbake til nå"
+			backToNow: "Tilbake til nå",
+			addSongs: "Legg til sanger for å starte"
+		},
+		mobile: {
+			tagline: "Den Demokratiske Jukeboksen",
+			tvDescription: "Gjør denne skjermen til den ultimate jukeboksen. La gjestene dine stemme på musikken.",
+			mobileDescription: "Stem på sanger, bygg spillelisten sammen, og la den beste musikken vinne.",
+			tvFeatureTitle: "Kinomodus",
+			mobileFeatureTitle: "Vær Vert for Festen",
+			tvFeatureBody: "Installer TV-appen for den perfekte delte spilleropplevelsen med Always-On-skjerm.",
+			mobileFeatureBody: "Bruk Android-appen vår til å kjøre musikkspilleren med sømløs bakgrunnsavspilling og \"Always On\"-skjerm.",
+			downloadTv: "Last ned TV-app",
+			downloadMobile: "Last ned Android-app",
+			requirement: "Krever Android 7.0+",
+			downloadFail: "Hvis nedlastingen mislykkes:",
+			installInstruction: "Innstillinger > Aktiver \"Installer ukjente apper\"",
+			privacyLegal: "Personvern og juridisk"
 		}
 	},
 	"fi": {
@@ -3431,7 +3742,23 @@ export const translations = {
 			nowPlaying: "Nyt soi",
 			upNext: "Seuraava",
 			queueEmpty: "Jono tyhjä",
-			backToNow: "Takaisin nykyiseen"
+			backToNow: "Takaisin nykyiseen",
+			addSongs: "Lisää kappaleita aloittaaksesi"
+		},
+		mobile: {
+			tagline: "Demokraattinen Jukebox",
+			tvDescription: "Muuta tämä näyttö äärimmäiseksi Jukeboxiksi. Anna vieraidesi äänestää musiikista.",
+			mobileDescription: "Äänestä kappaleita, rakenna soittolista yhdessä ja anna parhaan musiikin voittaa.",
+			tvFeatureTitle: "Elokuvatila",
+			mobileFeatureTitle: "Isännöi Juhlia",
+			tvFeatureBody: "Asenna TV-sovellus täydellistä jaettua soitinkokemusta ja Always-On-näyttöä varten.",
+			mobileFeatureBody: "Käytä Android-sovellustamme musiikkisoittimen suorittamiseen saumattomalla taustatoistolla ja \"Always On\" -näytöllä.",
+			downloadTv: "Lataa TV-sovellus",
+			downloadMobile: "Lataa Android-sovellus",
+			requirement: "Vaatii Android 7.0+",
+			downloadFail: "Jos lataus epäonnistuu:",
+			installInstruction: "Asetukset > Ota käyttöön \"Asenna tuntemattomat sovellukset\"",
+			privacyLegal: "Yksityisyys ja oikeudelliset tiedot"
 		}
 	},
 	"tr": {
@@ -3585,7 +3912,23 @@ export const translations = {
 			nowPlaying: "Şimdi Çalıyor",
 			upNext: "Sıradaki",
 			queueEmpty: "Kuyruk boş",
-			backToNow: "Şimdiye Dön"
+			backToNow: "Şimdiye Dön",
+			addSongs: "Başlamak için şarkı ekle"
+		},
+		mobile: {
+			tagline: "Demokratik Müzik Kutusu",
+			tvDescription: "Bu ekranı nihai Müzik Kutusuna dönüştürün. Misafirlerinizin müzik için oy vermesine izin verin.",
+			mobileDescription: "Şarkılara oy verin, çalma listesini birlikte oluşturun ve en iyi müziğin kazanmasına izin verin.",
+			tvFeatureTitle: "Sinema Modu",
+			mobileFeatureTitle: "Partiye Ev Sahipliği Yap",
+			tvFeatureBody: "Her Zaman Açık ekran ile mükemmel paylaşılan oynatıcı deneyimi için TV Uygulamasını yükleyin.",
+			mobileFeatureBody: "Sorunsuz arka plan oynatma ve \"Her Zaman Açık\" ekran ile müzik çaları çalıştırmak için Android Uygulamamızı kullanın.",
+			downloadTv: "TV Uygulamasını İndir",
+			downloadMobile: "Android Uygulamasını İndir",
+			requirement: "Android 7.0+ gerekir",
+			downloadFail: "İndirme başarısız olursa:",
+			installInstruction: "Ayarlar > \"Bilinmeyen uygulamaları yükle\" seçeneğini etkinleştirin",
+			privacyLegal: "Gizlilik ve Yasal"
 		}
 	},
 	"el": {
@@ -3739,7 +4082,23 @@ export const translations = {
 			nowPlaying: "Παίζει Τώρα",
 			upNext: "Επόμενο",
 			queueEmpty: "Η ουρά είναι άδεια",
-			backToNow: "Επιστροφή στο Τώρα"
+			backToNow: "Επιστροφή στο Τώρα",
+			addSongs: "Προσθέστε τραγούδια για έναρξη"
+		},
+		mobile: {
+			tagline: "Το Δημοκρατικό Jukebox",
+			tvDescription: "Μετατρέψτε αυτή την οθόνη στο απόλυτο Jukebox. Αφήστε τους καλεσμένους σας να ψηφίσουν για τη μουσική.",
+			mobileDescription: "Ψηφίστε τραγούδια, φτιάξτε τη λίστα αναπαραγωγής μαζί και αφήστε την καλύτερη μουσική να κερδίσει.",
+			tvFeatureTitle: "Λειτουργία Κινηματογράφου",
+			mobileFeatureTitle: "Φιλοξενία Πάρτι",
+			tvFeatureBody: "Εγκαταστήστε την εφαρμογή TV για την τέλεια εμπειρία κοινού παίκτη με οθόνη Always-On.",
+			mobileFeatureBody: "Χρησιμοποιήστε την εφαρμογή Android για να εκτελέσετε το πρόγραμμα αναπαραγωγής μουσικής με απρόσκοπτη αναπαραγωγή στο παρασκήνιο και οθόνη \"Always On\".",
+			downloadTv: "Λήψη εφαρμογής TV",
+			downloadMobile: "Λήψη εφαρμογής Android",
+			requirement: "Απαιτεί Android 7.0+",
+			downloadFail: "Εάν η λήψη αποτύχει:",
+			installInstruction: "Ρυθμίσεις > Ενεργοποίηση \"Εγκατάσταση άγνωστων εφαρμογών\"",
+			privacyLegal: "Απόρρητο & Νομικά"
 		}
 	},
 	"ru": {
@@ -3893,7 +4252,23 @@ export const translations = {
 			nowPlaying: "Сейчас играет",
 			upNext: "Далее",
 			queueEmpty: "Очередь пуста",
-			backToNow: "Вернуться к текущему"
+			backToNow: "Вернуться к текущему",
+			addSongs: "Добавьте песни, чтобы начать"
+		},
+		mobile: {
+			tagline: "Демократичный Джукбокс",
+			tvDescription: "Превратите этот экран в идеальный Джукбокс. Позвольте гостям голосовать за музыку.",
+			mobileDescription: "Голосуйте за песни, создавайте плейлист вместе, и пусть победит лучшая музыка.",
+			tvFeatureTitle: "Режим Кинотеатр",
+			mobileFeatureTitle: "Организовать Вечеринку",
+			tvFeatureBody: "Установите приложение для ТВ для идеального совместного воспроизведения с экраном Always-On.",
+			mobileFeatureBody: "Используйте наше приложение Android для запуска музыкального плеера с фоновым воспроизведением и экраном \"Always On\".",
+			downloadTv: "Скачать приложение для ТВ",
+			downloadMobile: "Скачать приложение Android",
+			requirement: "Требуется Android 7.0+",
+			downloadFail: "Если скачивание не удалось:",
+			installInstruction: "Настройки > Включить \"Установка неизвестных приложений\"",
+			privacyLegal: "Конфиденциальность и правовая информация"
 		}
 	},
 	"uk": {
@@ -4047,7 +4422,23 @@ export const translations = {
 			nowPlaying: "Зараз грає",
 			upNext: "Далі",
 			queueEmpty: "Черга порожня",
-			backToNow: "Повернутися до поточного"
+			backToNow: "Повернутися до поточного",
+			addSongs: "Додайте пісні, щоб почати"
+		},
+		mobile: {
+			tagline: "Демократичний Джукбокс",
+			tvDescription: "Перетворіть цей екран на ідеальний Джукбокс. Дозвольте гостям голосувати за музику.",
+			mobileDescription: "Голосуйте за пісні, створюйте плейлист разом, і нехай переможе найкраща музика.",
+			tvFeatureTitle: "Режим Кінотеатр",
+			mobileFeatureTitle: "Організувати Вечірку",
+			tvFeatureBody: "Встановіть додаток для ТБ для ідеального спільного відтворення з екраном Always-On.",
+			mobileFeatureBody: "Використовуйте наш додаток Android для запуску музичного плеєра з фоновим відтворенням і екраном \"Always On\".",
+			downloadTv: "Завантажити додаток для ТБ",
+			downloadMobile: "Завантажити додаток Android",
+			requirement: "Потрібно Android 7.0+",
+			downloadFail: "Якщо завантаження не вдалося:",
+			installInstruction: "Налаштування > Увімкнути \"Встановлення невідомих додатків\"",
+			privacyLegal: "Конфіденційність та правова інформація"
 		}
 	},
 	"cs": {
@@ -4201,7 +4592,23 @@ export const translations = {
 			nowPlaying: "Právě Hraje",
 			upNext: "Další",
 			queueEmpty: "Fronta je prázdná",
-			backToNow: "Zpět na Teď"
+			backToNow: "Zpět na aktuální",
+			addSongs: "Přidejte skladby pro zahájení"
+		},
+		mobile: {
+			tagline: "Demokratický Jukebox",
+			tvDescription: "Proměňte tuto obrazovku v dokonalý Jukebox. Nechte své hosty hlasovat o hudbě.",
+			mobileDescription: "Hlasujte o písních, společně sestavujte seznam skladeb a nechte vyhrát tu nejlepší hudbu.",
+			tvFeatureTitle: "Režim Kino",
+			mobileFeatureTitle: "Pořádat Párty",
+			tvFeatureBody: "Nainstalujte si aplikaci TV pro dokonalý zážitek ze sdíleného přehrávače s obrazovkou Always-On.",
+			mobileFeatureBody: "Použijte naši aplikaci pro Android ke spuštění hudebního přehrávače s plynulým přehráváním na pozadí a obrazovkou „Always On“.",
+			downloadTv: "Stáhnout aplikaci TV",
+			downloadMobile: "Stáhnout aplikaci pro Android",
+			requirement: "Vyžaduje Android 7.0+",
+			downloadFail: "Pokud stahování selže:",
+			installInstruction: "Nastavení > Povolit „Instalovat neznámé aplikace“",
+			privacyLegal: "Ochrana soukromí a právní informace"
 		}
 	},
 	"hu": {
@@ -4355,7 +4762,23 @@ export const translations = {
 			nowPlaying: "Most Játszott",
 			upNext: "Következő",
 			queueEmpty: "A sor üres",
-			backToNow: "Vissza a mosthoz"
+			backToNow: "Vissza a jelenbe",
+			addSongs: "Adjon hozzá dalokat a kezdéshez"
+		},
+		mobile: {
+			tagline: "A Demokratikus Jukebox",
+			tvDescription: "Változtassa ezt a képernyőt a végső Jukeboxszá. Hagyja, hogy vendégei szavazzanak a zenére.",
+			mobileDescription: "Szavazzon dalokra, építsen közösen lejátszási listát, és hagyja, hogy a legjobb zene nyerjen.",
+			tvFeatureTitle: "Mozi Mód",
+			mobileFeatureTitle: "Házigazda",
+			tvFeatureBody: "Telepítse a TV alkalmazást a tökéletes megosztott lejátszó élményért Always-On képernyővel.",
+			mobileFeatureBody: "Használja Android alkalmazásunkat a zenelejátszó futtatásához zökkenőmentes háttérlejátszással és \"Always On\" képernyővel.",
+			downloadTv: "TV Alkalmazás Letöltése",
+			downloadMobile: "Android Alkalmazás Letöltése",
+			requirement: "Android 7.0+ szükséges",
+			downloadFail: "Ha a letöltés sikertelen:",
+			installInstruction: "Beállítások > Engedélyezze az \"Ismeretlen alkalmazások telepítése\" opciót",
+			privacyLegal: "Adatvédelem és Jogi"
 		}
 	},
 	"ro": {
@@ -4509,7 +4932,23 @@ export const translations = {
 			nowPlaying: "Cântă Acum",
 			upNext: "Urmează",
 			queueEmpty: "Coadă goală",
-			backToNow: "Înapoi la Acum"
+			backToNow: "Înapoi la Acum",
+			addSongs: "Adaugă melodii pentru a începe"
+		},
+		mobile: {
+			tagline: "Jukebox-ul Democratic",
+			tvDescription: "Transformați acest ecran în Jukebox-ul suprem. Lăsați oaspeții să voteze pentru muzică.",
+			mobileDescription: "Votați melodii, construiți lista de redare împreună și lăsați cea mai bună muzică să câștige.",
+			tvFeatureTitle: "Mod Cinema",
+			mobileFeatureTitle: "Găzduiți Petrecerea",
+			tvFeatureBody: "Instalați aplicația TV pentru experiența perfectă de player partajat cu ecran Always-On.",
+			mobileFeatureBody: "Utilizați aplicația noastră Android pentru a rula playerul muzical cu redare în fundal fără întreruperi și ecran \"Always On\".",
+			downloadTv: "Descărcați Aplicația TV",
+			downloadMobile: "Descărcați Aplicația Android",
+			requirement: "Necesită Android 7.0+",
+			downloadFail: "Dacă descărcarea eșuează:",
+			installInstruction: "Setări > Activați \"Instalare aplicații necunoscute\"",
+			privacyLegal: "Confidențialitate și Legal"
 		}
 	},
 	"bg": {
@@ -4663,7 +5102,23 @@ export const translations = {
 			nowPlaying: "Свири сега",
 			upNext: "Следващо",
 			queueEmpty: "Опашката е празна",
-			backToNow: "Обратно към сега"
+			backToNow: "Обратно към момента",
+			addSongs: "Добавете песни за начало"
+		},
+		mobile: {
+			tagline: "Демократичният Джубокс",
+			tvDescription: "Превърнете този екран в най-добрия джубокс. Нека гостите ви гласуват за музиката.",
+			mobileDescription: "Гласувайте за песни, изграждайте плейлиста заедно и нека най-добрата музика победи.",
+			tvFeatureTitle: "Кино Режим",
+			mobileFeatureTitle: "Домакин на Партито",
+			tvFeatureBody: "Инсталирайте TV приложението за перфектното споделено изживяване с Always-On екран.",
+			mobileFeatureBody: "Използвайте нашето Android приложение за пускане на музикалния плейър с безпроблемно възпроизвеждане във фонов режим и \"Always On\" екран.",
+			downloadTv: "Изтегли TV Приложение",
+			downloadMobile: "Изтегли Android Приложение",
+			requirement: "Изисква Android 7.0+",
+			downloadFail: "Ако изтеглянето е неуспешно:",
+			installInstruction: "Настройки > Разреши \"Инсталиране на неизвестни приложения\"",
+			privacyLegal: "Поверителност и Правни"
 		}
 	},
 	"hr": {
@@ -4817,7 +5272,23 @@ export const translations = {
 			nowPlaying: "Sada Svira",
 			upNext: "Sljedeće",
 			queueEmpty: "Red je prazan",
-			backToNow: "Natrag na Sada"
+			backToNow: "Natrag na Slušanje",
+			addSongs: "Dodaj pjesme za početak"
+		},
+		mobile: {
+			tagline: "Demokratski Jukebox",
+			tvDescription: "Pretvorite ovaj zaslon u vrhunski Jukebox. Neka vaši gosti glasaju za glazbu.",
+			mobileDescription: "Glasajte za pjesme, gradite popis za reprodukciju zajedno i neka najbolja glazba pobijedi.",
+			tvFeatureTitle: "Kino Način",
+			mobileFeatureTitle: "Domaćin Zabave",
+			tvFeatureBody: "Instalirajte TV aplikaciju za savršeno zajedničko iskustvo playera s Always-On zaslonom.",
+			mobileFeatureBody: "Koristite našu Android aplikaciju za pokretanje glazbenog playera s besprijekornom reprodukcijom u pozadini i \"Always On\" zaslonom.",
+			downloadTv: "Preuzmi TV Aplikaciju",
+			downloadMobile: "Preuzmi Android Aplikaciju",
+			requirement: "Zahtijeva Android 7.0+",
+			downloadFail: "Ako preuzimanje ne uspije:",
+			installInstruction: "Postavke > Omogući \"Instaliraj nepoznate aplikacije\"",
+			privacyLegal: "Privatnost i Pravno"
 		}
 	},
 	"sr": {
@@ -4971,7 +5442,23 @@ export const translations = {
 			nowPlaying: "Sada Svira",
 			upNext: "Sledeće",
 			queueEmpty: "Red je prazan",
-			backToNow: "Nazad na Sada"
+			backToNow: "Nazad na Trenutno",
+			addSongs: "Dodaj pesme za početak"
+		},
+		mobile: {
+			tagline: "Demokratski Džuboks",
+			tvDescription: "Pretvorite ovaj ekran u vrhunski džuboks. Neka vaši gosti glasaju za muziku.",
+			mobileDescription: "Glasajte za pesme, pravite plejlistu zajedno i neka najbolja muzika pobedi.",
+			tvFeatureTitle: "Bioskopski Režim",
+			mobileFeatureTitle: "Domaćin Zabave",
+			tvFeatureBody: "Instalirajte TV aplikaciju za savršeno zajedničko iskustvo plejera sa Always-On ekranom.",
+			mobileFeatureBody: "Koristite našu Android aplikaciju za pokretanje muzičkog plejera sa besprekornom reprodukcijom u pozadini i \"Always On\" ekranom.",
+			downloadTv: "Preuzmi TV Aplikaciju",
+			downloadMobile: "Preuzmi Android Aplikaciju",
+			requirement: "Zahteva Android 7.0+",
+			downloadFail: "Ako preuzimanje ne uspe:",
+			installInstruction: "Podešavanja > Omogući \"Instaliraj nepoznate aplikacije\"",
+			privacyLegal: "Privatnost i Pravno"
 		}
 	},
 	"sk": {
@@ -5125,7 +5612,23 @@ export const translations = {
 			nowPlaying: "Práve Hrá",
 			upNext: "Ďalšie",
 			queueEmpty: "Fronta je prázdna",
-			backToNow: "Späť na Teraz"
+			backToNow: "Späť na Teraz",
+			addSongs: "Pridajte skladby pre začiatok"
+		},
+		mobile: {
+			tagline: "Demokratický Jukebox",
+			tvDescription: "Premeňte túto obrazovku na dokonalý Jukebox. Nechajte hostí hlasovať o hudbe.",
+			mobileDescription: "Hlasujte za piesne, zostavujte playlist spoločne a nechajte vyhrať najlepšiu hudbu.",
+			tvFeatureTitle: "Režim Kino",
+			mobileFeatureTitle: "Poriadať Párty",
+			tvFeatureBody: "Nainštalujte TV aplikáciu pre dokonalý spoločný zážitok z prehrávača s obrazovkou Always-On.",
+			mobileFeatureBody: "Použite našu aplikáciu pre Android na spustenie hudobného prehrávača s plynulým prehrávaním na pozadí a obrazovkou „Always On“.",
+			downloadTv: "Stiahnuť TV Aplikáciu",
+			downloadMobile: "Stiahnuť Aplikáciu Android",
+			requirement: "Vyžaduje Android 7.0+",
+			downloadFail: "Ak sťahovanie zlyhá:",
+			installInstruction: "Nastavenia > Povoliť „Inštalovať neznáme aplikácie“",
+			privacyLegal: "Súkromie a Právne"
 		}
 	},
 	"ar": {
@@ -5279,7 +5782,23 @@ export const translations = {
 			nowPlaying: "يعمل الآن",
 			upNext: "التالي",
 			queueEmpty: "قائمة الانتظار فارغة",
-			backToNow: "العودة إلى الآن"
+			backToNow: "العودة إلى الآن",
+			addSongs: "أضف أغاني للبدء"
+		},
+		mobile: {
+			tagline: "صندوق الموسيقى الديمقراطي",
+			tvDescription: "حول هذه الشاشة إلى صندوق الموسيقى المثالي. دع ضيوفك يصوتون للموسيقى.",
+			mobileDescription: "صوت للأغاني، وابن قائمة التشغيل معًا، ودع أفضل موسيقى تفوز.",
+			tvFeatureTitle: "وضع السينما",
+			mobileFeatureTitle: "استضافة الحفلة",
+			tvFeatureBody: "قم بتثبيت تطبيق التلفزيون للحصول على تجربة مشغل مشتركة مثالية مع شاشة تعمل دائمًا.",
+			mobileFeatureBody: "استخدم تطبيق Android الخاص بنا لتشغيل مشغل الموسيقى مع تشغيل الخلفية السلس وشاشة \"تعمل دائمًا\".",
+			downloadTv: "تنزيل تطبيق التلفزيون",
+			downloadMobile: "تنزيل تطبيق Android",
+			requirement: "يتطلب Android 7.0+",
+			downloadFail: "إذا فشل التنزيل:",
+			installInstruction: "الإعدادات > تمكين \"تثبيت تطبيقات غير معروفة\"",
+			privacyLegal: "الخصوصية والقانونية"
 		}
 	},
 	"he": {
@@ -5433,7 +5952,23 @@ export const translations = {
 			nowPlaying: "מנגן עכשיו",
 			upNext: "הבא",
 			queueEmpty: "התור ריק",
-			backToNow: "חזרה לעכשיו"
+			backToNow: "חזרה לעכשיו",
+			addSongs: "הוסף שירים להתחלה"
+		},
+		mobile: {
+			tagline: "הג'וקבוקס הדמוקרטי",
+			tvDescription: "הפוך את המסך הזה לג'וקבוקס האולטימטיבי. תן לאורחים שלך להצביע למוזיקה.",
+			mobileDescription: "הצבע לשירים, בנה את הפלייליסט יחד, ותן למוזיקה הטובה ביותר לנצח.",
+			tvFeatureTitle: "מצב קולנוע",
+			mobileFeatureTitle: "ארח את המסיבה",
+			tvFeatureBody: "התקן את אפליקציית הטלוויזיה לחוויית נגן משותפת מושלמת עם מסך שפועל תמיד.",
+			mobileFeatureBody: "השתמש באפליקציית ה-Android שלנו כדי להפעיל את נגן המוזיקה עם ניגון ברקע חלק ומסך \"פועל תמיד\".",
+			downloadTv: "הורד את אפליקציית הטלוויזיה",
+			downloadMobile: "הורד את אפליקציית Android",
+			requirement: "דורש Android 7.0+",
+			downloadFail: "אם ההורדה נכשלת:",
+			installInstruction: "הגדרות > אפשר \"התקן אפליקציות לא ידועות\"",
+			privacyLegal: "פרטיות ומשפטי"
 		}
 	}
 };
