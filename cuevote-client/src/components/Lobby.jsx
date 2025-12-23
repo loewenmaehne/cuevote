@@ -690,7 +690,7 @@ export function Lobby() {
                                     onMouseMove={() => {
                                         if (!isScrolling.current && focusedIndex !== actualIndex) setFocusedIndex(actualIndex);
                                     }}
-                                    className={`scroll-mt-56 scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-4 sm:p-6 aspect-[4/3] flex flex-col justify-end cursor-pointer ${actualIndex === focusedIndex
+                                    className={`scroll-mt-56 scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left aspect-[4/3] cursor-pointer ${actualIndex === focusedIndex
                                         ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
                                         : "border-neutral-800"
                                         }`}
@@ -710,8 +710,8 @@ export function Lobby() {
                                         )}
                                     </div>
 
-                                    <div className="relative z-10 space-y-2 w-full">
-                                        <div className="flex items-center justify-between">
+                                    <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-end z-10 w-full pointer-events-none">
+                                        <div className="flex items-center justify-between pointer-events-auto">
                                             <div className="flex-1 min-w-0 pr-2">
                                                 {/* Mobile: Always scroll if long */}
                                                 <div className="md:hidden">
@@ -755,9 +755,9 @@ export function Lobby() {
                                             </div>
                                             <Radio className={`transition-colors flex-shrink-0 ${actualIndex === focusedIndex ? "text-white" : "text-neutral-500"}`} />
                                         </div>
-                                        <p className="text-neutral-400 text-sm line-clamp-2">{channel.description}</p>
+                                        <p className="text-neutral-400 text-sm line-clamp-2 mt-2 pointer-events-auto">{channel.description}</p>
 
-                                        <div className="flex items-center gap-2 pt-4 text-xs font-medium text-neutral-500 uppercase tracking-wider justify-between">
+                                        <div className="flex items-center gap-2 pt-4 text-xs font-medium text-neutral-500 uppercase tracking-wider justify-between pointer-events-auto">
                                             <div className="flex items-center gap-2">
                                                 <Users size={14} /> <span>{channel.listeners || 0} {t('lobby.live')}</span>
                                             </div>
