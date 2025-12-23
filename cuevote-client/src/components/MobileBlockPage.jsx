@@ -1,9 +1,11 @@
 import React from 'react';
 import { Download, Monitor, Smartphone, Tv, Settings } from 'lucide-react';
 import { isTV } from '../utils/deviceDetection';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const MobileBlockPage = () => {
 	const isTvDevice = isTV();
+	const { t } = useLanguage();
 
 	return (
 		<div className="flex flex-col h-[100dvh] bg-[#050505] items-center justify-center p-6 text-center relative overflow-hidden select-none font-sans">
@@ -21,14 +23,14 @@ export const MobileBlockPage = () => {
 						</h1>
 						<div className="h-1 w-24 bg-gradient-to-r from-orange-600 to-orange-400 rounded-full mb-4" />
 						<p className="text-xl font-bold tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400 drop-shadow-sm">
-							The Democratic Jukebox
+							{t('mobile.tagline')}
 						</p>
 					</div>
 
 					<p className="text-lg text-neutral-300 font-medium leading-relaxed max-w-xs mx-auto opacity-90">
 						{isTvDevice
-							? "Turn this screen into the ultimate Jukebox. Let your guests vote on the music."
-							: "Vote on songs, build the playlist together, and let the best music win."
+							? t('mobile.tvDescription')
+							: t('mobile.mobileDescription')
 						}
 					</p>
 				</div>
@@ -41,12 +43,12 @@ export const MobileBlockPage = () => {
 						</div>
 						<div>
 							<h3 className="text-white font-bold text-lg mb-1 tracking-tight">
-								{isTvDevice ? "Cinema Mode" : "Host the Party"}
+								{isTvDevice ? t('mobile.tvFeatureTitle') : t('mobile.mobileFeatureTitle')}
 							</h3>
 							<p className="text-sm text-neutral-400 leading-snug font-medium">
 								{isTvDevice
-									? "Install the TV App for the perfect shared player experience with Always-On screen."
-									: "Use our Android App to run the music player with seamless background playback and \"Always On\" screen."
+									? t('mobile.tvFeatureBody')
+									: t('mobile.mobileFeatureBody')
 								}
 							</p>
 						</div>
@@ -64,31 +66,23 @@ export const MobileBlockPage = () => {
 					>
 						<div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
 						<Download size={24} className="fill-current animate-bounce-subtle" />
-						<span className="relative z-10">Download {isTvDevice ? "TV App" : "Android App"}</span>
+						<span className="relative z-10">{isTvDevice ? t('mobile.downloadTv') : t('mobile.downloadMobile')}</span>
 					</a>
 
 					<div className="text-center space-y-1">
 						<p className="text-xs text-neutral-500 font-medium">
-							Requires Android 7.0+
+							{t('mobile.requirement')}
 						</p>
 						<p className="text-xs text-neutral-400">
-							<span className="opacity-70">If download fails:</span> Settings &gt; Enable <strong>"Install Unknown Apps"</strong>
+							<span className="opacity-70">{t('mobile.downloadFail')}</span> {t('mobile.installInstruction')}
 						</p>
 					</div>
 				</div>
 
-				{/* DEBUG: User Agent Display */}
-				<div className="pt-8 opacity-40 hover:opacity-100 transition-opacity">
-					<p className="text-[10px] text-neutral-600 font-mono break-all px-4 select-all">
-						UA: {navigator.userAgent}
-						<br />
-						Wrapper: {typeof window.CueVoteAndroid}
-					</p>
-					<div className="mt-2">
-						<a href="/legal" className="text-xs text-neutral-500 hover:text-orange-400 underline underline-offset-4 transition-colors">
-							Privacy Policy & Legal
-						</a>
-					</div>
+				<div className="pt-8">
+					<a href="/legal" className="text-xs text-neutral-500 hover:text-orange-400 underline underline-offset-4 transition-colors">
+						{t('mobile.privacyLegal')}
+					</a>
 				</div>
 
 			</div>
