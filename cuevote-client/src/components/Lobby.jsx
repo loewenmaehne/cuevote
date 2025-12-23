@@ -518,6 +518,7 @@ export function Lobby() {
                                         onTouchEnd={(e) => {
                                             // iOS Fix: Trigger immediately on touch release preventing ghost clicks
                                             e.preventDefault();
+                                            alert("Debug: Touch Detected");
                                             performLogin();
                                         }}
                                         onClick={performLogin}
