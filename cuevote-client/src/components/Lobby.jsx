@@ -515,12 +515,12 @@ export function Lobby() {
                                     <button
                                         id="lobby-auth-button-mobile"
                                         type="button"
-                                        onTouchEnd={() => alert("Debug: Touch End")}
-                                        onClick={(e) => {
-                                            alert("Debug: Click Fired");
-                                            if (performLogin) performLogin();
-                                            else alert("Debug: performLogin is null");
+                                        onTouchEnd={(e) => {
+                                            // iOS Fix: Trigger immediately on touch release preventing ghost clicks
+                                            e.preventDefault();
+                                            performLogin();
                                         }}
+                                        onClick={performLogin}
                                         className={`p-3 rounded-full border border-neutral-700 bg-neutral-800 text-white transition-transform active:scale-90 ${disabled ? 'opacity-50' : 'hover:bg-neutral-700'}`}
                                         aria-label="Sign in with Google"
                                     >
