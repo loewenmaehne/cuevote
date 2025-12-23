@@ -5,7 +5,7 @@ import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { useConsent } from '../contexts/ConsentContext';
 
 import { useLanguage } from '../contexts/LanguageContext';
-import { LanguageSwitcher } from './LanguageSwitcher';
+import { LanguageSwitcher, languages } from './LanguageSwitcher';
 import { GoogleAuthButton } from './GoogleAuthButton';
 
 import { isTV } from "../utils/deviceDetection";
@@ -54,6 +54,12 @@ export function Lobby() {
     const isScrolling = useRef(false);
     // Default to 4 for lg screens
     const [searchQuery, setSearchQuery] = useState("");
+
+    // Keyboard Navigation State
+    const INDEX_LANGUAGE = -10;
+    const INDEX_PROFILE = -11;
+    const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+    const [languageMenuIndex, setLanguageMenuIndex] = useState(0);
 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
@@ -174,7 +180,33 @@ export function Lobby() {
     // Handle Keyboard Navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (isCreatingRoom || showPasswordModal) return; // Don't navigate if modal is open
+            if (isCreatingRoom || showPasswordModal || showProfileModal || showDeleteConfirm) return;
+
+            // Language Menu Navigation
+            if (languageMenuOpen) {
+                e.preventDefault(); // Capture all keys when menu is open
+                if (e.key === 'Escape' || e.key === 'ArrowLeft') {
+                    setLanguageMenuOpen(false);
+                    return;
+                }
+                if (e.key === 'ArrowDown') {
+                    setLanguageMenuIndex(prev => Math.min(prev + 1, languages.length - 1));
+                    return;
+                }
+                if (e.key === 'ArrowUp') {
+                    setLanguageMenuIndex(prev => Math.max(prev - 1, 0));
+                    return;
+                }
+                if (e.key === 'Enter') {
+                    const selectedLang = languages[languageMenuIndex];
+                    if (selectedLang) {
+                        setLanguage(selectedLang.code);
+                    }
+                    setLanguageMenuOpen(false);
+                    return;
+                }
+                return;
+            }
 
             // Search Input Handling
             if (document.activeElement.tagName === 'INPUT') {
@@ -195,6 +227,11 @@ export function Lobby() {
                     if (user) setFocusedIndex(-4); // My Channels
                     else setFocusedIndex(-1); // Private
                 }
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    document.activeElement.blur();
+                    setFocusedIndex(INDEX_LANGUAGE); // Go to Language Switcher
+                }
                 return; // Let user type in search
             }
 
@@ -204,7 +241,12 @@ export function Lobby() {
 
             if (e.key === 'ArrowRight') {
                 e.preventDefault();
-                if (focusedIndex === -2) setFocusedIndex(-1); // Public -> Private
+                // Header Navigation
+                if (focusedIndex === INDEX_LANGUAGE) setFocusedIndex(INDEX_PROFILE);
+                else if (focusedIndex === INDEX_PROFILE) { /* Stop or loop? Stop at Profile (Rightmost) */ }
+
+                // Filter Navigation
+                else if (focusedIndex === -2) setFocusedIndex(-1); // Public -> Private
                 else if (focusedIndex === -1 && user) setFocusedIndex(-4); // Private -> My Channels
                 else if (focusedIndex === -1 && !user) {
                     // Private -> Search (if no My Channels)
@@ -216,16 +258,29 @@ export function Lobby() {
                     document.getElementById('channel-search')?.focus();
                     setFocusedIndex(-3);
                 }
-                else setFocusedIndex(prev => Math.min(prev + 1, totalItems - 1));
+                else if (focusedIndex >= 0) setFocusedIndex(prev => Math.min(prev + 1, totalItems - 1));
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
-                if (focusedIndex === -1) setFocusedIndex(-2); // Private -> Public
+                // Header Navigation
+                if (focusedIndex === INDEX_PROFILE) setFocusedIndex(INDEX_LANGUAGE);
+                else if (focusedIndex === INDEX_LANGUAGE) { /* Stop at Language (Leftmost) */ }
+
+                // Filter Navigation
+                else if (focusedIndex === -1) setFocusedIndex(-2); // Private -> Public
                 else if (focusedIndex === -4) setFocusedIndex(-1); // My Channels -> Private
                 else if (focusedIndex === -2) { /* stay */ }
-                else setFocusedIndex(prev => Math.max(prev - 1, 0));
+                else if (focusedIndex >= 0) setFocusedIndex(prev => Math.max(prev - 1, 0));
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                if (focusedIndex < 0) setFocusedIndex(0); // Filters -> Grid Start
+                // Header -> Search
+                if (focusedIndex === INDEX_LANGUAGE || focusedIndex === INDEX_PROFILE) {
+                    document.getElementById('channel-search')?.focus();
+                    setFocusedIndex(-3);
+                }
+                else if (focusedIndex === -3) { // Search -> Filters (handled in Input block mostly, but if focusedIndex is stuck)
+                    setFocusedIndex(-1);
+                }
+                else if (focusedIndex < 0) setFocusedIndex(0); // Filters -> Grid Start
                 else {
                     setFocusedIndex(prev => {
                         return Math.min(prev + columns, totalItems - 1);
@@ -233,10 +288,18 @@ export function Lobby() {
                 }
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                if (focusedIndex < 0) { /* stay in filters */ }
-                else {
-                    // Logic to jump to Search Bar if in top row (User Request)
+                // Search -> Header
+                if (focusedIndex === -3) setFocusedIndex(INDEX_LANGUAGE);
+
+                // Filters -> Search
+                else if (focusedIndex === -1 || focusedIndex === -2 || focusedIndex === -4) {
+                    document.getElementById('channel-search')?.focus();
+                    setFocusedIndex(-3);
+                }
+                // Grid -> Filters/Search
+                else if (focusedIndex >= 0) {
                     if (focusedIndex < columns) {
+                        // Top row -> Search
                         document.getElementById('channel-search')?.focus();
                         setFocusedIndex(-3);
                     } else {
@@ -245,7 +308,22 @@ export function Lobby() {
                 }
             } else if (e.key === 'Enter') {
                 e.preventDefault();
-                if (focusedIndex === -2) setChannelType('public');
+                if (focusedIndex === INDEX_LANGUAGE) {
+                    setLanguageMenuOpen(true);
+                    // Find current language index
+                    const idx = languages.findIndex(l => l.code === language);
+                    setLanguageMenuIndex(idx >= 0 ? idx : 0);
+                }
+                else if (focusedIndex === INDEX_PROFILE) {
+                    if (user) setShowProfileModal(true);
+                    else {
+                        // Trigger Google Login
+                        // Since Google button is handled via SDK/Button click, we might need a simulated click or ref
+                        // We put an id on the button: 'lobby-auth-button'
+                        document.getElementById('lobby-auth-button')?.click();
+                    }
+                }
+                else if (focusedIndex === -2) setChannelType('public');
                 else if (focusedIndex === -1) setChannelType('private');
                 else if (focusedIndex === -4) setChannelType('my_channels');
                 else if (focusedIndex >= 0 && focusedIndex < totalItems) {
@@ -253,10 +331,7 @@ export function Lobby() {
                         // Create Room (Index 0)
                         handleCreateRoomClick();
                     } else {
-                        // Join Room (Index > 0 on page 1, or any index on other pages)
-                        // If showCreateButton is true: index 0 is create, 1..N are rooms
-                        // If showCreateButton is false: index 0..N are rooms
-
+                        // Join Room
                         let roomToJoin;
                         if (showCreateButton) {
                             roomToJoin = visibleRooms[focusedIndex - 1]; // Index 0 is safe-guarded above
@@ -278,7 +353,7 @@ export function Lobby() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [visibleRooms, columns, focusedIndex, isCreatingRoom, showPasswordModal, navigate, showCreateButton]);
+    }, [visibleRooms, columns, focusedIndex, isCreatingRoom, showPasswordModal, navigate, showCreateButton, user, languageMenuOpen, languageMenuIndex, language, setLanguage, showProfileModal, showDeleteConfirm]);
 
     // Reset focused index when filtered rooms change
     useEffect(() => {
@@ -310,6 +385,10 @@ export function Lobby() {
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
+        } else if (focusedIndex === INDEX_LANGUAGE) {
+            document.getElementById('lobby-language-switcher')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else if (focusedIndex === INDEX_PROFILE) {
+            document.getElementById('lobby-profile-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     }, [focusedIndex]);
 
@@ -403,7 +482,15 @@ export function Lobby() {
                         </h1>
 
                         {/* Language Switcher */}
-                        <LanguageSwitcher />
+                        <LanguageSwitcher
+                            isOpen={languageMenuOpen}
+                            onToggle={(val) => {
+                                setLanguageMenuOpen(val);
+                                if (val) setFocusedIndex(INDEX_LANGUAGE);
+                            }}
+                            focused={focusedIndex === INDEX_LANGUAGE}
+                            focusedLanguageIndex={languageMenuIndex}
+                        />
                     </div>
 
                     {/* Mobile User Profile (Visible only on small screens) */}
@@ -441,11 +528,12 @@ export function Lobby() {
                 </div>
 
                 {/* Desktop User Profile */}
-                <div className="hidden sm:block">
+                <div className="hidden sm:block" id="lobby-profile-section">
                     {user ? (
                         <button
+                            id="lobby-auth-button"
                             onClick={() => setShowProfileModal(true)}
-                            className="flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border border-transparent transition-all group cursor-pointer"
+                            className={`flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border transition-all group cursor-pointer ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 bg-neutral-800 border-neutral-700 scale-105' : 'border-transparent'}`}
                             title="Profile & Settings"
                         >
                             <div className="flex items-center gap-2">
@@ -464,9 +552,10 @@ export function Lobby() {
                             onLoginSuccess={handleLoginSuccess}
                             render={(performLogin, disabled) => (
                                 <button
+                                    id="lobby-auth-button"
                                     onClick={() => !disabled && performLogin()}
                                     disabled={disabled}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? 'bg-neutral-900/50 text-neutral-600 border-neutral-800 cursor-not-allowed opacity-50 grayscale' : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'}`}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? 'bg-neutral-900/50 text-neutral-600 border-neutral-800 cursor-not-allowed opacity-50 grayscale' : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'} ${focusedIndex === INDEX_PROFILE && !disabled ? 'ring-2 ring-orange-500 bg-neutral-700 scale-105' : ''}`}
                                     title={disabled ? t('lobby.acceptCookies') : ""}
                                 >
                                     <svg className={`w-5 h-5 ${disabled ? 'text-neutral-600' : ''}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
