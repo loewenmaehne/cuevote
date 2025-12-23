@@ -78,13 +78,27 @@ struct WebView: UIViewRepresentable {
             controller.modalPresentationStyle = .pageSheet // Or .automatic
             
             // 3. Find the top-most view controller to present from
-            if let rootVC = UIApplication.shared.windows.first?.rootViewController {
-                rootVC.present(controller, animated: true, completion: nil)
+            // Robust lookup for modern iOS (Scened-based)
+            let windowScene = UIApplication.shared.connectedScenes
+                .filter { $0.activationState == .foregroundActive }
+                .first as? UIWindowScene
+            
+            let window = windowScene?.windows.first { $0.isKeyWindow } 
+                ?? UIApplication.shared.windows.first { $0.isKeyWindow }
+            
+            if var topController = window?.rootViewController {
+                // Determine the true top view controller if others are presented
+                while let presented = topController.presentedViewController {
+                    topController = presented
+                }
+                
+                topController.present(controller, animated: true, completion: nil)
                 self.popupWebView = popup
                 self.popupController = controller
+                return popup
             }
             
-            return popup
+            return nil
         }
         
         // This is called when window.close() is triggered (e.g. Auth finished)
