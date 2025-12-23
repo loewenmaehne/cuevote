@@ -647,7 +647,7 @@ export function Lobby() {
                                 onMouseMove={() => {
                                     if (!isScrolling.current && focusedIndex !== 0) setFocusedIndex(0);
                                 }}
-                                className={`scroll-mt-56 scroll-mb-24 rounded-2xl border p-4 sm:p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
+                                className={`scroll-mt-56 scroll-mb-24 rounded-2xl border relative transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
                                     ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
                                     : user
                                         ? "border-neutral-800 text-neutral-500 cursor-pointer"
@@ -655,10 +655,12 @@ export function Lobby() {
                                     }`}
                                 title={user ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
                             >
-                                <Sparkles size={32} className={focusedIndex === 0 ? "text-orange-500" : ""} />
-                                <span className={`font-medium text-center ${focusedIndex === 0 ? "text-white" : ""}`}>
-                                    {user ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
-                                </span>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4 sm:p-6">
+                                    <Sparkles size={32} className={focusedIndex === 0 ? "text-orange-500" : ""} />
+                                    <span className={`font-medium text-center ${focusedIndex === 0 ? "text-white" : ""}`}>
+                                        {user ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
+                                    </span>
+                                </div>
                             </button>
                         )}
 
