@@ -20,6 +20,7 @@ import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
 import { Toast } from "./components/Toast";
 import { LoadingScreen } from "./components/LoadingScreen";
+import { LayoutDebugger } from "./components/LayoutDebugger"; // DEBUG OVERLAY
 
 
 
@@ -807,6 +808,12 @@ function App() {
 
 
   // Strict Consent Blocking - "Friendlier Welcome Gate"
+  // DEBUGGER
+  // return <><LayoutDebugger /> ... existing code ...</>
+  // Actually simplest is to prepend it to the return but we have multiple returns.
+  // Let's check where the main return is.
+  // Viewing file... we have early returns.
+
   if (!hasConsent) {
     return (
       <div className="flex flex-col h-[100dvh] bg-[#050505] items-center justify-center p-6 relative overflow-hidden select-none">
@@ -984,6 +991,7 @@ function App() {
 
   return (
     <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView || showChannelLibrary ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
+      <LayoutDebugger />
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header

@@ -53,7 +53,8 @@ export const isTablet = () => {
 
 	// 4. Hybrid Heuristic (Touch + Widescreen)
 	// We use 768px as the standard cutoff (iPad Mini width)
-	const isHybridTablet = (navigator.maxTouchPoints > 0) && (window.innerWidth >= 768);
+	// CRITICAL FIX: Check min dimension, otherwise a landscape phone (width > 800) counts as tablet.
+	const isHybridTablet = (navigator.maxTouchPoints > 0) && (Math.min(window.innerWidth, window.innerHeight) >= 768);
 
 	return isExplicitTablet || isAndroidTablet || isIPadOS || isHybridTablet;
 };
