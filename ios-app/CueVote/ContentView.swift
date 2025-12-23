@@ -1,12 +1,24 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var logMessage: String = "Ready. Tap Sign In."
+    
     var body: some View {
-        WebView(url: URL(string: "https://cuevote.com")!)
+        ZStack(alignment: .top) {
+            WebView(url: URL(string: "https://cuevote.com")!, logger: { msg in
+                self.logMessage = msg
+            })
             // Extend to edges (fullscreen feel)
-            .ignoresSafeArea(.all) 
-            // We might want to keep the top safe area for status bar, or ignore all.
-            // Android wrapper uses standard theme but adds flags.
-            // Let's stick to default safe area for top to avoid notch issues, but ignore bottom.
+            .ignoresSafeArea(.all)
+            
+            // Debug Overlay
+            Text(logMessage)
+                .font(.caption)
+                .foregroundColor(.yellow)
+                .padding()
+                .background(Color.black.opacity(0.8))
+                .cornerRadius(10)
+                .padding(.top, 50) // Below notch
+        }
     }
 }
