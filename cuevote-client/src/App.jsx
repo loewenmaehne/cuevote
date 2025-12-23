@@ -286,7 +286,11 @@ function App() {
   }, [lastMessage]);
   const [showPendingPage, setShowPendingPage] = useState(false);
   const [showBannedPage, setShowBannedPage] = useState(false); // Added this
-  const [isCinemaMode, setIsCinemaMode] = useState(isTV());
+  const [isCinemaMode, setIsCinemaMode] = useState(() => {
+    // Correctly initialize based on current state to avoid "Window Too Small" flash
+    if (typeof window === 'undefined') return false;
+    return isTV() || ((isMobile() && !isTablet()) && window.matchMedia("(orientation: landscape)").matches);
+  });
   const [volume, setVolume] = useState(80);
   // minimized state removed
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
@@ -329,27 +333,33 @@ function App() {
   // Mobile Auto-Fullscreen on Landscape
   useEffect(() => {
     // Only apply to Smartphones (Mobile but not Tablet)
-    // Tablets often prefer widescreen non-fullscreen, or have keyboards attached.
     if (!isMobile() || isTablet()) return;
 
-    const handleOrientationCheck = () => {
-      const isLandscape = window.innerWidth > window.innerHeight;
+    const mediaQuery = window.matchMedia("(orientation: landscape)");
+
+    const handleOrientationChange = (e) => {
+      const isLandscape = e.matches;
 
       // Auto-Enter Cinema Mode in Landscape
-      if (isLandscape && !isCinemaMode) {
+      if (isLandscape) {
         setIsCinemaMode(true);
       }
-      // Auto-Exit Cinema Mode in Portrait (optional but good UX for this layout)
-      else if (!isLandscape && isCinemaMode) {
+      // Auto-Exit Cinema Mode in Portrait
+      else {
         setIsCinemaMode(false);
       }
     };
 
-    // Check initially and on resize/orientationchange
-    handleOrientationCheck();
-    window.addEventListener('resize', handleOrientationCheck);
-    return () => window.removeEventListener('resize', handleOrientationCheck);
-  }, [isCinemaMode]); // Dependency on isCinemaMode to avoid loops if we check equality, but logic handles it safely.
+    // Check initially
+    // We manually trigger it based on current matches to set initial state correctly
+    if (mediaQuery.matches && !isCinemaMode) {
+      setIsCinemaMode(true);
+    }
+
+    // Add Listener
+    mediaQuery.addEventListener("change", handleOrientationChange);
+    return () => mediaQuery.removeEventListener("change", handleOrientationChange);
+  }, [isCinemaMode]); // Dependency mainly for access to current state if needed, though media query is robust
 
   // Smart Bar Logic: Intercept visibility changes to enforce TOS
   // Smart Bar Logic: Intercept visibility changes to enforce TOS
