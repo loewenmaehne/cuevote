@@ -474,7 +474,7 @@ export function Lobby() {
 
     return (
         <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center p-8 safe-pt">
-            <header className="w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 gap-4">
+            <header className="w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 gap-4 relative z-50">
                 <div className="flex items-center justify-between w-full sm:w-auto gap-4">
                     <div className="flex items-center gap-4">
                         <h1 className="text-3xl font-bold text-orange-500 tracking-tight">
