@@ -37,7 +37,7 @@ export function GoogleAuthButton({ onLoginSuccess, className, render }) {
 		}
 
 		return (
-			<button onClick={noOp} disabled className={`${className} opacity-50 grayscale cursor-not-allowed`}>
+			<button onClick={noOp} className={`${className} opacity-50 grayscale cursor-not-allowed`} title="Accept cookies to sign in">
 				Sign in with Google
 			</button>
 		);
