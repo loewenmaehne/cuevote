@@ -515,7 +515,12 @@ export function Lobby() {
                                     <button
                                         id="lobby-auth-button-mobile"
                                         type="button"
-                                        onClick={performLogin}
+                                        onTouchEnd={() => alert("Debug: Touch End")}
+                                        onClick={(e) => {
+                                            alert("Debug: Click Fired");
+                                            if (performLogin) performLogin();
+                                            else alert("Debug: performLogin is null");
+                                        }}
                                         className={`p-3 rounded-full border border-neutral-700 bg-neutral-800 text-white transition-transform active:scale-90 ${disabled ? 'opacity-50' : 'hover:bg-neutral-700'}`}
                                         aria-label="Sign in with Google"
                                     >
