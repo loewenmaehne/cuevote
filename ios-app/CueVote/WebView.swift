@@ -56,27 +56,49 @@ struct WebView: UIViewRepresentable {
     
     class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
         var parent: WebView
-        
+        var popupWebView: WKWebView?
+        var popupController: UIViewController?
+
         init(parent: WebView) {
             self.parent = parent
         }
-        
+
         // MARK: - WKUIDelegate (Popups)
+        // This is called when window.open() is triggered (e.g. Google Sign-In)
         func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-            // Handle popups (like Google OAuth) by loading them in the same view
-            // or handling them if they are strictly new windows.
-            if let url = navigationAction.request.url {
-                webView.load(navigationAction.request)
+            
+            // 1. Create a new WebView with the provided configuration
+            let popup = WKWebView(frame: .zero, configuration: configuration)
+            popup.uiDelegate = self
+            popup.navigationDelegate = self
+            
+            // 2. Wrap it in a ViewController to present it
+            let controller = UIViewController()
+            controller.view = popup
+            controller.modalPresentationStyle = .pageSheet // Or .automatic
+            
+            // 3. Find the top-most view controller to present from
+            if let rootVC = UIApplication.shared.windows.first?.rootViewController {
+                rootVC.present(controller, animated: true, completion: nil)
+                self.popupWebView = popup
+                self.popupController = controller
             }
-            return nil
+            
+            return popup
         }
         
+        // This is called when window.close() is triggered (e.g. Auth finished)
+        func webViewDidClose(_ webView: WKWebView) {
+            if webView == popupWebView {
+                popupController?.dismiss(animated: true, completion: nil)
+                popupWebView = nil
+                popupController = nil
+            }
+        }
+
         // MARK: - WKNavigationDelegate
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-            // Handle target="_blank"
-            if navigationAction.targetFrame == nil {
-                webView.load(navigationAction.request)
-            }
+            // Allow all navigation
             decisionHandler(.allow)
         }
     }
