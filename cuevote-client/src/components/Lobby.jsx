@@ -230,7 +230,7 @@ export function Lobby() {
                 if (e.key === 'ArrowUp') {
                     e.preventDefault();
                     document.activeElement.blur();
-                    setFocusedIndex(INDEX_LANGUAGE); // Go to Language Switcher
+                    setFocusedIndex(INDEX_PROFILE); // Go to Profile/Google Button
                 }
                 return; // Let user type in search
             }
@@ -289,7 +289,7 @@ export function Lobby() {
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 // Search -> Header
-                if (focusedIndex === -3) setFocusedIndex(INDEX_LANGUAGE);
+                if (focusedIndex === -3) setFocusedIndex(INDEX_PROFILE);
 
                 // Filters -> Search
                 else if (focusedIndex === -1 || focusedIndex === -2 || focusedIndex === -4) {
@@ -647,7 +647,7 @@ export function Lobby() {
                                 onMouseMove={() => {
                                     if (!isScrolling.current && focusedIndex !== 0) setFocusedIndex(0);
                                 }}
-                                className={`scroll-mt-56 scroll-mb-24 rounded-2xl border p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
+                                className={`scroll-mt-56 scroll-mb-24 rounded-2xl border p-4 sm:p-6 flex flex-col items-center justify-center gap-4 transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
                                     ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
                                     : user
                                         ? "border-neutral-800 text-neutral-500 cursor-pointer"
@@ -690,7 +690,7 @@ export function Lobby() {
                                     onMouseMove={() => {
                                         if (!isScrolling.current && focusedIndex !== actualIndex) setFocusedIndex(actualIndex);
                                     }}
-                                    className={`scroll-mt-56 scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-6 aspect-[4/3] flex flex-col justify-end block cursor-pointer ${actualIndex === focusedIndex
+                                    className={`scroll-mt-56 scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left p-4 sm:p-6 aspect-[4/3] flex flex-col justify-end cursor-pointer ${actualIndex === focusedIndex
                                         ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
                                         : "border-neutral-800"
                                         }`}
