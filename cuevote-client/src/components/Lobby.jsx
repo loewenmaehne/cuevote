@@ -690,7 +690,7 @@ export function Lobby() {
                                     onMouseMove={() => {
                                         if (!isScrolling.current && focusedIndex !== actualIndex) setFocusedIndex(actualIndex);
                                     }}
-                                    className={`scroll-mt-56 scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left aspect-[4/3] cursor-pointer ${actualIndex === focusedIndex
+                                    className={`scroll-mt-56 scroll-mb-24 group relative overflow-hidden rounded-2xl bg-neutral-900 border transition-all duration-300 text-left w-full aspect-[4/3] cursor-pointer ${actualIndex === focusedIndex
                                         ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] z-10"
                                         : "border-neutral-800"
                                         }`}
