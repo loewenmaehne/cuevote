@@ -65,7 +65,21 @@ struct WebView: UIViewRepresentable {
 
         // MARK: - WKUIDelegate (Popups)
         // This is called when window.open() is triggered (e.g. Google Sign-In)
+        // MARK: - WKUIDelegate (Popups)
+        // This is called when window.open() is triggered (e.g. Google Sign-In)
         func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+            
+            // DEBUG: Spy on Popup Request
+            // We find the rootVC to show "Native: Popup Requested"
+            /*
+            if let rootVC = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController {
+                 let alert = UIAlertController(title: "Debug", message: "Native: Popup Requested", preferredStyle: .alert)
+                 alert.addAction(UIAlertAction(title: "OK", style: .default))
+                 rootVC.present(alert, animated: true)
+            }
+            */
+            // Actually, showing an alert MIGHT block the popup presentation logic or cause conflict.
+            // Let's rely on the JS Spy first. If JS says "Open" and nothing happens, we know it's here.
             
             // 1. Create a new WebView with the provided configuration
             let popup = WKWebView(frame: .zero, configuration: configuration)
