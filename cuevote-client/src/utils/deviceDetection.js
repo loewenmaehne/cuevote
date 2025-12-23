@@ -68,6 +68,7 @@ export const isMobile = () => {
 
 	return (
 		/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent) ||
+		userAgent.includes('cuevotewrapper') || // Whitelist Native Wrapper
 		(navigator.maxTouchPoints > 0 && window.innerWidth < 768) // Fallback for touch devices
 	);
 };

@@ -9,6 +9,11 @@
   --sar: env(safe-area-inset-right, 0px);
 }
 
+/* Fallback: If on mobile, ensure at least 24px top padding if env() returns 0px (broken support) */
+.is-mobile {
+  --sat: max(env(safe-area-inset-top, 0px), 24px);
+}
+
 html,
 body,
 #root {
