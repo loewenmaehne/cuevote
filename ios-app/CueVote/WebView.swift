@@ -115,5 +115,16 @@ struct WebView: UIViewRepresentable {
             // Allow all navigation
             decisionHandler(.allow)
         }
+        
+        // MARK: - WKUIDelegate (JS Alerts)
+        func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+            let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in completionHandler() })
+            
+            // Find presentation controller
+            if let rootVC = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController {
+                rootVC.present(alert, animated: true)
+            }
+        }
     }
 }
