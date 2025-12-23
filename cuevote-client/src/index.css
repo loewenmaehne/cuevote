@@ -2,13 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
+html,
+body,
+#root {
   background-color: black;
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  overscroll-behavior: none; /* Prevent rubber-banding */
+  overscroll-behavior: none;
+  /* Prevent rubber-banding */
+}
+
+/* Safe Area Utility */
+.safe-pt {
+  padding-top: var(--sat);
 }
 
 @keyframes fadeIn {
@@ -107,18 +122,37 @@ html, body, #root {
   mask-image: linear-gradient(to right, black 0px, black calc(100% - 24px), transparent 100%);
   -webkit-mask-image: linear-gradient(to right, black 0px, black calc(100% - 24px), transparent 100%);
 }
+
 @keyframes pulse-slow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .7; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .7;
+  }
 }
+
 .animate-pulse-slow {
   animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes bounce-subtle {
-  0%, 100% { transform: translateY(-3%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
-  50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
+
+  0%,
+  100% {
+    transform: translateY(-3%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
 }
+
 .animate-bounce-subtle {
   animation: bounce-subtle 2s infinite;
 }

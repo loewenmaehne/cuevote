@@ -130,7 +130,7 @@ export function Header({
   return (
     <header
       ref={headerRef}
-      className="p-2 md:p-4 flex flex-col items-center gap-3 w-full"
+      className="p-2 md:p-4 flex flex-col items-center gap-3 w-full safe-pt"
     >
       <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full gap-2 lg:gap-4">
         <div className="flex items-center gap-3 justify-start min-w-0">
