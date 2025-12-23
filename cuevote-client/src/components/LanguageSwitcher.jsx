@@ -2,67 +2,86 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
-export function LanguageSwitcher({ minimized = false, className = "" }) {
-	const { language, setLanguage } = useLanguage();
-	const [isOpen, setIsOpen] = useState(false);
-	const dropdownRef = useRef(null);
+export const languages = [
+	{ code: 'en', label: 'English' },
+	{ code: 'nl', label: 'Nederlands' },
+	{ code: 'de', label: 'Deutsch' },
+	{ code: 'fr', label: 'Français' },
+	{ code: 'es', label: 'Español' },
+	{ code: 'it', label: 'Italiano' },
+	{ code: 'pt', label: 'Português' },
+	{ code: 'zh-CN', label: '简体中文' },
+	{ code: 'zh-TW', label: '繁體中文' },
+	{ code: 'ja', label: '日本語' },
+	{ code: 'ko', label: '한국어' },
+	{ code: 'hi', label: 'हिन्दी' },
+	{ code: 'th', label: 'ไทย' },
+	{ code: 'vi', label: 'Tiếng Việt' },
+	{ code: 'id', label: 'Bahasa Indonesia' },
+	{ code: 'ms', label: 'Bahasa Melayu' },
+	{ code: 'tl', label: 'Tagalog' },
+	{ code: 'pl', label: 'Polski' },
+	{ code: 'sv', label: 'Svenska' },
+	{ code: 'da', label: 'Dansk' },
+	{ code: 'no', label: 'Norsk' },
+	{ code: 'fi', label: 'Suomi' },
+	{ code: 'tr', label: 'Türkçe' },
+	{ code: 'el', label: 'Ελληνικά' },
+	{ code: 'ru', label: 'Русский' },
+	{ code: 'uk', label: 'Українська' },
+	{ code: 'cs', label: 'Čeština' },
+	{ code: 'hu', label: 'Magyar' },
+	{ code: 'ro', label: 'Română' },
+	{ code: 'bg', label: 'Български' },
+	{ code: 'hr', label: 'Hrvatski' },
+	{ code: 'sr', label: 'Српски' },
+	{ code: 'sk', label: 'Slovenčina' },
+	{ code: 'ar', label: 'العربية' },
+	{ code: 'he', label: 'עברית' }
+];
 
-	const languages = [
-		{ code: 'en', label: 'English' },
-		{ code: 'nl', label: 'Nederlands' },
-		{ code: 'de', label: 'Deutsch' },
-		{ code: 'fr', label: 'Français' },
-		{ code: 'es', label: 'Español' },
-		{ code: 'it', label: 'Italiano' },
-		{ code: 'pt', label: 'Português' },
-		{ code: 'zh-CN', label: '简体中文' },
-		{ code: 'zh-TW', label: '繁體中文' },
-		{ code: 'ja', label: '日本語' },
-		{ code: 'ko', label: '한국어' },
-		{ code: 'hi', label: 'हिन्दी' },
-		{ code: 'th', label: 'ไทย' },
-		{ code: 'vi', label: 'Tiếng Việt' },
-		{ code: 'id', label: 'Bahasa Indonesia' },
-		{ code: 'ms', label: 'Bahasa Melayu' },
-		{ code: 'tl', label: 'Tagalog' },
-		{ code: 'pl', label: 'Polski' },
-		{ code: 'sv', label: 'Svenska' },
-		{ code: 'da', label: 'Dansk' },
-		{ code: 'no', label: 'Norsk' },
-		{ code: 'fi', label: 'Suomi' },
-		{ code: 'tr', label: 'Türkçe' },
-		{ code: 'el', label: 'Ελληνικά' },
-		{ code: 'ru', label: 'Русский' },
-		{ code: 'uk', label: 'Українська' },
-		{ code: 'cs', label: 'Čeština' },
-		{ code: 'hu', label: 'Magyar' },
-		{ code: 'ro', label: 'Română' },
-		{ code: 'bg', label: 'Български' },
-		{ code: 'hr', label: 'Hrvatski' },
-		{ code: 'sr', label: 'Српски' },
-		{ code: 'sk', label: 'Slovenčina' },
-		{ code: 'ar', label: 'العربية' },
-		{ code: 'he', label: 'עברית' }
-	];
+export function LanguageSwitcher({ minimized = false, className = "", isOpen: controlledIsOpen, onToggle: controlledOnToggle, focused = false, focusedLanguageIndex = -1 }) {
+	const { language, setLanguage } = useLanguage();
+	const [internalIsOpen, setInternalIsOpen] = useState(false);
+	const dropdownRef = useRef(null);
+	const listRef = useRef(null);
+
+	const isControlled = controlledIsOpen !== undefined;
+	const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
+	const setIsOpen = isControlled ? controlledOnToggle : setInternalIsOpen;
 
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-				setIsOpen(false);
+				// Only close if it's internal state, generic click outside logic
+				if (!isControlled) setInternalIsOpen(false);
+				else if (controlledOnToggle) controlledOnToggle(false);
 			}
 		};
 		document.addEventListener('mousedown', handleClickOutside);
 		return () => document.removeEventListener('mousedown', handleClickOutside);
-	}, []);
+	}, [isControlled, controlledOnToggle]);
+
+	// Auto-scroll to focused language
+	useEffect(() => {
+		if (isOpen && focusedLanguageIndex >= 0 && listRef.current) {
+			const children = listRef.current.children;
+			if (children && children[focusedLanguageIndex]) {
+				children[focusedLanguageIndex].scrollIntoView({ block: 'nearest' });
+			}
+		}
+	}, [isOpen, focusedLanguageIndex]);
+
 
 	return (
-		<div className={`relative ${className}`} ref={dropdownRef}>
+		<div className={`relative ${className}`} ref={dropdownRef} id="lobby-language-switcher">
 			<button
 				onClick={(e) => {
 					e.stopPropagation();
-					setIsOpen(!isOpen);
+					if (isControlled) controlledOnToggle && controlledOnToggle(!isOpen);
+					else setInternalIsOpen(!internalIsOpen);
 				}}
-				className={`flex items-center gap-2 p-2 rounded-full hover:bg-neutral-800 transition-colors ${isOpen ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'}`}
+				className={`flex items-center gap-2 p-2 rounded-full hover:bg-neutral-800 transition-all ${isOpen ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'} ${focused ? 'ring-2 ring-orange-500 text-white z-20 bg-neutral-800' : ''}`}
 				title="Change Language"
 			>
 				<Globe size={20} />
@@ -70,16 +89,20 @@ export function LanguageSwitcher({ minimized = false, className = "" }) {
 			</button>
 
 			{isOpen && (
-				<div className="absolute right-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl overflow-hidden py-1 z-[100] animate-in fade-in zoom-in-95 duration-200 max-h-80 overflow-y-auto">
-					{languages.map((lang) => (
+				<div
+					ref={listRef}
+					className="absolute right-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl overflow-hidden py-1 z-[100] animate-in fade-in zoom-in-95 duration-200 max-h-80 overflow-y-auto"
+				>
+					{languages.map((lang, index) => (
 						<button
 							key={lang.code}
 							onClick={(e) => {
 								e.stopPropagation();
 								setLanguage(lang.code);
-								setIsOpen(false);
+								if (isControlled) controlledOnToggle && controlledOnToggle(false);
+								else setInternalIsOpen(false);
 							}}
-							className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between hover:bg-neutral-800 transition-colors ${language === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
+							className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between hover:bg-neutral-800 transition-colors ${language === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'} ${focusedLanguageIndex === index ? 'bg-neutral-800 text-white ring-1 ring-inset ring-neutral-700' : ''}`}
 						>
 							<span>{lang.label}</span>
 							{language === lang.code && <Check size={16} />}
