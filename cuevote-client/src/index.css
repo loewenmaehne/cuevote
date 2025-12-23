@@ -23,7 +23,8 @@ body,
   width: 100%;
   height: 100%;
   overscroll-behavior: none;
-  /* Prevent rubber-banding */
+  touch-action: pan-x pan-y;
+  /* Prevent rubber-banding & zooming */
 }
 
 /* Safe Area Utility */
