@@ -5,12 +5,8 @@ import { useConsent } from '../contexts/ConsentContext';
 // Logic-only component that uses the hook (must be inside GoogleOAuthProvider)
 function RealAuthButton({ onLoginSuccess, className, render }) {
 	const login = useGoogleLogin({
-		onSuccess: (res) => {
-			alert("Debug: Login Success! Token: " + (res.access_token ? "Yes" : "No"));
-			onLoginSuccess(res);
-		},
-		onError: (err) => alert("Debug: Login Failed: " + JSON.stringify(err)),
-		flow: 'auth-code', // Force popup flow explicitly? Or implicit? Default is implicit usually.
+		onSuccess: onLoginSuccess,
+		onError: () => console.log('Login Failed'),
 	});
 
 	if (render) {
@@ -18,10 +14,7 @@ function RealAuthButton({ onLoginSuccess, className, render }) {
 	}
 
 	return (
-		<button onClick={() => {
-			alert("Debug: Button Clicked - Calling Login...");
-			login();
-		}} className={className}>
+		<button onClick={() => login()} className={className}>
 			Sign in with Google
 		</button>
 	);
