@@ -36,6 +36,28 @@ export const isTV = () => {
 	);
 };
 
+// Tablet Detection
+export const isTablet = () => {
+	if (typeof navigator === 'undefined') return false;
+
+	const userAgent = navigator.userAgent.toLowerCase();
+
+	// 1. Explicit Tablet UAs
+	const isExplicitTablet = /ipad|tablet|playbook|silk/i.test(userAgent);
+
+	// 2. Android: If it says "Android" but NOT "Mobile", it's usually a tablet
+	const isAndroidTablet = /android/i.test(userAgent) && !/mobile/i.test(userAgent);
+
+	// 3. iPadOS 13+ (Macintosh + Touch)
+	const isIPadOS = (navigator.maxTouchPoints > 0) && /macintosh/i.test(userAgent);
+
+	// 4. Hybrid Heuristic (Touch + Widescreen)
+	// We use 768px as the standard cutoff (iPad Mini width)
+	const isHybridTablet = (navigator.maxTouchPoints > 0) && (window.innerWidth >= 768);
+
+	return isExplicitTablet || isAndroidTablet || isIPadOS || isHybridTablet;
+};
+
 export const isMobile = () => {
 	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
 	const userAgent = navigator.userAgent.toLowerCase();
