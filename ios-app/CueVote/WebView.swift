@@ -35,6 +35,11 @@ struct WebView: UIViewRepresentable {
         webView.uiDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
         
+        // MARK: - Layout & Appearance
+        webView.backgroundColor = .black
+        webView.scrollView.backgroundColor = .black
+        webView.scrollView.contentInsetAdjustmentBehavior = .never
+
         // Load the URL
         webView.load(URLRequest(url: url))
         
