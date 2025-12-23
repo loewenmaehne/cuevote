@@ -50,12 +50,23 @@ function App() {
 
   // console.log("App Component MOUNTED, Room:", activeRoomId);
 
-  // Online Status Detection
+  // Online Status & Device Class Injection
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   useEffect(() => {
     const handleStatusChange = () => setIsOnline(navigator.onLine);
     window.addEventListener('online', handleStatusChange);
     window.addEventListener('offline', handleStatusChange);
+
+    // Inject Device Classes for CSS targeting
+    if (isMobile()) document.body.classList.add('is-mobile');
+    else document.body.classList.remove('is-mobile');
+
+    if (isTablet()) document.body.classList.add('is-tablet');
+    else document.body.classList.remove('is-tablet');
+
+    if (isTV()) document.body.classList.add('is-tv');
+    else document.body.classList.remove('is-tv');
+
     return () => {
       window.removeEventListener('online', handleStatusChange);
       window.removeEventListener('offline', handleStatusChange);
