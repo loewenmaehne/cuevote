@@ -116,7 +116,7 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
             handleSubmitSuggestion();
           }}
           disabled={isSubmittingSuggestion || (!suggestionsEnabled && !isOwner)}
-          className={`keep-open px-5 py-2 rounded-full text-white transition-all flex items-center gap-2 text-base disabled:cursor-not-allowed disabled:opacity-70 ${submissionSuccess
+          className={`keep-open px-5 py-2 rounded-full text-white transition-all flex items-center gap-2 text-base disabled:cursor-not-allowed disabled:opacity-70 whitespace-nowrap ${submissionSuccess
             ? (infoMessage ? "bg-blue-600 hover:bg-blue-500" : "bg-green-600 hover:bg-green-500")
             : "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500"
             }`}
