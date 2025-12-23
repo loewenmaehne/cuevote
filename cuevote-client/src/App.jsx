@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { isTV, isMobile } from './utils/deviceDetection';
+import { isTV, isMobile, isTablet } from './utils/deviceDetection';
 import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw } from "lucide-react";
 import { useConsent } from './contexts/ConsentContext';
 import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
@@ -328,7 +328,9 @@ function App() {
 
   // Mobile Auto-Fullscreen on Landscape
   useEffect(() => {
-    if (!isMobile()) return;
+    // Only apply to Smartphones (Mobile but not Tablet)
+    // Tablets often prefer widescreen non-fullscreen, or have keyboards attached.
+    if (!isMobile() || isTablet()) return;
 
     const handleOrientationCheck = () => {
       const isLandscape = window.innerWidth > window.innerHeight;
