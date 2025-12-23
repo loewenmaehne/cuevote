@@ -513,8 +513,8 @@ export function Lobby() {
                                 onLoginSuccess={handleLoginSuccess}
                                 render={(performLogin, disabled) => (
                                     <button
-                                        onClick={() => !disabled && performLogin()}
-                                        disabled={disabled}
+                                        id="lobby-auth-button"
+                                        onClick={performLogin}
                                         className={`p-2 rounded-full border border-neutral-700 bg-neutral-800 text-white ${disabled ? 'opacity-50' : ''}`}
                                     >
                                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -553,9 +553,8 @@ export function Lobby() {
                             render={(performLogin, disabled) => (
                                 <button
                                     id="lobby-auth-button"
-                                    onClick={() => !disabled && performLogin()}
-                                    disabled={disabled}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? 'bg-neutral-900/50 text-neutral-600 border-neutral-800 cursor-not-allowed opacity-50 grayscale' : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'} ${focusedIndex === INDEX_PROFILE && !disabled ? 'ring-2 ring-orange-500 bg-neutral-700 scale-105' : ''}`}
+                                    onClick={performLogin}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? 'bg-neutral-900/50 text-neutral-600 border-neutral-800 opacity-50 grayscale' : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'} ${focusedIndex === INDEX_PROFILE && !disabled ? 'ring-2 ring-orange-500 bg-neutral-700 scale-105' : ''} ${focusedIndex === INDEX_PROFILE && disabled ? 'ring-2 ring-neutral-500 scale-105' : ''}`}
                                     title={disabled ? t('lobby.acceptCookies') : ""}
                                 >
                                     <svg className={`w-5 h-5 ${disabled ? 'text-neutral-600' : ''}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
