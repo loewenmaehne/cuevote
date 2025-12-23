@@ -3,6 +3,7 @@ import WebKit
 
 struct WebView: UIViewRepresentable {
     let url: URL
+    var logger: ((String) -> Void)?
     
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
@@ -66,6 +67,7 @@ struct WebView: UIViewRepresentable {
         // MARK: - WKUIDelegate (Popups)
         // This is called when window.open() is triggered (e.g. Google Sign-In)
         func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+            parent.logger?("Popup Requested: \(navigationAction.request.url?.absoluteString ?? "No URL")")
             
             // 1. Create a new WebView with the provided configuration
             let popup = WKWebView(frame: .zero, configuration: configuration)
@@ -92,12 +94,14 @@ struct WebView: UIViewRepresentable {
                     topController = presented
                 }
                 
+                parent.logger?("Presenting Modal on \(type(of: topController))")
                 topController.present(controller, animated: true, completion: nil)
                 self.popupWebView = popup
                 self.popupController = controller
                 return popup
             }
             
+            parent.logger?("Error: No Window/RootVC found")
             return nil
         }
         
