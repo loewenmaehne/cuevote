@@ -20,7 +20,6 @@ import { useWebSocketContext } from "./hooks/useWebSocketContext";
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
 import { Toast } from "./components/Toast";
 import { LoadingScreen } from "./components/LoadingScreen";
-import { LayoutDebugger } from "./components/LayoutDebugger"; // DEBUG OVERLAY
 
 
 
@@ -1002,7 +1001,6 @@ function App() {
 
   return (
     <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView || showChannelLibrary ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
-      <LayoutDebugger />
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header
