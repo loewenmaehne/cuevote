@@ -17,8 +17,8 @@ export function Lobby() {
     const { t, language, setLanguage } = useLanguage();
     const [rooms, setRooms] = useState([]);
 
-    /* 
     // TV Auto-Redirect - DISABLED so user sees Lobby first
+    /*
     useEffect(() => {
         if (isTV() && rooms.length > 0) {
             const tvRoom = rooms.find(r => r.name === "TV") || rooms.find(r => r.id === "tv-a56dfad8") || rooms[0];
@@ -29,6 +29,17 @@ export function Lobby() {
         }
     }, [rooms, navigate]);
     */
+
+    // DEBUG: Spy on window.open for iOS Tracing
+    useEffect(() => {
+        if (window.alreadySpying) return;
+        window.alreadySpying = true;
+        const originalOpen = window.open;
+        window.open = (...args) => {
+            alert("JS: window.open called! URL: " + (args[0] || "unknown"));
+            return originalOpen.apply(window, args);
+        };
+    }, []);
 
     // Creation State
     const [isCreatingRoom, setIsCreatingRoom] = useState(false);
@@ -518,7 +529,6 @@ export function Lobby() {
                                         onTouchEnd={(e) => {
                                             // iOS Fix: Trigger immediately on touch release preventing ghost clicks
                                             e.preventDefault();
-                                            alert("Debug: Touch Detected");
                                             performLogin();
                                         }}
                                         onClick={performLogin}
