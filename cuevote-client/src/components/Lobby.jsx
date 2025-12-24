@@ -473,7 +473,7 @@ export function Lobby() {
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center p-8 safe-pt">
+        <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center p-8 pt-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))]">
             <header className="w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 gap-4 relative z-50">
                 <div className="flex items-center justify-between w-full sm:w-auto gap-4">
                     <div className="flex items-center gap-4">
@@ -623,7 +623,7 @@ export function Lobby() {
                             {user && (
                                 <button
                                     onClick={() => setChannelType('my_channels')}
-                                    className={`flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap ${channelType === 'my_channels' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -4 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
+                                    className={`flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap ${channelType === 'my_channels' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/50' : 'text-neutral-500 hover:text-neutral-300'}`}
                                 >
                                     <Sparkles size={14} /> {t('lobby.myChannels')}
                                 </button>
