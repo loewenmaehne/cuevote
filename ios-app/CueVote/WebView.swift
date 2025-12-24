@@ -75,10 +75,12 @@ struct WebView: UIViewRepresentable {
         
         func startGoogleSignInPKCE() {
             // TODO: Enter your iOS Client ID Here
-            let iosClientId = "PASTE_YOUR_IOS_CLIENT_ID_HERE"
+            let iosClientId = "296553515986-asvbr086mtb3e266srp1ccett5egjlh0.apps.googleusercontent.com"
             
             // Standard Custom Scheme for Google OAuth
-            let customScheme = "com.googleusercontent.apps.\(iosClientId)"
+            // Remove .apps.googleusercontent.com from the end to get the scheme base
+            let schemeBase = iosClientId.replacingOccurrences(of: ".apps.googleusercontent.com", with: "")
+            let customScheme = "com.googleusercontent.apps.\(schemeBase)"
             let redirectUri = "\(customScheme):/oauth2callback"
             
             // Safety Check
