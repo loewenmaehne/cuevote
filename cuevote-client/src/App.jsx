@@ -44,7 +44,7 @@ function App() {
   const [controlsHeight, setControlsHeight] = useState(96); // Default 6rem ~ 96px
   const [showSettings, setShowSettings] = useState(false); // Refactored state from Header
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
-  const { hasConsent, giveConsent } = useConsent();
+  const { hasConsent, showBanner } = useConsent();
   const { t } = useLanguage();
 
   // console.log("App Component MOUNTED, Room:", activeRoomId);
@@ -74,10 +74,10 @@ function App() {
 
   // Native Bridge: Sync QR Button State
   useEffect(() => {
-    // Show QR only if user has consented AND is in the lobby (root path)
+    // Show QR only if user has consented AND is in the lobby (root path) AND no banner is shown
     const isLobby = location.pathname === '/';
-    // FORCE BOOLEAN
-    const showQR = !!(hasConsent && isLobby);
+    // FORCE BOOLEAN & Strict Conditions
+    const showQR = !!(hasConsent && !showBanner && isLobby);
 
     const sendBridgeMessage = () => {
       // iOS Bridge
@@ -1392,7 +1392,7 @@ function App() {
           <div style={{ borderBottom: '1px solid #333', marginBottom: '4px', fontWeight: 'bold' }}>QR BRIDGE DEBUGGER (LOBBY)</div>
 
           <div className="flex justify-between">
-            <span>HasConsent: {String(hasConsent)}</span>
+            <span>Cnst:{hasConsent ? 'Y' : 'N'} Bnr:{showBanner ? 'Y' : 'N'}</span>
             <span>Path: {location.pathname}</span>
           </div>
 
