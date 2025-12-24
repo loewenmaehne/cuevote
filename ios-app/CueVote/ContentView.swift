@@ -32,19 +32,36 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $isScanning) {
-            QRScannerView { code in
-                // Handle scanned code
-                isScanning = false
-                if let url = URL(string: code), code.contains("cuevote.com") {
-                    // It's a valid URL, load it
-                    currentUrl = url
-                } else if !code.contains("http") {
-                     // It might be just a Room ID (e.g. "synthwave")
-                     // Construct the URL
-                     if let url = URL(string: "https://cuevote.com/" + code) {
-                         currentUrl = url
-                     }
+            VStack(spacing: 0) {
+                // Drag Handle & Header Area
+                ZStack {
+                    Capsule()
+                        .fill(Color.gray.opacity(0.5))
+                        .frame(width: 40, height: 5)
                 }
+                .frame(height: 20) // Small top area
+                .padding(.top, 10)
+                
+                // Scanner
+                QRScannerView { code in
+                    // Handle scanned code
+                    isScanning = false
+                    
+                    // FIX: Hide button immediately on successful scan
+                    self.isButtonVisible = false 
+                    
+                    if let url = URL(string: code), code.contains("cuevote.com") {
+                        // It's a valid URL, load it
+                        currentUrl = url
+                    } else if !code.contains("http") {
+                         // It might be just a Room ID (e.g. "synthwave")
+                         // Construct the URL
+                         if let url = URL(string: "https://cuevote.com/" + code) {
+                             currentUrl = url
+                         }
+                    }
+                }
+                .padding(.top, 10) // "Smaller to the top" visual gap
             }
         }
     }
