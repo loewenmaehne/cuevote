@@ -5,6 +5,7 @@ import CryptoKit
 
 struct WebView: UIViewRepresentable {
     let url: URL
+    var reloadKey: UUID = UUID()
     
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
