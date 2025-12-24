@@ -521,7 +521,7 @@ export function Lobby() {
                                             performLogin();
                                         }}
                                         onClick={performLogin}
-                                        className={`p-3 rounded-full border border-neutral-700 bg-neutral-800 text-white transition-transform active:scale-90 ${disabled && focusedIndex !== INDEX_PROFILE ? 'opacity-50' : 'hover:bg-neutral-700'} ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 ring-offset-2 ring-offset-black scale-105' : ''}`}
+                                        className={`p-3 rounded-full border border-neutral-700 bg-neutral-800 text-white transition-transform active:scale-90 ${disabled && focusedIndex !== INDEX_PROFILE ? 'opacity-50' : 'hover:bg-neutral-700'} ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 scale-105' : ''}`}
                                         aria-label="Sign in with Google"
                                     >
                                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -561,7 +561,7 @@ export function Lobby() {
                                 <button
                                     id="lobby-auth-button"
                                     onClick={performLogin}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? (focusedIndex === INDEX_PROFILE ? 'bg-neutral-900 text-neutral-500 border-neutral-700' : 'bg-neutral-900/50 text-neutral-600 border-neutral-800 opacity-50 grayscale') : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'} ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 ring-offset-2 ring-offset-black scale-105' : ''}`}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? (focusedIndex === INDEX_PROFILE ? 'bg-neutral-900 text-neutral-500 border-neutral-700' : 'bg-neutral-900/50 text-neutral-600 border-neutral-800 opacity-50 grayscale') : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'} ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 scale-105' : ''}`}
                                     title={disabled ? t('lobby.acceptCookies') : ""}
                                 >
                                     <svg className={`w-5 h-5 ${disabled ? 'text-neutral-600' : ''}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
