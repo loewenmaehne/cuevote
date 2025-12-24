@@ -101,8 +101,21 @@ function App() {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      clearTimeout(t3);
     };
   }, [hasConsent, location.pathname]);
+
+  // DEBUG OVERLAY
+  const [debugLog, setDebugLog] = useState([]);
+  const addLog = useCallback((msg) => setDebugLog(prev => [msg, ...prev].slice(0, 5)), []);
+
+  useEffect(() => {
+    try {
+      const isiOS = !!window.webkit?.messageHandlers?.toggleQRButton;
+      const isAndroid = !!window.CueVoteAndroid;
+      addLog(`S: ${hasConsent ? 'C' : '!'}${location.pathname === '/' ? 'L' : '!'} | iOS:${isiOS} And:${isAndroid}`);
+    } catch (e) { addLog(e.message); }
+  }, [hasConsent, location.pathname, addLog]);
 
   // WebSocket connection (Shared)
   const {
