@@ -41,7 +41,13 @@ struct WebView: UIViewRepresentable {
         webView.scrollView.contentInsetAdjustmentBehavior = .never
 
         // Load the URL
-        webView.load(URLRequest(url: url))
+        // MARK: - Cleaning Cache (Force Update)
+        // Aggressively clear cache for debugging
+        WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0)) { }
+
+        // Load the URL with cache ignoring policy
+        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 30)
+        webView.load(request)
         
         return webView
     }
