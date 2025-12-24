@@ -72,6 +72,23 @@ function App() {
     };
   }, []);
 
+  // Native Bridge: Sync QR Button State
+  useEffect(() => {
+    // Show QR only if user has consented AND is in the lobby (root path)
+    const isLobby = location.pathname === '/';
+    const showQR = hasConsent && isLobby;
+
+    // iOS Bridge
+    if (window.webkit?.messageHandlers?.toggleQRButton) {
+      window.webkit.messageHandlers.toggleQRButton.postMessage(showQR);
+    }
+
+    // Android Bridge
+    if (window.CueVoteAndroid?.toggleQRButton) {
+      window.CueVoteAndroid.toggleQRButton(showQR);
+    }
+  }, [hasConsent, location.pathname]);
+
   // WebSocket connection (Shared)
   const {
     state: serverState,
