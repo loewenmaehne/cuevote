@@ -17,9 +17,7 @@ export function Lobby() {
     const { t, language, setLanguage } = useLanguage();
     const [rooms, setRooms] = useState([]);
 
-    // DEBUG OVERLAY LOGIC
-    const [debugLog, setDebugLog] = useState([]);
-    const addLog = useCallback((msg) => setDebugLog(prev => [msg, ...prev].slice(0, 5)), []);
+
 
     // Native Bridge: Sync QR Button State (LOBBY ONLY)
     useEffect(() => {
@@ -56,14 +54,7 @@ export function Lobby() {
         };
     }, [hasConsent, showBanner]);
 
-    // Debug Logger
-    useEffect(() => {
-        try {
-            const isiOS = !!window.webkit?.messageHandlers?.toggleQRButton;
-            const isAndroid = !!window.CueVoteAndroid;
-            addLog(`S: ${hasConsent ? 'C' : '!'}${!showBanner ? 'NB' : '!'} | iOS:${isiOS} And:${isAndroid}`);
-        } catch (e) { addLog(e.message); }
-    }, [hasConsent, showBanner, addLog]);
+
 
     // TV Auto-Redirect - DISABLED so user sees Lobby first
     /*
