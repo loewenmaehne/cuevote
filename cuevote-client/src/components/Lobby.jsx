@@ -518,8 +518,6 @@ export function Lobby() {
                                         onTouchEnd={(e) => {
                                             // iOS Fix: Trigger immediately on touch release preventing ghost clicks
                                             e.preventDefault();
-                                            const sdkStatus = window.google ? "Ready" : "Missing";
-                                            alert(`Debug: SDK=${sdkStatus}, Consent=${hasConsent}`);
                                             performLogin();
                                         }}
                                         onClick={performLogin}

@@ -6,7 +6,7 @@ import { useConsent } from '../contexts/ConsentContext';
 function RealAuthButton({ onLoginSuccess, className, render }) {
 	const login = useGoogleLogin({
 		onSuccess: onLoginSuccess,
-		onError: (err) => alert("JS: Google Login Error: " + JSON.stringify(err)),
+		onError: (err) => console.error("Google Login Error:", err),
 	});
 
 	if (render) {

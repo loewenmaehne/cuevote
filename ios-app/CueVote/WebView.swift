@@ -103,15 +103,33 @@ struct WebView: UIViewRepresentable {
         }
         
         func startGoogleSignIn(clientId: String) {
+            // CRITICAL: Google requires an iOS Client ID for Custom Schemes.
+            // The 'clientId' passed from JS is the WEB ID. We must use the iOS ID here.
+            
+            // TODO: PASTE YOUR NEW iOS CLIENT ID HERE
+            // Example: "123456-abcdef...apps.googleusercontent.com"
+            let iosClientId = "PASTE_YOUR_IOS_CLIENT_ID_HERE"
+            
             // Standard Custom Scheme for Google OAuth
-            // Format: com.googleusercontent.apps.CLIENT_ID
-            let customScheme = "com.googleusercontent.apps.\(clientId)"
+            let customScheme = "com.googleusercontent.apps.\(iosClientId)"
             let redirectStr = "\(customScheme):/oauth2callback"
             let scope = "email profile openid"
             
-            // NOTE: User MUST add 'customScheme' to Xcode URL Types and Google Console Redirect URIs.
+            // ERROR CHECK
+            if iosClientId.contains("PASTE") {
+                let alert = UIAlertController(title: "Configuration Missing", message: "Please open WebView.swift and paste your iOS Client ID.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                 let windowScene = UIApplication.shared.connectedScenes
+                    .filter { $0.activationState == .foregroundActive }
+                    .first as? UIWindowScene
+                if let rootVC = windowScene?.windows.first(where: { $0.isKeyWindow })?.rootViewController {
+                    rootVC.present(alert, animated: true)
+                }
+                return
+            }
             
-            let authUrlStr = "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(clientId)&redirect_uri=\(redirectStr)&response_type=token&scope=\(scope)"
+            let authUrlStr = "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(iosClientId)&redirect_uri=\(redirectStr)&response_type=token&scope=\(scope)"
             
             guard let authUrl = URL(string: authUrlStr) else { return }
             
