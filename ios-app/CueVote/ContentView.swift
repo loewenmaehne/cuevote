@@ -49,12 +49,13 @@ struct ContentView: View {
                             reloadKey = UUID() // Force WebView Re-creation
                         }) {
                             Text("Retry")
+                                .font(.title3) // Bigger Font
                                 .fontWeight(.bold)
                                 .foregroundColor(.black)
-                                .padding()
-                                .frame(width: 120)
+                                .padding(.vertical, 16) // More vertical padding
+                                .frame(width: 200) // Bigger Width
                                 .background(Color.orange)
-                                .cornerRadius(10)
+                                .cornerRadius(12)
                         }
                     }
                 }
@@ -114,9 +115,13 @@ struct ContentView: View {
                                 self.isButtonVisible = false 
                                 self.reloadKey = UUID()
                                 
-                                if let url = URL(string: code), code.contains("cuevote.com") {
-                                    currentUrl = url
-                                } else if !code.contains("http") {
+                                if let url = URL(string: code), code.hasPrefix("http") {
+                                    // STRICT VALIDATION
+                                    if url.scheme == "https" && (url.host == "cuevote.com" || url.host == "www.cuevote.com") {
+                                        currentUrl = url
+                                    }
+                                } else if !code.contains(":") && !code.contains("/") {
+                                     // Assume Room ID (Strict check: no special chars usually found in URLs)
                                      if let url = URL(string: "https://cuevote.com/" + code) {
                                          currentUrl = url
                                      }
