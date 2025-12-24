@@ -73,7 +73,7 @@ struct ContentView: View {
                                 }
                             }
                         }
-                        .frame(height: geometry.size.height * 0.9) // 90% Height Always
+                        .frame(height: geometry.size.height * (geometry.size.width > geometry.size.height ? 0.85 : 0.80))
                         .background(Color.black)
                         .cornerRadius(15, corners: [.topLeft, .topRight])
                         .offset(y: max(0, dragOffset)) // Only allow dragging down
