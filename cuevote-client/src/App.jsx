@@ -1376,6 +1376,19 @@ function App() {
 
       {/* CookieConsent handled globally in main.jsx */}
       {passwordModalContent}
+
+      {/* DEBUG OVERLAY */}
+      <div style={{
+        position: 'fixed', top: 50, left: 10, maxWidth: '250px',
+        background: 'rgba(0,0,0,0.85)', color: '#00ff00',
+        padding: '8px', zIndex: 99999, fontSize: '10px',
+        pointerEvents: 'none', border: '1px solid #00ff00',
+        display: 'flex', flexDirection: 'column', gap: '2px',
+        fontFamily: 'monospace'
+      }}>
+        <div style={{ borderBottom: '1px solid #333', marginBottom: '4px' }}>QR BRIDGE DEBUG</div>
+        {debugLog.map((l, i) => <div key={i}>{l}</div>)}
+      </div>
     </div >
   );
 }
