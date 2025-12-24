@@ -114,7 +114,11 @@ export const translations = {
 			listenMusic: "Listen to Music",
 			unmuteAndPlay: "Unmute & Play",
 			noInternet: "No Internet Connection",
-			retry: "Retry Connection"
+			retry: "Retry Connection",
+			retrying: "Retrying...",
+			connectionIssue: "Connection Issue",
+			takingTooLong: "Taking longer than usual...",
+			checkConnection: "Please check your internet connection."
 		},
 		track: {
 			playing: "Playing",
@@ -290,7 +294,11 @@ export const translations = {
 			listenMusic: "Muziek luisteren",
 			unmuteAndPlay: "Geluid aan & Start",
 			noInternet: "Geen internetverbinding",
-			retry: "Opnieuw proberen"
+			retry: "Opnieuw proberen",
+			retrying: "Opnieuw proberen...",
+			connectionIssue: "Verbindingsprobleem",
+			takingTooLong: "Duurt langer dan gewoonlijk...",
+			checkConnection: "Controleer je internetverbinding."
 		},
 		track: {
 			playing: "Speelt nu",
@@ -466,7 +474,11 @@ export const translations = {
 			listenMusic: "Musik hören",
 			unmuteAndPlay: "Ton an & Start",
 			noInternet: "Keine Internetverbindung",
-			retry: "Verbindung wiederholen"
+			retry: "Verbindung wiederholen",
+			retrying: "Wiederholen...",
+			connectionIssue: "Verbindungsproblem",
+			takingTooLong: "Dauert länger als gewöhnlich...",
+			checkConnection: "Bitte überprüfen Sie Ihre Internetverbindung."
 		},
 		track: {
 			playing: "Wiedergabe",
@@ -642,7 +654,11 @@ export const translations = {
 			listenMusic: "Écouter de la musique",
 			unmuteAndPlay: "Son & Lecture",
 			noInternet: "Pas de connexion internet",
-			retry: "Réessayer"
+			retry: "Réessayer",
+			retrying: "Tentative...",
+			connectionIssue: "Problème de connexion",
+			takingTooLong: "Cela prend plus de temps que d'habitude...",
+			checkConnection: "Veuillez vérifier votre connexion internet."
 		},
 		track: {
 			playing: "Lecture",
@@ -818,7 +834,11 @@ export const translations = {
 			listenMusic: "Escuchar música",
 			unmuteAndPlay: "Sonido y Reproducir",
 			noInternet: "Sin conexión a internet",
-			retry: "Reintentar"
+			retry: "Reintentar conexión",
+			retrying: "Reintentando...",
+			connectionIssue: "Problema de conexión",
+			takingTooLong: "Tarda más de lo habitual...",
+			checkConnection: "Por favor, comprueba tu conexión a internet."
 		},
 		track: {
 			playing: "Reproduciendo",
@@ -985,6 +1005,10 @@ export const translations = {
 		app: {
 			noInternet: "Nessuna connessione internet",
 			retry: "Riprova connessione",
+			retrying: "Riprovo...",
+			connectionIssue: "Problema di connessione",
+			takingTooLong: "Ci sta mettendo più del solito...",
+			checkConnection: "Controlla la tua connessione internet.",
 			switching: "Cambio Canale...",
 			channelNotFound: "Canale inesistente",
 			notFoundMessage: "Il canale cercato ({roomId}) non è stato trovato.",
@@ -1159,6 +1183,10 @@ export const translations = {
 		app: {
 			noInternet: "Sem conexão com a internet",
 			retry: "Tentar novamente",
+			retrying: "Tentando...",
+			connectionIssue: "Problema de conexão",
+			takingTooLong: "Demorando mais que o normal...",
+			checkConnection: "Verifique sua conexão com a internet.",
 			switching: "Trocando Canal...",
 			channelNotFound: "Canal não existe",
 			notFoundMessage: "O canal procurado ({roomId}) não foi encontrado.",
@@ -1329,6 +1357,10 @@ export const translations = {
 		app: {
 			noInternet: "无网络连接",
 			retry: "重试连接",
+			retrying: "重试中...",
+			connectionIssue: "连接问题",
+			takingTooLong: "用时比平时更长...",
+			checkConnection: "请检查您的互联网连接。",
 			switching: "切换频道...",
 			channelNotFound: "频道不存在",
 			notFoundMessage: "未找到您查找的频道 ({roomId})。",
@@ -1499,6 +1531,10 @@ export const translations = {
 		app: {
 			noInternet: "無網際網路連線",
 			retry: "重試連線",
+			retrying: "重試中...",
+			connectionIssue: "連線問題",
+			takingTooLong: "耗時比平時更久...",
+			checkConnection: "請檢查您的網際網路連線。",
 			switching: "切換頻道...",
 			channelNotFound: "頻道不存在",
 			notFoundMessage: "未找到您搜尋的頻道 ({roomId})。",
@@ -1669,6 +1705,10 @@ export const translations = {
 		app: {
 			noInternet: "インターネット接続がありません",
 			retry: "接続を再試行",
+			retrying: "再試行中...",
+			connectionIssue: "接続の問題",
+			takingTooLong: "通常より時間がかかっています...",
+			checkConnection: "インターネット接続を確認してください。",
 			switching: "チャンネル切り替え中...",
 			channelNotFound: "チャンネルが存在しません",
 			notFoundMessage: "お探しのチャンネル ({roomId}) は見つかりませんでした。",
@@ -1839,6 +1879,10 @@ export const translations = {
 		app: {
 			noInternet: "인터넷에 연결되지 않음",
 			retry: "연결 재시도",
+			retrying: "재시도 중...",
+			connectionIssue: "연결 문제",
+			takingTooLong: "평소보다 오래 걸리고 있습니다...",
+			checkConnection: "인터넷 연결을 확인해주세요.",
 			switching: "채널 변경 중...",
 			channelNotFound: "채널이 없습니다",
 			notFoundMessage: "찾으시는 채널 ({roomId})을 찾을 수 없습니다.",
@@ -2008,6 +2052,10 @@ export const translations = {
 		app: {
 			noInternet: "कोई इंटरनेट कनेक्शन नहीं",
 			retry: "कनेक्शन पुनः प्रयास करें",
+			retrying: "पुनः प्रयास कर रहा है...",
+			connectionIssue: "कनेक्शन समस्या",
+			takingTooLong: "सामान्य से अधिक समय लग रहा है...",
+			checkConnection: "कृपया अपना इंटरनेट कनेक्शन जांचें।",
 			switching: "चैनल बदल रहा है...",
 			channelNotFound: "चैनल मौजूद नहीं है",
 			notFoundMessage: "वह चैनल ({roomId}) नहीं मिला।",

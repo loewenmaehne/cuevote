@@ -674,9 +674,8 @@ export function Lobby() {
                 </div>
 
                 {!isConnected ? (
-                    <div className="flex flex-col items-center gap-4 text-neutral-500 animate-pulse">
-                        <Radio className="w-12 h-12" />
-                        <span>{t('lobby.connecting')}</span>
+                    <div className="col-span-full py-12">
+                        <LoadingScreen embedded isOnline={true/* Assumed if Lobby Loaded */} isConnected={false} message={t('lobby.connecting')} />
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">

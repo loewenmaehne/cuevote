@@ -1,86 +1,119 @@
 import React, { useState, useEffect } from "react";
-import { WifiOff, RefreshCw, Loader2 } from "lucide-react";
+import { WifiOff, RefreshCw, Loader2, ServerCrash } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 
-export function LoadingScreen({ isOnline, isConnected }) {
+export function LoadingScreen({ isOnline, isConnected, embedded = false, message, fullScreen = true }) {
 	const { t } = useLanguage();
 	const [showTimeoutCheck, setShowTimeoutCheck] = useState(false);
+	const [isRetrying, setIsRetrying] = useState(false);
 
 	useEffect(() => {
-		// Reset timer when props change (though typically they won't if we are stuck)
-		// Actually, we want the timer to start when this component MOUNTS and keep ticking.
-		// If isOnline or isConnected changes, we might change state, but the "stuck" timer is global for this view.
+		// Reset state when status changes
+		if (isOnline && isConnected) {
+			setShowTimeoutCheck(false);
+			return;
+		}
 
-		// We only care about the timer if we are "technically" fine (Online + Connected) but still stuck here.
+		// Start a "stuck" timer
 		const timer = setTimeout(() => {
 			setShowTimeoutCheck(true);
-		}, 5000); // 5 seconds grace period
+		}, 5000); // 5 seconds grace period before showing retry options
 
 		return () => clearTimeout(timer);
-	}, []);
+	}, [isOnline, isConnected]);
 
 	const handleRetry = () => {
-		window.location.reload();
+		setIsRetrying(true);
+		// Simulate a brief "trying" state visually before actual reload or just reload
+		setTimeout(() => {
+			window.location.reload();
+		}, 500);
 	};
 
-	let content = {
-		icon: <Loader2 size={48} className="mb-4 text-orange-500 animate-spin mx-auto" />, // Improved spinner
-		message: t('app.switching'),
-		action: null
+	// Determine State
+	let state = 'loading'; // loading | offline | error
+	if (!isOnline) state = 'offline';
+	else if (!isConnected && showTimeoutCheck) state = 'error'; // Connected to internet but logic stuck?
+	else if (!isConnected) state = 'loading'; // Just connecting normally
+
+	// Content Configuration
+	const getConfig = () => {
+		switch (state) {
+			case 'offline':
+				return {
+					icon: <WifiOff size={48} className="text-neutral-500 mb-6" />,
+					title: t('app.noInternet', "No Internet Connection"),
+					sub: t('app.checkConnection', "Please check your internet connection."),
+					action: true
+				};
+			case 'error':
+				return {
+					icon: <ServerCrash size={48} className="text-orange-500 mb-6" />,
+					title: t('app.connectionIssue', "Connection Issue"), // New key or fallback
+					sub: t('app.takingTooLong', "Taking longer than usual..."),
+					action: true
+				};
+			case 'loading':
+			default:
+				return {
+					icon: <Loader2 size={48} className="text-orange-500 animate-spin mb-6" />,
+					title: message || t('app.connecting', "Connecting to server..."),
+					sub: null,
+					action: false
+				};
+		}
 	};
 
-	if (!isOnline) {
-		content = {
-			icon: <WifiOff size={48} className="mb-4 text-neutral-500 mx-auto" />,
-			message: t('app.noInternet', "No Internet Connection"),
-			action: (
+	const config = getConfig();
+
+	const content = (
+		<div className={`flex flex-col items-center justify-center text-center animate-in fade-in zoom-in-95 duration-500 ${embedded ? "" : "max-w-md p-8"}`}>
+			<div className={`transition-all duration-500 ${isRetrying ? "opacity-50 scale-90" : "opacity-100 scale-100"}`}>
+				{config.icon}
+			</div>
+
+			<h2 className="text-2xl md:text-3xl font-bold text-white mb-2 tracking-tight">
+				{config.title}
+			</h2>
+
+			{config.sub && (
+				<p className="text-neutral-400 font-medium mb-8">
+					{config.sub}
+				</p>
+			)}
+
+			{config.action && (
 				<button
 					onClick={handleRetry}
-					className="mt-6 flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white font-semibold transition-all hover:scale-105 active:scale-95 mx-auto"
+					disabled={isRetrying}
+					className="flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 				>
-					<RefreshCw size={20} />
-					{t('app.retry', "Retry Connection")}
+					<RefreshCw size={20} className={isRetrying ? "animate-spin" : ""} />
+					{isRetrying ? t('app.retrying', "Retrying...") : t('app.retry', "Retry Connection")}
 				</button>
-			)
-		};
-	} else if (!isConnected) {
-		content = {
-			icon: <Loader2 size={48} className="mb-4 text-neutral-500 animate-spin mx-auto" />,
-			message: t('lobby.connecting', "Connecting to server..."),
-			action: null // Usually connects purely automatically, but if stuck here too long...
-		};
-		// If we are stuck in "Connecting" for too long, same logic applies?
-		// Yes, the timeout below will override if needed, OR we can add a specific retry here too.
-		// Let's rely on the timeout override for simplicity.
+			)}
+		</div>
+	);
+
+	if (embedded) {
+		return (
+			<div className="flex flex-col items-center justify-center p-8 w-full h-full min-h-[300px]">
+				{content}
+			</div>
+		);
 	}
 
-	// Timeout Override: If we are showing "Switching" or "Connecting" for too long => Offer Retry
-	if (showTimeoutCheck && isOnline) {
-		// Don't fully replace if we are "Connecting" - maybe just add the button?
-		// Actually, if it's been 5 seconds and we are still "Switching" or "Connecting", user needs options.
-		if (!content.action) {
-			content.action = (
-				<div className="animate-in fade-in slide-in-from-bottom-2 duration-500 flex flex-col items-center">
-					<p className="text-neutral-500 text-sm mb-4">Taking longer than usual...</p>
-					<button
-						onClick={handleRetry}
-						className="flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white font-semibold transition-all hover:scale-105 active:scale-95"
-					>
-						<RefreshCw size={20} />
-						{t('app.retry', "Retry Connection")}
-					</button>
-				</div>
-			);
-		}
-	}
-
+	// Full Screen Mode
 	return (
-		<div className="min-h-screen bg-black text-white flex items-center justify-center p-6">
-			<div className="flex flex-col items-center justify-center max-w-sm text-center animate-in fade-in zoom-in-95 duration-300">
-				{content.icon}
-				<h2 className="text-2xl font-bold mb-2">{content.message}</h2>
-				{content.action}
+		<div className="fixed inset-0 z-[100] bg-[#050505] text-white flex items-center justify-center p-6 overflow-hidden">
+			{/* Background Gradient */}
+			<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-orange-900/20 via-[#050505] to-[#050505] pointer-events-none" />
+
+			{/* Content */}
+			<div className="relative z-10 w-full flex items-center justify-center">
+				{content}
 			</div>
 		</div>
 	);
 }
+
