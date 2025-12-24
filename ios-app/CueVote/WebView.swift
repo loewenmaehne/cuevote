@@ -1,5 +1,6 @@
 import SwiftUI
 import WebKit
+import AuthenticationServices
 
 struct WebView: UIViewRepresentable {
     let url: URL
