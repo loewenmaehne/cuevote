@@ -30,7 +30,7 @@ export function Lobby() {
     }, [rooms, navigate]);
     */
 
-    // DEBUG: Spy on window.open for iOS Tracing
+    // DEBUG: Spy on window.open for iOS Tracing (Updated 15:45)
     useEffect(() => {
         if (window.alreadySpying) return;
         window.alreadySpying = true;
