@@ -498,7 +498,7 @@ export function Lobby() {
                         {user ? (
                             <button
                                 onClick={() => setShowProfileModal(true)}
-                                className="flex items-center gap-2"
+                                className={`flex items-center gap-2 rounded-full transition-all ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 scale-105' : ''}`}
                             >
                                 {user.picture ? (
                                     <img src={user.picture} className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
