@@ -44,7 +44,7 @@ function App() {
   const [controlsHeight, setControlsHeight] = useState(96); // Default 6rem ~ 96px
   const [showSettings, setShowSettings] = useState(false); // Refactored state from Header
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
-  const { hasConsent, showBanner } = useConsent();
+  const { hasConsent, showBanner, giveConsent } = useConsent();
   const { t } = useLanguage();
 
   // console.log("App Component MOUNTED, Room:", activeRoomId);
