@@ -15,7 +15,8 @@ struct WebView: UIViewRepresentable {
         // MARK: - User Agent & Detection
         // Appending our identifier so the web app detects the wrapper.
         // This matches the 'CueVoteWrapper' check in MobileRedirectGuard.jsx
-        config.applicationNameForUserAgent = "CueVoteWrapper/1.0"
+        // TEST: Commenting out to see if Google blocks this UA
+        // config.applicationNameForUserAgent = "CueVoteWrapper/1.0"
         
         // MARK: - Popup Settings
         config.preferences.javaScriptCanOpenWindowsAutomatically = true
