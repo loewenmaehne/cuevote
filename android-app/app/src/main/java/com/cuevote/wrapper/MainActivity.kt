@@ -80,10 +80,16 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         offlineView.visibility = android.view.View.GONE
         container.addView(offlineView)
         
+        // 4. Inject Loading Layout
+        val loadingView = inflater.inflate(R.layout.layout_loading, container, false)
+        loadingView.visibility = android.view.View.VISIBLE // Show initially
+        container.addView(loadingView)
+        
         // Retry Button Logic
         val btnRetry = offlineView.findViewById<android.widget.Button>(R.id.btn_retry)
         btnRetry.setOnClickListener {
             offlineView.visibility = android.view.View.GONE
+             loadingView.visibility = android.view.View.VISIBLE // Show loader
             webView.visibility = android.view.View.VISIBLE
             webView.reload()
         }
@@ -94,10 +100,17 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
                 return false 
             }
             
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                // Hide Loader when done
+                loadingView.visibility = android.view.View.GONE
+            }
+
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: android.webkit.WebResourceError?) {
                 super.onReceivedError(view, request, error)
                 // Show Offline Screen
                 runOnUiThread {
+                    loadingView.visibility = android.view.View.GONE // Ensure loader is hidden
                     webView.visibility = android.view.View.GONE
                     offlineView.visibility = android.view.View.VISIBLE
                 }
