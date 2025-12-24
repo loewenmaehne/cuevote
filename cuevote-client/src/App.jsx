@@ -95,10 +95,12 @@ function App() {
     // Retry mechanics to handle potential race conditions during page load/bridge injection
     const t1 = setTimeout(sendBridgeMessage, 500);
     const t2 = setTimeout(sendBridgeMessage, 1500);
+    const t3 = setTimeout(sendBridgeMessage, 3000); // Extended retry
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      clearTimeout(t3);
     };
   }, [hasConsent, location.pathname]);
 
