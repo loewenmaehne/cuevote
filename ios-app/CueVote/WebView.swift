@@ -71,7 +71,17 @@ struct WebView: UIViewRepresentable {
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
             if message.name == "nativeGoogleLogin" {
                 startGoogleSignInPKCE()
-            } else if message.name == "toggleQRButton", let show = message.body as? Bool {
+            } else if message.name == "toggleQRButton" {
+                // Fix: JS booleans are passed as NSNumber (0 or 1), direct cast to Bool can fail/be unreliable
+                var show = false
+                if let boolVal = message.body as? Bool {
+                    show = boolVal
+                } else if let intVal = message.body as? Int {
+                    show = (intVal != 0)
+                } else if let numVal = message.body as? NSNumber {
+                    show = numVal.boolValue
+                }
+                
                 // Broadcast capability to ContentView
                 NotificationCenter.default.post(name: NSNotification.Name("ToggleQRButton"), object: show)
             }
