@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale, ChevronLeft, ChevronRight } from "lucide-react";
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
@@ -13,9 +13,57 @@ import { isTV } from "../utils/deviceDetection";
 export function Lobby() {
     const navigate = useNavigate();
     const { sendMessage, lastMessage, isConnected, lastError, lastErrorCode, user, handleLoginSuccess, handleLogout, clearMessage, state } = useWebSocketContext();
-    const { hasConsent } = useConsent();
+    const { hasConsent, showBanner } = useConsent();
     const { t, language, setLanguage } = useLanguage();
     const [rooms, setRooms] = useState([]);
+
+    // DEBUG OVERLAY LOGIC
+    const [debugLog, setDebugLog] = useState([]);
+    const addLog = useCallback((msg) => setDebugLog(prev => [msg, ...prev].slice(0, 5)), []);
+
+    // Native Bridge: Sync QR Button State (LOBBY ONLY)
+    useEffect(() => {
+        // Show QR only if user has consented AND no banner is shown (implicit Lobby because this component IS valid)
+        const showQR = !!(hasConsent && !showBanner);
+
+        const sendBridgeMessage = () => {
+            // iOS Bridge
+            if (window.webkit?.messageHandlers?.toggleQRButton) {
+                window.webkit.messageHandlers.toggleQRButton.postMessage(showQR);
+            }
+            // Android Bridge
+            if (window.CueVoteAndroid?.toggleQRButton) {
+                window.CueVoteAndroid.toggleQRButton(showQR);
+            }
+        };
+
+        // Send immediately
+        sendBridgeMessage();
+
+        // Retry mechanics
+        const t1 = setTimeout(sendBridgeMessage, 500);
+        const t2 = setTimeout(sendBridgeMessage, 1500);
+        const t3 = setTimeout(sendBridgeMessage, 3000);
+
+        return () => {
+            // Cleanup: Hide button when leaving Lobby
+            if (window.webkit?.messageHandlers?.toggleQRButton) window.webkit.messageHandlers.toggleQRButton.postMessage(false);
+            if (window.CueVoteAndroid?.toggleQRButton) window.CueVoteAndroid.toggleQRButton(false);
+
+            clearTimeout(t1);
+            clearTimeout(t2);
+            clearTimeout(t3);
+        };
+    }, [hasConsent, showBanner]);
+
+    // Debug Logger
+    useEffect(() => {
+        try {
+            const isiOS = !!window.webkit?.messageHandlers?.toggleQRButton;
+            const isAndroid = !!window.CueVoteAndroid;
+            addLog(`S: ${hasConsent ? 'C' : '!'}${!showBanner ? 'NB' : '!'} | iOS:${isiOS} And:${isAndroid}`);
+        } catch (e) { addLog(e.message); }
+    }, [hasConsent, showBanner, addLog]);
 
     // TV Auto-Redirect - DISABLED so user sees Lobby first
     /*
@@ -474,6 +522,54 @@ export function Lobby() {
 
     return (
         <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center p-8 pt-[calc(2rem+env(safe-area-inset-top))] pb-[calc(2rem+env(safe-area-inset-bottom))]">
+
+            {/* DEBUG OVERLAY - LOBBY (Real) */}
+            <div style={{
+                position: 'fixed', top: 80, left: 10, maxWidth: '280px',
+                background: 'rgba(0,0,0,0.9)', color: '#00ff00',
+                padding: '10px', zIndex: 99999, fontSize: '11px',
+                border: '1px solid #00ff00', borderRadius: '4px',
+                display: 'flex', flexDirection: 'column', gap: '4px',
+                fontFamily: 'monospace', pointerEvents: 'auto'
+            }}>
+                <div style={{ borderBottom: '1px solid #333', marginBottom: '4px', fontWeight: 'bold' }}>QR DEBUG (LOBBY.JSX)</div>
+
+                <div className="flex justify-between">
+                    <span>Cnst:{hasConsent ? 'Y' : 'N'} Bnr:{showBanner ? 'Y' : 'N'}</span>
+                </div>
+
+                <div className="flex gap-2 my-1">
+                    <div style={{ background: window.webkit?.messageHandlers?.toggleQRButton ? '#004400' : '#440000', padding: '2px' }}>iOS</div>
+                    <div style={{ background: window.CueVoteAndroid?.toggleQRButton ? '#004400' : '#440000', padding: '2px' }}>And</div>
+                </div>
+
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => {
+                            if (window.webkit?.messageHandlers?.toggleQRButton) window.webkit.messageHandlers.toggleQRButton.postMessage(true);
+                            if (window.CueVoteAndroid?.toggleQRButton) window.CueVoteAndroid.toggleQRButton(true);
+                            addLog("Manual: ON");
+                        }}
+                        className="bg-green-700 hover:bg-green-600 text-white px-2 py-1 rounded"
+                    >
+                        ON
+                    </button>
+                    <button
+                        onClick={() => {
+                            if (window.webkit?.messageHandlers?.toggleQRButton) window.webkit.messageHandlers.toggleQRButton.postMessage(false);
+                            if (window.CueVoteAndroid?.toggleQRButton) window.CueVoteAndroid.toggleQRButton(false);
+                            addLog("Manual: OFF");
+                        }}
+                        className="bg-red-700 hover:bg-red-600 text-white px-2 py-1 rounded"
+                    >
+                        OFF
+                    </button>
+                </div>
+
+                <div style={{ maxHeight: '100px', overflowY: 'auto', marginTop: '4px', borderTop: '1px solid #333' }}>
+                    {debugLog.map((l, i) => <div key={i}>{l}</div>)}
+                </div>
+            </div>
             <header className="w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 gap-4 relative z-50">
                 <div className="flex items-center justify-between w-full sm:w-auto gap-4">
                     <div className="flex items-center gap-4">
