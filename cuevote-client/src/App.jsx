@@ -76,7 +76,8 @@ function App() {
   useEffect(() => {
     // Show QR only if user has consented AND is in the lobby (root path)
     const isLobby = location.pathname === '/';
-    const showQR = hasConsent && isLobby;
+    // FORCE BOOLEAN
+    const showQR = !!(hasConsent && isLobby);
 
     const sendBridgeMessage = () => {
       // iOS Bridge
