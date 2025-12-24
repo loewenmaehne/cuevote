@@ -43,7 +43,12 @@ struct WebView: UIViewRepresentable {
         return webView
     }
     
-    func updateUIView(_ uiView: WKWebView, context: Context) {}
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+        if uiView.url?.absoluteString != url.absoluteString {
+            let request = URLRequest(url: url)
+            uiView.load(request)
+        }
+    }
     
     func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
     
