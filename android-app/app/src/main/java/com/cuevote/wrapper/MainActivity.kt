@@ -11,11 +11,20 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.webkit.JavascriptInterface
+import android.widget.FrameLayout
+import android.view.Gravity
+import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
+// ZXing Imports
+import com.google.zxing.integration.android.IntentIntegrator
+import com.google.zxing.integration.android.IntentResult
 
 import androidx.annotation.Keep
 
 import android.os.Message
 import android.app.Dialog
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,12 +36,21 @@ class MainActivity : AppCompatActivity() {
         // Keep Screen On
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        // Create WebView programmatically
+        // 1. Setup Layout Container (FrameLayout)
+        val container = FrameLayout(this)
+        container.layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
 
+        // 2. Create WebView programmatically
         webView = WebView(this)
         WebView.setWebContentsDebuggingEnabled(true) // Enable Debugging
-        setContentView(webView)
-
+        webView.layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+        
         // Configure Settings
         webView.settings.apply {
             javaScriptEnabled = true
@@ -53,8 +71,6 @@ class MainActivity : AppCompatActivity() {
             cacheMode = WebSettings.LOAD_DEFAULT
 
             // Custom User Agent for detection
-            // We explicitly get the default, append our tag, and set it back.
-            // IMPORTANT: Remove "; wv" to avoid Google's "Disallowed User Agent" block
             val defaultUserAgent = userAgentString
             val sanitizedUserAgent = defaultUserAgent.replace("; wv", "")
             userAgentString = "$sanitizedUserAgent CueVoteWrapper/1.0"
@@ -63,18 +79,13 @@ class MainActivity : AppCompatActivity() {
         // Web Client to keep links internal
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                // Return false to let the WebView handle the URL (keep it inside the app)
                 return false 
             }
         }
 
+        // Web Chrome Client for Popups
         webView.webChromeClient = object : WebChromeClient() {
-            override fun onCreateWindow(
-                view: WebView?,
-                isDialog: Boolean,
-                isUserGesture: Boolean,
-                resultMsg: Message?
-            ): Boolean {
+            override fun onCreateWindow(view: WebView?, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
                 val newWebView = WebView(this@MainActivity)
                 newWebView.settings.javaScriptEnabled = true
                 newWebView.settings.domStorageEnabled = true
@@ -82,22 +93,14 @@ class MainActivity : AppCompatActivity() {
                 
                 val dialog = Dialog(this@MainActivity)
                 dialog.setContentView(newWebView)
-                dialog.window?.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT, 
-                    WindowManager.LayoutParams.MATCH_PARENT
-                )
+                dialog.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
                 dialog.show()
                 
                 newWebView.webChromeClient = object : WebChromeClient() {
-                    override fun onCloseWindow(window: WebView?) {
-                        dialog.dismiss()
-                    }
+                    override fun onCloseWindow(window: WebView?) { dialog.dismiss() }
                 }
-                
                 newWebView.webViewClient = object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                        return false
-                    }
+                    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean { return false }
                 }
 
                 val transport = resultMsg?.obj as WebView.WebViewTransport
@@ -108,10 +111,44 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Inject JS Interface for Detection
-        webView.addJavascriptInterface(WebAppInterface(this), "CueVoteAndroid")
+        // webView.addJavascriptInterface(...) -> Moved down to have access to FAB
 
         // Load the production URL
         webView.loadUrl("https://cuevote.com")
+
+        // Add WebView to container
+        container.addView(webView)
+
+        // 3. Create Floating Action Button (QR Scan)
+        val fab = FloatingActionButton(this)
+        val fabParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        )
+        // Revert to Bottom Right (Standard)
+        fabParams.gravity = Gravity.BOTTOM or Gravity.END 
+        fabParams.setMargins(0, 0, 40, 40) // Bottom-Right Margin
+        fab.layoutParams = fabParams
+        
+        // Style the FAB
+        fab.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF8C00")) // Orange
+        // Use custom QR Icon
+        fab.setImageResource(R.drawable.ic_qr_code)
+        
+        // Initially HIDDEN
+        fab.visibility = android.view.View.GONE
+        
+        fab.setOnClickListener {
+            startQRScan()
+        }
+
+        container.addView(fab)
+
+        // Set Content View
+        setContentView(container)
+        
+        // Pass FAB reference to Interface
+        webView.addJavascriptInterface(WebAppInterface(this, fab), "CueVoteAndroid")
 
         // Handle Back Press properly
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -125,12 +162,60 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun startQRScan() {
+        val integrator = IntentIntegrator(this)
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+        integrator.setPrompt("Scan a Room QR Code")
+        integrator.setCameraId(0)  // Use a specific camera of the device
+        integrator.setBeepEnabled(false)
+        integrator.setBarcodeImageEnabled(false)
+        integrator.setOrientationLocked(false)
+        integrator.initiateScan()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val result: IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            if (result.contents == null) {
+                // Canceled
+            } else {
+                val scannedContent = result.contents
+                var finalUrl = scannedContent
+                
+                // Logic to handle Room ID vs URL
+                if (scannedContent.contains("cuevote.com")) {
+                     finalUrl = scannedContent
+                } else if (!scannedContent.startsWith("http")) {
+                    // Assume it's a room ID
+                    finalUrl = "https://cuevote.com/" + scannedContent
+                }
+                
+                webView.loadUrl(finalUrl)
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
 }
 
 @Keep
-class WebAppInterface(private val mContext: Context) {
+class WebAppInterface(private val mContext: Context, private val fab: FloatingActionButton) {
     @JavascriptInterface
     fun isNative(): Boolean {
         return true
+    }
+
+    @JavascriptInterface
+    fun toggleQRButton(show: Boolean) {
+        // Must run UI updates on Main Thread
+        val activity = mContext as? MainActivity
+        activity?.runOnUiThread {
+            if (show) {
+                fab.show()
+            } else {
+                fab.hide()
+            }
+        }
     }
 }
