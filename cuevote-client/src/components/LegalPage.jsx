@@ -42,7 +42,7 @@ export function LegalPage() {
             </div>
 
             {/* Navigation Bar */}
-            <nav className={`fixed top-0 inset-x-0 z-[100] transition-all duration-300 ${scrolled ? 'bg-[#050505]/90 border-b border-white/5 py-4' : 'bg-[#050505]/60 py-6'} backdrop-blur-xl`}>
+            <nav className={`fixed top-0 inset-x-0 z-[100] transition-all duration-300 ${scrolled ? 'bg-[#050505]/90 border-b border-white/5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))]' : 'bg-[#050505]/60 pb-6 pt-[calc(1.5rem+env(safe-area-inset-top))]'} backdrop-blur-xl`}>
                 <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
                     <button
                         onClick={() => navigate(-1)}
@@ -59,7 +59,7 @@ export function LegalPage() {
                 </div>
             </nav>
 
-            <main className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto">
+            <main className="relative pt-32 pb-[calc(5rem+env(safe-area-inset-bottom))] px-6 max-w-7xl mx-auto">
                 {/* Hero Section */}
                 <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight bg-gradient-to-br from-white via-white to-neutral-500 bg-clip-text text-transparent">
