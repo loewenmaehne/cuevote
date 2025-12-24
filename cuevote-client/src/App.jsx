@@ -1379,53 +1379,56 @@ function App() {
       {passwordModalContent}
 
       {/* DEBUG OVERLAY */}
-      <div style={{
-        position: 'fixed', top: 50, left: 10, maxWidth: '280px',
-        background: 'rgba(0,0,0,0.9)', color: '#00ff00',
-        padding: '10px', zIndex: 99999, fontSize: '11px',
-        border: '1px solid #00ff00', borderRadius: '4px',
-        display: 'flex', flexDirection: 'column', gap: '4px',
-        fontFamily: 'monospace', pointerEvents: 'auto'
-      }}>
-        <div style={{ borderBottom: '1px solid #333', marginBottom: '4px', fontWeight: 'bold' }}>QR BRIDGE DEBUGGER</div>
+      {/* DEBUG OVERLAY - LOBBY ONLY */}
+      {location.pathname === '/' && (
+        <div style={{
+          position: 'fixed', top: 50, left: 10, maxWidth: '280px',
+          background: 'rgba(0,0,0,0.9)', color: '#00ff00',
+          padding: '10px', zIndex: 99999, fontSize: '11px',
+          border: '1px solid #00ff00', borderRadius: '4px',
+          display: 'flex', flexDirection: 'column', gap: '4px',
+          fontFamily: 'monospace', pointerEvents: 'auto'
+        }}>
+          <div style={{ borderBottom: '1px solid #333', marginBottom: '4px', fontWeight: 'bold' }}>QR BRIDGE DEBUGGER (LOBBY)</div>
 
-        <div className="flex justify-between">
-          <span>HasConsent: {String(hasConsent)}</span>
-          <span>Path: {location.pathname}</span>
-        </div>
+          <div className="flex justify-between">
+            <span>HasConsent: {String(hasConsent)}</span>
+            <span>Path: {location.pathname}</span>
+          </div>
 
-        <div className="flex gap-2 my-1">
-          <div style={{ background: window.webkit?.messageHandlers?.toggleQRButton ? '#004400' : '#440000', padding: '2px' }}>iOS</div>
-          <div style={{ background: window.CueVoteAndroid?.toggleQRButton ? '#004400' : '#440000', padding: '2px' }}>Android</div>
-        </div>
+          <div className="flex gap-2 my-1">
+            <div style={{ background: window.webkit?.messageHandlers?.toggleQRButton ? '#004400' : '#440000', padding: '2px' }}>iOS</div>
+            <div style={{ background: window.CueVoteAndroid?.toggleQRButton ? '#004400' : '#440000', padding: '2px' }}>Android</div>
+          </div>
 
-        <div className="flex gap-2">
-          <button
-            onClick={() => {
-              if (window.webkit?.messageHandlers?.toggleQRButton) window.webkit.messageHandlers.toggleQRButton.postMessage(true);
-              if (window.CueVoteAndroid?.toggleQRButton) window.CueVoteAndroid.toggleQRButton(true);
-              addLog("Manual: ON");
-            }}
-            className="bg-green-700 hover:bg-green-600 text-white px-2 py-1 rounded"
-          >
-            FORCE ON
-          </button>
-          <button
-            onClick={() => {
-              if (window.webkit?.messageHandlers?.toggleQRButton) window.webkit.messageHandlers.toggleQRButton.postMessage(false);
-              if (window.CueVoteAndroid?.toggleQRButton) window.CueVoteAndroid.toggleQRButton(false);
-              addLog("Manual: OFF");
-            }}
-            className="bg-red-700 hover:bg-red-600 text-white px-2 py-1 rounded"
-          >
-            FORCE OFF
-          </button>
-        </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                if (window.webkit?.messageHandlers?.toggleQRButton) window.webkit.messageHandlers.toggleQRButton.postMessage(true);
+                if (window.CueVoteAndroid?.toggleQRButton) window.CueVoteAndroid.toggleQRButton(true);
+                addLog("Manual: ON");
+              }}
+              className="bg-green-700 hover:bg-green-600 text-white px-2 py-1 rounded"
+            >
+              FORCE ON
+            </button>
+            <button
+              onClick={() => {
+                if (window.webkit?.messageHandlers?.toggleQRButton) window.webkit.messageHandlers.toggleQRButton.postMessage(false);
+                if (window.CueVoteAndroid?.toggleQRButton) window.CueVoteAndroid.toggleQRButton(false);
+                addLog("Manual: OFF");
+              }}
+              className="bg-red-700 hover:bg-red-600 text-white px-2 py-1 rounded"
+            >
+              FORCE OFF
+            </button>
+          </div>
 
-        <div style={{ maxHeight: '100px', overflowY: 'auto', marginTop: '4px', borderTop: '1px solid #333' }}>
-          {debugLog.map((l, i) => <div key={i}>{l}</div>)}
+          <div style={{ maxHeight: '100px', overflowY: 'auto', marginTop: '4px', borderTop: '1px solid #333' }}>
+            {debugLog.map((l, i) => <div key={i}>{l}</div>)}
+          </div>
         </div>
-      </div>
+      )}
     </div >
   );
 }
