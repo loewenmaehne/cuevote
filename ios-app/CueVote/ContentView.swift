@@ -28,7 +28,6 @@ struct ContentView: View {
                 .padding(30) // Offset from bottom-right (Reverted)
             }
         }
-        }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ToggleQRButton"))) { note in
             if let show = note.object as? Bool {
                 self.isButtonVisible = show
