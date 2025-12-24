@@ -79,6 +79,8 @@ struct WebView: UIViewRepresentable {
     class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, ASWebAuthenticationPresentationContextProviding {
         var parent: WebView
         var webAuthSession: ASWebAuthenticationSession?
+        var popupWebView: WKWebView?
+        var popupController: UIViewController?
 
         init(parent: WebView) {
             self.parent = parent
@@ -86,7 +88,11 @@ struct WebView: UIViewRepresentable {
 
         // MARK: - ASWebAuthenticationPresentationContextProviding
         func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-            return UIApplication.shared.windows.first { $0.isKeyWindow } ?? ASPresentationAnchor()
+            return UIApplication.shared.connectedScenes
+                .filter { $0.activationState == .foregroundActive }
+                .first(where: { $0 is UIWindowScene })
+                .flatMap({ $0 as? UIWindowScene })?.windows
+                .first(where: { $0.isKeyWindow }) ?? ASPresentationAnchor()
         }
 
         // MARK: - WKScriptMessageHandler
@@ -215,8 +221,12 @@ struct WebView: UIViewRepresentable {
             let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in completionHandler() })
             
-            // Find presentation controller
-            if let rootVC = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController {
+            // Find presentation controller (Robust Scene-based)
+            let windowScene = UIApplication.shared.connectedScenes
+                .filter { $0.activationState == .foregroundActive }
+                .first as? UIWindowScene
+            
+            if let rootVC = windowScene?.windows.first(where: { $0.isKeyWindow })?.rootViewController {
                 rootVC.present(alert, animated: true)
             }
         }
