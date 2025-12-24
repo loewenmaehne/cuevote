@@ -96,8 +96,7 @@ struct ContentView: View {
                     }
                 }
             }
-                }
-            }
+
             .ignoresSafeArea() // Fix: Ensure overlay fills entire screen (including notch area in landscape)
         )
         .animation(.spring(), value: isScanning)
