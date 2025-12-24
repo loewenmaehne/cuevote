@@ -78,15 +78,28 @@ function App() {
     const isLobby = location.pathname === '/';
     const showQR = hasConsent && isLobby;
 
-    // iOS Bridge
-    if (window.webkit?.messageHandlers?.toggleQRButton) {
-      window.webkit.messageHandlers.toggleQRButton.postMessage(showQR);
-    }
+    const sendBridgeMessage = () => {
+      // iOS Bridge
+      if (window.webkit?.messageHandlers?.toggleQRButton) {
+        window.webkit.messageHandlers.toggleQRButton.postMessage(showQR);
+      }
+      // Android Bridge
+      if (window.CueVoteAndroid?.toggleQRButton) {
+        window.CueVoteAndroid.toggleQRButton(showQR);
+      }
+    };
 
-    // Android Bridge
-    if (window.CueVoteAndroid?.toggleQRButton) {
-      window.CueVoteAndroid.toggleQRButton(showQR);
-    }
+    // Send immediately
+    sendBridgeMessage();
+
+    // Retry mechanics to handle potential race conditions during page load/bridge injection
+    const t1 = setTimeout(sendBridgeMessage, 500);
+    const t2 = setTimeout(sendBridgeMessage, 1500);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [hasConsent, location.pathname]);
 
   // WebSocket connection (Shared)
