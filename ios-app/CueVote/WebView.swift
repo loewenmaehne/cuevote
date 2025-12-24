@@ -6,13 +6,12 @@ import CryptoKit
 struct WebView: UIViewRepresentable {
     let url: URL
     @Binding var isOffline: Bool
+    @Binding var isLoading: Bool
     var reloadKey: UUID = UUID()
     
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
-        // ... (lines 12-23 remain same, skipping for brevity in replacement if possible, but replace_file_content needs contiguous block)
-        // To be safe I will just replace the top struct definition and the coordinator init to include the binding logic.
-        // Actually, to keep it simple, I will do a smaller chunk replacement for the struct properties and makeCoordinator
+        
         config.mediaTypesRequiringUserActionForPlayback = []
         config.allowsInlineMediaPlayback = true
         config.preferences.javaScriptCanOpenWindowsAutomatically = true
@@ -65,10 +64,16 @@ struct WebView: UIViewRepresentable {
 
         init(parent: WebView) { self.parent = parent }
 
+        // Start
+        func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+             // We can use this to keep loading true, but user sets it to true initially.
+        }
+
         // Success
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             DispatchQueue.main.async {
                 self.parent.isOffline = false
+                self.parent.isLoading = false
             }
         }
         
@@ -77,6 +82,7 @@ struct WebView: UIViewRepresentable {
             print("WebView Load Failed: \(error.localizedDescription)")
             DispatchQueue.main.async {
                 self.parent.isOffline = true
+                self.parent.isLoading = false
             }
         }
         
@@ -85,6 +91,7 @@ struct WebView: UIViewRepresentable {
             print("WebView Navigation Failed: \(error.localizedDescription)")
              DispatchQueue.main.async {
                 self.parent.isOffline = true
+                self.parent.isLoading = false
             }
         }
 
