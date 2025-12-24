@@ -27,10 +27,12 @@
 
     <Button
         android:id="@+id/btn_retry"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="Retry"
         android:textColor="#000000"
+        android:paddingVertical="12dp"
+        android:textSize="18sp"
         android:backgroundTint="#F97316"
         android:textStyle="bold" />
 
