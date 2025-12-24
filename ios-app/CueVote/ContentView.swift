@@ -4,10 +4,11 @@ struct ContentView: View {
     @State private var currentUrl: URL = URL(string: "https://cuevote.com")!
     @State private var isButtonVisible = false // Default hidden
     @State private var isScanning = false
+    @State private var reloadKey = UUID()
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) { // Revert to Bottom Right
-            WebView(url: currentUrl)
+            WebView(url: currentUrl, reloadKey: reloadKey)
                 .ignoresSafeArea()
             
             // Floating Scan Button
@@ -49,6 +50,9 @@ struct ContentView: View {
                     
                     // FIX: Hide button immediately on successful scan
                     self.isButtonVisible = false 
+                    
+                    // Force Webview Update even if URL is same
+                    self.reloadKey = UUID()
                     
                     if let url = URL(string: code), code.contains("cuevote.com") {
                         // It's a valid URL, load it
