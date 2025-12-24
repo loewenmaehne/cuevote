@@ -31,9 +31,23 @@ struct WebView: UIViewRepresentable {
         let script = WKUserScript(source: scriptSource, injectionTime: .atDocumentStart, forMainFrameOnly: false)
         config.userContentController.addUserScript(script)
         
+        // Message Handler for Native Bridge
+        let contentController = WKUserContentController()
+        contentController.add(context.coordinator, name: "nativeGoogleLogin")
+        config.userContentController = contentController
+
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
         webView.uiDelegate = context.coordinator
+        
+        // Listen for Native Token Injection
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("InjectGoogleToken"), object: nil, queue: .main) { note in
+            if let token = note.object as? String {
+                let js = "window.handleNativeGoogleLogin && window.handleNativeGoogleLogin('\(token)');"
+                webView.evaluateJavaScript(js, completionHandler: nil)
+            }
+        }
+        
         webView.allowsBackForwardNavigationGestures = true
         
         // MARK: - Layout & Appearance
@@ -61,13 +75,71 @@ struct WebView: UIViewRepresentable {
         Coordinator(parent: self)
     }
     
-    class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
+    class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler, ASWebAuthenticationPresentationContextProviding {
         var parent: WebView
-        var popupWebView: WKWebView?
-        var popupController: UIViewController?
+        var webAuthSession: ASWebAuthenticationSession?
 
         init(parent: WebView) {
             self.parent = parent
+        }
+
+        // MARK: - ASWebAuthenticationPresentationContextProviding
+        func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+            return UIApplication.shared.windows.first { $0.isKeyWindow } ?? ASPresentationAnchor()
+        }
+
+        // MARK: - WKScriptMessageHandler
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            if message.name == "nativeGoogleLogin", let dict = message.body as? [String: Any], let clientId = dict["clientId"] as? String {
+                startGoogleSignIn(clientId: clientId)
+            }
+        }
+        
+        func startGoogleSignIn(clientId: String) {
+            // Using the existing Web Redirect for now.
+            // NOTE: If this fails to capture, User must add a Custom Scheme (e.g. com.googleusercontent.apps.CLIENTID)
+            // to Google Console and Info.plist, then update this redirectURL.
+            let redirectStr = "https://cuevote.com"
+            let scope = "email profile openid"
+            let authUrlStr = "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(clientId)&redirect_uri=\(redirectStr)&response_type=token&scope=\(scope)"
+            
+            guard let authUrl = URL(string: authUrlStr) else { return }
+            
+            // Scheme to watch for. Using 'https' to try capturing the web redirect.
+            let callbackScheme = "https"
+            
+            self.webAuthSession = ASWebAuthenticationSession(url: authUrl, callbackURLScheme: callbackScheme) { callbackURL, error in
+                guard error == nil, let callbackURL = callbackURL else {
+                    print("Auth Failed: \(String(describing: error))")
+                    return
+                }
+                
+                // Parse Token from URL Fragment (#access_token=...)
+                if let fragment = callbackURL.fragment, let token = self.extractToken(from: fragment) {
+                     self.injectTokenToWeb(token: token)
+                }
+            }
+            
+            self.webAuthSession?.presentationContextProvider = self
+            self.webAuthSession?.start()
+        }
+        
+        func extractToken(from fragment: String) -> String? {
+            let params = fragment.components(separatedBy: "&")
+            for param in params {
+                let pair = param.components(separatedBy: "=")
+                if pair.count == 2, pair[0] == "access_token" {
+                    return pair[1]
+                }
+            }
+            return nil
+        }
+        
+        func injectTokenToWeb(token: String) {
+            // Broadcast token to be picked up by WebView (which holds the WKWebViewRef)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: NSNotification.Name("InjectGoogleToken"), object: token)
+            }
         }
 
         // MARK: - WKUIDelegate (Popups)
