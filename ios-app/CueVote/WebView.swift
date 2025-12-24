@@ -5,10 +5,14 @@ import CryptoKit
 
 struct WebView: UIViewRepresentable {
     let url: URL
+    @Binding var isOffline: Bool
     var reloadKey: UUID = UUID()
     
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
+        // ... (lines 12-23 remain same, skipping for brevity in replacement if possible, but replace_file_content needs contiguous block)
+        // To be safe I will just replace the top struct definition and the coordinator init to include the binding logic.
+        // Actually, to keep it simple, I will do a smaller chunk replacement for the struct properties and makeCoordinator
         config.mediaTypesRequiringUserActionForPlayback = []
         config.allowsInlineMediaPlayback = true
         config.preferences.javaScriptCanOpenWindowsAutomatically = true
@@ -46,7 +50,7 @@ struct WebView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        if uiView.url?.absoluteString != url.absoluteString {
+        if uiView.url?.absoluteString != url.absoluteString && !isOffline {
             let request = URLRequest(url: url)
             uiView.load(request)
         }
@@ -60,6 +64,29 @@ struct WebView: UIViewRepresentable {
         var codeVerifier: String?
 
         init(parent: WebView) { self.parent = parent }
+
+        // Success
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            DispatchQueue.main.async {
+                self.parent.isOffline = false
+            }
+        }
+        
+        // Failure (Provisional - e.g. dns lookup failed, offline)
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            print("WebView Load Failed: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                self.parent.isOffline = true
+            }
+        }
+        
+        // Failure (during commit)
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            print("WebView Navigation Failed: \(error.localizedDescription)")
+             DispatchQueue.main.async {
+                self.parent.isOffline = true
+            }
+        }
 
         func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
             return UIApplication.shared.connectedScenes
