@@ -17,8 +17,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 // ZXing Imports
-import com.google.zxing.integration.android.IntentIntegrator
-import com.google.zxing.integration.android.IntentResult
+
 
 import androidx.annotation.Keep
 
@@ -26,13 +25,12 @@ import android.os.Message
 import android.app.Dialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
 
     private lateinit var webView: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // Keep Screen On
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
@@ -76,10 +74,33 @@ class MainActivity : AppCompatActivity() {
             userAgentString = "$sanitizedUserAgent CueVoteWrapper/1.0"
         }
 
-        // Web Client to keep links internal
+        // 3. Inject Offline Layout
+        val inflater = android.view.LayoutInflater.from(this)
+        val offlineView = inflater.inflate(R.layout.layout_offline, container, false)
+        offlineView.visibility = android.view.View.GONE
+        container.addView(offlineView)
+        
+        // Retry Button Logic
+        val btnRetry = offlineView.findViewById<android.widget.Button>(R.id.btn_retry)
+        btnRetry.setOnClickListener {
+            offlineView.visibility = android.view.View.GONE
+            webView.visibility = android.view.View.VISIBLE
+            webView.reload()
+        }
+
+        // Web Client to keep links internal & Handle Errors
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 return false 
+            }
+            
+            override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: android.webkit.WebResourceError?) {
+                super.onReceivedError(view, request, error)
+                // Show Offline Screen
+                runOnUiThread {
+                    webView.visibility = android.view.View.GONE
+                    offlineView.visibility = android.view.View.VISIBLE
+                }
             }
         }
 
@@ -119,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         // Add WebView to container
         container.addView(webView)
 
-        // 3. Create Floating Action Button (QR Scan)
+        // 4. Create Floating Action Button (QR Scan)
         val fab = FloatingActionButton(this)
         val fabParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -149,7 +170,6 @@ class MainActivity : AppCompatActivity() {
         
         // Pass FAB reference to Interface
         webView.addJavascriptInterface(WebAppInterface(this, fab), "CueVoteAndroid")
-
         // Handle Back Press properly
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -164,39 +184,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startQRScan() {
-        val integrator = IntentIntegrator(this)
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-        integrator.setPrompt("Scan a Room QR Code")
-        integrator.setCameraId(0)  // Use a specific camera of the device
-        integrator.setBeepEnabled(false)
-        integrator.setBarcodeImageEnabled(false)
-        integrator.setOrientationLocked(false)
-        integrator.initiateScan()
+        val scannerFragment = QRScannerBottomSheet()
+        scannerFragment.show(supportFragmentManager, "QRScanner")
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val result: IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (result != null) {
-            if (result.contents == null) {
-                // Canceled
-            } else {
-                val scannedContent = result.contents
-                var finalUrl = scannedContent
-                
-                // Logic to handle Room ID vs URL
-                if (scannedContent.contains("cuevote.com")) {
-                     finalUrl = scannedContent
-                } else if (!scannedContent.startsWith("http")) {
-                    // Assume it's a room ID
-                    finalUrl = "https://cuevote.com/" + scannedContent
-                }
-                
-                webView.loadUrl(finalUrl)
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
+    // QRScanListener Implementation
+    override fun onScanComplete(contents: String) {
+        var finalUrl = contents
+        
+        // Logic to handle Room ID vs URL
+        if (contents.contains("cuevote.com")) {
+             finalUrl = contents
+        } else if (!contents.startsWith("http")) {
+            // Assume it's a room ID
+            finalUrl = "https://cuevote.com/" + contents
         }
+        
+        // Force Reload logic for Re-Scan Issue:
+        // If URL is same, WebView.loadUrl might do nothing or just reload. 
+        // We want to ensure it navigates. loadUrl usually forces navigation even if same URL.
+        webView.loadUrl(finalUrl)
     }
+
+    override fun onScanCancelled() {
+        // Handle cancellation if needed
+    }
+
+    // Removed onActivityResult as we don't use IntentIntegrator anymore
 }
 
 @Keep
