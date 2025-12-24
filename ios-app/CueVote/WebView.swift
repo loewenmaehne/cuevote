@@ -18,6 +18,7 @@ struct WebView: UIViewRepresentable {
         
         let contentController = WKUserContentController()
         contentController.add(context.coordinator, name: "nativeGoogleLogin")
+        contentController.add(context.coordinator, name: "toggleQRButton")
         config.userContentController = contentController
 
         let webView = WKWebView(frame: .zero, configuration: config)
@@ -70,6 +71,9 @@ struct WebView: UIViewRepresentable {
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
             if message.name == "nativeGoogleLogin" {
                 startGoogleSignInPKCE()
+            } else if message.name == "toggleQRButton", let show = message.body as? Bool {
+                // Broadcast capability to ContentView
+                NotificationCenter.default.post(name: NSNotification.Name("ToggleQRButton"), object: show)
             }
         }
         

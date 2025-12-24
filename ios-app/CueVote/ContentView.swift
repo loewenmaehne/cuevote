@@ -2,26 +2,33 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var currentUrl: URL = URL(string: "https://cuevote.com")!
-    @State private var isScanning = false
+    @State private var isButtonVisible = false // Default hidden
     
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
+        ZStack(alignment: .bottomTrailing) { // Revert to Bottom Right
             WebView(url: currentUrl)
                 .ignoresSafeArea()
             
             // Floating Scan Button
-            Button(action: {
-                isScanning = true
-            }) {
-                Image(systemName: "qrcode.viewfinder")
-                    .font(.system(size: 24))
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(Color.orange)
-                    .clipShape(Circle())
-                    .shadow(radius: 4)
+            if isButtonVisible {
+                Button(action: {
+                    isScanning = true
+                }) {
+                    Image(systemName: "qrcode.viewfinder")
+                        .font(.system(size: 24))
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.orange)
+                        .clipShape(Circle())
+                        .shadow(radius: 4)
+                }
+                .padding(30) // Offset from bottom-right (Reverted)
             }
-            .padding(30) // Offset from bottom-right
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ToggleQRButton"))) { note in
+            if let show = note.object as? Bool {
+                self.isButtonVisible = show
+            }
         }
         .sheet(isPresented: $isScanning) {
             QRScannerView { code in
