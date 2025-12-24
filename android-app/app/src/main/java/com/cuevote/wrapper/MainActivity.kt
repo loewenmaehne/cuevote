@@ -203,20 +203,32 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
 
     // QRScanListener Implementation
     override fun onScanComplete(contents: String) {
-        var finalUrl = contents
-        
-        // Logic to handle Room ID vs URL
-        if (contents.contains("cuevote.com")) {
-             finalUrl = contents
-        } else if (!contents.startsWith("http")) {
-            // Assume it's a room ID
-            finalUrl = "https://cuevote.com/" + contents
+        var finalUrl: String? = null
+
+        // 1. Check if it's a URL
+        if (contents.startsWith("http://") || contents.startsWith("https://")) {
+            try {
+                val uri = android.net.Uri.parse(contents)
+                // STRICT SECURITY CHECK
+                if (uri.scheme == "https" && (uri.host == "cuevote.com" || uri.host == "www.cuevote.com")) {
+                    finalUrl = contents
+                } else {
+                     android.widget.Toast.makeText(this, "Invalid QR Code: Domain not trusted", android.widget.Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+               // Invalid URI
+            }
+        } else {
+             // 2. Assume it is a plain Room ID (alphanumeric check recommended but simple "not url" is step 1)
+             // To be safe, ensure it doesn't contain obvious bad chars
+             if (!contents.contains("/") && !contents.contains(":")) {
+                 finalUrl = "https://cuevote.com/" + contents
+             }
         }
-        
-        // Force Reload logic for Re-Scan Issue:
-        // If URL is same, WebView.loadUrl might do nothing or just reload. 
-        // We want to ensure it navigates. loadUrl usually forces navigation even if same URL.
-        webView.loadUrl(finalUrl)
+
+        finalUrl?.let {
+            webView.loadUrl(it)
+        }
     }
 
     override fun onScanCancelled() {
