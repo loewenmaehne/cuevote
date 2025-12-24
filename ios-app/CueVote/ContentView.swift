@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var currentUrl: URL = URL(string: "https://cuevote.com")!
     @State private var isButtonVisible = false // Default hidden
+    @State private var isScanning = false
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) { // Revert to Bottom Right
