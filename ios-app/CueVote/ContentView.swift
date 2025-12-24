@@ -54,7 +54,7 @@ struct ContentView: View {
                      }
                 }
             }
-            .presentationDetents([.fraction(0.7)]) // 70% Screen Height (iOS 16+)
+            .presentationDetents([.fraction(0.8)]) // 80% Screen Height (iOS 16+)
             .presentationDragIndicator(.visible) // Native drag handle
         }
     }
