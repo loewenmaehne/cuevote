@@ -31,7 +31,7 @@ export function SettingsView({
 	const [showDeleteChannelConfirm, setShowDeleteChannelConfirm] = React.useState(false);
 
 	return (
-		<div className="w-full h-full bg-[#1a1a1a] p-4 md:p-8 overflow-y-auto custom-scrollbar">
+		<div className="w-full h-full bg-[#1a1a1a] px-4 md:px-8 pt-[calc(1rem+env(safe-area-inset-top))] pb-[calc(1rem+env(safe-area-inset-bottom))] overflow-y-auto custom-scrollbar">
 			<div className="max-w-6xl mx-auto">
 				<div className="flex items-center gap-4 mb-8 border-b border-neutral-800 pb-4">
 					<button
