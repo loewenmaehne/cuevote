@@ -7,14 +7,46 @@ struct ContentView: View {
     @State private var reloadKey = UUID()
     @State private var dragOffset: CGFloat = 0
     
+    @State private var isOffline = false
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) { // Revert to Bottom Right
-            WebView(url: currentUrl, reloadKey: reloadKey)
+            WebView(url: currentUrl, isOffline: $isOffline, reloadKey: reloadKey)
                 .ignoresSafeArea()
             
+            // Offline Overlay
+            if isOffline {
+                ZStack {
+                    Color.black
+                    VStack(spacing: 20) {
+                        Image(systemName: "wifi.slash")
+                            .font(.system(size: 50))
+                            .foregroundColor(.white)
+                        Text("No Internet Connection")
+                            .font(.title3)
+                            .foregroundColor(.white)
+                        Button(action: {
+                            // Retry Logic
+                            isOffline = false
+                            reloadKey = UUID() // Force WebView Re-creation
+                        }) {
+                            Text("Retry")
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                                .padding()
+                                .frame(width: 120)
+                                .background(Color.orange)
+                                .cornerRadius(10)
+                        }
+                    }
+                }
+                .ignoresSafeArea()
+            }
+            
             // Floating Scan Button
-            if isButtonVisible {
+            if isButtonVisible && !isOffline { // Hide button if offline
                 Button(action: {
+
                     isScanning = true
                 }) {
                     Image(systemName: "qrcode.viewfinder")
