@@ -103,17 +103,20 @@ struct WebView: UIViewRepresentable {
         }
         
         func startGoogleSignIn(clientId: String) {
-            // Using the existing Web Redirect for now.
-            // NOTE: If this fails to capture, User must add a Custom Scheme (e.g. com.googleusercontent.apps.CLIENTID)
-            // to Google Console and Info.plist, then update this redirectURL.
-            let redirectStr = "https://cuevote.com"
+            // Standard Custom Scheme for Google OAuth
+            // Format: com.googleusercontent.apps.CLIENT_ID
+            let customScheme = "com.googleusercontent.apps.\(clientId)"
+            let redirectStr = "\(customScheme):/oauth2callback"
             let scope = "email profile openid"
+            
+            // NOTE: User MUST add 'customScheme' to Xcode URL Types and Google Console Redirect URIs.
+            
             let authUrlStr = "https://accounts.google.com/o/oauth2/v2/auth?client_id=\(clientId)&redirect_uri=\(redirectStr)&response_type=token&scope=\(scope)"
             
             guard let authUrl = URL(string: authUrlStr) else { return }
             
-            // Scheme to watch for. Using 'https' to try capturing the web redirect.
-            let callbackScheme = "https"
+            // Watch for the custom scheme
+            let callbackScheme = customScheme
             
             self.webAuthSession = ASWebAuthenticationSession(url: authUrl, callbackURLScheme: callbackScheme) { callbackURL, error in
                 guard error == nil, let callbackURL = callbackURL else {

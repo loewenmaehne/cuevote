@@ -30,17 +30,6 @@ export function Lobby() {
     }, [rooms, navigate]);
     */
 
-    // DEBUG: Spy on window.open for iOS Tracing (Updated 15:45)
-    useEffect(() => {
-        if (window.alreadySpying) return;
-        window.alreadySpying = true;
-        const originalOpen = window.open;
-        window.open = (...args) => {
-            alert("JS: window.open called! URL: " + (args[0] || "unknown"));
-            return originalOpen.apply(window, args);
-        };
-    }, []);
-
     // Creation State
     const [isCreatingRoom, setIsCreatingRoom] = useState(false);
     const [newRoomName, setNewRoomName] = useState("");
