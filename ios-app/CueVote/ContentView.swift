@@ -5,6 +5,7 @@ struct ContentView: View {
     @State private var isButtonVisible = false // Default hidden
     @State private var isScanning = false
     @State private var reloadKey = UUID()
+    @State private var dragOffset: CGFloat = 0
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) { // Revert to Bottom Right
