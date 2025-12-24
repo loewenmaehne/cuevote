@@ -8,11 +8,28 @@ struct ContentView: View {
     @State private var dragOffset: CGFloat = 0
     
     @State private var isOffline = false
+    @State private var isLoading = true
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) { // Revert to Bottom Right
-            WebView(url: currentUrl, isOffline: $isOffline, reloadKey: reloadKey)
+            WebView(url: currentUrl, isOffline: $isOffline, isLoading: $isLoading, reloadKey: reloadKey)
                 .ignoresSafeArea()
+            
+            // Loading Overlay
+            if isLoading {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    VStack {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .orange))
+                            .scaleEffect(2.0)
+                        Text("Loading...")
+                            .foregroundColor(.gray)
+                            .padding(.top, 20)
+                    }
+                }
+                .transition(.opacity)
+            }
             
             // Offline Overlay
             if isOffline {
@@ -27,6 +44,7 @@ struct ContentView: View {
                             .foregroundColor(.white)
                         Button(action: {
                             // Retry Logic
+                            isLoading = true // Show loader again
                             isOffline = false
                             reloadKey = UUID() // Force WebView Re-creation
                         }) {
