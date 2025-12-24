@@ -77,6 +77,21 @@ struct ContentView: View {
                         .frame(height: geometry.size.height * 0.9) // 90% Height Always
                         .background(Color.black)
                         .cornerRadius(15, corners: [.topLeft, .topRight])
+                        .offset(y: max(0, dragOffset)) // Only allow dragging down
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    if value.translation.height > 0 {
+                                        dragOffset = value.translation.height
+                                    }
+                                }
+                                .onEnded { value in
+                                    if value.translation.height > 100 {
+                                        withAnimation { isScanning = false }
+                                    }
+                                    withAnimation { dragOffset = 0 }
+                                }
+                        )
                         .transition(.move(edge: .bottom))
                         .offset(y: 0)
                     }
