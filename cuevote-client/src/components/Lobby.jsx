@@ -8,6 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { LanguageSwitcher, languages } from './LanguageSwitcher';
 import { GoogleAuthButton } from './GoogleAuthButton';
 
+import { LoadingScreen } from './LoadingScreen';
 import { isTV } from "../utils/deviceDetection";
 
 export function Lobby() {
