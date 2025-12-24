@@ -10,6 +10,25 @@ function RealAuthButton({ onLoginSuccess, className, render }) {
 	});
 
 	if (render) {
+		// Native Bridge Check
+		const isNativeWrapper = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeGoogleLogin;
+
+		if (isNativeWrapper) {
+			const performNativeLogin = () => {
+				const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+				// Define Global Handler
+				window.handleNativeGoogleLogin = (token) => {
+					// Mock the response object expected by GoogleOAuthProvider/User
+					onLoginSuccess({ access_token: token });
+					// Cleanup
+					delete window.handleNativeGoogleLogin;
+				};
+				// Call iOS
+				window.webkit.messageHandlers.nativeGoogleLogin.postMessage({ clientId });
+			};
+			return render(performNativeLogin, false);
+		}
+
 		return render(login, false); // disabled = false
 	}
 
