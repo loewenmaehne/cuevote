@@ -33,40 +33,29 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $isScanning) {
-            VStack(spacing: 0) {
-                // Drag Handle & Header Area
-                ZStack {
-                    Capsule()
-                        .fill(Color.gray.opacity(0.5))
-                        .frame(width: 40, height: 5)
-                }
-                .frame(height: 20) // Small top area
-                .padding(.top, 10)
+            QRScannerView { code in
+                // Handle scanned code
+                isScanning = false
                 
-                // Scanner
-                QRScannerView { code in
-                    // Handle scanned code
-                    isScanning = false
-                    
-                    // FIX: Hide button immediately on successful scan
-                    self.isButtonVisible = false 
-                    
-                    // Force Webview Update even if URL is same
-                    self.reloadKey = UUID()
-                    
-                    if let url = URL(string: code), code.contains("cuevote.com") {
-                        // It's a valid URL, load it
-                        currentUrl = url
-                    } else if !code.contains("http") {
-                         // It might be just a Room ID (e.g. "synthwave")
-                         // Construct the URL
-                         if let url = URL(string: "https://cuevote.com/" + code) {
-                             currentUrl = url
-                         }
-                    }
+                // FIX: Hide button immediately on successful scan
+                self.isButtonVisible = false 
+                
+                // Force Webview Update even if URL is same
+                self.reloadKey = UUID()
+                
+                if let url = URL(string: code), code.contains("cuevote.com") {
+                    // It's a valid URL, load it
+                    currentUrl = url
+                } else if !code.contains("http") {
+                     // It might be just a Room ID (e.g. "synthwave")
+                     // Construct the URL
+                     if let url = URL(string: "https://cuevote.com/" + code) {
+                         currentUrl = url
+                     }
                 }
-                .padding(.top, 10) // "Smaller to the top" visual gap
             }
+            .presentationDetents([.fraction(0.7)]) // 70% Screen Height (iOS 16+)
+            .presentationDragIndicator(.visible) // Native drag handle
         }
     }
 }
