@@ -97,19 +97,9 @@ struct ContentView: View {
                             }
                         
                         // Card
-                        VStack(spacing: 0) {
-                            // Drag Handle Area
-                            ZStack {
-                                Capsule()
-                                    .fill(Color.gray.opacity(0.5))
-                                    .frame(width: 40, height: 5)
-                            }
-                            .frame(height: 30) // Tappable / Drag area
-                            .frame(maxWidth: .infinity)
-                            .background(Color(UIColor.systemBackground))
-                            .cornerRadius(15, corners: [.topLeft, .topRight])
+                        ZStack(alignment: .top) {
                             
-                            // Scanner View
+                            // Scanner View (Full Fill)
                             QRScannerView { code in
                                 isScanning = false
                                 self.isButtonVisible = false 
@@ -122,10 +112,21 @@ struct ContentView: View {
                                     }
                                 }
                             }
+                            
+                            // Drag Handle Area (Overlay)
+                            ZStack {
+                                Capsule()
+                                    .fill(Color.white.opacity(0.8)) // Brighter for visibility on video
+                                    .frame(width: 40, height: 5)
+                                    .shadow(radius: 2) // Add shadow for contrast
+                            }
+                            .frame(height: 30) // Tappable / Drag area
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 8) // Slight top padding
                         }
                         .frame(height: geometry.size.height * (geometry.size.width > geometry.size.height ? 0.85 : 0.80))
                         .background(Color.black)
-                        .cornerRadius(24, corners: [.topLeft, .topRight]) // Update: Rounded corners 24
+                        .cornerRadius(44, corners: [.topLeft, .topRight]) // Update: Rounded corners 44 for borderless look
                         .offset(y: max(0, dragOffset)) // Only allow dragging down
                         .gesture(
                             DragGesture()
