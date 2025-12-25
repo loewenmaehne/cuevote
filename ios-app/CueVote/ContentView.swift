@@ -120,11 +120,6 @@ struct ContentView: View {
                                     if url.scheme == "https" && (url.host == "cuevote.com" || url.host == "www.cuevote.com") {
                                         currentUrl = url
                                     }
-                                } else if !code.contains(":") && !code.contains("/") {
-                                     // Assume Room ID (Strict check: no special chars usually found in URLs)
-                                     if let url = URL(string: "https://cuevote.com/" + code) {
-                                         currentUrl = url
-                                     }
                                 }
                             }
                         }
