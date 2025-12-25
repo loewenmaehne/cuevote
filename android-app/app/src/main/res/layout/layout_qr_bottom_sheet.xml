@@ -1,24 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/bg_bottom_sheet_rounded"
-    android:paddingTop="12dp">
+    app:cardCornerRadius="24dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@android:color/white">
 
-    <!-- Drag Handle -->
-    <View
-        android:layout_width="40dp"
-        android:layout_height="5dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/drag_handle"
-        android:layout_marginBottom="12dp" />
-
-    <!-- Scanner View -->
-    <com.journeyapps.barcodescanner.DecoratedBarcodeView
-        android:id="@+id/barcode_scanner"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000000" />
+        android:orientation="vertical"
+        android:paddingTop="12dp">
 
-</LinearLayout>
+        <!-- Drag Handle -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="5dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/drag_handle"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Scanner View -->
+        <com.journeyapps.barcodescanner.DecoratedBarcodeView
+            android:id="@+id/barcode_scanner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000000" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
