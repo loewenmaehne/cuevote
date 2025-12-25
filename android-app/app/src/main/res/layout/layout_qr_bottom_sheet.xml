@@ -2,31 +2,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:cardCornerRadius="24dp"
+    app:cardCornerRadius="44dp"
     app:strokeWidth="0dp"
     app:cardBackgroundColor="@android:color/white">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingTop="12dp">
+        android:layout_height="match_parent">
 
-        <!-- Drag Handle -->
-        <View
-            android:layout_width="40dp"
-            android:layout_height="5dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/drag_handle"
-            android:layout_marginBottom="12dp" />
-
-        <!-- Scanner View -->
+        <!-- Scanner View (Full Screen) -->
         <com.journeyapps.barcodescanner.DecoratedBarcodeView
             android:id="@+id/barcode_scanner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#000000" />
 
-    </LinearLayout>
+        <!-- Drag Handle (Overlay) -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="5dp"
+            android:layout_gravity="center_horizontal|top"
+            android:background="@drawable/drag_handle"
+            android:layout_marginTop="12dp" />
+
+    </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>
