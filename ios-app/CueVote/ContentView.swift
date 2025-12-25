@@ -136,9 +136,20 @@ struct ContentView: View {
                                     }
                                 }
                                 .onEnded { value in
-                                    if value.translation.height > 100 || value.predictedEndTranslation.height > 100 {
-                                        withAnimation { isScanning = false }
-                                        // Do NOT reset dragOffset here to allow the view to slide down naturally
+                                    let threshold: CGFloat = 100
+                                    let velocity = value.predictedEndTranslation.height
+                                    
+                                    if value.translation.height > threshold || velocity > threshold {
+                                        // Manually animate off-screen
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            dragOffset = geometry.size.height
+                                        }
+                                        
+                                        // Update state after animation completes
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            isScanning = false
+                                            dragOffset = 0
+                                        }
                                     } else {
                                          withAnimation { dragOffset = 0 }
                                     }
