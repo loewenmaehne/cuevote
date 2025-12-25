@@ -218,12 +218,6 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
             } catch (e: Exception) {
                // Invalid URI
             }
-        } else {
-             // 2. Assume it is a plain Room ID (alphanumeric check recommended but simple "not url" is step 1)
-             // To be safe, ensure it doesn't contain obvious bad chars
-             if (!contents.contains("/") && !contents.contains(":")) {
-                 finalUrl = "https://cuevote.com/" + contents
-             }
         }
 
         finalUrl?.let {
