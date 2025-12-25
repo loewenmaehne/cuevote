@@ -229,7 +229,7 @@ export function Header({
 
         <div className="flex items-center justify-end gap-2 lg:gap-4 min-w-0">
           <div
-            className="hidden md:flex items-center gap-2 text-orange-500 select-none"
+            className="hidden lg:flex items-center gap-2 text-orange-500 select-none"
             title={activeChannel}
           >
             <Radio size={22} className="flex-shrink-0" />
