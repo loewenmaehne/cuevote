@@ -212,5 +212,9 @@ module.exports = {
       console.error("[DB] deleteUser Transaction Failed:", err);
       throw err;
     }
+  },
+
+  backup: (destination) => {
+    return db.backup(destination);
   }
 };
