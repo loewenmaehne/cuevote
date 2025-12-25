@@ -125,7 +125,7 @@ struct ContentView: View {
                         }
                         .frame(height: geometry.size.height * (geometry.size.width > geometry.size.height ? 0.85 : 0.80))
                         .background(Color.black)
-                        .cornerRadius(15, corners: [.topLeft, .topRight])
+                        .cornerRadius(24, corners: [.topLeft, .topRight]) // Update: Rounded corners 24
                         .offset(y: max(0, dragOffset)) // Only allow dragging down
                         .gesture(
                             DragGesture()
@@ -135,14 +135,18 @@ struct ContentView: View {
                                     }
                                 }
                                 .onEnded { value in
-                                    if value.translation.height > 100 {
+                                    if value.translation.height > 100 || value.predictedEndTranslation.height > 100 {
                                         withAnimation { isScanning = false }
+                                        // Do NOT reset dragOffset here to allow the view to slide down naturally
+                                    } else {
+                                         withAnimation { dragOffset = 0 }
                                     }
-                                    withAnimation { dragOffset = 0 }
                                 }
                         )
                         .transition(.move(edge: .bottom))
-                        .offset(y: 0)
+                        .onAppear {
+                            dragOffset = 0 // Reset offset when view appears
+                        }
                     }
                 }
             }
