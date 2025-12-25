@@ -109,7 +109,7 @@ export function LegalPage() {
                         <div className="p-8 md:p-12 rounded-3xl bg-neutral-900/50 border border-white/5 backdrop-blur-xl relative overflow-hidden">
 
                             {/* Header */}
-                            <div className="flex items-baseline justify-between border-b border-white/5 pb-6 mb-8">
+                            <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-2 border-b border-white/5 pb-6 mb-8">
                                 <h2 className="text-2xl font-bold text-white">
                                     {tabs.find(t => t.id === activeTab)?.label}
                                 </h2>
