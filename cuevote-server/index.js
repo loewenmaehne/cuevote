@@ -10,6 +10,8 @@ const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const db = require('./db');
 const fs = require('fs');
+const backupScheduler = require('./backup_scheduler');
+backupScheduler.start();
 
 const logFile = 'debug_server.log';
 function logToFile(msg) {
