@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { isTV, isMobile, isTablet } from './utils/deviceDetection';
+import { isTV, isMobile, isTablet, isIOS, isNativeApp } from './utils/deviceDetection';
 import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw } from "lucide-react";
 import { useConsent } from './contexts/ConsentContext';
 import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
@@ -147,7 +147,8 @@ function App() {
 
   const isOwner = user && ownerId && user.id === ownerId;
   // TV always ignores Venue Mode (shows video)
-  const isVenueMode = playlistViewMode && !isOwner && !isTV();
+  // iOS Browsers (not native app) are FORCED into Venue Mode because video autoplay/playback is unreliable/broken in browser
+  const isVenueMode = (playlistViewMode && !isOwner && !isTV()) || (isIOS() && !isNativeApp());
   // TV always defaults to Fullscreen (CinemaMode), unless manually exited
   const isAnyPlaylistView = isVenueMode || localPlaylistView;
 
