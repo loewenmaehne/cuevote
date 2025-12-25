@@ -59,6 +59,21 @@ export const isTablet = () => {
 	return isExplicitTablet || isAndroidTablet || isIPadOS || isHybridTablet;
 };
 
+export const isIOS = () => {
+	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
+	const userAgent = navigator.userAgent.toLowerCase();
+	// Check for iPhone/iPad/iPod or Mac with Touch Points (iPadOS 13+)
+	return (
+		/iphone|ipad|ipod/i.test(userAgent) ||
+		(navigator.maxTouchPoints > 0 && /macintosh/i.test(userAgent))
+	);
+};
+
+export const isNativeApp = () => {
+	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
+	return navigator.userAgent.toLowerCase().includes('cuevotewrapper');
+};
+
 export const isMobile = () => {
 	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
 	const userAgent = navigator.userAgent.toLowerCase();
@@ -68,7 +83,7 @@ export const isMobile = () => {
 
 	return (
 		/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent) ||
-		userAgent.includes('cuevotewrapper') || // Whitelist Native Wrapper
+		isNativeApp() || // Whitelist Native Wrapper
 		(navigator.maxTouchPoints > 0 && window.innerWidth < 768) // Fallback for touch devices
 	);
 };
