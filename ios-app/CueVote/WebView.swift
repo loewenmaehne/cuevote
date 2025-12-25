@@ -15,6 +15,7 @@ struct WebView: UIViewRepresentable {
         config.mediaTypesRequiringUserActionForPlayback = []
         config.allowsInlineMediaPlayback = true
         config.preferences.javaScriptCanOpenWindowsAutomatically = true
+        config.applicationNameForUserAgent = "CueVoteWrapper"
         
         let scriptSource = "window.CueVoteAndroid = { isNative: function() { return true; } };"
         let script = WKUserScript(source: scriptSource, injectionTime: .atDocumentStart, forMainFrameOnly: false)
