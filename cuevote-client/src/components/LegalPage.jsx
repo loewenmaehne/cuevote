@@ -182,7 +182,7 @@ export function LegalPage() {
                                     <div className="not-prose space-y-8">
                                         <div className="grid md:grid-cols-2 gap-8">
                                             <div className="space-y-4">
-                                                <h3 className="text-white font-bold text-lg border-b border-white/10 pb-2">CueVote Digital</h3>
+                                                <h3 className="text-white font-bold text-lg border-b border-white/10 pb-2">{import.meta.env.VITE_LEGAL_NAME || "CueVote Digital"}</h3>
                                                 <div className="text-sm text-neutral-400 space-y-1">
                                                     <p>{import.meta.env.VITE_LEGAL_ADDRESS_LINE1 || "[Street Address]"}</p>
                                                     <p>{import.meta.env.VITE_LEGAL_ADDRESS_LINE2 || "[City, Country]"}</p>
