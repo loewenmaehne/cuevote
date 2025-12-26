@@ -130,6 +130,10 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
                 dialog.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
                 dialog.show()
                 
+                dialog.setOnDismissListener { 
+                    newWebView.destroy() 
+                }
+                
                 newWebView.webChromeClient = object : WebChromeClient() {
                     override fun onCloseWindow(window: WebView?) { dialog.dismiss() }
                 }
