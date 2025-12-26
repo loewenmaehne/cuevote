@@ -188,10 +188,7 @@ export function LegalPage() {
                                                     <p>{import.meta.env.VITE_LEGAL_ADDRESS_LINE2 || "[City, Country]"}</p>
                                                     <p>{currentLang === 'nl' ? 'Nederland' : 'The Netherlands'}</p>
                                                 </div>
-                                                <div className="pt-4 text-sm">
-                                                    <p className="text-neutral-500 mb-1">{content.imprint.managedBy}</p>
-                                                    <p className="text-white font-medium">{import.meta.env.VITE_LEGAL_NAME || "[Director Name]"}</p>
-                                                </div>
+
                                             </div>
 
                                             <div className="space-y-4">
