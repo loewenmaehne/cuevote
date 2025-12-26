@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { CheckCircle, Send, Clock } from "lucide-react";
 import { useLanguage } from '../contexts/LanguageContext';
 
-export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, serverMessage, isOwner, suggestionsEnabled, suggestionMode }) {
+export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, serverMessage, isOwner, suggestionsEnabled, suggestionMode, isConnected = true }) {
   const [songSuggestion, setSongSuggestion] = useState("");
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [suggestionError, setSuggestionError] = useState("");
@@ -19,7 +19,32 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
     if (infoMessage) setInfoMessage("");
   };
 
+  // Reset state if connection drops
+  useEffect(() => {
+    if (!isConnected && isSubmittingSuggestion) {
+      setIsSubmittingSuggestion(false);
+      setSuggestionError(t('app.noInternet'));
+    }
+  }, [isConnected, isSubmittingSuggestion, t]);
+
+  // Safety Timeout to prevent hanging
+  useEffect(() => {
+    let timeout;
+    if (isSubmittingSuggestion) {
+      timeout = setTimeout(() => {
+        setIsSubmittingSuggestion(false);
+        setSuggestionError(t('app.takingTooLong'));
+      }, 5000);
+    }
+    return () => clearTimeout(timeout);
+  }, [isSubmittingSuggestion, t]);
+
   const handleSubmitSuggestion = useCallback(async () => {
+    if (!isConnected) {
+      setSuggestionError(t('app.noInternet'));
+      return;
+    }
+
     const input = songSuggestion.trim();
 
     if (!input) {
@@ -39,7 +64,7 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
     // to drive the UI state. This ensures we don't auto-close on errors (duplicates etc).
 
 
-  }, [songSuggestion, onSongSuggested, suggestionMode, onShowSuggest]);
+  }, [songSuggestion, onSongSuggested, suggestionMode, onShowSuggest, isConnected, t]);
 
   const handleKeyPress = useCallback(
     (event) => {
@@ -149,4 +174,5 @@ SuggestSongForm.propTypes = {
   isOwner: PropTypes.bool,
   suggestionsEnabled: PropTypes.bool,
   suggestionMode: PropTypes.string,
+  isConnected: PropTypes.bool,
 };

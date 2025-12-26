@@ -1056,7 +1056,7 @@ function App() {
           />
           {showSuggest && (
             <div className="px-6 pb-4">
-              <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} serverMessage={lastMessage} isOwner={isOwner && ownerBypass} suggestionsEnabled={suggestionsEnabled} suggestionMode={suggestionMode} />
+              <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} serverMessage={lastMessage} isOwner={isOwner && ownerBypass} suggestionsEnabled={suggestionsEnabled} suggestionMode={suggestionMode} isConnected={isConnected} />
             </div>
           )}
         </div>
