@@ -109,6 +109,16 @@ export function WebSocketProvider({ children }) {
       const handleMessage = (event) => {
         try {
           const message = JSON.parse(event.data);
+
+          if (message.type === "PONG") {
+            // console.log("[WS] PONG received");
+            // Heartbeat valid, handled in the interval check logic implicitly by liveness timestamp?
+            // Actually, we need to let the loop know.
+            // Let's us a ref on the outer scope of connect or just a property on the socket?
+            socket.lastPong = Date.now();
+            return;
+          }
+
           if (message.type === "state") {
             // console.log(`[CLIENT TRACE] <<< INCOMING STATE. RoomId: ${message.payload.roomId}`);
             setState(message.payload);
@@ -139,9 +149,36 @@ export function WebSocketProvider({ children }) {
       socket.addEventListener("error", handleError);
       socket.addEventListener("message", handleMessage);
 
+      // Heartbeat Loop (Aggressive)
+      // Send PING every 5s. If lastPong > 5s + threshold, kill it.
+      const pingInterval = setInterval(() => {
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify({ type: "PING" }));
+
+          // Check for timeout (only if we have sent at least one ping before?)
+          // If lastPong was ages ago, we might be dead.
+          // Give 2s grace period for network latency on the Pong.
+          const now = Date.now();
+          if (socket.lastPong && (now - socket.lastPong > 7000)) {
+            console.warn("[WS] Heartbeat timeout! No PONG in 7s. Force closing.");
+            socket.close();
+          }
+        }
+      }, 5000); // 5s Interval
+
+      // Initialize lastPong to avoid immediate kill
+      socket.lastPong = Date.now();
+
       // Cleanup listeners on close is handled by standard garbage collection if checks are mostly ensuring single instance?
       // Actually, we must manually cleanup if we were re-running this function, but this function runs inside `connect`.
       // The `cleanup` logic in useEffect handles the `ws.close()`.
+
+      // Monkey-patch close to clear interval logic inside this scope
+      const originalClose = socket.close.bind(socket);
+      socket.close = () => {
+        clearInterval(pingInterval);
+        originalClose();
+      };
     };
 
     connect();
