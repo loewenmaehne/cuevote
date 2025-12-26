@@ -31,7 +31,7 @@ export function LegalPage() {
         { id: 'imprint', label: content.tabs.imprint.label, icon: FileText, desc: content.tabs.imprint.desc },
     ];
 
-    const LastUpdated = "December 14, 2025";
+    const LastUpdated = "December 26, 2025";
 
     return (
         <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-orange-500/30">
