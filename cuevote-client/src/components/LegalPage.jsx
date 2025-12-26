@@ -31,7 +31,12 @@ export function LegalPage() {
         { id: 'imprint', label: content.tabs.imprint.label, icon: FileText, desc: content.tabs.imprint.desc },
     ];
 
-    const LastUpdated = "December 26, 2025";
+    const dates = {
+        terms: "December 14, 2025",
+        privacy: "December 26, 2025",
+        imprint: "December 26, 2025"
+    };
+    const LastUpdated = dates[activeTab];
 
     return (
         <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-orange-500/30">
@@ -202,8 +207,8 @@ export function LegalPage() {
                                                         </a>
                                                     </li>
                                                     <li className="flex items-center gap-3 text-neutral-400">
-                                                        <Flag size={16} />
-                                                        <span className="text-neutral-500 text-xs uppercase tracking-wider">{content.imprint.abuse}:</span>
+                                                        <Flag size={16} className="shrink-0" />
+                                                        <span className="text-neutral-500 text-xs uppercase tracking-wider whitespace-nowrap min-w-[100px]">{content.imprint.abuse}:</span>
                                                         <a href={`mailto:${import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}?subject=Abuse%20Report`} className="text-neutral-300 hover:text-white transition-colors">
                                                             {import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}
                                                         </a>
