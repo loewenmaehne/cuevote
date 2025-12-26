@@ -493,6 +493,10 @@ wss.on("connection", (ws, req) => {
                     console.log("[CLIENT DEBUG]", parsedMessage.payload);
                     return;
                 }
+                case "PING": {
+                    ws.send(JSON.stringify({ type: "PONG" }));
+                    return;
+                }
             }
 
             // Delegate Room-Specific Messages
