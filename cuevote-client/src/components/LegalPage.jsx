@@ -1,6 +1,6 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, Mail, Phone, Globe } from 'lucide-react';
+import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, Mail, Phone, Globe, Flag } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { LEGAL_CONTENT } from '../constants/legalContent';
 
@@ -198,6 +198,13 @@ export function LegalPage() {
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Mail size={16} />
                                                         <a href={`mailto:${import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}`} className="text-orange-500 hover:text-white transition-colors">
+                                                            {import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}
+                                                        </a>
+                                                    </li>
+                                                    <li className="flex items-center gap-3 text-neutral-400">
+                                                        <Flag size={16} />
+                                                        <span className="text-neutral-500 text-xs uppercase tracking-wider">{content.imprint.abuse}:</span>
+                                                        <a href={`mailto:${import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}?subject=Abuse%20Report`} className="text-neutral-300 hover:text-white transition-colors">
                                                             {import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}
                                                         </a>
                                                     </li>
