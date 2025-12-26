@@ -110,6 +110,7 @@ export const LEGAL_CONTENT = {
 		imprint: {
 			addressHeading: "Legal Address",
 			managedBy: "Managed by",
+			abuse: "Report Abuse",
 			country: "The Netherlands",
 			contact: "Contact",
 			liability: {
@@ -215,6 +216,7 @@ export const LEGAL_CONTENT = {
 		imprint: {
 			addressHeading: "Juridisch Adres",
 			managedBy: "Beheerd door",
+			abuse: "Misbruik melden",
 			country: "Nederland",
 			contact: "Contact",
 			liability: {
