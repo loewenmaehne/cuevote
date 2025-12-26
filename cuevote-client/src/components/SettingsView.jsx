@@ -24,7 +24,9 @@ export function SettingsView({
 	ownerQueueBypass,
 	ownerPopups,
 	onDeleteChannel,
-	captionsEnabled
+	onDeleteChannel,
+	captionsEnabled,
+	isConnected = true
 }) {
 	const { t } = useLanguage();
 	const [deleteChannelText, setDeleteChannelText] = React.useState("");
@@ -33,19 +35,21 @@ export function SettingsView({
 	return (
 		<div className="w-full h-full bg-[#1a1a1a] px-4 md:px-8 pt-[calc(1rem+env(safe-area-inset-top))] pb-[calc(1rem+env(safe-area-inset-bottom))] overflow-y-auto custom-scrollbar">
 			<div className="max-w-6xl mx-auto">
-				<div className="flex items-center gap-4 mb-8 border-b border-neutral-800 pb-4">
-					<button
-						onClick={onClose}
-						className="p-2 -ml-2 hover:bg-neutral-800 rounded-full text-white transition-colors flex items-center gap-2 group"
-					>
-						<ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
-						<span className="text-lg font-bold">{t('header.back')}</span>
-					</button>
-					<div className="h-6 w-px bg-neutral-800" />
-					<h2 className="text-xl font-bold text-neutral-400">{t('header.settings')}</h2>
+				<div className="flex items-center gap-4 mb-8 border-b border-neutral-800 pb-4 justify-between">
+					<div className="flex items-center gap-4">
+						<button
+							onClick={onClose}
+							className="p-2 -ml-2 hover:bg-neutral-800 rounded-full text-white transition-colors flex items-center gap-2 group"
+						>
+							<ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
+							<span className="text-lg font-bold">{t('header.back')}</span>
+						</button>
+						<div className="h-6 w-px bg-neutral-800" />
+						<h2 className="text-xl font-bold text-neutral-400">{t('header.settings')}</h2>
+					</div>
 				</div>
 
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 transition-opacity duration-300 ${!isConnected ? "opacity-50 pointer-events-none grayscale" : ""}`}>
 					{/* Column 1: Requests & Suggestions */}
 					<div className="space-y-4">
 						<h4 className="text-xs font-semibold text-neutral-500 uppercase">{t('header.suggestions')}</h4>
@@ -479,5 +483,6 @@ SettingsView.propTypes = {
 	ownerQueueBypass: PropTypes.bool,
 	ownerPopups: PropTypes.bool,
 	onDeleteChannel: PropTypes.func,
-	captionsEnabled: PropTypes.bool
+	captionsEnabled: PropTypes.bool,
+	isConnected: PropTypes.bool
 };

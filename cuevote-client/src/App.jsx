@@ -998,6 +998,7 @@ function App() {
           ownerPopups={ownerPopups}
           onDeleteChannel={handleDeleteChannel}
           captionsEnabled={captionsEnabled}
+          isConnected={isConnected}
         />
       </div>
     );
