@@ -108,6 +108,7 @@ export const LEGAL_CONTENT = {
 			]
 		},
 		imprint: {
+			addressHeading: "Legal Address",
 			managedBy: "Managed by",
 			country: "The Netherlands",
 			contact: "Contact",
@@ -212,6 +213,7 @@ export const LEGAL_CONTENT = {
 			]
 		},
 		imprint: {
+			addressHeading: "Juridisch Adres",
 			managedBy: "Beheerd door",
 			country: "Nederland",
 			contact: "Contact",
