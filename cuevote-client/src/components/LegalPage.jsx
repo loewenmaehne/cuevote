@@ -208,9 +208,8 @@ export function LegalPage() {
                                                     </li>
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Flag size={16} className="shrink-0" />
-                                                        <span className="text-neutral-500 text-xs uppercase tracking-wider whitespace-nowrap min-w-[100px]">{content.imprint.abuse}:</span>
                                                         <a href={`mailto:${import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}?subject=Abuse%20Report`} className="text-neutral-300 hover:text-white transition-colors">
-                                                            {import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}
+                                                            {content.imprint.abuse}
                                                         </a>
                                                     </li>
                                                     {import.meta.env.VITE_LEGAL_PHONE && (
