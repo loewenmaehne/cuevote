@@ -24,7 +24,6 @@ export function SettingsView({
 	ownerQueueBypass,
 	ownerPopups,
 	onDeleteChannel,
-	onDeleteChannel,
 	captionsEnabled,
 	isConnected = true
 }) {
