@@ -58,7 +58,7 @@ export const MobileBlockPage = () => {
 				{/* Primary Call to Action */}
 				<div className="w-full space-y-4 pt-4">
 					<a
-						href="https://github.com/loewenmaehne/cuevote/releases/download/v1.0.1/app-release.apk"
+						href="https://github.com/loewenmaehne/cuevote/releases/download/v1.0.3/app-release.apk"
 						download="CueVote-App.apk"
 						target="_blank"
 						rel="noopener noreferrer"
