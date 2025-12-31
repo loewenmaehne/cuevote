@@ -498,6 +498,7 @@ function App() {
           autoplay: 0,
           controls: 0,
           origin: window.location.origin,
+          widget_referrer: window.location.origin,
           cc_load_policy: captionsEnabled ? 1 : 0,
           cc_lang_pref: currentTrackRef.current?.language,
           hl: currentTrackRef.current?.language
@@ -542,11 +543,28 @@ function App() {
           },
           onError: (event) => {
             console.error("YouTube Player Error:", event.data);
+            // Handle Playback Restrictions (100, 101, 150) - Owner Autoplay
+            const errorCode = event.data;
+            if ([100, 101, 150].includes(errorCode)) {
+              if (isOwner) {
+                console.warn("[Player] Video restricted/unavailable. Skipping...", currentTrackRef.current?.title);
+                // Force skip to next track
+                sendMessage({ type: "NEXT_TRACK" });
+                // Also ban/delete? Maybe just skip for now to be safe.
+              } else {
+                // Determine error message
+                let msg = t('player.errorGeneric');
+                if (errorCode === 100) msg = t('player.errorNotFound');
+                if (errorCode === 101 || errorCode === 150) msg = t('player.errorRestricted');
+                // Show sticky toast or generic error?
+                console.warn("[Player] Playback Error shown to guest:", msg);
+              }
+            }
           },
         },
       });
     });
-  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled, currentTrack?.language]);
+  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled, t, isOwner]);
 
   const playerContainerRef = useCallback(node => {
     if (!hasConsent) return; // Gate Ref Handling
@@ -622,6 +640,24 @@ function App() {
       setAutoplayBlocked(false);
     }
   }, [isPlaying, isPlayerReady, currentTrack]);
+
+  // Infinite Load Guard (Stall Detection)
+  useEffect(() => {
+    if (!isPlaying || !isPlayerReady || !playerRef.current) return;
+
+    const checkInterval = setInterval(() => {
+      const state = playerRef.current.getPlayerState?.();
+      // If we are supposed to be playing (isPlaying=true) but player is stuck in BUFFERING (3) or UNSTARTED (-1)
+      if (state === YouTubeState.BUFFERING || state === YouTubeState.UNSTARTED) {
+        console.warn("[Player] Stall detected (Buffering > 5s). Force-reloading video...");
+        // Re-load current video at current time
+        const currentTime = playerRef.current.getCurrentTime?.() || serverProgress;
+        playerRef.current.loadVideoById?.(currentTrackRef.current?.videoId, currentTime);
+      }
+    }, 8000); // Check every 8 seconds (aggressive but needed for hangs)
+
+    return () => clearInterval(checkInterval);
+  }, [isPlaying, isPlayerReady, serverProgress]);
 
   // Progress bar update
   useEffect(() => {
