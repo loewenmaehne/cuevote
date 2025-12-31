@@ -493,7 +493,7 @@ function App() {
     loadYouTubeAPI().then((YT) => {
       // console.log("[Player] YT loaded, creating player instance");
       playerRef.current = new YT.Player(container, {
-        host: 'https://www.youtube-nocookie.com',
+        host: 'https://www.youtube.com',
         playerVars: {
           autoplay: 0,
           controls: 0,
