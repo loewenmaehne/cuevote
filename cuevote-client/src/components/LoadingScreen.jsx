@@ -8,11 +8,9 @@ export function LoadingScreen({ isOnline, isConnected, embedded = false, message
 	const [isRetrying, setIsRetrying] = useState(false);
 
 	useEffect(() => {
-		// Reset state when status changes
-		if (isOnline && isConnected) {
-			setShowTimeoutCheck(false);
-			return;
-		}
+		// Reset state when status changes to OFFLINE (pause timer?) 
+		// Actually, we just want a simple timer that runs on mount.
+		// If we are offline, the state is 'offline' anyway.
 
 		// Start a "stuck" timer
 		const timer = setTimeout(() => {
@@ -20,7 +18,7 @@ export function LoadingScreen({ isOnline, isConnected, embedded = false, message
 		}, 5000); // 5 seconds grace period before showing retry options
 
 		return () => clearTimeout(timer);
-	}, [isOnline, isConnected]);
+	}, []); // Run once on mount
 
 	const handleRetry = () => {
 		setIsRetrying(true);
@@ -33,8 +31,8 @@ export function LoadingScreen({ isOnline, isConnected, embedded = false, message
 	// Determine State
 	let state = 'loading'; // loading | offline | error
 	if (!isOnline) state = 'offline';
-	else if (!isConnected && showTimeoutCheck) state = 'error'; // Connected to internet but logic stuck?
-	else if (!isConnected) state = 'loading'; // Just connecting normally
+	else if (showTimeoutCheck) state = 'error'; // Took too long (socket or data)
+	else state = 'loading'; // Just connecting normally
 
 	// Content Configuration
 	const getConfig = () => {
