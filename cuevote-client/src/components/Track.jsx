@@ -150,7 +150,7 @@ export function Track({
                   <p className="text-xs font-medium">{t('suggestions.loading', 'Finding similar songs...')}</p>
                 </div>
               ) : suggestions && suggestions.length > 0 ? (
-                <Suggestions suggestions={suggestions} onAdd={onAdd} />
+                <Suggestions suggestions={suggestions} onAdd={onAdd} onPreview={onPreview} />
               ) : (
                 <div className="text-center py-4 text-neutral-500 text-sm">
                   {t('suggestions.empty', 'No suggestions found.')}
