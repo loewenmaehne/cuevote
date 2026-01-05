@@ -754,6 +754,10 @@ function App() {
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
 
   const handleSongSuggested = (query) => {
+    if (!user) {
+      setToast({ message: t('suggest.loginRequired'), type: 'error' });
+      return;
+    }
     sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
   };
 

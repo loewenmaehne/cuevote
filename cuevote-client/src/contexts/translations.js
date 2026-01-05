@@ -101,7 +101,8 @@ export const translations = {
 			submit: "Submit",
 			adding: "Adding...",
 			added: "Added",
-			error: "Please enter a YouTube link or song name."
+			error: "Please enter a YouTube link or song name.",
+			loginRequired: "Please log in to suggest songs."
 		},
 		suggestions: {
 			title: "Related Songs",
@@ -290,7 +291,8 @@ export const translations = {
 			submit: "Dien in",
 			adding: "Toevoegen...",
 			added: "Toegevoegd",
-			error: "Voer een YouTube-link of titel in."
+			error: "Voer een YouTube-link of titel in.",
+			loginRequired: "Log in om nummers voor te stellen."
 		},
 		suggestions: {
 			title: "Gerelateerde Nummers",
@@ -479,7 +481,8 @@ export const translations = {
 			submit: "Senden",
 			adding: "Hinzufügen...",
 			added: "Hinzugefügt",
-			error: "Bitte YouTube-Link oder Titel eingeben."
+			error: "Bitte YouTube-Link oder Titel eingeben.",
+			loginRequired: "Bitte anmelden, um Songs vorzuschlagen."
 		},
 		suggestions: {
 			title: "Ähnliche Songs",
@@ -668,7 +671,8 @@ export const translations = {
 			submit: "Envoyer",
 			adding: "Ajout...",
 			added: "Ajouté",
-			error: "Entrez un lien YouTube ou un titre."
+			error: "Entrez un lien YouTube ou un titre.",
+			loginRequired: "Veuillez vous connecter pour suggérer."
 		},
 		suggestions: {
 			title: "Chansons Similaires",
