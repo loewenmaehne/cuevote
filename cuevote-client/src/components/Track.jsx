@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { ThumbsUp, ThumbsDown, Headphones, Trash2 } from "lucide-react";
 import { useLanguage } from '../contexts/LanguageContext';
+import { useConsent } from '../contexts/ConsentContext';
 
 const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;
 const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
@@ -22,7 +23,10 @@ export function Track({
   // Check prioritized status
   const isPriority = track.isOwnerPriority;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+
   const { t } = useLanguage();
+  const { hasConsent } = useConsent(); // Get consent state
 
   return (
     <div
@@ -45,12 +49,18 @@ export function Track({
     >
       <div className="flex justify-between items-center gap-3">
         <div className="flex items-center gap-4 flex-1 min-w-0">
-          <img
-            src={track.thumbnail ?? buildThumbnailUrl(track.videoId)}
-            alt={track.title}
-            className="w-16 h-16 rounded-3xl object-cover shadow-md flex-shrink-0"
-            loading="lazy"
-          />
+          {hasConsent ? (
+            <img
+              src={track.thumbnail ?? buildThumbnailUrl(track.videoId)}
+              alt={track.title}
+              className="w-16 h-16 rounded-3xl object-cover shadow-md flex-shrink-0"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-3xl bg-neutral-800 flex items-center justify-center flex-shrink-0 shadow-inner">
+              <Headphones size={24} className="text-neutral-600" />
+            </div>
+          )}
           <div className="min-w-0">
             <h3 className="text-lg font-semibold tracking-tight truncate">
               {track.title}
