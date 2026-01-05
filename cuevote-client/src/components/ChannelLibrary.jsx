@@ -16,6 +16,7 @@ export function ChannelLibrary({
 	activeSuggestionId,
 	suggestions,
 	isFetchingSuggestions,
+	queueVideoIds,
 }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -143,6 +144,7 @@ export function ChannelLibrary({
 									activeSuggestionId={activeSuggestionId}
 									suggestions={suggestions}
 									isFetchingSuggestions={isFetchingSuggestions}
+									queueVideoIds={queueVideoIds}
 								/>
 							))}
 							{/* Sentinel for Infinite Scroll */}

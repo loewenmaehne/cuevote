@@ -25,7 +25,8 @@ export function PlaylistView({
     onAdd,
     activeSuggestionId, // <--- New Prop
     suggestions,        // <--- New Prop
-    isFetchingSuggestions // <--- New Prop
+    isFetchingSuggestions, // <--- New Prop
+    queueVideoIds
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -163,6 +164,7 @@ export function PlaylistView({
                                 activeSuggestionId={activeSuggestionId}
                                 suggestions={suggestions}
                                 isFetchingSuggestions={isFetchingSuggestions}
+                                queueVideoIds={queueVideoIds}
                             />
                         </div>
                     )}

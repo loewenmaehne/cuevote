@@ -1326,6 +1326,7 @@ function App() {
             activeSuggestionId={activeSuggestionId}
             suggestions={manualSuggestions}
             isFetchingSuggestions={isFetchingSuggestions}
+            queueVideoIds={queueVideoIds}
           />
         )}
 
