@@ -104,7 +104,42 @@ const clients = new Set();
 
 console.log("WebSocket server started on port", process.env.PORT || 8080);
 
+const connectionAttempts = new Map();
+
+// Helper to cleanup old rate limit entries
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, data] of connectionAttempts.entries()) {
+        if (now - data.timestamp > 60000) { // Clear after 1 minute
+            connectionAttempts.delete(ip);
+        }
+    }
+}, 60000);
+
 wss.on("connection", (ws, req) => {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+    // Rate Limiting (Simple: 30 connections per minute per IP)
+    if (ip) {
+        const now = Date.now();
+        const limitData = connectionAttempts.get(ip) || { count: 0, timestamp: now };
+
+        // Reset if older than 1 minute
+        if (now - limitData.timestamp > 60000) {
+            limitData.count = 0;
+            limitData.timestamp = now;
+        }
+
+        limitData.count++;
+        connectionAttempts.set(ip, limitData);
+
+        if (limitData.count > 30) {
+            console.warn(`[RATE LIMIT] Blocking connection from ${ip}`);
+            ws.close(1008, 'Rate Limit Exceeded');
+            return;
+        }
+    }
+
     console.log("Client connected");
 
     // Parse Client ID

@@ -103,6 +103,12 @@ export const translations = {
 			added: "Added",
 			error: "Please enter a YouTube link or song name."
 		},
+		suggestions: {
+			modalTitle: "Related Songs",
+			basedOn: "Based on:",
+			loading: "Finding similar songs...",
+			empty: "No suggestions found."
+		},
 		app: {
 			switching: "Switching Channels...",
 			channelNotFound: "Channel does not exist",
@@ -129,7 +135,8 @@ export const translations = {
 			cancel: "Cancel",
 			confirmDelete: "Confirm Delete",
 			delete: "Delete Song",
-			watch: "Watch on YouTube"
+			watch: "Watch on YouTube",
+			recommend: "Get Suggestions"
 		},
 		library: {
 			searchPlaceholder: "Search library...",
@@ -284,6 +291,12 @@ export const translations = {
 			added: "Toegevoegd",
 			error: "Voer een YouTube-link of titel in."
 		},
+		suggestions: {
+			modalTitle: "Gerelateerde Nummers",
+			basedOn: "Gebaseerd op:",
+			loading: "Zoeken naar vergelijkbare nummers...",
+			empty: "Geen suggesties gevonden."
+		},
 		app: {
 			switching: "Kanaal Wisselen...",
 			channelNotFound: "Kanaal bestaat niet",
@@ -310,7 +323,8 @@ export const translations = {
 			cancel: "Annuleren",
 			confirmDelete: "Bevestig",
 			delete: "Verwijder",
-			watch: "Op YouTube"
+			watch: "Op YouTube",
+			recommend: "Krijg Suggesties"
 		},
 		library: {
 			searchPlaceholder: "Zoek in bibliotheek...",
@@ -465,6 +479,12 @@ export const translations = {
 			added: "Hinzugefügt",
 			error: "Bitte YouTube-Link oder Titel eingeben."
 		},
+		suggestions: {
+			modalTitle: "Ähnliche Songs",
+			basedOn: "Basierend auf:",
+			loading: "Suche ähnliche Songs...",
+			empty: "Keine Vorschläge gefunden."
+		},
 		app: {
 			switching: "Kanal wechseln...",
 			channelNotFound: "Kanal existiert nicht",
@@ -491,7 +511,8 @@ export const translations = {
 			cancel: "Abbrechen",
 			confirmDelete: "Bestätigen",
 			delete: "Löschen",
-			watch: "Auf YouTube"
+			watch: "Auf YouTube",
+			recommend: "Vorschläge erhalten"
 		},
 		library: {
 			searchPlaceholder: "Bibliothek durchsuchen...",
@@ -646,6 +667,12 @@ export const translations = {
 			added: "Ajouté",
 			error: "Entrez un lien YouTube ou un titre."
 		},
+		suggestions: {
+			modalTitle: "Chansons Similaires",
+			basedOn: "Basé sur :",
+			loading: "Recherche de chansons similaires...",
+			empty: "Aucune suggestion trouvée."
+		},
 		app: {
 			switching: "Changement de Chaîne...",
 			channelNotFound: "Chaîne inexistante",
@@ -672,7 +699,8 @@ export const translations = {
 			cancel: "Annuler",
 			confirmDelete: "Confirmer",
 			delete: "Supprimer",
-			watch: "Sur YouTube"
+			watch: "Sur YouTube",
+			recommend: "Obtenir des suggestions"
 		},
 		library: {
 			searchPlaceholder: "Chercher dans la bibliothèque...",
@@ -827,6 +855,12 @@ export const translations = {
 			added: "Añadido",
 			error: "Introduce un enlace de YouTube o título."
 		},
+		suggestions: {
+			modalTitle: "Canciones Relacionadas",
+			basedOn: "Basado en:",
+			loading: "Buscando canciones similares...",
+			empty: "No se encontraron sugerencias."
+		},
 		app: {
 			switching: "Cambiando Canales...",
 			channelNotFound: "El canal no existe",
@@ -853,7 +887,8 @@ export const translations = {
 			cancel: "Cancelar",
 			confirmDelete: "Confirmar",
 			delete: "Eliminar",
-			watch: "En YouTube"
+			watch: "En YouTube",
+			recommend: "Obtener Sugerencias"
 		},
 		library: {
 			searchPlaceholder: "Buscar en biblioteca...",

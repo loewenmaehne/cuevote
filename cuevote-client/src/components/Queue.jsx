@@ -15,6 +15,10 @@ export function Queue({
   onPreview,
   votesEnabled = true,
   onDelete,
+  onRecommend,
+  activeSuggestionId,
+  suggestions,
+  isFetchingSuggestions,
 }) {
   const containerRef = useRef(null);
   const [showJumpToNow, setShowJumpToNow] = useState(false);
@@ -97,6 +101,10 @@ export function Queue({
             onPreview={onPreview}
             votesEnabled={votesEnabled}
             onDelete={onDelete}
+            onRecommend={onRecommend}
+            activeSuggestionId={activeSuggestionId}
+            suggestions={suggestions}
+            isFetchingSuggestions={isFetchingSuggestions}
           />
         </div>
       ))}
@@ -117,4 +125,8 @@ Queue.propTypes = {
   onPreview: PropTypes.func,
   votesEnabled: PropTypes.bool,
   onDelete: PropTypes.func,
+  onRecommend: PropTypes.func,
+  activeSuggestionId: PropTypes.string,
+  suggestions: PropTypes.array,
+  isFetchingSuggestions: PropTypes.bool,
 };

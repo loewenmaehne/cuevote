@@ -190,6 +190,56 @@ class Room {
                     this.updateState({ progress: newProgress });
                 }
             }
+
+            // Suggestion Check Trigger
+            // If we have a current track, and we haven't fetched suggestions for it yet
+            if (this.state.currentTrack && this.state.currentTrack.videoId !== this.lastSuggestionSourceVideoId) {
+                this.updateSuggestions(this.state.currentTrack.videoId);
+            }
+        }
+    }
+
+    async updateSuggestions(videoId) {
+        this.lastSuggestionSourceVideoId = videoId; // Prevent loop
+
+        try {
+            // 1. Check Cache
+            const cached = db.getRelatedVideos(videoId);
+            if (cached) {
+                const age = Math.floor(Date.now() / 1000) - cached.fetched_at;
+                // 30 Days cache validity
+                if (age < 2592000) {
+                    this.broadcast({ type: "SUGGESTION_UPDATE", payload: cached.data });
+                    return;
+                }
+            }
+
+            if (!this.apiKey) return;
+
+            // 2. Fetch from API
+            const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&relatedToVideoId=${videoId}&type=video&videoCategoryId=10&maxResults=6&key=${this.apiKey}`;
+            const response = await fetch(apiUrl, {
+                headers: { 'Referer': process.env.URL || 'https://cuevote.com' }
+            });
+            const data = await response.json();
+
+            if (data.items) {
+                const suggestions = data.items.map(item => ({
+                    videoId: item.id.videoId,
+                    title: item.snippet.title,
+                    artist: item.snippet.channelTitle,
+                    thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url
+                }));
+
+                // Save to Cache
+                db.saveRelatedVideos(videoId, suggestions);
+
+                // Broadcast
+                this.broadcast({ type: "SUGGESTION_UPDATE", payload: suggestions });
+            }
+
+        } catch (e) {
+            console.error("[Suggestions] Error:", e);
         }
     }
 
@@ -483,6 +533,72 @@ class Room {
                 // If I modify index.js to check for DELETE_ACCOUNT *before* routing to room, that fixes it globally.
                 // I will NOT edit Room.js yet. I will edit index.js.
                 break;
+            case "FETCH_SUGGESTIONS":
+                this.handleFetchSuggestions(ws, message.payload);
+                break;
+        }
+    }
+
+    async handleFetchSuggestions(ws, { videoId, title, artist }) {
+        if (!videoId) return;
+
+        try {
+            // 1. Check Cache
+            const cached = db.getRelatedVideos(videoId);
+            if (cached) {
+                const age = Math.floor(Date.now() / 1000) - cached.fetched_at;
+                if (age < 2592000) {
+                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: videoId, suggestions: cached.data } }));
+                    return;
+                }
+            }
+
+            if (!this.apiKey) {
+                ws.send(JSON.stringify({ type: "error", message: "Suggestions not unavailable (No API Key)." }));
+                return;
+            }
+
+            // 2. Fetch from API (Search by keyword)
+            // Strategy: Search for the ARTIST to get "More from this artist".
+            //Searching for "Title + Artist" mostly returns covers/versions of the same song.
+            let query = "";
+            if (artist && artist.toLowerCase() !== "unknown artist") {
+                query = artist; // Best for variety (other songs by same artist)
+            } else {
+                query = title; // Fallback
+            }
+
+            const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&maxResults=6&key=${this.apiKey}`;
+            console.log("[Suggestions] Fetching Search:", apiUrl);
+
+            const response = await fetch(apiUrl, {
+                headers: { 'Referer': process.env.URL || 'https://cuevote.com' }
+            });
+            const data = await response.json();
+            console.log("[Suggestions] YouTube Response:", JSON.stringify(data, null, 2));
+
+            if (data.items) {
+                const suggestions = data.items
+                    .filter(item => item.id.videoId !== videoId) // Exclude self
+                    .map(item => ({
+                        videoId: item.id.videoId,
+                        title: item.snippet.title,
+                        artist: item.snippet.channelTitle,
+                        thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url
+                    }));
+
+                // Save to Cache
+                db.saveRelatedVideos(videoId, suggestions);
+
+                // Send to Client
+                ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: videoId, suggestions } }));
+            } else {
+                console.error("[Suggestions] No items found in response:", data);
+                ws.send(JSON.stringify({ type: "error", message: "No suggestions found." }));
+            }
+        } catch (e) {
+            console.error("Manual Fetch Error:", e);
+            ws.send(JSON.stringify({ type: "error", message: "Failed to fetch suggestions." }));
         }
     }
 

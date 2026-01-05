@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { ThumbsUp, ThumbsDown, Headphones, Trash2 } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Headphones, Trash2, Sparkles, Loader2 } from "lucide-react";
 import { useLanguage } from '../contexts/LanguageContext';
 import { useConsent } from '../contexts/ConsentContext';
+import { Suggestions } from "./Suggestions";
 
 const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;
 const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
@@ -18,11 +19,17 @@ export function Track({
   readOnly = false,
   votesEnabled = true,
   onDelete,
-  onAdd, // <--- Added this to destructuring
+  onAdd,
+  onRecommend,
+  activeSuggestionId, // <--- New Prop
+  suggestions,        // <--- New Prop
+  isFetchingSuggestions // <--- New Prop
 }) {
   // Check prioritized status
   const isPriority = track.isOwnerPriority;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const isActiveSuggestion = activeSuggestionId === track.id; // Check if active
 
 
   const { t } = useLanguage();
@@ -138,6 +145,18 @@ export function Track({
                 {t('track.add')}
               </button>
             )}
+            {onRecommend && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRecommend(track);
+                }}
+                className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-all shadow-lg shadow-purple-900/20"
+              >
+                <Sparkles size={20} className="text-yellow-300" />
+                {t('track.recommend', 'Get Suggestions')}
+              </button>
+            )}
             {onPreview && !isActive && (
               <button
                 onClick={(e) => {
@@ -200,7 +219,33 @@ export function Track({
           </a>
         </div>
       )}
-    </div>
+
+      {/* Inline Suggestions Accordion */}
+      {isActiveSuggestion && (
+        <div className="mt-4 border-t border-neutral-800 pt-4 animate-fadeIn">
+          <div className="flex items-center justify-between mb-4 px-1">
+            <h4 className="text-sm font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
+              <Sparkles size={14} className="text-purple-400" />
+              {t('suggestions.title', 'Similar Songs')}
+            </h4>
+          </div>
+
+          {isFetchingSuggestions ? (
+            <div className="flex flex-col items-center justify-center py-12 text-neutral-500 gap-3">
+              <Loader2 className="animate-spin text-orange-500" size={24} />
+              <p className="text-xs font-medium">{t('suggestions.loading', 'Finding similar songs...')}</p>
+            </div>
+          ) : suggestions && suggestions.length > 0 ? (
+            <Suggestions suggestions={suggestions} onAdd={onAdd} />
+          ) : (
+            <div className="text-center py-8 text-neutral-500 text-sm">
+              {t('suggestions.empty', 'No suggestions found.')}
+            </div>
+          )}
+        </div>
+      )}
+
+    </div >
   );
 }
 
@@ -215,4 +260,8 @@ Track.propTypes = {
   readOnly: PropTypes.bool,
   onDelete: PropTypes.func,
   onAdd: PropTypes.func,
+  onRecommend: PropTypes.func,
+  activeSuggestionId: PropTypes.string,
+  suggestions: PropTypes.array,
+  isFetchingSuggestions: PropTypes.bool,
 };

@@ -11,7 +11,11 @@ export function ChannelLibrary({
 	onAdd, // New prop to add song to queue
 	isOwner,
 	onDelete,
-	onPreview
+	onPreview,
+	onRecommend,
+	activeSuggestionId,
+	suggestions,
+	isFetchingSuggestions,
 }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -138,6 +142,10 @@ export function ChannelLibrary({
 									}}
 									onDelete={onDelete ? () => onDelete(track.videoId) : undefined}
 									onPreview={onPreview}
+									onRecommend={onRecommend}
+									activeSuggestionId={activeSuggestionId}
+									suggestions={suggestions}
+									isFetchingSuggestions={isFetchingSuggestions}
 								/>
 							))}
 							{/* Sentinel for Infinite Scroll */}
@@ -162,5 +170,9 @@ ChannelLibrary.propTypes = {
 	onAdd: PropTypes.func,
 	isOwner: PropTypes.bool,
 	onDelete: PropTypes.func,
-	onPreview: PropTypes.func
+	onPreview: PropTypes.func,
+	onRecommend: PropTypes.func,
+	activeSuggestionId: PropTypes.string,
+	suggestions: PropTypes.array,
+	isFetchingSuggestions: PropTypes.bool,
 };
