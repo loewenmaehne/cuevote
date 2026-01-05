@@ -164,7 +164,7 @@ export function Track({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onAdd(track);
+                  onAdd(track.videoId);
                 }}
                 className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-all shadow-lg shadow-orange-900/20"
               >
