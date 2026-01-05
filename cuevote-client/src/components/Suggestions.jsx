@@ -43,6 +43,6 @@ export function Suggestions({ suggestions, onAdd }) {
 				</div>
 			))}
 		</div>
-		</div >
+
 	);
 }
