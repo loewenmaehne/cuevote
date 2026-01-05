@@ -20,7 +20,12 @@ export function PlaylistView({
     votesEnabled = true,
     onPreview,
     onExit,
-    onDelete, // New prop
+    onDelete,
+    onRecommend,
+    onAdd,
+    activeSuggestionId, // <--- New Prop
+    suggestions,        // <--- New Prop
+    isFetchingSuggestions // <--- New Prop
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -125,6 +130,11 @@ export function PlaylistView({
                                     onToggleExpand={() => handleToggleExpand(`hist-${track.id}-${i}`)}
                                     readOnly={true}
                                     votesEnabled={votesEnabled}
+                                    onRecommend={onRecommend}
+                                    onAdd={onAdd}
+                                    activeSuggestionId={activeSuggestionId}
+                                    suggestions={suggestions}
+                                    isFetchingSuggestions={isFetchingSuggestions}
                                 />
                             ))}
                         </div>
@@ -147,6 +157,10 @@ export function PlaylistView({
                                 readOnly={true}
                                 votesEnabled={votesEnabled}
                                 onDelete={onDelete}
+                                onRecommend={onRecommend}
+                                activeSuggestionId={activeSuggestionId}
+                                suggestions={suggestions}
+                                isFetchingSuggestions={isFetchingSuggestions}
                             />
                         </div>
                     )}
@@ -171,6 +185,10 @@ export function PlaylistView({
                                     votesEnabled={votesEnabled}
                                     onPreview={onPreview}
                                     onDelete={onDelete}
+                                    onRecommend={onRecommend}
+                                    activeSuggestionId={activeSuggestionId}
+                                    suggestions={suggestions}
+                                    isFetchingSuggestions={isFetchingSuggestions}
                                 />
                             ))}
                         </div>
@@ -218,4 +236,9 @@ PlaylistView.propTypes = {
     votesEnabled: PropTypes.bool,
     onPreview: PropTypes.func,
     onExit: PropTypes.func,
+    onRecommend: PropTypes.func,
+    onAdd: PropTypes.func,
+    activeSuggestionId: PropTypes.string,
+    suggestions: PropTypes.array,
+    isFetchingSuggestions: PropTypes.bool,
 };
