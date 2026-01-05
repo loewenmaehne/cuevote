@@ -151,7 +151,7 @@ export function Track({
                   <p className="text-xs font-medium">{t('suggestions.loading', 'Finding similar songs...')}</p>
                 </div>
               ) : suggestions && suggestions.length > 0 ? (
-                <Suggestions suggestions={suggestions} onAdd={onAddSuggestion || onAdd} onPreview={onPreview} />
+                <Suggestions suggestions={suggestions} onAdd={onAddSuggestion || onAdd} onPreview={onPreview} queueVideoIds={queueVideoIds} />
               ) : (
                 <div className="text-center py-4 text-neutral-500 text-sm">
                   {t('suggestions.empty', 'No suggestions found.')}
@@ -267,4 +267,5 @@ Track.propTypes = {
   activeSuggestionId: PropTypes.string,
   suggestions: PropTypes.array,
   isFetchingSuggestions: PropTypes.bool,
+  queueVideoIds: PropTypes.object, // Set
 };

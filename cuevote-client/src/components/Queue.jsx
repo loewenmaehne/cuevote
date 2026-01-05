@@ -20,6 +20,7 @@ export function Queue({
   activeSuggestionId,
   suggestions,
   isFetchingSuggestions,
+  queueVideoIds
 }) {
   const containerRef = useRef(null);
   const [showJumpToNow, setShowJumpToNow] = useState(false);
@@ -107,6 +108,7 @@ export function Queue({
             activeSuggestionId={activeSuggestionId}
             suggestions={suggestions}
             isFetchingSuggestions={isFetchingSuggestions}
+            queueVideoIds={queueVideoIds}
           />
         </div>
       ))}
