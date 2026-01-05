@@ -3,7 +3,7 @@ import { Plus, Headphones, Check } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { isMobile } from '../utils/deviceDetection';
 
-export function Suggestions({ suggestions, onAdd, onPreview }) {
+export function Suggestions({ suggestions, onAdd, onPreview, queueVideoIds }) {
 	const { t } = useLanguage();
 	const mobile = isMobile();
 
