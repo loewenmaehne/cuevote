@@ -43,7 +43,10 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
 
         // 2. Create WebView programmatically
         webView = WebView(this)
-        WebView.setWebContentsDebuggingEnabled(true) // Enable Debugging
+        // Enable Debugging only in Debug builds
+        if (BuildConfig.DEBUG) {
+            WebView.setWebContentsDebuggingEnabled(true)
+        }
         webView.layoutParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
