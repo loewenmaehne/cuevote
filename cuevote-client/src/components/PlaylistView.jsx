@@ -131,7 +131,6 @@ export function PlaylistView({
                                     readOnly={true}
                                     votesEnabled={votesEnabled}
                                     onRecommend={onRecommend}
-                                    onAdd={onAdd}
                                     onPreview={onPreview}
                                     activeSuggestionId={activeSuggestionId}
                                     suggestions={suggestions}
