@@ -16,6 +16,7 @@ export function Queue({
   votesEnabled = true,
   onDelete,
   onRecommend,
+  onAdd,
   activeSuggestionId,
   suggestions,
   isFetchingSuggestions,
@@ -102,6 +103,7 @@ export function Queue({
             votesEnabled={votesEnabled}
             onDelete={onDelete}
             onRecommend={onRecommend}
+            onAdd={onAdd}
             activeSuggestionId={activeSuggestionId}
             suggestions={suggestions}
             isFetchingSuggestions={isFetchingSuggestions}
@@ -126,6 +128,7 @@ Queue.propTypes = {
   votesEnabled: PropTypes.bool,
   onDelete: PropTypes.func,
   onRecommend: PropTypes.func,
+  onAdd: PropTypes.func,
   activeSuggestionId: PropTypes.string,
   suggestions: PropTypes.array,
   isFetchingSuggestions: PropTypes.bool,
