@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { isTV, isMobile, isTablet, isIOS, isNativeApp } from './utils/deviceDetection';
 import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw } from "lucide-react";
@@ -95,6 +95,8 @@ function App() {
 
   // console.log("Server State:", serverState);
 
+
+
   // Handle Delete Account Success (Moved up to avoid conditional hook call error)
   useEffect(() => {
     if (lastMessage && lastMessage.type === "DELETE_ACCOUNT_SUCCESS") {
@@ -144,6 +146,18 @@ function App() {
     bannedSongs = [], // Added this
     captionsEnabled = false
   } = serverState || {};
+
+  // Calculate set of ALL videoIds currently in the queue or playing for suggestion "Added" check
+  const queueVideoIds = useMemo(() => {
+    const ids = new Set();
+    if (currentTrack?.videoId) ids.add(currentTrack.videoId);
+    if (queue) {
+      queue.forEach(t => {
+        if (t.videoId) ids.add(t.videoId);
+      });
+    }
+    return ids;
+  }, [queue, currentTrack]);
 
 
   const isOwner = user && ownerId && user.id === ownerId;
@@ -1077,6 +1091,8 @@ function App() {
       </div>
     );
   }
+
+
 
   return (
     <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView || showChannelLibrary ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>

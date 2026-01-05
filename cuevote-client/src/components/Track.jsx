@@ -24,7 +24,8 @@ export function Track({
   onRecommend,
   activeSuggestionId, // <--- New Prop
   suggestions,        // <--- New Prop
-  isFetchingSuggestions // <--- New Prop
+  isFetchingSuggestions, // <--- New Prop
+  queueVideoIds       // <--- New Prop
 }) {
   // Check prioritized status
   const isPriority = track.isOwnerPriority;
