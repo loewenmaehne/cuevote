@@ -1,8 +1,10 @@
 import { Plus, Headphones } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { isMobile } from '../utils/deviceDetection';
 
 export function Suggestions({ suggestions, onAdd, onPreview }) {
 	const { t } = useLanguage();
+	const mobile = isMobile();
 
 	if (!suggestions || suggestions.length === 0) return null;
 
@@ -23,7 +25,10 @@ export function Suggestions({ suggestions, onAdd, onPreview }) {
 							loading="lazy"
 						/>
 						{/* Overlay Icons */}
-						<div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+						<div className={`absolute inset-0 transition-opacity flex items-center justify-center gap-3 ${mobile
+								? "opacity-100 bg-black/30"
+								: "opacity-0 group-hover:opacity-100 bg-black/60"
+							}`}>
 							{onPreview && (
 								<button
 									onClick={(e) => {
