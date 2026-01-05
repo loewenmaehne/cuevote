@@ -753,29 +753,25 @@ function App() {
   const [activeSuggestionId, setActiveSuggestionId] = useState(null); // ID of track currently showing suggestions
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
 
-  const handleSongSuggested = (query) => {
+  const handleSongSuggested = useCallback((query) => {
     if (!user) {
       setToast({ message: t('suggest.loginRequired'), type: 'error' });
       return;
     }
     sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
-  };
+  }, [user, sendMessage, t]);
 
-  const handleLibraryAdd = (videoId) => {
+  const handleLibraryAdd = useCallback((videoId) => {
     console.log("[App] Adding from Library:", videoId);
     handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
-    // Don't close anything, let user add multiple if they want, or maybe collapse? 
-    // For inline, keeping it open is fine.
-    // setShowChannelLibrary(false); // Only if in library view? 
-    // Actually, if we are in inline mode, we might want to keep it open.
-  };
+  }, [handleSongSuggested]);
 
-  const handleRemoveFromLibrary = (videoId) => {
+  const handleRemoveFromLibrary = useCallback((videoId) => {
     console.log("[App] Removing from Library:", videoId);
     sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { videoId } });
-  };
+  }, [sendMessage]);
 
-  const handleFetchSuggestions = (track) => {
+  const handleFetchSuggestions = useCallback((track) => {
     // Toggle if clicking same track
     if (activeSuggestionId === track.id) {
       setActiveSuggestionId(null);
@@ -795,7 +791,7 @@ function App() {
         artist: track.artist
       }
     });
-  };
+  }, [activeSuggestionId, sendMessage]);
 
 
 
@@ -810,13 +806,10 @@ function App() {
 
 
 
-  const handlePreviewTrack = (track) => {
-
+  const handlePreviewTrack = useCallback((track) => {
     setIsLocallyPaused(true);
-
     setPreviewTrack(track);
-
-  };
+  }, []);
 
 
 
@@ -824,11 +817,11 @@ function App() {
     sendMessage({ type: "UPDATE_SETTINGS", payload: settings });
   };
 
-  const handleStopPreview = () => {
+  const handleStopPreview = useCallback(() => {
     setPreviewTrack(null);
     setIsLocallyPaused(false);
     playerRef.current?.seekTo?.(serverProgress);
-  };
+  }, [serverProgress]);
 
   // Watch for Room Not Found Error
   useEffect(() => {
