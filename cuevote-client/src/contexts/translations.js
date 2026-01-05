@@ -104,6 +104,7 @@ export const translations = {
 			error: "Please enter a YouTube link or song name."
 		},
 		suggestions: {
+			title: "Related Songs",
 			modalTitle: "Related Songs",
 			basedOn: "Based on:",
 			loading: "Finding similar songs...",
@@ -292,6 +293,7 @@ export const translations = {
 			error: "Voer een YouTube-link of titel in."
 		},
 		suggestions: {
+			title: "Gerelateerde Nummers",
 			modalTitle: "Gerelateerde Nummers",
 			basedOn: "Gebaseerd op:",
 			loading: "Zoeken naar vergelijkbare nummers...",
@@ -480,6 +482,7 @@ export const translations = {
 			error: "Bitte YouTube-Link oder Titel eingeben."
 		},
 		suggestions: {
+			title: "Ähnliche Songs",
 			modalTitle: "Ähnliche Songs",
 			basedOn: "Basierend auf:",
 			loading: "Suche ähnliche Songs...",
@@ -668,6 +671,7 @@ export const translations = {
 			error: "Entrez un lien YouTube ou un titre."
 		},
 		suggestions: {
+			title: "Chansons Similaires",
 			modalTitle: "Chansons Similaires",
 			basedOn: "Basé sur :",
 			loading: "Recherche de chansons similaires...",
