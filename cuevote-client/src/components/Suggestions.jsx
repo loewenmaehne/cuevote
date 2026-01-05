@@ -1,3 +1,4 @@
+import React from 'react';
 import { Plus, Headphones } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { isMobile } from '../utils/deviceDetection';
@@ -14,7 +15,10 @@ export function Suggestions({ suggestions, onAdd, onPreview }) {
 				<div
 					key={video.videoId}
 					className="group relative flex-shrink-0 w-40 snap-start bg-white/5 rounded-xl overflow-hidden hover:bg-white/10 transition-all cursor-pointer border border-white/5"
-					onClick={() => onAdd(video.videoId)}
+					onClick={() => {
+						console.log("Suggestions: Card clicked", video.videoId);
+						onAdd(video.videoId);
+					}}
 				>
 					{/* Thumbnail */}
 					<div className="aspect-video w-full overflow-hidden relative">
@@ -26,8 +30,8 @@ export function Suggestions({ suggestions, onAdd, onPreview }) {
 						/>
 						{/* Overlay Icons */}
 						<div className={`absolute inset-0 transition-opacity flex items-center justify-center gap-3 ${mobile
-								? "opacity-100 bg-black/30"
-								: "opacity-0 group-hover:opacity-100 bg-black/60"
+							? "opacity-100 bg-black/30"
+							: "opacity-0 group-hover:opacity-100 bg-black/60"
 							}`}>
 							{onPreview && (
 								<button
@@ -44,6 +48,7 @@ export function Suggestions({ suggestions, onAdd, onPreview }) {
 							<button
 								onClick={(e) => {
 									e.stopPropagation();
+									console.log("Suggestions: Plus button clicked", video.videoId);
 									onAdd(video.videoId);
 								}}
 								className="p-2 rounded-full bg-orange-500 hover:bg-orange-400 text-white transition-colors hover:scale-110 active:scale-95 shadow-lg"
