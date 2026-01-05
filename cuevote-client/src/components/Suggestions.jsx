@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Headphones } from 'lucide-react';
+import { Plus, Headphones, Check } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { isMobile } from '../utils/deviceDetection';
 
@@ -16,8 +16,11 @@ export function Suggestions({ suggestions, onAdd, onPreview }) {
 		e.stopPropagation();
 		if (addedIds.has(videoId)) return;
 
-		setAddedIds(prev => new Set(prev).add(videoId));
-		onAdd(videoId);
+		const success = onAdd(videoId);
+		// If handler returns explicit false, do not mark as added
+		if (success !== false) {
+			setAddedIds(prev => new Set(prev).add(videoId));
+		}
 	};
 
 	return (
@@ -66,8 +69,10 @@ export function Suggestions({ suggestions, onAdd, onPreview }) {
 								</div>
 							)}
 							{isAdded && (
-								<div className="absolute inset-0 flex items-center justify-center bg-black/60">
-									<span className="text-green-500 font-bold text-xs uppercase tracking-wider">{t('track.added', 'Added')}</span>
+								<div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-[1px]">
+									<div className="bg-green-500 rounded-full p-1 shadow-lg animate-in zoom-in duration-200">
+										<Check size={20} className="text-white" strokeWidth={3} />
+									</div>
 								</div>
 							)}
 						</div>

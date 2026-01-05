@@ -762,7 +762,7 @@ function App() {
   }, [user, sendMessage, t]);
 
   const handleLibraryAdd = useCallback((videoId) => {
-    handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
+    return handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
   }, [handleSongSuggested]);
 
   const handleRemoveFromLibrary = useCallback((videoId) => {
