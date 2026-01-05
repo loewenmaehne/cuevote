@@ -1,15 +1,12 @@
-import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Headphones } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
-export function Suggestions({ suggestions, onAdd }) {
+export function Suggestions({ suggestions, onAdd, onPreview }) {
 	const { t } = useLanguage();
 
 	if (!suggestions || suggestions.length === 0) return null;
 
 	return (
-
-
 		<div className="flex gap-4 overflow-x-auto pb-4 px-1 scroll-smooth snap-x snap-mandatory custom-scrollbar">
 			{suggestions.map((video) => (
 				<div
@@ -25,9 +22,30 @@ export function Suggestions({ suggestions, onAdd }) {
 							className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 							loading="lazy"
 						/>
-						{/* Overlay Icon */}
-						<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-							<Plus className="w-8 h-8 text-white drop-shadow-lg scale-90 group-hover:scale-100 transition-transform" />
+						{/* Overlay Icons */}
+						<div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+							{onPreview && (
+								<button
+									onClick={(e) => {
+										e.stopPropagation();
+										onPreview(video);
+									}}
+									className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors hover:scale-110 active:scale-95"
+									title={t('track.preview')}
+								>
+									<Headphones size={20} />
+								</button>
+							)}
+							<button
+								onClick={(e) => {
+									e.stopPropagation();
+									onAdd(video.videoId);
+								}}
+								className="p-2 rounded-full bg-orange-500 hover:bg-orange-400 text-white transition-colors hover:scale-110 active:scale-95 shadow-lg"
+								title={t('track.add')}
+							>
+								<Plus size={20} />
+							</button>
 						</div>
 					</div>
 
