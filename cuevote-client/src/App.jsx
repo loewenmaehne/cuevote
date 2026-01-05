@@ -762,12 +762,6 @@ function App() {
   }, [user, sendMessage, t]);
 
   const handleLibraryAdd = useCallback((videoId) => {
-    console.log("[App] handleLibraryAdd called with videoId:", videoId);
-    if (!videoId) {
-      console.error("[App] validation error: videoId is null/undefined");
-      setToast({ message: "Error: Invalid video ID", type: "error" });
-      return;
-    }
     handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
   }, [handleSongSuggested]);
 
