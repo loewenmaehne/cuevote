@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
 import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2 } from "lucide-react";
-import { isMobile } from '../utils/deviceDetection';
+import { isMobile, isTablet } from '../utils/deviceDetection';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export function PlaybackControls({
@@ -233,7 +233,7 @@ export function PlaybackControls({
                 disabled={!currentTrack}
               />
             )}
-            {!isMobile() && (
+            {(!isMobile() || isTablet()) && (
               <button
                 onClick={(event) => {
                   event.stopPropagation();
