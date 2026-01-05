@@ -135,12 +135,8 @@ export function ChannelLibrary({
 									readOnly={true}
 									votesEnabled={false}
 									onToggleExpand={() => handleToggleExpand(`lib-${track.videoId}-${i}`)}
-									// Pass onAdd wrapped with logging and closure
-									onAdd={(id) => {
-										const targetId = typeof id === 'string' ? id : track.videoId;
-										console.log("ChannelLibrary: Adding video", targetId);
-										if (onAdd) onAdd(targetId);
-									}}
+									// Pass onAdd directly, Track ensures ID is passed
+									onAdd={onAdd}
 									onDelete={onDelete ? () => onDelete(track.videoId) : undefined}
 									onPreview={onPreview}
 									onRecommend={onRecommend}
