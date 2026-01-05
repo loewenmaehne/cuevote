@@ -194,6 +194,7 @@ export function PlaylistView({
                                     activeSuggestionId={activeSuggestionId}
                                     suggestions={suggestions}
                                     isFetchingSuggestions={isFetchingSuggestions}
+                                    queueVideoIds={queueVideoIds}
                                 />
                             ))}
                         </div>
