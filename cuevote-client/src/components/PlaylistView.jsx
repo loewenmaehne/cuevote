@@ -131,6 +131,7 @@ export function PlaylistView({
                                     readOnly={true}
                                     votesEnabled={votesEnabled}
                                     onRecommend={onRecommend}
+                                    onAddSuggestion={onAdd} // Enable Suggestion Adds, but not Track Add
                                     onPreview={onPreview}
                                     activeSuggestionId={activeSuggestionId}
                                     suggestions={suggestions}
@@ -187,6 +188,7 @@ export function PlaylistView({
                                     onPreview={onPreview}
                                     onDelete={onDelete}
                                     onRecommend={onRecommend}
+                                    onAdd={onAdd} // Fix: Missing onAdd in Queue
                                     activeSuggestionId={activeSuggestionId}
                                     suggestions={suggestions}
                                     isFetchingSuggestions={isFetchingSuggestions}
