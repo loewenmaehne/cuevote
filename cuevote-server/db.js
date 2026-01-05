@@ -53,6 +53,12 @@ db.exec(`
     created_at INTEGER DEFAULT (unixepoch()),
     FOREIGN KEY(video_id) REFERENCES videos(id)
   );
+
+  CREATE TABLE IF NOT EXISTS related_videos_cache (
+    source_video_id TEXT PRIMARY KEY,
+    data TEXT, -- JSON Array of video objects
+    fetched_at INTEGER DEFAULT (unixepoch())
+  );
 `);
 
 // Migration: Add captions_enabled if missing
@@ -176,6 +182,31 @@ module.exports = {
   getSearchTermVideo: (term) => {
     const row = db.prepare('SELECT video_id FROM search_cache WHERE term = ?').get(term);
     return row ? row.video_id : null;
+  },
+  // Related Videos Caching
+  saveRelatedVideos: (sourceVideoId, relatedVideos) => {
+    const data = JSON.stringify(relatedVideos);
+    const stmt = db.prepare(`
+      INSERT INTO related_videos_cache (source_video_id, data, fetched_at)
+      VALUES (?, ?, unixepoch())
+      ON CONFLICT(source_video_id) DO UPDATE SET
+        data = excluded.data,
+        fetched_at = unixepoch()
+    `);
+    stmt.run(sourceVideoId, data);
+  },
+  getRelatedVideos: (sourceVideoId) => {
+    const row = db.prepare('SELECT data, fetched_at FROM related_videos_cache WHERE source_video_id = ?').get(sourceVideoId);
+    if (!row) return null;
+    try {
+      return {
+        data: JSON.parse(row.data),
+        fetched_at: row.fetched_at
+      };
+    } catch (e) {
+      console.error("Failed to parse related videos cache:", e);
+      return null;
+    }
   },
   deleteUser: (userId) => {
     // 1. Get User Email for double-tap deletion (prevents email unique constraint zombies)
