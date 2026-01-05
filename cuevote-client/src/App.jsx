@@ -1210,6 +1210,10 @@ function App() {
               isOwner={isOwner}
               onDelete={isOwner ? handleRemoveFromLibrary : undefined}
               onPreview={allowPrelisten ? handlePreviewTrack : null}
+              onRecommend={handleFetchSuggestions}
+              activeSuggestionId={activeSuggestionId}
+              suggestions={manualSuggestions}
+              isFetchingSuggestions={isFetchingSuggestions}
             />
             {previewTrack && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
