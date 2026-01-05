@@ -9,6 +9,7 @@ import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
+import { Suggestions } from "./components/Suggestions";
 import { PlaylistView } from "./components/PlaylistView"; // Added this import
 import { SettingsView } from "./components/SettingsView";
 import { PendingRequests, PendingRequestsPage } from "./components/PendingRequests";
@@ -270,6 +271,8 @@ function App() {
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+
 
   // Fix: Use Ref to track showSuggeststate to suppress global toasts when bar is open
   const showSuggestRef = useRef(showSuggest);
@@ -297,6 +300,13 @@ function App() {
         setToast({ message: lastMessage.payload || "Success", type: "success" });
       }
       else if (lastMessage.type === 'error') setToast({ message: lastMessage.message, type: "error" });
+      else if (lastMessage.type === 'SUGGESTION_UPDATE') {
+        setSuggestions(lastMessage.payload);
+      }
+      else if (lastMessage.type === 'SUGGESTION_RESULT') {
+        setManualSuggestions(lastMessage.payload.suggestions);
+        setIsFetchingSuggestions(false);
+      }
     }
   }, [lastMessage]);
   const [showPendingPage, setShowPendingPage] = useState(false);
@@ -739,6 +749,10 @@ function App() {
 
 
 
+  const [manualSuggestions, setManualSuggestions] = useState([]);
+  const [activeSuggestionId, setActiveSuggestionId] = useState(null); // ID of track currently showing suggestions
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
+
   const handleSongSuggested = (query) => {
     sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
   };
@@ -746,13 +760,40 @@ function App() {
   const handleLibraryAdd = (videoId) => {
     console.log("[App] Adding from Library:", videoId);
     handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
-    setShowChannelLibrary(false);
+    // Don't close anything, let user add multiple if they want, or maybe collapse? 
+    // For inline, keeping it open is fine.
+    // setShowChannelLibrary(false); // Only if in library view? 
+    // Actually, if we are in inline mode, we might want to keep it open.
   };
 
   const handleRemoveFromLibrary = (videoId) => {
     console.log("[App] Removing from Library:", videoId);
     sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { videoId } });
   };
+
+  const handleFetchSuggestions = (track) => {
+    // Toggle if clicking same track
+    if (activeSuggestionId === track.id) {
+      setActiveSuggestionId(null);
+      return;
+    }
+
+    console.log("[App] handleFetchSuggestions triggered for:", track.title);
+    setActiveSuggestionId(track.id);
+    setManualSuggestions([]); // Clear previous
+    setIsFetchingSuggestions(true);
+
+    sendMessage({
+      type: "FETCH_SUGGESTIONS",
+      payload: {
+        videoId: track.videoId,
+        title: track.title,
+        artist: track.artist
+      }
+    });
+  };
+
+
 
 
 
@@ -795,6 +836,7 @@ function App() {
   // Reset error when changing rooms
   useEffect(() => {
     setRoomNotFound(false);
+    setSuggestions([]); // Clear suggestions on room change
   }, [activeRoomId]);
 
   if (roomNotFound) {
@@ -1208,6 +1250,12 @@ function App() {
               onPreview={allowPrelisten ? handlePreviewTrack : null}
               onExit={localPlaylistView ? () => setLocalPlaylistView(false) : null}
               onDelete={isOwner ? handleDeleteSong : null} // Added Delete feature
+              onRecommend={handleFetchSuggestions} // Passed handler
+              onAdd={handleLibraryAdd}
+              // Suggestions Props
+              activeSuggestionId={activeSuggestionId}
+              suggestions={manualSuggestions}
+              isFetchingSuggestions={isFetchingSuggestions}
             />
             {previewTrack && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
@@ -1260,7 +1308,7 @@ function App() {
       </div>
 
       <div className="pb-4 min-h-0 flex-1">
-        {isAnyPlaylistView || isCinemaMode || showChannelLibrary ? null : ( // Hide queue if playlistViewMode/isCinemaMode/ChannelLibrary is active
+        {!isAnyPlaylistView && !isCinemaMode && !showChannelLibrary && (
           <Queue
             tracks={queue}
             currentTrack={currentTrack}
@@ -1272,6 +1320,12 @@ function App() {
             onPreview={allowPrelisten ? handlePreviewTrack : null}
             votesEnabled={serverState?.votesEnabled ?? true}
             onDelete={isOwner ? handleDeleteSong : null}
+            onRecommend={handleFetchSuggestions}
+            onAdd={handleLibraryAdd}
+            // Suggestions Props
+            activeSuggestionId={activeSuggestionId}
+            suggestions={manualSuggestions}
+            isFetchingSuggestions={isFetchingSuggestions}
           />
         )}
 
@@ -1364,17 +1418,15 @@ function App() {
             className="group relative bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full px-12 py-6 text-3xl font-bold flex items-center gap-6 shadow-2xl hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all duration-300"
           >
             <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <Volume2 size={48} className="relative z-10" />
-            <span className="relative z-10">{t('app.unmuteAndPlay')}</span>
+            <VolumeX size={48} className="animate-pulse" />
+            {t('app.tapToUnmute')}
+            <div className="absolute -inset-4 rounded-full border border-white/20 animate-ping opacity-20" />
+            <div className="absolute -inset-8 rounded-full border border-white/10 animate-ping opacity-10 animation-delay-300" />
           </button>
         </div>
       )}
 
-      {/* CookieConsent handled globally in main.jsx */}
-      {passwordModalContent}
-
-
-    </div >
+    </div>
   );
 }
 export default App;
