@@ -132,7 +132,33 @@ export function Track({
       </div>
 
       {isExpanded && (
-        <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-neutral-800 text-neutral-300 mt-4 space-y-3">
+        <div className="p-4 bg-[#1a1a1a] rounded-2xl border border-neutral-800 text-neutral-300 mt-4 space-y-4">
+
+          {/* Inline Suggestions Accordion (Moved to Top) */}
+          {isActiveSuggestion && (
+            <div className="border-b border-neutral-800 pb-4 animate-fadeIn">
+              <div className="flex items-center justify-between mb-2 px-1">
+                <h4 className="text-sm font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
+                  <Sparkles size={14} className="text-purple-400" />
+                  {t('suggestions.title', 'Similar Songs')}
+                </h4>
+              </div>
+
+              {isFetchingSuggestions ? (
+                <div className="flex flex-col items-center justify-center py-8 text-neutral-500 gap-3">
+                  <Loader2 className="animate-spin text-orange-500" size={24} />
+                  <p className="text-xs font-medium">{t('suggestions.loading', 'Finding similar songs...')}</p>
+                </div>
+              ) : suggestions && suggestions.length > 0 ? (
+                <Suggestions suggestions={suggestions} onAdd={onAdd} />
+              ) : (
+                <div className="text-center py-4 text-neutral-500 text-sm">
+                  {t('suggestions.empty', 'No suggestions found.')}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex flex-col gap-3">
             {onAdd && (
               <button
@@ -217,31 +243,6 @@ export function Track({
           >
             {t('track.watch')}
           </a>
-        </div>
-      )}
-
-      {/* Inline Suggestions Accordion */}
-      {isActiveSuggestion && (
-        <div className="mt-4 border-t border-neutral-800 pt-4 animate-fadeIn">
-          <div className="flex items-center justify-between mb-4 px-1">
-            <h4 className="text-sm font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
-              <Sparkles size={14} className="text-purple-400" />
-              {t('suggestions.title', 'Similar Songs')}
-            </h4>
-          </div>
-
-          {isFetchingSuggestions ? (
-            <div className="flex flex-col items-center justify-center py-12 text-neutral-500 gap-3">
-              <Loader2 className="animate-spin text-orange-500" size={24} />
-              <p className="text-xs font-medium">{t('suggestions.loading', 'Finding similar songs...')}</p>
-            </div>
-          ) : suggestions && suggestions.length > 0 ? (
-            <Suggestions suggestions={suggestions} onAdd={onAdd} />
-          ) : (
-            <div className="text-center py-8 text-neutral-500 text-sm">
-              {t('suggestions.empty', 'No suggestions found.')}
-            </div>
-          )}
         </div>
       )}
 
