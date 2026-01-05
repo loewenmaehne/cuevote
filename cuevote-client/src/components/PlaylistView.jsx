@@ -132,6 +132,7 @@ export function PlaylistView({
                                     votesEnabled={votesEnabled}
                                     onRecommend={onRecommend}
                                     onAdd={onAdd}
+                                    onPreview={onPreview}
                                     activeSuggestionId={activeSuggestionId}
                                     suggestions={suggestions}
                                     isFetchingSuggestions={isFetchingSuggestions}
@@ -158,6 +159,7 @@ export function PlaylistView({
                                 votesEnabled={votesEnabled}
                                 onDelete={onDelete}
                                 onRecommend={onRecommend}
+                                onAdd={onAdd} // Added for Re-Queue
                                 activeSuggestionId={activeSuggestionId}
                                 suggestions={suggestions}
                                 isFetchingSuggestions={isFetchingSuggestions}
