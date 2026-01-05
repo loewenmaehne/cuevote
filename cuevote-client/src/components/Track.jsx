@@ -20,6 +20,7 @@ export function Track({
   votesEnabled = true,
   onDelete,
   onAdd,
+  onAddSuggestion, // <--- New Prop for separation of concerns
   onRecommend,
   activeSuggestionId, // <--- New Prop
   suggestions,        // <--- New Prop
@@ -150,7 +151,7 @@ export function Track({
                   <p className="text-xs font-medium">{t('suggestions.loading', 'Finding similar songs...')}</p>
                 </div>
               ) : suggestions && suggestions.length > 0 ? (
-                <Suggestions suggestions={suggestions} onAdd={onAdd} onPreview={onPreview} />
+                <Suggestions suggestions={suggestions} onAdd={onAddSuggestion || onAdd} onPreview={onPreview} />
               ) : (
                 <div className="text-center py-4 text-neutral-500 text-sm">
                   {t('suggestions.empty', 'No suggestions found.')}
@@ -261,6 +262,7 @@ Track.propTypes = {
   readOnly: PropTypes.bool,
   onDelete: PropTypes.func,
   onAdd: PropTypes.func,
+  onAddSuggestion: PropTypes.func,
   onRecommend: PropTypes.func,
   activeSuggestionId: PropTypes.string,
   suggestions: PropTypes.array,
