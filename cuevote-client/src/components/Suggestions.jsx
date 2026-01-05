@@ -26,7 +26,7 @@ export function Suggestions({ suggestions, onAdd, onPreview }) {
 	return (
 		<div className="flex gap-4 overflow-x-auto pb-4 px-1 scroll-smooth snap-x snap-mandatory custom-scrollbar">
 			{suggestions.map((video) => {
-				const isAdded = addedIds.has(video.videoId);
+				const isAdded = queueVideoIds?.has(video.videoId);
 				return (
 					<div
 						key={video.videoId}
