@@ -1282,6 +1282,7 @@ function App() {
                 hasConsent={hasConsent}
                 playbackError={playbackError}
                 playerContainerRef={playerContainerRef}
+                isCinemaMode={isCinemaMode}
                 t={t}
               />
             )}
@@ -1321,6 +1322,7 @@ function App() {
                 hasConsent={hasConsent}
                 playbackError={playbackError}
                 playerContainerRef={playerContainerRef}
+                isCinemaMode={isCinemaMode}
                 t={t}
               />
             )}
