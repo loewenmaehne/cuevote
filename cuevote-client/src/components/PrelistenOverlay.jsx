@@ -4,7 +4,7 @@ import { CookieBlockedPlaceholder } from './CookieBlockedPlaceholder';
 import { Player } from './Player';
 import PlayerErrorBoundary from './PlayerErrorBoundary';
 
-export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef, t }) {
+export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef, t, isCinemaMode }) {
 	const containerRef = useRef(null);
 	const [isTooSmall, setIsTooSmall] = useState(false);
 
@@ -27,8 +27,14 @@ export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef
 		};
 	}, []);
 
+	// Optimize padding for Mobile Landscape (CinemaMode) where Header is hidden
+	const paddingTop = isCinemaMode ? 'pt-4' : 'pt-20';
+	// Back to Radio bar is smaller in landscape/mobile usually, but let's be safe. 
+	// pb-24 (96px) is safe for standard, pb-20 (80px) for tight landscape.
+	const paddingBottom = isCinemaMode ? 'pb-20' : 'pb-24';
+
 	return (
-		<div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center pt-24 pb-32 px-4 animate-fadeIn">
+		<div className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center ${paddingTop} ${paddingBottom} px-4 animate-fadeIn`}>
 			<div
 				ref={containerRef}
 				className="w-full max-w-5xl aspect-video max-h-full bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative"
