@@ -170,6 +170,9 @@ export const translations = {
 			nowPlaying: "Now Playing",
 			upNext: "Up Next",
 			queueEmpty: "Queue empty",
+			errorNotFound: "Video not found",
+			errorRestricted: "Video not available in your country",
+			skippedRestricted: "Skipped '{title}' (Region Restricted)",
 			backToNow: "Back to Now",
 			addSongs: "Add songs to start playback"
 		},
@@ -360,6 +363,9 @@ export const translations = {
 			nowPlaying: "Nu Spelend",
 			upNext: "Volgende",
 			queueEmpty: "Wachtrij leeg",
+			errorNotFound: "Video niet gevonden",
+			errorRestricted: "Video niet beschikbaar in jouw land",
+			skippedRestricted: "'{title}' overgeslagen (Regio Geblokkeerd)",
 			backToNow: "Terug naar Nu",
 			addSongs: "Voeg nummers toe om af te spelen"
 		},
@@ -550,6 +556,9 @@ export const translations = {
 			nowPlaying: "Jetzt gespielt",
 			upNext: "Als nächstes",
 			queueEmpty: "Warteschlange leer",
+			errorNotFound: "Video nicht gefunden",
+			errorRestricted: "Video in deinem Land nicht verfügbar",
+			skippedRestricted: "'{title}' übersprungen (Ländersperre)",
 			backToNow: "Zurück zum Aktuellen",
 			addSongs: "Füge Songs hinzu, um zu starten"
 		},
@@ -740,6 +749,9 @@ export const translations = {
 			nowPlaying: "Lecture en cours",
 			upNext: "À suivre",
 			queueEmpty: "File d'attente vide",
+			errorNotFound: "Vidéo introuvable",
+			errorRestricted: "Vidéo indisponible dans votre pays",
+			skippedRestricted: "'{title}' passé (Restriction géographique)",
 			backToNow: "Retour au direct",
 			addSongs: "Ajoutez des chansons pour commencer"
 		},
@@ -928,6 +940,9 @@ export const translations = {
 			nowPlaying: "Reproduciendo ahora",
 			upNext: "A continuación",
 			queueEmpty: "Cola vacía",
+			errorNotFound: "Video no encontrado",
+			errorRestricted: "Video no disponible en tu país",
+			skippedRestricted: "'{title}' saltada (Restricción Regional)",
 			backToNow: "Volver al actual",
 			addSongs: "Añade canciones para empezar"
 		},
