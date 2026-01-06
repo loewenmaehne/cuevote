@@ -26,7 +26,8 @@ export function PlaylistView({
     activeSuggestionId, // <--- New Prop
     suggestions,        // <--- New Prop
     isFetchingSuggestions, // <--- New Prop
-    queueVideoIds
+    queueVideoIds,
+    disableFloatingUI = false
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -211,7 +212,7 @@ export function PlaylistView({
             </div>
 
             {/* Back to Now Button - Portal to escape potential masks/fades */}
-            {showJumpToNow && currentTrack && createPortal(
+            {showJumpToNow && currentTrack && !disableFloatingUI && createPortal(
                 <div className="fixed bottom-8 right-8 z-[100] animate-fadeIn">
                     <button
                         onClick={() => scrollToCurrent(true)}
