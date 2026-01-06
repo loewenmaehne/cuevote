@@ -35,6 +35,11 @@ export const translations = {
 			startWithCaptions: "Start with Captions",
 			terms: "Terms & Legal"
 		},
+		player: {
+			errorGeneric: "An error occurred while playing this video.",
+			errorNotFound: "This video is unavailable.",
+			errorRestricted: "This video is not available in your country."
+		},
 		cookie: {
 			title: "Privacy & Playback",
 			description: "To play music, we need to load the YouTube Player. This connects to Google's servers.",
@@ -227,6 +232,11 @@ export const translations = {
 			delete: "Verwijderen",
 			startWithCaptions: "Start met Ondertiteling",
 			terms: "Voorwaarden & Juridisch"
+		},
+		player: {
+			errorGeneric: "Er is een fout opgetreden bij het afspelen.",
+			errorNotFound: "Deze video is niet beschikbaar.",
+			errorRestricted: "Deze video is niet beschikbaar in jouw land."
 		},
 		cookie: {
 			title: "Privacy & Afspelen",
@@ -421,6 +431,11 @@ export const translations = {
 			startWithCaptions: "Mit Untertiteln starten",
 			terms: "Rechtliches"
 		},
+		player: {
+			errorGeneric: "Ein Fehler ist bei der Wiedergabe aufgetreten.",
+			errorNotFound: "Dieses Video ist nicht verfügbar.",
+			errorRestricted: "Dieses Video ist in deinem Land nicht verfügbar."
+		},
 		cookie: {
 			title: "Datenschutz & Wiedergabe",
 			description: "Um Musik abzuspielen, müssen wir den YouTube-Player laden. Dies stellt eine Verbindung zu Google-Servern her.",
@@ -614,6 +629,11 @@ export const translations = {
 			startWithCaptions: "Démarrer avec sous-titres",
 			terms: "Conditions & Légal"
 		},
+		player: {
+			errorGeneric: "Une erreur est survenue lors de la lecture.",
+			errorNotFound: "Cette vidéo n'est pas disponible.",
+			errorRestricted: "Cette vidéo n'est pas disponible dans votre pays."
+		},
 		cookie: {
 			title: "Confidentialité & Lecture",
 			description: "Pour lire la musique, nous devons charger le lecteur YouTube. Cela se connecte aux serveurs de Google.",
@@ -798,6 +818,22 @@ export const translations = {
 			signOut: "Cerrar Sesión",
 			signInGoogle: "Iniciar sesión con Google",
 			deleteAccount: "Eliminar Cuenta",
+			deleteAccountConfirm: "¿Estás seguro?",
+			deleteAccountWarning: "Esta acción no se puede deshacer. Se eliminará permanentemente tu cuenta y <strong>todos los canales</strong> que has creado.",
+			deleteAccountType: "Escribe",
+			deleteAccountPhrase: "Eliminar esta cuenta y todos mis canales para siempre",
+			deleteAccountToConfirm: "para confirmar",
+			delete: "Eliminar",
+			startWithCaptions: "Iniciar con Subtítulos",
+			terms: "Términos y Legal"
+		},
+		player: {
+			errorGeneric: "Ocurrió un error al reproducir este video.",
+			errorNotFound: "Este video no está disponible.",
+			errorRestricted: "Este video no está disponible en tu país."
+		},
+		cookie: {
+			title: "Privacidad y Reproducción",
 			deleteAccountConfirm: "¿Estás seguro?",
 			deleteAccountWarning: "Esta acción no se puede deshacer. Eliminará permanentemente tu cuenta y <strong>todos los canales</strong> que hayas creado.",
 			deleteAccountType: "Escribe",
