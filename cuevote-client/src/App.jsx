@@ -1229,6 +1229,7 @@ function App() {
               activeSuggestionId={activeSuggestionId}
               suggestions={manualSuggestions}
               isFetchingSuggestions={isFetchingSuggestions}
+              queueVideoIds={queueVideoIds}
             />
             {previewTrack && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
@@ -1272,6 +1273,7 @@ function App() {
               activeSuggestionId={activeSuggestionId}
               suggestions={manualSuggestions}
               isFetchingSuggestions={isFetchingSuggestions}
+              queueVideoIds={queueVideoIds}
             />
             {previewTrack && (
               <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
