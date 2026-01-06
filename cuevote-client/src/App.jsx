@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { isTV, isMobile, isTablet, isIOS, isNativeApp } from './utils/deviceDetection';
-import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw } from "lucide-react";
+import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
 import { useConsent } from './contexts/ConsentContext';
 import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
 import { useLanguage } from './contexts/LanguageContext';
@@ -338,6 +338,7 @@ function App() {
   const [previewTrack, setPreviewTrack] = useState(null);
   // const [user, setUser] = useState(null); // Now from Context
   const [progress, setProgress] = useState(0);
+  const [playbackError, setPlaybackError] = useState(null); // New State: Track playback errors
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false); // <--- Added this
   const [showChannelLibrary, setShowChannelLibrary] = useState(false); // <--- Added this
@@ -475,6 +476,7 @@ function App() {
   const currentTrackRef = useRef(currentTrack);
   useEffect(() => {
     currentTrackRef.current = currentTrack;
+    setPlaybackError(null); // Reset error on track change
     if (isPlayerReady && playerRef.current) {
       try {
         if (captionsEnabled && currentTrack?.language) {
@@ -582,12 +584,14 @@ function App() {
                 // Force skip to next track
                 sendMessage({ type: "NEXT_TRACK" });
               } else {
-                // Determine error message
-                let msg = t('player.errorGeneric');
-                if (errorCode === 100) msg = t('player.errorNotFound');
-                if (errorCode === 101 || errorCode === 150) msg = t('player.errorRestricted');
                 // Show sticky toast or generic error?
                 console.warn("[Player] Playback Error shown to guest:", msg);
+                setPlaybackError(errorCode); // Set error state to unmount player and show overlay
+              }
+            } else {
+              // Catch-all for other errors (e.g. 105, 1000, etc)
+              if (!isOwner) {
+                setPlaybackError(errorCode);
               }
             }
           },
@@ -672,6 +676,13 @@ function App() {
   }, [isPlaying, isPlayerReady, currentTrack]);
 
   // Infinite Load Guard (Stall Detection)
+  const stallRetriesRef = useRef(0); // Track number of stall retries
+
+  useEffect(() => {
+    // Reset retries when track changes
+    stallRetriesRef.current = 0;
+  }, [currentTrack]);
+
   useEffect(() => {
     if (!isPlaying || !isPlayerReady || !playerRef.current) return;
 
@@ -679,15 +690,30 @@ function App() {
       const state = playerRef.current.getPlayerState?.();
       // If we are supposed to be playing (isPlaying=true) but player is stuck in BUFFERING (3) or UNSTARTED (-1)
       if (state === YouTubeState.BUFFERING || state === YouTubeState.UNSTARTED) {
-        console.warn("[Player] Stall detected (Buffering > 5s). Force-reloading video...");
+        stallRetriesRef.current += 1;
+        console.warn(`[Player] Stall detected (Attempt ${stallRetriesRef.current}).`);
+
+        if (!isOwner && stallRetriesRef.current > 2) {
+          console.warn("[Player] Stall limit exceeded for guest. Assuming unavailable.");
+          setPlaybackError(100); // 100 = Video Not Found / Generic Unavailable. Triggers overlay.
+          clearInterval(checkInterval); // Stop trying
+          return;
+        }
+
+        console.warn("[Player] Force-reloading video...");
         // Re-load current video at current time
         const currentTime = playerRef.current.getCurrentTime?.() || serverProgress;
         playerRef.current.loadVideoById?.(currentTrackRef.current?.videoId, currentTime);
+      } else {
+        // Reset retries if we are playing or in a good state
+        if (state === YouTubeState.PLAYING) {
+          stallRetriesRef.current = 0;
+        }
       }
-    }, 8000); // Check every 8 seconds (aggressive but needed for hangs)
+    }, 8000); // Check every 8 seconds
 
     return () => clearInterval(checkInterval);
-  }, [isPlaying, isPlayerReady, serverProgress]);
+  }, [isPlaying, isPlayerReady, serverProgress, isOwner]);
 
   // Progress bar update
   useEffect(() => {
@@ -1187,9 +1213,22 @@ function App() {
           <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
             <PlayerErrorBoundary>
               {hasConsent ? (
-                <Player
-                  playerContainerRef={playerContainerRef}
-                />
+                playbackError ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-center p-6 space-y-4">
+                    <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400">
+                      <AlertTriangle size={24} />
+                    </div>
+                    <div>
+                      <p className="text-white font-medium mb-1">
+                        {playbackError === 100 ? t('player.errorNotFound') : (playbackError === 101 || playbackError === 150 ? t('player.errorRestricted') : t('player.errorGeneric'))}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <Player
+                    playerContainerRef={playerContainerRef}
+                  />
+                )
               ) : <CookieBlockedPlaceholder />}
             </PlayerErrorBoundary>
           </div>
@@ -1242,9 +1281,22 @@ function App() {
                 <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
                   <PlayerErrorBoundary>
                     {hasConsent ? (
-                      <Player
-                        playerContainerRef={playerContainerRef}
-                      />
+                      playbackError ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-center p-6 space-y-4">
+                          <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400">
+                            <AlertTriangle size={24} />
+                          </div>
+                          <div>
+                            <p className="text-white font-medium mb-1">
+                              {playbackError === 100 ? t('player.errorNotFound') : (playbackError === 101 || playbackError === 150 ? t('player.errorRestricted') : t('player.errorGeneric'))}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <Player
+                          playerContainerRef={playerContainerRef}
+                        />
+                      )
                     ) : <CookieBlockedPlaceholder />}
                   </PlayerErrorBoundary>
                 </div>
@@ -1286,9 +1338,22 @@ function App() {
                 <div className="w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
                   <PlayerErrorBoundary>
                     {hasConsent ? (
-                      <Player
-                        playerContainerRef={playerContainerRef}
-                      />
+                      playbackError ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-center p-6 space-y-4">
+                          <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400">
+                            <AlertTriangle size={24} />
+                          </div>
+                          <div>
+                            <p className="text-white font-medium mb-1">
+                              {playbackError === 100 ? t('player.errorNotFound') : (playbackError === 101 || playbackError === 150 ? t('player.errorRestricted') : t('player.errorGeneric'))}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <Player
+                          playerContainerRef={playerContainerRef}
+                        />
+                      )
                     ) : <CookieBlockedPlaceholder />}
                   </PlayerErrorBoundary>
                 </div>
@@ -1306,9 +1371,22 @@ function App() {
                   <>
                     <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
                       <PlayerErrorBoundary>
-                        <Player
-                          playerContainerRef={playerContainerRef}
-                        />
+                        {playbackError ? (
+                          <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-center p-6 space-y-4">
+                            <div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400">
+                              <AlertTriangle size={24} />
+                            </div>
+                            <div>
+                              <p className="text-white font-medium mb-1">
+                                {playbackError === 100 ? t('player.errorNotFound') : (playbackError === 101 || playbackError === 150 ? t('player.errorRestricted') : t('player.errorGeneric'))}
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <Player
+                            playerContainerRef={playerContainerRef}
+                          />
+                        )}
                       </PlayerErrorBoundary>
                     </div>
                     {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">{t('playlist.queueEmpty')}</div>}
