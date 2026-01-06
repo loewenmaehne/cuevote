@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { ThumbsUp, ThumbsDown, Headphones, Trash2, Sparkles, Loader2 } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Headphones, Trash2, Sparkles, Loader2, Check } from "lucide-react";
 import { useLanguage } from '../contexts/LanguageContext';
 import { useConsent } from '../contexts/ConsentContext';
 import { Suggestions } from "./Suggestions";
@@ -163,15 +163,25 @@ export function Track({
 
           <div className="flex flex-col gap-3">
             {onAdd && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAdd(track.videoId);
-                }}
-                className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-all shadow-lg shadow-orange-900/20"
-              >
-                {t('track.add')}
-              </button>
+              queueVideoIds?.has(track.videoId) ? (
+                <button
+                  disabled
+                  className="flex-1 bg-green-500/10 border border-green-500/50 text-green-500 py-3 rounded-xl flex items-center justify-center gap-2 font-semibold cursor-default"
+                >
+                  <Check size={20} />
+                  {t('track.added', 'Added')}
+                </button>
+              ) : (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAdd(track.videoId);
+                  }}
+                  className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-all shadow-lg shadow-orange-900/20 active:scale-95"
+                >
+                  {t('track.add')}
+                </button>
+              )
             )}
             {onRecommend && (
               <button

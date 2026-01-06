@@ -132,11 +132,13 @@ export function PlaylistView({
                                     readOnly={true}
                                     votesEnabled={votesEnabled}
                                     onRecommend={onRecommend}
-                                    onAddSuggestion={onAdd} // Enable Suggestion Adds, but not Track Add
+                                    onAdd={onAdd} // Enable Track Add Button
+                                    onAddSuggestion={onAdd}
                                     onPreview={onPreview}
                                     activeSuggestionId={activeSuggestionId}
                                     suggestions={suggestions}
                                     isFetchingSuggestions={isFetchingSuggestions}
+                                    queueVideoIds={queueVideoIds}
                                 />
                             ))}
                         </div>
