@@ -1316,6 +1316,7 @@ function App() {
               suggestions={manualSuggestions}
               isFetchingSuggestions={isFetchingSuggestions}
               queueVideoIds={queueVideoIds}
+              disableFloatingUI={!!previewTrack}
             />
             {previewTrack && (
               <PrelistenOverlay
