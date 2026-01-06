@@ -7,7 +7,7 @@ import PlayerErrorBoundary from './PlayerErrorBoundary';
 export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef, t }) {
 	return (
 		<div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center pt-24 pb-32 px-4 animate-fadeIn">
-			<div className="w-full max-w-5xl aspect-video max-h-full bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
+			<div className="w-full max-w-5xl aspect-video max-h-full min-w-[200px] min-h-[200px] bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 relative">
 				<PlayerErrorBoundary>
 					{hasConsent ? (
 						playbackError ? (
