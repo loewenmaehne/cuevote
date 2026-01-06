@@ -572,9 +572,15 @@ function App() {
             if ([100, 101, 150].includes(errorCode)) {
               if (isOwner) {
                 console.warn("[Player] Video restricted/unavailable. Skipping...", currentTrackRef.current?.title);
+
+                // Show feedback to owner why it skipped
+                setToast({
+                  message: t('playlist.skippedRestricted', { title: currentTrackRef.current?.title || 'Track' }),
+                  type: "error" // Use error type for visibility
+                });
+
                 // Force skip to next track
                 sendMessage({ type: "NEXT_TRACK" });
-                // Also ban/delete? Maybe just skip for now to be safe.
               } else {
                 // Determine error message
                 let msg = t('player.errorGeneric');
