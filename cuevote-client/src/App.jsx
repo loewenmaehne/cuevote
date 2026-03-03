@@ -46,7 +46,7 @@ function App() {
   const [controlsHeight, setControlsHeight] = useState(96); // Default 6rem ~ 96px
   const [showSettings, setShowSettings] = useState(false); // Refactored state from Header
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
-  const { hasConsent, showBanner, giveConsent } = useConsent();
+  const { hasConsent, giveConsent } = useConsent();
   const { t } = useLanguage();
 
   // console.log("App Component MOUNTED, Room:", activeRoomId);
@@ -254,7 +254,7 @@ function App() {
         navigate(location.pathname, { replace: true, state: { ...location.state, showShareOnLoad: false } });
       }
     }
-  }, [serverState, serverRoomId, activeRoomId, location.state]);
+  }, [serverState, serverRoomId, activeRoomId, location.state, location.pathname, navigate]);
 
 
   const submitPasswordJoin = (e) => {
@@ -286,7 +286,7 @@ function App() {
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
+
 
 
   // Fix: Use Ref to track showSuggeststate to suppress global toasts when bar is open
@@ -315,13 +315,6 @@ function App() {
         setToast({ message: lastMessage.payload || "Success", type: "success" });
       }
       else if (lastMessage.type === 'error') setToast({ message: lastMessage.message, type: "error" });
-      else if (lastMessage.type === 'SUGGESTION_UPDATE') {
-        setSuggestions(lastMessage.payload);
-      }
-      else if (lastMessage.type === 'SUGGESTION_RESULT') {
-        setManualSuggestions(lastMessage.payload.suggestions);
-        setIsFetchingSuggestions(false);
-      }
     }
   }, [lastMessage]);
   const [showPendingPage, setShowPendingPage] = useState(false);
@@ -447,7 +440,7 @@ function App() {
 
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [showPendingPage, showBannedPage, showSuggest, showQRModal, showPasswordModal]);
+  }, [showPendingPage, showBannedPage, showSuggest, showQRModal, showPasswordModal, showChannelLibrary, isCinemaMode]);
 
   // Auth: Resume Session logic moved to Provider
 
@@ -586,7 +579,7 @@ function App() {
                 sendMessage({ type: "NEXT_TRACK" });
               } else {
                 // Show sticky toast or generic error?
-                console.warn("[Player] Playback Error shown to guest:", msg);
+                console.warn("[Player] Playback Error shown to guest:", errorCode);
                 setPlaybackError(errorCode); // Set error state to unmount player and show overlay
               }
             } else {
@@ -617,7 +610,7 @@ function App() {
         setIsPlayerReady(false); // Reset player ready state so it triggers updates when re-initialized
       }
     }
-  }, [initializePlayer]);
+  }, [initializePlayer, hasConsent]);
 
   // Main playback logic
   useEffect(() => {
@@ -879,7 +872,6 @@ function App() {
   // Reset error when changing rooms
   useEffect(() => {
     setRoomNotFound(false);
-    setSuggestions([]); // Clear suggestions on room change
   }, [activeRoomId]);
 
   if (roomNotFound) {
@@ -1176,6 +1168,7 @@ function App() {
               setShowSettings(!showSettings);
               if (!showSettings) setShowSuggest(false); // Close suggest if opening settings
             }}
+            onCloseSettings={() => setShowSettings(false)}
             captionsEnabled={captionsEnabled}
           />
           {showSuggest && (
