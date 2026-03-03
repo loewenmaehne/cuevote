@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Cookie, X } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useLocation } from "react-router-dom";

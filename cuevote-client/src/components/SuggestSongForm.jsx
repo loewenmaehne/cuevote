@@ -4,7 +4,7 @@ import { CheckCircle, Send, Clock } from "lucide-react";
 import { useLanguage } from '../contexts/LanguageContext';
 import { Suggestions } from "./Suggestions"; // ADDED IMPORT
 
-export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, serverMessage, isOwner, suggestionsEnabled, suggestionMode, isConnected = true, currentTrack, onRecommend, suggestions = [], isFetchingSuggestions = false, queueVideoIds = new Set() }) {
+export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, serverMessage, isOwner, suggestionsEnabled, isConnected = true, currentTrack, onRecommend, suggestions = [], isFetchingSuggestions = false, queueVideoIds = new Set() }) {
   const [songSuggestion, setSongSuggestion] = useState("");
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [suggestionError, setSuggestionError] = useState("");
@@ -65,7 +65,7 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
     // to drive the UI state. This ensures we don't auto-close on errors (duplicates etc).
 
 
-  }, [songSuggestion, onSongSuggested, suggestionMode, onShowSuggest, isConnected, t]);
+  }, [songSuggestion, onSongSuggested, isConnected, t]);
 
   const handleKeyPress = useCallback(
     (event) => {

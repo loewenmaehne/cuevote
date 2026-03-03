@@ -71,7 +71,8 @@ class Room {
         try {
             const savedHistory = db.getRoomHistory(this.id);
             if (savedHistory && savedHistory.length > 0) {
-                this.state.history = savedHistory;
+                // Cap memory to the most recent 200 tracks
+                this.state.history = savedHistory.slice(-200);
             }
         } catch (error) {
             console.error(`[Room ${this.id}] Failed to load history from DB:`, error);
@@ -171,6 +172,11 @@ class Room {
                     } catch (err) {
                         console.error(`[Room ${this.id}] Failed to save track to DB history:`, err);
                     }
+                }
+
+                // Cap memory history
+                if (newHistory.length > 200) {
+                    newHistory = newHistory.slice(-200);
                 }
 
                 newQueue.shift();
@@ -1051,6 +1057,11 @@ class Room {
             } catch (err) {
                 console.error(`[Room ${this.id}] Failed to save track to DB history:`, err);
             }
+        }
+
+        // Cap memory history
+        if (newHistory.length > 200) {
+            newHistory = newHistory.slice(-200);
         }
 
         newQueue.shift();

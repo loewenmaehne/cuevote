@@ -9,7 +9,6 @@ import { LanguageSwitcher, languages } from './LanguageSwitcher';
 import { GoogleAuthButton } from './GoogleAuthButton';
 
 import { LoadingScreen } from './LoadingScreen';
-import { isTV } from "../utils/deviceDetection";
 
 export function Lobby() {
     const navigate = useNavigate();
@@ -393,6 +392,7 @@ export function Lobby() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visibleRooms, columns, focusedIndex, isCreatingRoom, showPasswordModal, navigate, showCreateButton, user, languageMenuOpen, languageMenuIndex, language, setLanguage, showProfileModal, showDeleteConfirm]);
 
     // Reset focused index when filtered rooms change
@@ -430,6 +430,7 @@ export function Lobby() {
         } else if (focusedIndex === INDEX_PROFILE) {
             document.getElementById('lobby-profile-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [focusedIndex]);
 
     // Handle Escape Key to Close Modals
