@@ -1,7 +1,5 @@
-import React, { useRef, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import React from "react";
 import PropTypes from "prop-types";
-import { ArrowDown, ArrowUp } from "lucide-react";
 import { Track } from "./Track";
 
 export function Queue({
@@ -22,65 +20,11 @@ export function Queue({
   isFetchingSuggestions,
   queueVideoIds
 }) {
-  const containerRef = useRef(null);
-  const [showJumpToNow, setShowJumpToNow] = useState(false);
-  const [jumpDirection, setJumpDirection] = useState("down");
-
-  // Helper to scroll to current track (which is inside the mapped list)
-  const scrollToCurrent = (smooth = true) => {
-    if (currentTrack) {
-      const currentEl = document.getElementById(`track-${currentTrack.id}`);
-      if (currentEl) {
-        setShowJumpToNow(false);
-        currentEl.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
-      }
-    }
-  };
-
-  // IntersectionObserver for Queue (Standard Mode)
-  useEffect(() => {
-    // For Queue, the "viewport" is usually the window, so we can use default root (null).
-
-    const currentEl = currentTrack ? document.getElementById(`track-${currentTrack.id}`) : null;
-    if (!currentEl) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const isVisible = entry.isIntersecting;
-        setShowJumpToNow(!isVisible);
-
-        if (!isVisible) {
-          const { top } = entry.boundingClientRect;
-          setJumpDirection(top < 0 ? "up" : "down");
-        }
-      },
-      {
-        root: null, // Watch relative to viewport
-        threshold: 0
-      }
-    );
-
-    observer.observe(currentEl);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [currentTrack?.id]);
-
-  // Initial scroll or on track change
-  useEffect(() => {
-    if (!showJumpToNow) {
-      scrollToCurrent();
-    }
-  }, [currentTrack?.id]);
-
-
   // Filter out current track as it is shown in the bottom bar
   const visibleTracks = tracks.filter(t => t.id !== currentTrack?.id);
 
   return (
     <div
-      ref={containerRef}
       className={`relative transition-all duration-700 ease-in-out ${isMinimized
         ? "max-h-0 opacity-0 translate-y-10"
         : "p-6 space-y-4 opacity-100 translate-y-0"

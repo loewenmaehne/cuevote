@@ -832,17 +832,7 @@ export const translations = {
 			errorNotFound: "Este video no está disponible.",
 			errorRestricted: "Este video no está disponible en tu país."
 		},
-		cookie: {
-			title: "Privacidad y Reproducción",
-			deleteAccountConfirm: "¿Estás seguro?",
-			deleteAccountWarning: "Esta acción no se puede deshacer. Eliminará permanentemente tu cuenta y <strong>todos los canales</strong> que hayas creado.",
-			deleteAccountType: "Escribe",
-			deleteAccountPhrase: "Eliminar esta cuenta y todos mis canales para siempre",
-			deleteAccountToConfirm: "para confirmar",
-			delete: "Eliminar",
-			startWithCaptions: "Comenzar con subtítulos",
-			terms: "Términos y Legal"
-		},
+
 		cookie: {
 			title: "Privacidad y Reproducción",
 			description: "Para reproducir música, necesitamos cargar el reproductor de YouTube. Esto conecta con los servidores de Google.",

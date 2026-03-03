@@ -11,12 +11,6 @@ export function PlaylistView({
     queue,
     onVote,
     votes,
-    progress,
-    volume,
-    isMuted,
-    activeChannel,
-    onMuteToggle,
-    onVolumeChange,
     votesEnabled = true,
     onPreview,
     onExit,
@@ -88,6 +82,7 @@ export function PlaylistView({
         if (!showJumpToNow) {
             scrollToCurrent();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentTrack?.id]);
 
     const filteredQueue = queue.filter(t => t.id !== currentTrack?.id);
@@ -236,12 +231,6 @@ PlaylistView.propTypes = {
     onVote: PropTypes.func,
     votes: PropTypes.object,
     isOwner: PropTypes.bool,
-    progress: PropTypes.number,
-    volume: PropTypes.number,
-    isMuted: PropTypes.bool,
-    activeChannel: PropTypes.string,
-    onMuteToggle: PropTypes.func,
-    onVolumeChange: PropTypes.func,
     votesEnabled: PropTypes.bool,
     onPreview: PropTypes.func,
     onExit: PropTypes.func,

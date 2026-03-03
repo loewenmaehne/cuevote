@@ -6,10 +6,7 @@ import { Track } from "./Track";
 
 export function ChannelLibrary({
 	history = [],
-	onExit,
-	activeChannel,
 	onAdd, // New prop to add song to queue
-	isOwner,
 	onDelete,
 	onPreview,
 	onRecommend,
@@ -73,6 +70,7 @@ export function ChannelLibrary({
 	}, [filteredSongs, displayedCount]);
 
 	useEffect(() => {
+		const target = observerTarget.current;
 		const observer = new IntersectionObserver(
 			(entries) => {
 				if (entries[0].isIntersecting && displayedCount < filteredSongs.length) {
@@ -83,16 +81,16 @@ export function ChannelLibrary({
 			{ threshold: 0.1 } // Trigger when 10% of sentinel is visible
 		);
 
-		if (observerTarget.current) {
-			observer.observe(observerTarget.current);
+		if (target) {
+			observer.observe(target);
 		}
 
 		return () => {
-			if (observerTarget.current) {
-				observer.unobserve(observerTarget.current);
+			if (target) {
+				observer.unobserve(target);
 			}
 		};
-	}, [observerTarget, displayedCount, filteredSongs.length]);
+	}, [displayedCount, filteredSongs.length]);
 
 
 	return (
@@ -164,10 +162,7 @@ export function ChannelLibrary({
 
 ChannelLibrary.propTypes = {
 	history: PropTypes.array.isRequired,
-	onExit: PropTypes.func.isRequired,
-	activeChannel: PropTypes.string,
 	onAdd: PropTypes.func,
-	isOwner: PropTypes.bool,
 	onDelete: PropTypes.func,
 	onPreview: PropTypes.func,
 	onRecommend: PropTypes.func,

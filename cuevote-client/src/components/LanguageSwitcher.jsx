@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const languages = [
 	{ code: 'en', label: 'English' },
 	{ code: 'nl', label: 'Nederlands' },
@@ -48,7 +49,6 @@ export function LanguageSwitcher({ minimized = false, className = "", isOpen: co
 
 	const isControlled = controlledIsOpen !== undefined;
 	const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
-	const setIsOpen = isControlled ? controlledOnToggle : setInternalIsOpen;
 
 	useEffect(() => {
 		const handleClickOutside = (event) => {

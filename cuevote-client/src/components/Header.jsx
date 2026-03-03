@@ -16,35 +16,19 @@ export function Header({
   onLogout,
   isOwner,
   suggestionsEnabled,
-  musicOnly,
-  maxDuration,
-  maxQueueSize,
-  allowPrelisten,
-  smartQueue,
   playlistViewMode,
 
   ownerBypass,
-  suggestionMode,
-  onUpdateSettings,
-  ownerPopups,
-  onManageRequests,
-  pendingCount,
-  duplicateCooldown,
-  ownerQueueBypass,
-  votesEnabled,
-  autoApproveKnown,
-  autoRefill,
   onTogglePlaylistView,
   showQRCode, // <--- Added prop
   onShowQRCode,
   onDeleteAccount, // GDPR: Right to Erasure
   onToggleChannelLibrary,
-  onDeleteChannel,
   showSettings,
-  onToggleSettings
+  onToggleSettings,
+  onCloseSettings
 }) {
   const headerRef = React.useRef(null);
-  // const [showSettings, setShowSettings] = React.useState(false); // Lifted to App
   const [showExitConfirm, setShowExitConfirm] = React.useState(false);
   const [showProfileModal, setShowProfileModal] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false); // Account Delete
@@ -139,7 +123,7 @@ export function Header({
               onClick={() => {
                 setShowExitConfirm(true);
                 setExitConfirmIndex(0);
-                setShowSettings(false);
+                if (onCloseSettings) onCloseSettings();
               }}
               className="p-2 -ml-2 text-neutral-400 hover:text-white transition-colors rounded-full hover:bg-neutral-800"
               title={t('header.leave')}
@@ -196,7 +180,7 @@ export function Header({
               onClick={(event) => {
                 event.stopPropagation();
                 onTogglePlaylistView();
-                setShowSettings(false);
+                if (onCloseSettings) onCloseSettings();
                 onShowSuggest(false);
               }}
               className="hidden md:flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
@@ -216,7 +200,7 @@ export function Header({
             onClick={(event) => {
               event.stopPropagation();
               if (onToggleChannelLibrary) onToggleChannelLibrary();
-              setShowSettings(false);
+              if (onCloseSettings) onCloseSettings();
               onShowSuggest(false);
             }}
             className="hidden md:flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
@@ -256,7 +240,7 @@ export function Header({
             onClick={(event) => {
               event.stopPropagation();
               onShowQRCode(true);
-              setShowSettings(false);
+              if (onCloseSettings) onCloseSettings();
               onShowSuggest(false);
             }}
             className="hidden md:flex keep-open items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
@@ -276,7 +260,7 @@ export function Header({
                 onClick={(event) => {
                   event.stopPropagation();
                   onShowSuggest((prev) => !prev);
-                  setShowSettings(false);
+                  if (onCloseSettings) onCloseSettings();
                 }}
                 className={`keep-open flex items-center gap-2 transition-colors flex-shrink-0 ${isDisabled
                   ? "text-neutral-600 hover:text-neutral-500"
@@ -537,26 +521,12 @@ Header.propTypes = {
   onLogout: PropTypes.func,
   isOwner: PropTypes.bool,
   suggestionsEnabled: PropTypes.bool,
-  musicOnly: PropTypes.bool,
-  maxDuration: PropTypes.number,
-  maxQueueSize: PropTypes.number,
-  allowPrelisten: PropTypes.bool,
-  smartQueue: PropTypes.bool,
   playlistViewMode: PropTypes.bool,
   ownerBypass: PropTypes.bool,
-  suggestionMode: PropTypes.string,
-  onUpdateSettings: PropTypes.func,
-  ownerPopups: PropTypes.bool,
-  onManageRequests: PropTypes.func,
-  pendingCount: PropTypes.number,
-  duplicateCooldown: PropTypes.number,
-  ownerQueueBypass: PropTypes.bool,
-  votesEnabled: PropTypes.bool,
-  autoApproveKnown: PropTypes.bool,
-  autoRefill: PropTypes.bool,
   onTogglePlaylistView: PropTypes.func,
   showQRCode: PropTypes.bool,
   onShowQRCode: PropTypes.func,
   onDeleteAccount: PropTypes.func,
   onToggleChannelLibrary: PropTypes.func,
+  onCloseSettings: PropTypes.func,
 };
