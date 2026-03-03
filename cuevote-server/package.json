@@ -13,7 +13,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "better-sqlite3": "^12.5.0",
+    "better-sqlite3": "^12.6.2",
     "dotenv": "^17.2.3",
     "google-auth-library": "^10.5.0",
     "jsonwebtoken": "^9.0.3",

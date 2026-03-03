@@ -1,4 +1,3 @@
-import { translations } from '../contexts/translations';
 
 // Helper to reuse English content but override specific fields
 const withEnglishContent = (overrides) => {
@@ -156,7 +155,7 @@ export const LEGAL_CONTENT = {
 				},
 				{
 					title: "4. Disclaimer & Aansprakelijkheid",
-					content: `De dienst wordt geleverd \"zoals deze is\". CueVote wijst alle garanties af. Voor zover toegestaan door de Nederlandse wet, zijn wij niet aansprakelijk voor enige indirecte schade die voortvloeit uit uw gebruik van de dienst.`
+					content: `De dienst wordt geleverd "zoals deze is". CueVote wijst alle garanties af. Voor zover toegestaan door de Nederlandse wet, zijn wij niet aansprakelijk voor enige indirecte schade die voortvloeit uit uw gebruik van de dienst.`
 				},
 				{
 					title: "5. Google Privacybeleid",
@@ -203,7 +202,7 @@ export const LEGAL_CONTENT = {
 				},
 				{
 					title: "4. Uw Rechten",
-					content: `U heeft te allen tijde het recht om uw persoonlijke gegevens in te zien, te corrigeren, te verwijderen of te exporteren. Om deze rechten uit te oefenen (\"Recht om vergeten te worden\"), neem contact met ons op via het bovenstaande e-mailadres.
+					content: `U heeft te allen tijde het recht om uw persoonlijke gegevens in te zien, te corrigeren, te verwijderen of te exporteren. Om deze rechten uit te oefenen ("Recht om vergeten te worden"), neem contact met ons op via het bovenstaande e-mailadres.
                     <br /><br />
                     U kunt ook onze toegang tot uw Google Gegevens intrekken via de <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">Google Beveiligingsinstellingen</a> pagina.`
 				},
