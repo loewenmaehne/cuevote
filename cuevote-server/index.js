@@ -564,3 +564,20 @@ setInterval(() => {
         }
     }
 }, 5 * 60 * 1000);
+
+// Cleanup Old Room History (Once a day)
+setInterval(() => {
+    console.log("Running room history cleanup task...");
+    try {
+        db.cleanupRoomHistory();
+    } catch (e) {
+        console.error("Failed to cleanup room history", e);
+    }
+}, 24 * 60 * 60 * 1000);
+
+// Run history cleanup once on startup as well
+try {
+    db.cleanupRoomHistory();
+} catch (e) {
+    console.error("Failed to cleanup room history on startup", e);
+}
