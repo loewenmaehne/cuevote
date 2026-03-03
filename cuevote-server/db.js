@@ -59,6 +59,15 @@ db.exec(`
     data TEXT, -- JSON Array of video objects
     fetched_at INTEGER DEFAULT (unixepoch())
   );
+
+  CREATE TABLE IF NOT EXISTS room_history (
+    room_id TEXT NOT NULL,
+    video_id TEXT NOT NULL,
+    played_at INTEGER DEFAULT (unixepoch()),
+    PRIMARY KEY (room_id, video_id),
+    FOREIGN KEY(room_id) REFERENCES rooms(id) ON DELETE CASCADE,
+    FOREIGN KEY(video_id) REFERENCES videos(id)
+  );
 `);
 
 // Migration: Add captions_enabled if missing
@@ -247,5 +256,61 @@ module.exports = {
 
   backup: (destination) => {
     return db.backup(destination);
+  },
+
+  // Room History
+  addToRoomHistory: (roomId, track) => {
+    if (!track.videoId) return;
+
+    // 1. Ensure the video exists in the videos table first
+    module.exports.upsertVideo({
+      id: track.videoId,
+      title: track.title,
+      artist: track.artist,
+      thumbnail: track.thumbnail,
+      duration: track.duration,
+      category_id: track.category_id || '10', // Default to music if unknown
+      language: track.language || null
+    });
+
+    // 2. Insert or update the history record
+    const playedAt = track.playedAt ? Math.floor(track.playedAt / 1000) : Math.floor(Date.now() / 1000);
+    const stmt = db.prepare(`
+      INSERT INTO room_history (room_id, video_id, played_at)
+      VALUES (?, ?, ?)
+      ON CONFLICT(room_id, video_id) DO UPDATE SET
+        played_at = excluded.played_at
+    `);
+    stmt.run(roomId, track.videoId, playedAt);
+  },
+
+  getRoomHistory: (roomId) => {
+    // Return history from the last 28 days
+    const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
+    const rows = db.prepare(`
+        SELECT v.*, h.played_at 
+        FROM room_history h
+        JOIN videos v ON h.video_id = v.id
+        WHERE h.room_id = ? AND h.played_at > ?
+        ORDER BY h.played_at ASC
+    `).all(roomId, threshold);
+
+    // Map DB rows back to the track object format expected by the frontend/Room.js
+    return rows.map(row => ({
+      ...row, // Contains title, artist, duration etc from videos table
+      videoId: row.id,
+      playedAt: row.played_at * 1000 // Convert back to milliseconds
+    }));
+  },
+
+  removeFromRoomHistory: (roomId, videoId) => {
+    db.prepare('DELETE FROM room_history WHERE room_id = ? AND video_id = ?').run(roomId, videoId);
+  },
+
+  cleanupRoomHistory: () => {
+    const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
+    const result = db.prepare('DELETE FROM room_history WHERE played_at < ?').run(threshold);
+    console.log(`[DB Cleanup] Removed ${result.changes} old room history entries.`);
+    return result.changes;
   }
 };
