@@ -66,6 +66,16 @@ class Room {
 
         // Start the Room Timer
         this.interval = setInterval(() => this.tick(), 1000);
+
+        // Load History from Database (Persistent Library)
+        try {
+            const savedHistory = db.getRoomHistory(this.id);
+            if (savedHistory && savedHistory.length > 0) {
+                this.state.history = savedHistory;
+            }
+        } catch (error) {
+            console.error(`[Room ${this.id}] Failed to load history from DB:`, error);
+        }
     }
 
     getSummary() {
@@ -152,7 +162,15 @@ class Room {
                 // Move current track to history if it exists
                 let newHistory = [...this.state.history];
                 if (this.state.currentTrack) {
-                    newHistory.push({ ...this.state.currentTrack, playedAt: Date.now() });
+                    const trackToSave = { ...this.state.currentTrack, playedAt: Date.now() };
+                    newHistory.push(trackToSave);
+
+                    // Persist history addition to Database
+                    try {
+                        db.addToRoomHistory(this.id, trackToSave);
+                    } catch (err) {
+                        console.error(`[Room ${this.id}] Failed to save track to DB history:`, err);
+                    }
                 }
 
                 newQueue.shift();
@@ -1025,7 +1043,14 @@ class Room {
         // Move current track to history
         let newHistory = [...this.state.history];
         if (this.state.currentTrack) {
-            newHistory.push({ ...this.state.currentTrack, playedAt: Date.now() });
+            const trackToSave = { ...this.state.currentTrack, playedAt: Date.now() };
+            newHistory.push(trackToSave);
+
+            try {
+                db.addToRoomHistory(this.id, trackToSave);
+            } catch (err) {
+                console.error(`[Room ${this.id}] Failed to save track to DB history:`, err);
+            }
         }
 
         newQueue.shift();
@@ -1173,6 +1198,13 @@ class Room {
         if (newHistory.length !== initialCount) {
             console.log(`[Room ${this.roomId}] Removed video ${videoId} from history.`);
             this.updateState({ history: newHistory });
+
+            // Delete from persistent database as well
+            try {
+                db.removeFromRoomHistory(this.id, videoId);
+            } catch (err) {
+                console.error(`[Room ${this.id}] Failed to remove track from DB history:`, err);
+            }
         }
     }
 
