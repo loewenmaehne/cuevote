@@ -1180,7 +1180,21 @@ function App() {
           />
           {showSuggest && (
             <div className="px-6 pb-4">
-              <SuggestSongForm onSongSuggested={handleSongSuggested} onShowSuggest={setShowSuggest} serverError={lastError} serverMessage={lastMessage} isOwner={isOwner && ownerBypass} suggestionsEnabled={suggestionsEnabled} suggestionMode={suggestionMode} isConnected={isConnected} />
+              <SuggestSongForm
+                onSongSuggested={handleSongSuggested}
+                onShowSuggest={setShowSuggest}
+                serverError={lastError}
+                serverMessage={lastMessage}
+                isOwner={isOwner && ownerBypass}
+                suggestionsEnabled={suggestionsEnabled}
+                suggestionMode={suggestionMode}
+                isConnected={isConnected}
+                currentTrack={currentTrack}
+                onRecommend={handleFetchSuggestions}
+                suggestions={manualSuggestions}
+                isFetchingSuggestions={isFetchingSuggestions}
+                queueVideoIds={queueVideoIds}
+              />
             </div>
           )}
         </div>
