@@ -4,6 +4,9 @@ const db = new Database('cuevote.db'); // Creates the file if missing
 // Enable WAL mode for better concurrency
 db.pragma('journal_mode = WAL');
 
+// Enforce Foreign Key constraints for cascading deletions
+db.pragma('foreign_keys = ON');
+
 // Initialize Schema
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
