@@ -48,6 +48,7 @@ export function PlaybackControls({
       // console.log("[PlaybackControls] Track changed, activating visibility.");
       activateTemporaryVisibility();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrack?.id]);
 
   // Clean up timeout
@@ -104,6 +105,7 @@ export function PlaybackControls({
     };
     window.addEventListener("blur", handleWindowBlur);
     return () => window.removeEventListener("blur", handleWindowBlur);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHovered]);
 
   const handleSeekClick = (e) => {

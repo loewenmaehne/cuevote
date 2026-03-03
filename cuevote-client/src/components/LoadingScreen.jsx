@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { WifiOff, RefreshCw, Loader2, ServerCrash } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 
-export function LoadingScreen({ isOnline, isConnected, embedded = false, message, fullScreen = true }) {
+export function LoadingScreen({ isOnline, embedded = false, message }) {
 	const { t } = useLanguage();
 	const [showTimeoutCheck, setShowTimeoutCheck] = useState(false);
 	const [isRetrying, setIsRetrying] = useState(false);
