@@ -191,11 +191,8 @@ class Room {
                 }
             }
 
-            // Suggestion Check Trigger
-            // If we have a current track, and we haven't fetched suggestions for it yet
-            if (this.state.currentTrack && this.state.currentTrack.videoId !== this.lastSuggestionSourceVideoId) {
-                this.updateSuggestions(this.state.currentTrack.videoId);
-            }
+            // Suggestion Check Trigger is now REMOVED to save API Quota (Option 4).
+            // Suggestions are now only fetched explicitly via the FETCH_SUGGESTIONS message triggered by the client.
         }
     }
 
