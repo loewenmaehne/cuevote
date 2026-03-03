@@ -18,5 +18,8 @@
     "google-auth-library": "^10.5.0",
     "jsonwebtoken": "^9.0.3",
     "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "eslint": "^10.0.2"
   }
 }
