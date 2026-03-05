@@ -98,7 +98,7 @@ export const LEGAL_CONTENT = {
 					title: "4. Your Rights",
 					content: `You have the right to access, correct, delete, or export your personal data at any time. To exercise these rights ("Right to be Forgotten" or "Revocation of Access"), contact us at the email provided above.
                     <br /><br />
-                    You can also revoke our access to your Google Data via the <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">Google Security Settings</a> page.`
+                    You can also revoke our access to your Google Data via the <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener noreferrer">Google Security Settings</a> page.`
 				},
 				{
 					title: "5. Cookies",
@@ -204,7 +204,7 @@ export const LEGAL_CONTENT = {
 					title: "4. Uw Rechten",
 					content: `U heeft te allen tijde het recht om uw persoonlijke gegevens in te zien, te corrigeren, te verwijderen of te exporteren. Om deze rechten uit te oefenen ("Recht om vergeten te worden"), neem contact met ons op via het bovenstaande e-mailadres.
                     <br /><br />
-                    U kunt ook onze toegang tot uw Google Gegevens intrekken via de <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">Google Beveiligingsinstellingen</a> pagina.`
+                    U kunt ook onze toegang tot uw Google Gegevens intrekken via de <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener noreferrer">Google Beveiligingsinstellingen</a> pagina.`
 				},
 				{
 					title: "5. Cookies",
