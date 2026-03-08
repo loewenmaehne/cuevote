@@ -774,7 +774,7 @@ class Room {
             // Max Duration
             if (this.state.maxDuration > 0 && !canBypass && cachedVideo.duration > this.state.maxDuration) {
                 const maxMinutes = Math.floor(this.state.maxDuration / 60);
-                ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
+                ws.send(JSON.stringify({ type: "error", message: `Video is too long. Max duration is ${maxMinutes} minutes.` }));
                 return;
             }
             // Music Only
@@ -837,7 +837,7 @@ class Room {
                     // Max Duration Check
                     if (this.state.maxDuration > 0 && !canBypass && durationInSeconds > this.state.maxDuration) {
                         const maxMinutes = Math.floor(this.state.maxDuration / 60);
-                        ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
+                        ws.send(JSON.stringify({ type: "error", message: `Video is too long. Max duration is ${maxMinutes} minutes.` }));
                         return;
                     }
 
@@ -1131,7 +1131,7 @@ class Room {
 
             // Add to queue logic (simplified version of handleSuggestSong end)
             const newQueue = [...this.state.queue, track];
-            this.knownVideos.add(track.videoId); // Remember this song
+            this.knownVideos.add(track.videoId); // Remember this video
             const newState = {
                 queue: newQueue,
                 pendingSuggestions: newPending
