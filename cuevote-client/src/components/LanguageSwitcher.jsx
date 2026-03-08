@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const languages = [
+// Single export object so bundler cannot reorder and cause TDZ (see docs/TDZ-FIXES.md).
+const languages = [
 	{ code: 'en', label: 'English' },
 	{ code: 'nl', label: 'Nederlands' },
 	{ code: 'de', label: 'Deutsch' },
@@ -41,7 +41,7 @@ export const languages = [
 	{ code: 'he', label: 'עברית' }
 ];
 
-export function LanguageSwitcher({ minimized = false, className = "", isOpen: controlledIsOpen, onToggle: controlledOnToggle, focused = false, focusedLanguageIndex = -1 }) {
+function LanguageSwitcher({ minimized = false, className = "", isOpen: controlledIsOpen, onToggle: controlledOnToggle, focused = false, focusedLanguageIndex = -1 }) {
 	const { language, setLanguage } = Language.useLanguage();
 	const [internalIsOpen, setInternalIsOpen] = useState(false);
 	const dropdownRef = useRef(null);
@@ -113,3 +113,6 @@ export function LanguageSwitcher({ minimized = false, className = "", isOpen: co
 		</div>
 	);
 }
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const LanguageSwitcherExports = { languages, LanguageSwitcher };

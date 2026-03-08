@@ -4,7 +4,8 @@ import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, G
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { Consent } from '../contexts/ConsentContext';
 import { Language } from '../contexts/LanguageContext';
-import { LanguageSwitcher, languages } from './LanguageSwitcher';
+import { LanguageSwitcherExports } from './LanguageSwitcher';
+const { LanguageSwitcher, languages } = LanguageSwitcherExports;
 import { GoogleAuthButton } from './GoogleAuthButton';
 
 import { LoadingScreen } from './LoadingScreen';
