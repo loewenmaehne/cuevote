@@ -10,9 +10,7 @@ const App = lazy(() => import('./App.jsx'))
 const LegalPage = lazy(() => import('./components/LegalPage.jsx').then(m => ({ default: m.LegalPage })))
 
 import { Consent } from './contexts/ConsentContext.jsx';
-const { ConsentProvider } = Consent;
 import { Language } from './contexts/LanguageContext.jsx';
-const { LanguageProvider } = Language;
 import { ConditionalGoogleOAuthProvider } from './components/ConditionalGoogleOAuthProvider.jsx';
 
 import { MobileRedirectGuard } from './components/MobileRedirectGuard.jsx';
@@ -20,8 +18,8 @@ import { MobileRedirectGuard } from './components/MobileRedirectGuard.jsx';
 
 createRoot(document.getElementById('root')).render(
   <ErrorBoundary>
-    <ConsentProvider>
-      <LanguageProvider>
+    <Consent.ConsentProvider>
+      <Language.LanguageProvider>
         <BrowserRouter>
           <MobileRedirectGuard>
             <ConditionalGoogleOAuthProvider>
@@ -35,7 +33,7 @@ createRoot(document.getElementById('root')).render(
             </ConditionalGoogleOAuthProvider>
           </MobileRedirectGuard>
         </BrowserRouter>
-      </LanguageProvider>
-    </ConsentProvider>
+      </Language.LanguageProvider>
+    </Consent.ConsentProvider>
   </ErrorBoundary>,
 )
