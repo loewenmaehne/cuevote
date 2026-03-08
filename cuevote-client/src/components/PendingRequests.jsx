@@ -101,7 +101,7 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onMa
 					className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors border border-neutral-700 font-medium"
 				>
 					<Ban size={18} className="text-red-500" />
-					<span>{t('pending.bannedSongs')}</span>
+					<span>{t('pending.bannedVideos')}</span>
 				</button>
 			</div>
 

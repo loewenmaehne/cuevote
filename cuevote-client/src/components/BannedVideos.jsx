@@ -1,7 +1,7 @@
 import React from 'react';
 import { Ban, X, ArrowLeft, CheckCircle } from 'lucide-react';
 
-export function BannedSongsPage({ bannedSongs, onUnban, onClose }) {
+export function BannedVideosPage({ bannedVideos, onUnban, onClose }) {
 	return (
 		<div className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm flex flex-col animate-in fade-in">
 			<div className="p-6 border-b border-neutral-800 flex items-center gap-4 bg-black">
@@ -13,7 +13,7 @@ export function BannedSongsPage({ bannedSongs, onUnban, onClose }) {
 				</button>
 				<h1 className="text-2xl font-bold text-white flex items-center gap-3">
 					<Ban className="text-red-500" />
-					Banned Songs
+					Banned Videos
 					<span className="text-lg font-normal text-neutral-500">
 						({bannedVideos.length})
 					</span>
@@ -21,10 +21,10 @@ export function BannedSongsPage({ bannedSongs, onUnban, onClose }) {
 			</div>
 
 			<div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
-				{(!bannedSongs || bannedVideos.length === 0) ? (
+				{(!bannedVideos || bannedVideos.length === 0) ? (
 					<div className="text-center text-neutral-500 mt-20">
-						<p className="text-xl">No banned songs</p>
-						<p className="text-sm mt-2">Songs banned from requests will appear here.</p>
+						<p className="text-xl">No banned videos</p>
+						<p className="text-sm mt-2">Videos banned from requests will appear here.</p>
 					</div>
 				) : (
 					<div className="grid gap-4">

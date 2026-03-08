@@ -14,7 +14,7 @@ import { PlaylistView } from "./components/PlaylistView";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { SettingsView } from "./components/SettingsView";
 import { PendingRequests, PendingRequestsPage } from "./components/PendingRequests";
-import { BannedSongsPage } from "./components/BannedSongs"; // Added this import
+import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
 import { ChannelLibrary } from "./components/ChannelLibrary"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
@@ -144,7 +144,7 @@ function App() {
     duplicateCooldown = 10,
     autoApproveKnown = true,
     autoRefill = false,
-    bannedSongs = [], // Added this
+    bannedVideos = [], // Added this
     captionsEnabled = false
   } = serverState || {};
 
@@ -1244,8 +1244,8 @@ function App() {
       )}
 
       {showBannedPage && (
-        <BannedSongsPage
-          bannedSongs={bannedSongs}
+        <BannedVideosPage
+          bannedVideos={bannedVideos}
           onUnban={handleUnbanSong}
           onClose={() => setShowBannedPage(false)}
         />
