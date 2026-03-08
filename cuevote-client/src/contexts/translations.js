@@ -82,6 +82,7 @@ export const translations = {
 			venueMode: "Party Mode",
 			venueModeTooltip: "Party Mode: Guests see playlist only (No Video)",
 			allowPrelisten: "Allow Prelisten",
+			captionsTooltip: "Show subtitles by default for all users when they load the player.",
 			allowVoting: "Allow Voting",
 			ownerTools: "Owner Tools",
 			ownerBypassRules: "Owner Bypass Rules",
@@ -172,7 +173,15 @@ export const translations = {
 			preview: "Preview",
 			ban: "Ban",
 			decline: "Decline",
-			accept: "Accept"
+			accept: "Accept",
+			pendingCount: "{count} pending"
+		},
+		banned: {
+			title: "Banned Videos",
+			empty: "No banned videos",
+			emptySubtitle: "Videos banned from requests will appear here.",
+			bannedOn: "Banned {date}",
+			unban: "Unban"
 		},
 		playlist: {
 			close: "Close Playlist",

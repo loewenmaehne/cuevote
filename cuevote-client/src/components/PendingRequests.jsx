@@ -92,7 +92,7 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onMa
 						<Clock className="text-orange-500" />
 						{t('pending.title')}
 						<span className="text-lg font-normal text-neutral-500">
-							({requests.length} pending)
+							({t('pending.pendingCount', { count: requests.length })})
 						</span>
 					</h1>
 				</div>
