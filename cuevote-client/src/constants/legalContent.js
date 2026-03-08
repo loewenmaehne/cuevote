@@ -1,21 +1,16 @@
 
-// Helper to reuse English content but override specific fields
-const withEnglishContent = (overrides) => {
-	return {
-		...LEGAL_CONTENT.en,
-		...overrides,
-		// Ensure nested structure for tabs is merged or preserved if needed, 
-		// but for now we might want to keep English tabs descriptions? 
-		// Actually, let's just use English content for the heavy text sections.
-		terms: LEGAL_CONTENT.en.terms,
-		privacy: LEGAL_CONTENT.en.privacy,
-		imprint: LEGAL_CONTENT.en.imprint
-	};
-};
+// Helper takes en reference as argument so we never close over LEGAL_CONTENT (avoids "Cannot access before initialization" with bundlers).
+const withEnglishContent = (enRef, overrides) => ({
+	...enRef,
+	...overrides,
+	terms: enRef.terms,
+	privacy: enRef.privacy,
+	imprint: enRef.imprint
+});
 
-export const LEGAL_CONTENT = {
-	en: {
-		title: "Transparency & Trust",
+// English content defined first so LEGAL_CONTENT is built in one assignment (no mutation = no TDZ).
+const enContent = {
+	title: "Transparency & Trust",
 		subtitle: "We believe in open communication. Here's everything you need to know about how we operate, protect your data, and respect your rights.",
 		back: "Back",
 		center: "Legal Center",
@@ -121,9 +116,10 @@ export const LEGAL_CONTENT = {
 				text: `The European Commission provides a platform for ODR at <a href="https://ec.europa.eu/consumers/odr" class="text-neutral-400 underline hover:text-white">ec.europa.eu/consumers/odr</a>. We are not obliged to participate in dispute settlement proceedings.`
 			}
 		}
-	},
-	nl: {
-		title: "Transparantie & Vertrouwen",
+};
+
+const nlContent = {
+	title: "Transparantie & Vertrouwen",
 		subtitle: "Wij geloven in open communicatie. Hier is alles wat u moet weten over hoe wij werken, uw gegevens beschermen en uw rechten respecteren.",
 		back: "Terug",
 		center: "Juridisch Centrum",
@@ -227,98 +223,84 @@ export const LEGAL_CONTENT = {
 				text: `De Europese Commissie biedt een platform voor ODR op <a href="https://ec.europa.eu/consumers/odr" class="text-neutral-400 underline hover:text-white">ec.europa.eu/consumers/odr</a>. Wij zijn niet verplicht deel te nemen aan geschillenbeslechtingsprocedures.`
 			}
 		}
-	}
 };
 
 // --- Language Variants (UI Translated, Legal Content in English) ---
+// Single export: no mutation of LEGAL_CONTENT, so no TDZ when bundler evaluates modules.
 
-// German
-// German
-LEGAL_CONTENT.de = withEnglishContent({
-	title: "Transparenz & Vertrauen",
-	subtitle: "Wir glauben an offene Kommunikation. Hier finden Sie alles, was Sie darüber wissen müssen, wie wir arbeiten, Ihre Daten schützen und Ihre Rechte respektieren.",
-	back: "Zurück",
-	center: "Rechtszentrum",
-	lastUpdated: "Zuletzt aktualisiert",
-	disclaimer: "Hinweis: Diese Bedingungen sind nur in englischer Sprache verfügbar. Die englische Version ist allein rechtlich bindend."
-});
-
-// French
-LEGAL_CONTENT.fr = withEnglishContent({
-	title: "Transparence & Confiance",
-	subtitle: "Nous croyons en une communication ouverte. Voici tout ce que vous devez savoir sur notre fonctionnement, la protection de vos données et le respect de vos droits.",
-	back: "Retour",
-	center: "Centre Juridique",
-	lastUpdated: "Dernière mise à jour",
-	disclaimer: "Note : Ces conditions sont uniquement disponibles en anglais. La version anglaise est la seule juridiquement contraignante."
-});
-
-// Spanish
-LEGAL_CONTENT.es = withEnglishContent({
-	title: "Transparencia y Confianza",
-	subtitle: "Creemos en la comunicación abierta. Aquí tienes todo lo que necesitas saber sobre cómo operamos, protegemos tus datos y respetamos tus derechos.",
-	back: "Atrás",
-	center: "Centro Legal",
-	lastUpdated: "Última actualización",
-	disclaimer: "Nota: Estos términos solo están disponibles en inglés. La versión en inglés es la única legalmente vinculante."
-});
-
-// Italian
-LEGAL_CONTENT.it = withEnglishContent({
-	title: "Trasparenza e Fiducia",
-	subtitle: "Crediamo nella comunicazione aperta. Ecco tutto ciò che devi sapere su come operiamo, proteggiamo i tuoi dati e rispettiamo i tuoi diritti.",
-	back: "Indietro",
-	center: "Centro Legale",
-	lastUpdated: "Ultimo aggiornamento",
-	disclaimer: "Nota: Questi termini sono disponibili solo in inglese. La versione inglese è l'unica giuridicamente vincolante."
-});
-
-// Portuguese
-LEGAL_CONTENT.pt = withEnglishContent({
-	title: "Transparência e Confiança",
-	subtitle: "Acreditamos na comunicação aberta. Aqui está tudo o que você precisa saber sobre como operamos, protegemos seus dados e respeitamos seus direitos.",
-	back: "Voltar",
-	center: "Centro Legal",
-	lastUpdated: "Última atualização",
-	disclaimer: "Nota: Estes termos estão disponíveis apenas em inglês. A versão em inglês é a única legalmente vinculativa."
-});
-
-// Chinese (Simplified)
-LEGAL_CONTENT['zh-CN'] = withEnglishContent({
-	title: "透明度与信任",
-	subtitle: "我们相信开放的沟通。这里有您需要了解的关于我们要如何运作、保护您的数据以及尊重您的权利的所有信息。",
-	back: "返回",
-	center: "法律中心",
-	lastUpdated: "最后更新",
-	disclaimer: "注意：这些条款仅提供英文版本。英文版本具有唯一法律约束力。"
-});
-
-// Chinese (Traditional)
-LEGAL_CONTENT['zh-TW'] = withEnglishContent({
-	title: "透明度與信任",
-	subtitle: "我們相信開放的溝通。這裡有您需要了解的關於我們要如何運作、保護您的數據以及尊重您的權利的所有信息。",
-	back: "返回",
-	center: "法律中心",
-	lastUpdated: "最後更新",
-	disclaimer: "注意：這些條款僅提供英文版本。英文版本具有唯一法律約束力。"
-});
-
-// Japanese
-LEGAL_CONTENT.ja = withEnglishContent({
-	title: "透明性と信頼",
-	subtitle: "私たちはオープンなコミュニケーションを信じています。私たちがどのように運営し、データを保護し、権利を尊重しているかについて知っておくべきすべての情報がここにあります。",
-	back: "戻る",
-	center: "法務センター",
-	lastUpdated: "最終更新",
-	disclaimer: "注：これらの条件は英語でのみ利用可能です。英語版のみが法的拘束力を持ちます。"
-});
-
-// Korean
-LEGAL_CONTENT.ko = withEnglishContent({
-	title: "투명성 및 신뢰",
-	subtitle: "우리는 열린 소통을 믿습니다. 우리가 운영하는 방식, 데이터를 보호하는 방식, 그리고 귀하의 권리를 존중하는 방식에 대해 알아야 할 모든 것이 여기에 있습니다.",
-	back: "뒤로",
-	center: "법률 센터",
-	lastUpdated: "마지막 업데이트",
-	disclaimer: "참고: 이 약관은 영어로만 제공됩니다. 영어 버전만이 법적 구속력이 있습니다."
-});
+export const LEGAL_CONTENT = {
+	en: enContent,
+	nl: nlContent,
+	de: withEnglishContent(enContent, {
+		title: "Transparenz & Vertrauen",
+		subtitle: "Wir glauben an offene Kommunikation. Hier finden Sie alles, was Sie darüber wissen müssen, wie wir arbeiten, Ihre Daten schützen und Ihre Rechte respektieren.",
+		back: "Zurück",
+		center: "Rechtszentrum",
+		lastUpdated: "Zuletzt aktualisiert",
+		disclaimer: "Hinweis: Diese Bedingungen sind nur in englischer Sprache verfügbar. Die englische Version ist allein rechtlich bindend."
+	}),
+	fr: withEnglishContent(enContent, {
+		title: "Transparence & Confiance",
+		subtitle: "Nous croyons en une communication ouverte. Voici tout ce que vous devez savoir sur notre fonctionnement, la protection de vos données et le respect de vos droits.",
+		back: "Retour",
+		center: "Centre Juridique",
+		lastUpdated: "Dernière mise à jour",
+		disclaimer: "Note : Ces conditions sont uniquement disponibles en anglais. La version anglaise est la seule juridiquement contraignante."
+	}),
+	es: withEnglishContent(enContent, {
+		title: "Transparencia y Confianza",
+		subtitle: "Creemos en la comunicación abierta. Aquí tienes todo lo que necesitas saber sobre cómo operamos, protegemos tus datos y respetamos tus derechos.",
+		back: "Atrás",
+		center: "Centro Legal",
+		lastUpdated: "Última actualización",
+		disclaimer: "Nota: Estos términos solo están disponibles en inglés. La versión en inglés es la única legalmente vinculante."
+	}),
+	it: withEnglishContent(enContent, {
+		title: "Trasparenza e Fiducia",
+		subtitle: "Crediamo nella comunicazione aperta. Ecco tutto ciò che devi sapere su come operiamo, proteggiamo i tuoi dati e rispettiamo i tuoi diritti.",
+		back: "Indietro",
+		center: "Centro Legale",
+		lastUpdated: "Ultimo aggiornamento",
+		disclaimer: "Nota: Questi termini sono disponibili solo in inglese. La versione inglese è l'unica giuridicamente vincolante."
+	}),
+	pt: withEnglishContent(enContent, {
+		title: "Transparência e Confiança",
+		subtitle: "Acreditamos na comunicação aberta. Aqui está tudo o que você precisa saber sobre como operamos, protegemos seus dados e respeitamos seus direitos.",
+		back: "Voltar",
+		center: "Centro Legal",
+		lastUpdated: "Última atualização",
+		disclaimer: "Nota: Estes termos estão disponíveis apenas em inglês. A versão em inglês é a única legalmente vinculativa."
+	}),
+	'zh-CN': withEnglishContent(enContent, {
+		title: "透明度与信任",
+		subtitle: "我们相信开放的沟通。这里有您需要了解的关于我们要如何运作、保护您的数据以及尊重您的权利的所有信息。",
+		back: "返回",
+		center: "法律中心",
+		lastUpdated: "最后更新",
+		disclaimer: "注意：这些条款仅提供英文版本。英文版本具有唯一法律约束力。"
+	}),
+	'zh-TW': withEnglishContent(enContent, {
+		title: "透明度與信任",
+		subtitle: "我們相信開放的溝通。這裡有您需要了解的關於我們要如何運作、保護您的數據以及尊重您的權利的所有信息。",
+		back: "返回",
+		center: "法律中心",
+		lastUpdated: "最後更新",
+		disclaimer: "注意：這些條款僅提供英文版本。英文版本具有唯一法律約束力。"
+	}),
+	ja: withEnglishContent(enContent, {
+		title: "透明性と信頼",
+		subtitle: "私たちはオープンなコミュニケーションを信じています。私たちがどのように運営し、データを保護し、権利を尊重しているかについて知っておくべきすべての情報がここにあります。",
+		back: "戻る",
+		center: "法務センター",
+		lastUpdated: "最終更新",
+		disclaimer: "注：これらの条件は英語でのみ利用可能です。英語版のみが法的拘束力を持ちます。"
+	}),
+	ko: withEnglishContent(enContent, {
+		title: "투명성 및 신뢰",
+		subtitle: "우리는 열린 소통을 믿습니다. 우리가 운영하는 방식, 데이터를 보호하는 방식, 그리고 귀하의 권리를 존중하는 방식에 대해 알아야 할 모든 것이 여기에 있습니다.",
+		back: "뒤로",
+		center: "법률 센터",
+		lastUpdated: "마지막 업데이트",
+		disclaimer: "참고: 이 약관은 영어로만 제공됩니다. 영어 버전만이 법적 구속력이 있습니다."
+	})
+};
