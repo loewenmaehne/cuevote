@@ -1,18 +1,22 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, Mail, Phone, Globe, Flag } from 'lucide-react';
+import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, Mail, Phone, Globe, Flag, Loader2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { LEGAL_CONTENT } from '../constants/legalContent';
 
 export function LegalPage() {
     const navigate = useNavigate();
     const { language } = useLanguage();
     const [activeTab, setActiveTab] = useState('terms');
     const [scrolled, setScrolled] = useState(false);
+    const [legalContent, setLegalContent] = useState(null);
+
+    useEffect(() => {
+        import('../constants/legalContent').then((m) => setLegalContent(m.LEGAL_CONTENT));
+    }, []);
 
     // Fallback to English if language is not supported
-    const currentLang = LEGAL_CONTENT[language] ? language : 'en';
-    const content = LEGAL_CONTENT[currentLang];
+    const currentLang = legalContent && legalContent[language] ? language : 'en';
+    const content = legalContent ? legalContent[currentLang] : null;
 
     useLayoutEffect(() => {
         window.scrollTo(0, 0);
@@ -24,6 +28,14 @@ export function LegalPage() {
     useLayoutEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [activeTab]);
+
+    if (!content) {
+        return (
+            <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">
+                <Loader2 size={32} className="animate-spin text-orange-500" />
+            </div>
+        );
+    }
 
     const tabs = [
         { id: 'terms', label: content.tabs.terms.label, icon: Scale, desc: content.tabs.terms.desc },
