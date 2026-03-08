@@ -51,7 +51,7 @@ class Room {
             ownerBypass: true, // Bypass suggestions disabled
             ownerQueueBypass: false, // Bypass queue voting (Priority)
             votesEnabled: true, // Allow voting
-            smartQueue: true, // Auto-replace bad songs if full
+            smartQueue: true, // Auto-replace bad videos if full
             ownerPopups: true, // Show popups for new requests
             playlistViewMode: false, // Venue Mode: Only show playlist view for guests
             maxQueueSize: 50, // Default 50
@@ -61,7 +61,7 @@ class Room {
             autoApproveKnown: true, // Default true
             autoRefill: false, // Automated Refill
             captionsEnabled: !!(metadata.captions_enabled), // Initialize from metadata
-            bannedSongs: [], // List of banned songs { videoId, title, artist, ... }
+            bannedSongs: [], // List of banned videos { videoId, title, artist, ... }
         };
 
         // Start the Room Timer
@@ -279,7 +279,7 @@ class Room {
             } = this.state;
 
             // 1. Target Size: Half of maxQueueSize (def 50 -> 25), or total history if less
-            // User: "If there is less than 5 songs in total, do not do anything."
+            // User: "If there is less than 5 videos in total, do not do anything."
             if (history.length < 5) {
                 console.log(`[AutoRefill] Not enough history (${history.length} < 5). Abort.`);
                 this.updateState({ isRefilling: false });
@@ -327,7 +327,7 @@ class Room {
                 // Check if title is in recent history
                 if (historyTitles.includes(title)) continue;
 
-                // FIX: Check if song is ALREADY IN QUEUE (prevent immediate duplicate)
+                // FIX: Check if video is ALREADY IN QUEUE (prevent immediate duplicate)
                 if (queueVideoIds.has(track.videoId)) continue;
 
                 // Check if we already picked this title in current candidates
@@ -368,7 +368,7 @@ class Room {
                 }
             }
 
-            // Remove invalid songs from history entirely
+            // Remove invalid videos from history entirely
             if (invalidVideoIds.size > 0) {
                 const cleanedHistory = history.filter(t => !invalidVideoIds.has(t.videoId));
                 this.updateState({ history: cleanedHistory });
@@ -398,7 +398,7 @@ class Room {
                 }
 
                 this.updateState(newState);
-                console.log(`[AutoRefill] Added ${finalTracks.length} songs to queue.`);
+                console.log(`[AutoRefill] Added ${finalTracks.length} videos to queue.`);
 
             } else {
                 this.updateState({ isRefilling: false });
@@ -581,10 +581,10 @@ class Room {
 
             // 2. Fetch from API (Search by keyword)
             // Strategy: Search for the ARTIST to get "More from this artist".
-            //Searching for "Title + Artist" mostly returns covers/versions of the same song.
+            //Searching for "Title + Artist" mostly returns covers/versions of the same video.
             let query = "";
             if (artist && artist.toLowerCase() !== "unknown artist") {
-                query = artist; // Best for variety (other songs by same artist)
+                query = artist; // Best for variety (other videos by same artist)
             } else {
                 query = title; // Fallback
             }
@@ -625,7 +625,7 @@ class Room {
 
     async handleSuggestSong(ws, payload) {
         if (!ws.user) {
-            ws.send(JSON.stringify({ type: "error", message: "You must be logged in to suggest songs." }));
+            ws.send(JSON.stringify({ type: "error", message: "You must be logged in to suggest videos." }));
             return;
         }
 
@@ -641,10 +641,10 @@ class Room {
 
         // Duplicate Title Check
         // We need to resolve the video first to get the title, OR we check videoId if we have it?
-        // Proposal says "Duplicate Song Title Prevention".
+        // Proposal says "Duplicate Video Title Prevention".
         // Titles can slightly vary, but usually videoId is the unique identifier. 
         // User asked for "same title", but practically "same video" (videoId) is safer and usually what is meant to prevent repetition.
-        // HOWEVER, if they want "same title" specifically to prevent covers or same song different video, that's harder.
+        // HOWEVER, if they want "same title" specifically to prevent covers or same video different video, that's harder.
         // Let's stick to strict Title check as requested "repetition of turning in the same title".
         // But we don't know the title yet until we fetch it!
         // We will have to fetch the title first.
@@ -656,7 +656,7 @@ class Room {
 
         // Check Max Queue Size
         if (this.state.maxQueueSize > 0 && !canBypass && this.state.queue.length >= this.state.maxQueueSize) {
-            // Smart Replacement: Look for worst song (score < 0) to replace ONLY IF ENABLED
+            // Smart Replacement: Look for worst video (score < 0) to replace ONLY IF ENABLED
             if (this.state.smartQueue) {
                 // Skip index 0 (current track)
                 const upcomingQueue = this.state.queue.slice(1);
@@ -674,7 +674,7 @@ class Room {
                 });
 
                 if (worstTrackIndex !== -1) {
-                    // Found a bad song to replace, mark its index for potential removal later
+                    // Found a bad video to replace, mark its index for potential removal later
                     indexToRemove = worstTrackIndex;
                 } else {
                     ws.send(JSON.stringify({ type: "error", message: `Queue is full. Max size is ${this.state.maxQueueSize}.` }));
@@ -689,7 +689,7 @@ class Room {
         // Rate Limiting (5 seconds) - Bypass for owner
         const now = Date.now();
         if (!canBypass && ws.lastSuggestionTime && (now - ws.lastSuggestionTime < 5000)) {
-            ws.send(JSON.stringify({ type: "error", message: "Please wait before suggesting another song." }));
+            ws.send(JSON.stringify({ type: "error", message: "Please wait before suggesting another video." }));
             return;
         }
         ws.lastSuggestionTime = now;
@@ -751,8 +751,8 @@ class Room {
         let track = null;
 
         // Check if banned before anything else
-        if (this.state.bannedSongs.some(b => b.videoId === videoId)) {
-            ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
+        if (this.state.bannedVideos.some(b => b.videoId === videoId)) {
+            ws.send(JSON.stringify({ type: "error", message: "This video has been banned from this channel." }));
             return;
         }
 
@@ -899,7 +899,7 @@ class Room {
             const isDuplicate = recentTracks.some(t => t === titleToCheck);
 
             if (isDuplicate) {
-                ws.send(JSON.stringify({ type: "error", message: `This song was recently played (Limit: ${cooldown}).` }));
+                ws.send(JSON.stringify({ type: "error", message: `This video was recently played (Limit: ${cooldown}).` }));
                 return;
             }
         }
@@ -923,11 +923,11 @@ class Room {
 
             // Manual Review Check
             if (this.state.suggestionMode === 'manual' && !canBypass) {
-                // Check if song is known and auto-approve is enabled
-                const isKnown = this.knownSongs.has(track.videoId);
+                // Check if video is known and auto-approve is enabled
+                const isKnown = this.knownVideos.has(track.videoId);
                 if (this.state.autoApproveKnown && isKnown) {
                     // Auto-approve: Skip adding to pending, proceed to queue
-                    console.log(`[Auto-Approve] Song ${track.title} (${track.videoId}) is known. Bypassing review.`);
+                    console.log(`[Auto-Approve] Video ${track.title} (${track.videoId}) is known. Bypassing review.`);
                     // Fallthrough to add to queue and send success at the end
                 } else {
                     const newPending = [...(this.state.pendingSuggestions || []), track];
@@ -1131,7 +1131,7 @@ class Room {
 
             // Add to queue logic (simplified version of handleSuggestSong end)
             const newQueue = [...this.state.queue, track];
-            this.knownSongs.add(track.videoId); // Remember this song
+            this.knownVideos.add(track.videoId); // Remember this song
             const newState = {
                 queue: newQueue,
                 pendingSuggestions: newPending
@@ -1168,7 +1168,7 @@ class Room {
             newPending.splice(index, 1);
 
             // Add to banned list
-            if (!this.state.bannedSongs.some(b => b.videoId === track.videoId)) {
+            if (!this.state.bannedVideos.some(b => b.videoId === track.videoId)) {
                 const newBanned = [
                     ...this.state.bannedSongs,
                     {
@@ -1202,8 +1202,8 @@ class Room {
         const newHistory = this.state.history.filter(t => t.videoId !== videoId);
 
         // Also remove from knownSongs cache
-        if (this.knownSongs.has(videoId)) {
-            this.knownSongs.delete(videoId);
+        if (this.knownVideos.has(videoId)) {
+            this.knownVideos.delete(videoId);
         }
 
         if (newHistory.length !== initialCount) {

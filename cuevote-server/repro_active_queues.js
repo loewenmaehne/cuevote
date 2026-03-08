@@ -32,9 +32,9 @@ ws.on('message', function message(data) {
 			ws.send(JSON.stringify({ type: 'SUGGEST_SONG', payload: { query: 'lofi' } }));
 			synthwaveAdded = true;
 		}
-		// 2. Wait for Synthwave Song -> Switch to Pop
+		// 2. Wait for Synthwave Video -> Switch to Pop
 		else if (roomId === 'synthwave' && synthwaveAdded && queue.length > 0 && !popAdded) {
-			console.log('Synthwave has song. Waiting 5s then Switching to Pop...');
+			console.log('Synthwave has video. Waiting 5s then Switching to Pop...');
 			setTimeout(() => {
 				activeRoom = 'pop';
 				ws.send(JSON.stringify({ type: 'JOIN_ROOM', payload: { roomId: 'pop' } }));
@@ -46,9 +46,9 @@ ws.on('message', function message(data) {
 			ws.send(JSON.stringify({ type: 'SUGGEST_SONG', payload: { query: 'pop' } }));
 			popAdded = true;
 		}
-		// 4. Wait for Pop Song -> Switch Back
+		// 4. Wait for Pop Video -> Switch Back
 		else if (roomId === 'pop' && popAdded && queue.length > 0 && switchCount === 0) {
-			console.log(`Pop has song. Switching back to Synthwave (Cycle 1)...`);
+			console.log(`Pop has video. Switching back to Synthwave (Cycle 1)...`);
 			activeRoom = 'synthwave';
 			ws.send(JSON.stringify({ type: 'JOIN_ROOM', payload: { roomId: 'synthwave' } }));
 			switchCount++;
