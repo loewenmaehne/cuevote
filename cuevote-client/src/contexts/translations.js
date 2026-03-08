@@ -107,7 +107,9 @@ export const translations = {
 			adding: "Adding...",
 			added: "Added",
 			error: "Please enter a YouTube link or video name.",
-			loginRequired: "Please log in to suggest videos."
+			loginRequired: "Please log in to suggest videos.",
+			loadSimilar: "Load Similar Videos",
+			similarTo: "Similar to"
 		},
 		suggestions: {
 			title: "Related Videos",
@@ -305,7 +307,9 @@ export const translations = {
 			adding: "Toevoegen...",
 			added: "Toegevoegd",
 			error: "Voer een YouTube-link of titel in.",
-			loginRequired: "Log in om videos voor te stellen."
+			loginRequired: "Log in om videos voor te stellen.",
+			loadSimilar: "Vergelijkbare videos laden",
+			similarTo: "Vergelijkbaar met"
 		},
 		suggestions: {
 			title: "Gerelateerde Videos",
@@ -503,7 +507,9 @@ export const translations = {
 			adding: "Hinzufügen...",
 			added: "Hinzugefügt",
 			error: "Bitte YouTube-Link oder Titel eingeben.",
-			loginRequired: "Bitte anmelden, um Videos vorzuschlagen."
+			loginRequired: "Bitte anmelden, um Videos vorzuschlagen.",
+			loadSimilar: "Ähnliche Videos laden",
+			similarTo: "Ähnlich wie"
 		},
 		suggestions: {
 			title: "Ähnliche Videos",
@@ -701,7 +707,9 @@ export const translations = {
 			adding: "Ajout...",
 			added: "Ajouté",
 			error: "Entrez un lien YouTube ou un titre.",
-			loginRequired: "Veuillez vous connecter pour suggérer."
+			loginRequired: "Veuillez vous connecter pour suggérer.",
+			loadSimilar: "Charger des vidéos similaires",
+			similarTo: "Similaire à"
 		},
 		suggestions: {
 			title: "Vidéos Similaires",

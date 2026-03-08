@@ -33,7 +33,7 @@ class Room {
             captions_enabled: metadata.captions_enabled !== undefined ? metadata.captions_enabled : 0
         };
         this.clients = new Set();
-        this.knownSongs = new Set(); // Stores videoIds of approved songs
+        this.knownVideos = new Set(); // Stores videoIds of approved videos
 
         this.state = {
             roomId: id, // Send ID to client for validation
@@ -448,18 +448,8 @@ class Room {
                 }
             } catch (e) {
                 console.error("[AutoRefill] API Check Failed:", e);
-                // If API fails, we can't be sure they are invalid. Be conservative and keep them?
-                // Or skip adding them this time? 
-                // Let's skip adding them to be safe, but NOT delete from history (since it could be just API error).
-                // Actually, if we return empty set, we delete them from history in the caller logic?
-                // The caller logic says "if not remove it from saved history entirely".
-                // We should only delete if we are SURE it's invalid (found in API response as invalid/missing).
-                // If API call itself fails, we probably shouldn't return anything, or return all?
-                // Let's assume on API error we preserve history but don't add.
-                // So adding 0 valid IDs here means 0 added to queue, and all treated as "invalid" -> deleted? 
-                // Wait, if API request fails, we shouldn't delete.
-                // So we need to handle network error separate from "video missing" error.
-                // For now, simple logging.
+                // On API network error, we cannot determine validity — preserve all videos in this chunk
+                for (const id of chunk) validIds.add(id);
             }
         }
         return validIds;
@@ -575,7 +565,7 @@ class Room {
             }
 
             if (!this.apiKey) {
-                ws.send(JSON.stringify({ type: "error", message: "Suggestions not unavailable (No API Key)." }));
+                ws.send(JSON.stringify({ type: "error", message: "Suggestions unavailable (No API Key)." }));
                 return;
             }
 
@@ -1140,6 +1130,7 @@ class Room {
             // Check if we need to start playing
             if (newQueue.length === 1 && !this.state.isPlaying) {
                 newState.currentTrack = newQueue[0];
+                newState.currentTrack.startedAt = Date.now(); // Init timestamp for proper progress tracking
                 newState.isPlaying = true;
                 newState.progress = 0;
             }
@@ -1207,7 +1198,7 @@ class Room {
         }
 
         if (newHistory.length !== initialCount) {
-            console.log(`[Room ${this.roomId}] Removed video ${videoId} from history.`);
+            console.log(`[Room ${this.id}] Removed video ${videoId} from history.`);
             this.updateState({ history: newHistory });
 
             // Delete from persistent database as well

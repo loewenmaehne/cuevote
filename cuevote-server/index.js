@@ -422,7 +422,6 @@ wss.on("connection", (ws, req) => {
                         ws.send(JSON.stringify({ type: "error", message: "Failed to generate a unique channel ID. Please try again." }));
                     }
                     return;
-                    return;
                 }
                 case "LIST_ROOMS": {
                     const { type } = parsedMessage.payload || {}; // 'public', 'private', or 'my_channels'
