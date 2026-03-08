@@ -15,6 +15,8 @@ export default defineConfig({
           if (id.includes('translations.js')) return 'translations'
           if (id.includes('legalContent.js')) return 'legalContent'
           if (id.includes('node_modules')) return undefined
+          // Context providers in their own chunk so they always run before App chunk (avoids TDZ 'ce' etc).
+          if (id.includes('ConsentContext.jsx') || id.includes('LanguageContext.jsx')) return 'contexts'
           if (id.includes('deviceDetection') || id.includes('ContextValue') || id.includes('WebSocketContext.js')) return 'app-core'
         },
       },
