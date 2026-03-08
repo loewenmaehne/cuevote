@@ -4,36 +4,30 @@ import { translations } from './translations';
 const LanguageContext = createContext();
 
 
+// Detect initial language in useEffect to avoid reading `translations` during module init (prevents TDZ in production bundle).
+function detectInitialLanguage() {
+	const saved = localStorage.getItem('cuevote_language');
+	if (saved && translations[saved]) return saved;
+	const browserLang = navigator.language || navigator.userLanguage;
+	if (browserLang) {
+		if (browserLang.toLowerCase() === 'zh-cn' || browserLang.toLowerCase() === 'zh-sg') {
+			if (translations['zh-CN']) return 'zh-CN';
+		}
+		if (browserLang.toLowerCase() === 'zh-tw' || browserLang.toLowerCase() === 'zh-hk') {
+			if (translations['zh-TW']) return 'zh-TW';
+		}
+		const code = browserLang.split('-')[0];
+		if (translations[code]) return code;
+	}
+	return 'en';
+}
+
 export function LanguageProvider({ children }) {
-	const [language, setLanguage] = useState(() => {
-		// 1. Check Local Storage
-		const saved = localStorage.getItem('cuevote_language');
-		if (saved && translations[saved]) {
-			return saved;
-		}
+	const [language, setLanguage] = useState('en');
 
-		// 2. Check Browser Language
-		const browserLang = navigator.language || navigator.userLanguage; // e.g., "en-US", "zh-CN", "fr"
-
-		// Special handling for Chinese variants
-		if (browserLang) {
-			if (browserLang.toLowerCase() === 'zh-cn' || browserLang.toLowerCase() === 'zh-sg') {
-				if (translations['zh-CN']) return 'zh-CN';
-			}
-			if (browserLang.toLowerCase() === 'zh-tw' || browserLang.toLowerCase() === 'zh-hk') {
-				if (translations['zh-TW']) return 'zh-TW';
-			}
-
-			// General handling: take first 2 chars
-			const code = browserLang.split('-')[0];
-			if (translations[code]) {
-				return code;
-			}
-		}
-
-		// 3. Fallback
-		return 'en';
-	});
+	useEffect(() => {
+		setLanguage(detectInitialLanguage());
+	}, []);
 
 	useEffect(() => {
 		localStorage.setItem('cuevote_language', language);
