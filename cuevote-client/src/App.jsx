@@ -874,6 +874,21 @@ function App() {
     setRoomNotFound(false);
   }, [activeRoomId]);
 
+  const handleDeleteSong = (trackId) => {
+    sendMessage({ type: "DELETE_SONG", payload: { trackId } });
+  };
+
+  const handleSeek = (percentage) => {
+    if (!playerRef.current) return;
+    const duration = playerRef.current.getDuration();
+    if (!duration) return;
+    const seconds = (percentage / 100) * duration;
+    if (isOwner) {
+      sendMessage({ type: "SEEK_TO", payload: seconds });
+      playerRef.current.seekTo(seconds, true);
+    }
+  };
+
   if (roomNotFound) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
@@ -890,7 +905,7 @@ function App() {
   }
 
   // TOS Compliance: Window Size Blocker (Desktop only, if not blocked by mobile check)
-  if (isWindowTooSmall && !isTV()) { // Adjusted to ignore TV as TV might report weird sizes but is trusted
+  if (isWindowTooSmall && !isTV()) {
     return (
       <div className="flex flex-col h-screen w-full bg-black items-center justify-center p-6 text-center z-[100] relative overflow-hidden">
         <div className="absolute inset-0 bg-neutral-900/50" />
@@ -898,9 +913,9 @@ function App() {
           <div className="mx-auto w-16 h-16 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 animate-bounce">
             <Maximize2 size={32} />
           </div>
-          <h2 className="text-2xl font-bold text-white">Window Too Small</h2>
+          <h2 className="text-2xl font-bold text-white">{t('app.windowTooSmall')}</h2>
           <p className="text-neutral-400">
-            Please resize your window to continue using CueVote. We need a bit more space to show the video player correctly.
+            {t('app.windowTooSmallMessage')}
           </p>
         </div>
       </div>
@@ -1060,28 +1075,7 @@ function App() {
   }
 
 
-  const handleDeleteSong = (trackId) => {
-    sendMessage({ type: "DELETE_SONG", payload: { trackId } });
-  };
-
-
-
-
-
-
-  const handleSeek = (percentage) => {
-    if (!playerRef.current) return;
-    const duration = playerRef.current.getDuration();
-    if (!duration) return;
-    const seconds = (percentage / 100) * duration;
-
-    // Send to server (Owner only check server-side, but frontend check is good too)
-    if (isOwner) {
-      sendMessage({ type: "SEEK_TO", payload: seconds });
-      // Seek locally immediately for responsiveness
-      playerRef.current.seekTo(seconds, true);
-    }
-  };
+  // NOTE: handleDeleteSong and handleSeek are now defined before the early return (see above)
 
   if (showSettings) {
     return (
@@ -1376,7 +1370,7 @@ function App() {
                   onClick={() => window.location.reload()}
                   className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-lg shadow-lg hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all active:scale-95"
                 >
-                  Reload to Join
+                  {t('app.reloadToJoin')}
                 </button>
               </div>
             )}
@@ -1416,10 +1410,10 @@ function App() {
               <button
                 onClick={handleStopPreview}
                 className="bg-white text-green-900 hover:bg-gray-100 transition-colors rounded-full p-2 sm:p-3 shadow-lg flex-shrink-0 flex items-center gap-2"
-                title="Back to Radio"
+                title={t('app.backToRadio')}
               >
                 <ArrowLeft size={18} className="sm:w-6 sm:h-6" />
-                <span className="font-bold pr-2 hidden sm:inline">Back to Radio</span>
+                <span className="font-bold pr-2 hidden sm:inline">{t('app.backToRadio')}</span>
               </button>
               <div className="truncate min-w-0 flex-1">
                 <div className="flex items-center gap-2">
