@@ -3,7 +3,6 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { deviceDetection } from './utils/deviceDetection';
 import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
 import { Consent } from './contexts/ConsentContext';
-import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
 import { Language } from './contexts/LanguageContext';
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
@@ -13,7 +12,6 @@ import { Suggestions } from "./components/Suggestions";
 import { PlaylistView } from "./components/PlaylistView";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { SettingsView } from "./components/SettingsView";
-import { PendingRequestsExports } from "./components/PendingRequests";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
 import { ChannelLibrary } from "./components/ChannelLibrary"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
@@ -35,7 +33,12 @@ const YouTubeState = {
 };
 
 function App() {
-  const { PendingRequests, PendingRequestsPage } = PendingRequestsExports;
+  const [CookieBlockedPlaceholderComponent, setCookieBlockedPlaceholder] = useState(null);
+  const [pendingRequestsExports, setPendingRequestsExports] = useState(null);
+  useEffect(() => {
+    import('./components/CookieBlockedPlaceholder').then((m) => setCookieBlockedPlaceholder(() => m.CookieBlockedPlaceholder));
+    import('./components/PendingRequests').then((m) => setPendingRequestsExports(m.PendingRequestsExports));
+  }, []);
   const { roomId } = useParams();
 
   const navigate = useNavigate();
@@ -1197,28 +1200,34 @@ function App() {
         </div>
       )}
 
-      {isOwner && pendingSuggestions.length > 0 && ownerPopups && (
-        <PendingRequests
-          requests={pendingSuggestions}
-          onApprove={handleApproveSuggestion}
-          onReject={handleRejectSuggestion}
-          onBan={handleBanSuggestion}
-          onPreview={handlePreviewTrack}
-          onClose={() => handleUpdateSettings({ ownerPopups: false })}
-        />
-      )}
+      {isOwner && pendingSuggestions.length > 0 && ownerPopups && (() => {
+        const PendingRequests = pendingRequestsExports?.PendingRequests;
+        return PendingRequests ? (
+          <PendingRequests
+            requests={pendingSuggestions}
+            onApprove={handleApproveSuggestion}
+            onReject={handleRejectSuggestion}
+            onBan={handleBanSuggestion}
+            onPreview={handlePreviewTrack}
+            onClose={() => handleUpdateSettings({ ownerPopups: false })}
+          />
+        ) : null;
+      })()}
 
-      {showPendingPage && (
-        <PendingRequestsPage
-          requests={pendingSuggestions}
-          onApprove={handleApproveSuggestion}
-          onReject={handleRejectSuggestion}
-          onBan={handleBanSuggestion}
-          onManageBanned={() => setShowBannedPage(true)}
-          onPreview={handlePreviewTrack}
-          onClose={() => setShowPendingPage(false)}
-        />
-      )}
+      {showPendingPage && (() => {
+        const PendingRequestsPage = pendingRequestsExports?.PendingRequestsPage;
+        return PendingRequestsPage ? (
+          <PendingRequestsPage
+            requests={pendingSuggestions}
+            onApprove={handleApproveSuggestion}
+            onReject={handleRejectSuggestion}
+            onBan={handleBanSuggestion}
+            onManageBanned={() => setShowBannedPage(true)}
+            onPreview={handlePreviewTrack}
+            onClose={() => setShowPendingPage(false)}
+          />
+        ) : null;
+      })()}
 
       {showPendingPage && previewTrack && (
         <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 animate-fadeIn">
@@ -1241,7 +1250,7 @@ function App() {
                     playerContainerRef={playerContainerRef}
                   />
                 )
-              ) : <CookieBlockedPlaceholder />}
+              ) : (CookieBlockedPlaceholderComponent ? <CookieBlockedPlaceholderComponent /> : <div className="w-full h-full flex items-center justify-center bg-black text-neutral-500">Loading…</div>)}
             </PlayerErrorBoundary>
           </div>
         </div>
@@ -1347,7 +1356,7 @@ function App() {
             {!showPendingPage && !showBannedPage && (
               <div className="absolute inset-0">
                 {!hasConsent ? (
-                  <CookieBlockedPlaceholder />
+                  CookieBlockedPlaceholderComponent ? <CookieBlockedPlaceholderComponent /> : <div className="w-full h-full flex items-center justify-center bg-black text-neutral-500">Loading…</div>
                 ) : (
                   <>
                     <div style={{ display: (currentTrack || previewTrack) ? 'block' : 'none', width: '100%', height: '100%' }}>
