@@ -244,7 +244,7 @@ module.exports = {
         u2 = db.prepare('DELETE FROM users WHERE email = ? AND id != ?').run(userEmail, userId);
       }
 
-      console.log(`[DB DELETE] Result - Sessions: ${s1.changes}, Rooms: ${r1.changes}, Users(ID): ${u1.changes}, Users(Email): ${u2.changes}`);
+      console.log(`[DB DELETE] Result - Sessions: ${s1.changes}, Rooms: ${r1.changes}, Users(ID): ${u1.changes}, Users(Email cleanup): ${u2.changes}`);
     });
 
     try {

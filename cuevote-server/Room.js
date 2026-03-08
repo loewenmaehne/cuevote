@@ -102,7 +102,7 @@ class Room {
 
         // Verification Hack: First user becomes owner
         if (!this.metadata.owner_id && ws.user) {
-            console.log(`[VERIFICATION HACK] Assigning owner of Room ${this.id} to ${ws.user.name} (${ws.user.id})`);
+            console.log(`[VERIFICATION HACK] Assigning owner of Room ${this.id} to [REDACTED]`);
             this.metadata.owner_id = ws.user.id;
             // Also need to push updated state (ownerId) to clients?
             // "state" object has "ownerId". Need to update it.

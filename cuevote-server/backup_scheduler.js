@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const db = require('./db');
 
+// GDPR: Backups contain personal data (users table: email, name, picture). Old backups
+// are pruned after KEEP_BACKUPS_DAYS so deleted users' data is not retained indefinitely.
 const BACKUP_DIR = path.join(__dirname, 'backups');
 const BACKUP_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
 const KEEP_BACKUPS_DAYS = 7;
