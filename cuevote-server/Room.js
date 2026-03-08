@@ -45,7 +45,7 @@ class Room {
             activeChannel: name,
             ownerId: metadata.owner_id,
             suggestionsEnabled: true,
-            musicOnly: true, // Default true
+            musicOnly: false, // Default false
             maxDuration: 600, // Default 10 minutes
             allowPrelisten: true,
             ownerBypass: true, // Bypass suggestions disabled
