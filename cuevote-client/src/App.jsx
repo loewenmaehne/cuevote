@@ -432,13 +432,8 @@ function App() {
         return;
       }
 
-      // Allow "Back" or "Escape" on TV to exit Cinema Mode
-      if (isCinemaMode && (e.key === 'Escape' || e.key === 'Backspace' || e.key === 'ArrowLeft')) {
-        // Special handling: if ArrowLeft, only exit if no specialized UI is focused?
-        // Safer to just use Escape/Backspace (standard Android TV Back)
-      }
-
-      if (e.key === 'Escape' || e.key === 'Backspace') {
+      // Allow "Back", "Escape", or "ArrowLeft" on TV to exit Cinema Mode
+      if (e.key === 'Escape' || e.key === 'Backspace' || (isTV() && e.key === 'ArrowLeft')) {
         if (showPendingPage) setShowPendingPage(false);
         else if (showBannedPage) setShowBannedPage(false);
         else if (showSuggest) setShowSuggest(false);
@@ -446,7 +441,7 @@ function App() {
         else if (showChannelLibrary) setShowChannelLibrary(false);
         else if (showPasswordModal) { /* navigate('/'); */ }
         else if (isCinemaMode) {
-          setIsCinemaMode(false); // <--- Add this!
+          setIsCinemaMode(false);
         }
       }
     };
@@ -700,7 +695,9 @@ function App() {
         stallRetriesRef.current += 1;
         console.warn(`[Player] Stall detected (Attempt ${stallRetriesRef.current}).`);
 
-        if (!isOwner && stallRetriesRef.current > 2) {
+        // TV/main display gets more retries (slower networks, primary screen)
+        const stallLimit = isTV() ? 6 : 2;
+        if (!isOwner && stallRetriesRef.current > stallLimit) {
           console.warn("[Player] Stall limit exceeded for guest. Assuming unavailable.");
           setPlaybackError(100); // 100 = Video Not Found / Generic Unavailable. Triggers overlay.
           clearInterval(checkInterval); // Stop trying
@@ -1491,8 +1488,8 @@ function App() {
           onClose={() => setToast(null)}
         />
       )}
-      {/* TV Unmute Overlay */}
-      {isTV() && isMuted && isPlayerReady && (
+      {/* TV Unmute Overlay - only when video is visible (not in playlist-only view) */}
+      {isTV() && isMuted && isPlayerReady && !isAnyPlaylistView && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-500">
           <button
             onClick={() => {
