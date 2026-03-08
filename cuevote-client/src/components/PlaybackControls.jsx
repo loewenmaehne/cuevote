@@ -30,7 +30,7 @@ export function PlaybackControls({
   const isHoveredRef = useRef(false);
   const { t } = useLanguage();
 
-  // Function to show controls temporarily (e.g. on song start or mouse leave)
+  // Function to show controls temporarily (e.g. on video start or mouse leave)
   const activateTemporaryVisibility = () => {
     if (isHoveredRef.current) return; // Don't hide if hovered (checked via Ref for sync access)
     // console.log("[PlaybackControls] Activating temporary visibility. Starting 3s timer.");

@@ -6,7 +6,7 @@ import { Track } from "./Track";
 
 export function ChannelLibrary({
 	history = [],
-	onAdd, // New prop to add song to queue
+	onAdd, // New prop to add video to queue
 	onDelete,
 	onPreview,
 	onRecommend,
@@ -43,17 +43,17 @@ export function ChannelLibrary({
 		const now = Date.now();
 		const TWENTY_EIGHT_DAYS_MS = 28 * 24 * 60 * 60 * 1000;
 
-		let result = uniqueSongs.filter(song => {
-			if (!song.playedAt) return false;
-			const age = now - song.playedAt;
+		let result = uniqueVideos.filter(song => {
+			if (!video.playedAt) return false;
+			const age = now - video.playedAt;
 			return age < TWENTY_EIGHT_DAYS_MS;
 		});
 
 		if (searchQuery.trim()) {
 			const lowerQ = searchQuery.toLowerCase();
 			result = result.filter(song =>
-				(song.title && song.title.toLowerCase().includes(lowerQ)) ||
-				(song.artist && song.artist.toLowerCase().includes(lowerQ))
+				(video.title && video.title.toLowerCase().includes(lowerQ)) ||
+				(video.artist && video.artist.toLowerCase().includes(lowerQ))
 			);
 		}
 
@@ -66,14 +66,14 @@ export function ChannelLibrary({
 	}, [searchQuery]);
 
 	const visibleSongs = useMemo(() => {
-		return filteredSongs.slice(0, displayedCount);
+		return filteredVideos.slice(0, displayedCount);
 	}, [filteredSongs, displayedCount]);
 
 	useEffect(() => {
 		const target = observerTarget.current;
 		const observer = new IntersectionObserver(
 			(entries) => {
-				if (entries[0].isIntersecting && displayedCount < filteredSongs.length) {
+				if (entries[0].isIntersecting && displayedCount < filteredVideos.length) {
 					console.log("Loading more items...");
 					setDisplayedCount((prev) => prev + 50);
 				}
@@ -90,7 +90,7 @@ export function ChannelLibrary({
 				observer.unobserve(target);
 			}
 		};
-	}, [displayedCount, filteredSongs.length]);
+	}, [displayedCount, filteredVideos.length]);
 
 
 	return (
@@ -109,7 +109,7 @@ export function ChannelLibrary({
 					/>
 				</div>
 				<p className="text-xs text-neutral-500 text-center mt-3 font-medium">
-					<span className="text-orange-500">{filteredSongs.length}</span> {t('header.songs')} {t('library.inLibrary')}
+					<span className="text-orange-500">{filteredVideos.length}</span> {t('header.songs')} {t('library.inLibrary')}
 				</p>
 			</div>
 
@@ -123,9 +123,9 @@ export function ChannelLibrary({
 				)}
 
 				<div className="space-y-2 max-w-3xl mx-auto">
-					{visibleSongs.length > 0 ? (
+					{visibleVideos.length > 0 ? (
 						<>
-							{visibleSongs.map((track, i) => (
+							{visibleVideos.map((track, i) => (
 								<Track
 									key={`lib-${track.videoId}-${i}`}
 									track={track}
