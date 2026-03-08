@@ -14,6 +14,11 @@ const backupScheduler = require('./backup_scheduler');
 backupScheduler.start();
 
 const logFile = 'debug_server.log';
+// GDPR: avoid persisting user identifiers to log file; use this for any PII in messages
+function redactForLog(value) {
+    if (value === undefined || value === null || value === '') return '[REDACTED]';
+    return '[REDACTED]';
+}
 function logToFile(msg) {
     const timestamp = new Date().toISOString();
     const line = `[${timestamp}] ${msg}\n`;
@@ -173,10 +178,10 @@ wss.on("connection", (ws, req) => {
             switch (parsedMessage.type) {
                 case "LOGIN": {
                     const { token } = parsedMessage.payload;
-                    console.log("[LOGIN TRACE] Processing login request...");
-                    try {
-                        const payload = await verifyGoogleToken(token);
-                        console.log(`[LOGIN TRACE] Token verified for Google Subject: ${payload.sub}`);
+                        console.log("[LOGIN TRACE] Processing login request...");
+                        try {
+                            const payload = await verifyGoogleToken(token);
+                            console.log(`[LOGIN TRACE] Token verified for Google Subject: ${redactForLog(payload.sub)}`);
 
                         let user = db.getUser(payload.sub);
                         console.log(`[LOGIN TRACE] User found in DB? ${!!user}`);
@@ -230,7 +235,7 @@ wss.on("connection", (ws, req) => {
                             }));
                         } else {
                             // Session exists but user is gone (deleted?)
-                            console.warn(`[Resume Session] Session found but user ${session.user_id} is missing. Invalidating.`);
+                            console.warn(`[Resume Session] Session found but user ${redactForLog(session.user_id)} is missing. Invalidating.`);
                             db.deleteSession(token);
                             ws.send(JSON.stringify({ type: "SESSION_INVALID" }));
                         }
@@ -257,11 +262,11 @@ wss.on("connection", (ws, req) => {
                         return;
                     }
                     const userId = ws.user.id;
-                    logToFile(`[GDPR] Deleting account for user: ${userId}`);
+                    logToFile(`[GDPR] Deleting account for user: ${redactForLog(userId)}`);
 
                     // 1. Delete from DB (Synchronous Transaction)
                     try {
-                        logToFile(`[GDPR TRACE] Starting DB Deletion for ${userId}...`);
+                        logToFile(`[GDPR TRACE] Starting DB Deletion for ${redactForLog(userId)}...`);
 
                         // Debug: Count before
                         const beforeRooms = db.listUserRooms(userId);
@@ -438,7 +443,7 @@ wss.on("connection", (ws, req) => {
                     const showMyChannels = type === 'my_channels';
 
                     if (showMyChannels) {
-                        console.log(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${ws.user?.id} (${ws.user?.name})`);
+                        console.log(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${redactForLog(ws.user?.id)}`);
                     }
 
                     if (showMyChannels && !ws.user) {
@@ -477,7 +482,7 @@ wss.on("connection", (ws, req) => {
                     let dbRooms = [];
                     if (showMyChannels) {
                         dbRooms = db.listUserRooms(ws.user.id);
-                        console.log(`[DEBUG_MARATHON] DB returned ${dbRooms.length} rooms for user ${ws.user.id}. IDs: ${dbRooms.map(r => r.id).join(', ')}`);
+                        console.log(`[DEBUG_MARATHON] DB returned ${dbRooms.length} rooms for user ${redactForLog(ws.user?.id)}. IDs: ${dbRooms.map(r => r.id).join(', ')}`);
                     } else {
                         dbRooms = showPrivate ? db.listPrivateRooms() : db.listPublicRooms();
                     }
