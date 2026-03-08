@@ -1274,6 +1274,42 @@ class Room {
         }
     }
 
+    /**
+     * GDPR: Remove a deleted user's PII from this room's in-memory state.
+     * Call this for every active room when a user account is deleted so their
+     * id/name are not broadcast in voters or suggestedBy/suggestedByUsername.
+     */
+    scrubDeletedUser(userId) {
+        const id = String(userId).trim();
+        const scrubTrack = (track) => {
+            if (!track) return track;
+            const next = { ...track };
+            if (next.voters && next.voters[id] !== undefined) {
+                const { [id]: _, ...rest } = next.voters;
+                next.voters = rest;
+            }
+            if (next.suggestedBy === id) {
+                next.suggestedBy = null;
+                next.suggestedByUsername = '[deleted]';
+            }
+            return next;
+        };
+
+        const newQueue = (this.state.queue || []).map(scrubTrack);
+        const newHistory = (this.state.history || []).map(scrubTrack);
+        const newPending = (this.state.pendingSuggestions || []).map(scrubTrack);
+        const newCurrentTrack = this.state.currentTrack ? scrubTrack(this.state.currentTrack) : null;
+
+        this.state = {
+            ...this.state,
+            queue: newQueue,
+            history: newHistory,
+            pendingSuggestions: newPending,
+            currentTrack: newCurrentTrack
+        };
+        this.broadcastState();
+    }
+
     destroy() {
         clearInterval(this.interval);
     }

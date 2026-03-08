@@ -313,6 +313,15 @@ wss.on("connection", (ws, req) => {
                         }
                     });
 
+                    // 2b. GDPR: Scrub deleted user's PII from all other rooms (voters, suggestedBy, suggestedByUsername)
+                    for (const [id, room] of rooms.entries()) {
+                        try {
+                            room.scrubDeletedUser(userId);
+                        } catch (err) {
+                            logToFile(`[GDPR ERROR] Failed to scrub user from room ${id}: ${err.message}`);
+                        }
+                    }
+
                     // 3. Success
                     logToFile("[GDPR TRACE] Sending DELETE_ACCOUNT_SUCCESS");
                     ws.send(JSON.stringify({ type: "DELETE_ACCOUNT_SUCCESS" }));
