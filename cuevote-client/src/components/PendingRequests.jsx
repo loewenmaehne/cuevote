@@ -2,13 +2,13 @@
 import React from 'react';
 import { Check, X, Clock, ArrowLeft, Ban, Headphones } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 
-function PendingRequests({ requests, onApprove, onReject, onBan, onPreview, onClose }) {
-	const { t } = useLanguage();
-	if (!requests || requests.length === 0) return null;
-
-	return (
+// Single export with inline components so bundler cannot reorder and cause TDZ.
+export const PendingRequestsExports = {
+	PendingRequests({ requests, onApprove, onReject, onBan, onPreview, onClose }) {
+		const { t } = Language.useLanguage();
+		if (!requests || requests.length === 0) return null;
+		return (
 		<div className="fixed bottom-20 sm:bottom-24 left-4 right-4 sm:left-auto sm:right-6 sm:w-[450px] z-30 bg-neutral-900/95 backdrop-blur-md border border-neutral-700 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5">
 			<div className="bg-neutral-800/50 p-3 border-b border-neutral-700 flex justify-between items-center">
 				<h3 className="font-bold text-white flex items-center gap-2">
@@ -74,12 +74,11 @@ function PendingRequests({ requests, onApprove, onReject, onBan, onPreview, onCl
 				))}
 			</div >
 		</div >
-	);
-}
-
-function PendingRequestsPage({ requests, onApprove, onReject, onBan, onManageBanned, onPreview, onClose }) {
-	const { t } = useLanguage();
-	return (
+		);
+	},
+	PendingRequestsPage({ requests, onApprove, onReject, onBan, onManageBanned, onPreview, onClose }) {
+		const { t } = Language.useLanguage();
+		return (
 		<div className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm flex flex-col animate-in fade-in">
 			<div className="p-6 border-b border-neutral-800 flex items-center justify-between bg-black">
 				<div className="flex items-center gap-4">
@@ -168,7 +167,6 @@ function PendingRequestsPage({ requests, onApprove, onReject, onBan, onManageBan
 				)}
 			</div>
 		</div>
-	);
-}
-
-export const PendingRequestsExports = { PendingRequests, PendingRequestsPage };
+		);
+	},
+};
