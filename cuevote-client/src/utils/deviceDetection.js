@@ -1,80 +1,45 @@
-export const isTV = () => {
-	if (typeof navigator === 'undefined' || !navigator.userAgent) {
-		return false;
-	}
+// Single export object so bundler cannot reorder and cause "Cannot access 'ie' before initialization".
+// All helpers are defined first, then one export at the end.
 
-	// Allow explicit override via URL parameter ?tv=true
+function isTV() {
+	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
 	if (typeof window !== 'undefined') {
 		const params = new URLSearchParams(window.location.search);
 		if (params.get('tv') === 'true') return true;
 	}
-
 	const userAgent = navigator.userAgent.toLowerCase();
-
 	return (
-		userAgent.includes('smart-tv') ||
-		userAgent.includes('smarttv') ||
-		userAgent.includes('googletv') ||
-		userAgent.includes('appletv') ||
-		userAgent.includes('hbbtv') ||
-		userAgent.includes('pov_tv') ||
-		userAgent.includes('netcast.tv') ||
-		userAgent.includes('webos') ||
-		userAgent.includes('tizen') ||
-		userAgent.includes('android tv') ||
-		// Re-enabled: Broad Android TV check (was removed and caused regression)
-		(userAgent.includes('android') && userAgent.includes('tv')) ||
-		// FireTV / distinct TV boxes
-		userAgent.includes('aft') ||         // FireTV keys often start with AFT
-		userAgent.includes('dtv') ||         // Digital TV
-		userAgent.includes('bravia') ||
-		userAgent.includes('viera') ||
-		userAgent.includes('philips') ||
-		userAgent.includes('crkey') ||       // Chromecast
-		userAgent.includes('roku') ||
-		userAgent.includes('large screen')   // Some TV browsers specifically state this
+		userAgent.includes('smart-tv') || userAgent.includes('smarttv') || userAgent.includes('googletv') ||
+		userAgent.includes('appletv') || userAgent.includes('hbbtv') || userAgent.includes('pov_tv') ||
+		userAgent.includes('netcast.tv') || userAgent.includes('webos') || userAgent.includes('tizen') ||
+		userAgent.includes('android tv') || (userAgent.includes('android') && userAgent.includes('tv')) ||
+		userAgent.includes('aft') || userAgent.includes('dtv') || userAgent.includes('bravia') ||
+		userAgent.includes('viera') || userAgent.includes('philips') || userAgent.includes('crkey') ||
+		userAgent.includes('roku') || userAgent.includes('large screen')
 	);
-};
+}
 
-// Tablet Detection
-export const isTablet = () => {
+function isTablet() {
 	if (typeof navigator === 'undefined') return false;
-
 	const userAgent = navigator.userAgent.toLowerCase();
-
-	// 1. Explicit Tablet UAs
 	const isExplicitTablet = /ipad|tablet|playbook|silk/i.test(userAgent);
-
-	// 2. Android: If it says "Android" but NOT "Mobile", it's usually a tablet
 	const isAndroidTablet = /android/i.test(userAgent) && !/mobile/i.test(userAgent);
-
-	// 3. iPadOS 13+ (Macintosh + Touch)
 	const isIPadOS = (navigator.maxTouchPoints > 0) && /macintosh/i.test(userAgent);
-
-	// 4. Hybrid Heuristic (Touch + Widescreen)
-	// We use 768px as the standard cutoff (iPad Mini width)
-	// CRITICAL FIX: Check min dimension, otherwise a landscape phone (width > 800) counts as tablet.
 	const isHybridTablet = (navigator.maxTouchPoints > 0) && (Math.min(window.innerWidth, window.innerHeight) >= 768);
-
 	return isExplicitTablet || isAndroidTablet || isIPadOS || isHybridTablet;
-};
+}
 
-export const isIOS = () => {
+function isIOS() {
 	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
 	const userAgent = navigator.userAgent.toLowerCase();
-	// Check for iPhone/iPad/iPod or Mac with Touch Points (iPadOS 13+)
-	return (
-		/iphone|ipad|ipod/i.test(userAgent) ||
-		(navigator.maxTouchPoints > 0 && /macintosh/i.test(userAgent))
-	);
-};
+	return /iphone|ipad|ipod/i.test(userAgent) || (navigator.maxTouchPoints > 0 && /macintosh/i.test(userAgent));
+}
 
-export const isNativeApp = () => {
+function isNativeApp() {
 	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
 	return navigator.userAgent.toLowerCase().includes('cuevotewrapper');
-};
+}
 
-// Inline helpers so isMobile does not call other exports (avoids TDZ when bundler reorders).
 function _isTV(userAgent) {
 	return (
 		userAgent.includes('smart-tv') || userAgent.includes('smarttv') || userAgent.includes('googletv') ||
@@ -87,7 +52,7 @@ function _isTV(userAgent) {
 	);
 }
 
-export const isMobile = () => {
+function isMobile() {
 	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
 	const userAgent = navigator.userAgent.toLowerCase();
 	if (typeof window !== 'undefined') {
@@ -100,4 +65,6 @@ export const isMobile = () => {
 		userAgent.includes('cuevotewrapper') ||
 		(navigator.maxTouchPoints > 0 && window.innerWidth < 768)
 	);
-};
+}
+
+export const deviceDetection = { isTV, isTablet, isIOS, isNativeApp, isMobile };

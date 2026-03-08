@@ -36,6 +36,6 @@ Same kind of error, different minified variable names.
 | **LanguageContext** | No static import of `translations`; load via `import('./translations')` in `useEffect` and store in state. |
 | **main.jsx** | App and LegalPage routes are `React.lazy()` so their chunks (and deps) don’t run at initial load. |
 | **vite.config.js** | `manualChunks` for `translations` and `legalContent`; `sourcemap: true` so production errors point to real files. |
-| **deviceDetection.js** | `isMobile()` no longer calls `isTV()` or `isNativeApp()`; TV/native checks inlined so no cross-reference between exports. |
+| **deviceDetection.js** | Replaced multiple `export const` with a single `export const deviceDetection = { isTV, isTablet, ... }` so all helpers are defined first and only one binding is exported (no reorder/TDZ). Call sites use `deviceDetection.isTV()` etc. |
 
 Together, these remove or avoid the patterns that were causing the TDZ errors in production.

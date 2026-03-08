@@ -1,5 +1,6 @@
 import React from 'react';
-import { isTV } from '../utils/deviceDetection';
+import { deviceDetection } from '../utils/deviceDetection';
+const { isTV } = deviceDetection;
 import { MobileBlockPage } from './MobileBlockPage';
 
 export const MobileRedirectGuard = ({ children }) => {

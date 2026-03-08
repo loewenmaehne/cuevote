@@ -1,6 +1,7 @@
 import React from 'react';
 import { Download, Monitor, Smartphone, Tv, Settings } from 'lucide-react';
-import { isTV } from '../utils/deviceDetection';
+import { deviceDetection } from '../utils/deviceDetection';
+const { isTV } = deviceDetection;
 import { useLanguage } from '../contexts/LanguageContext';
 
 export const MobileBlockPage = () => {

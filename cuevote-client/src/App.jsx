@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { isTV, isMobile, isTablet, isIOS, isNativeApp } from './utils/deviceDetection';
+import { deviceDetection } from './utils/deviceDetection';
+const { isTV, isMobile, isTablet, isIOS, isNativeApp } = deviceDetection;
 import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
 import { useConsent } from './contexts/ConsentContext';
 import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
