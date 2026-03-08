@@ -311,7 +311,7 @@ function App() {
     if (lastMessage) {
       if (lastMessage.type === 'info') setToast({ message: lastMessage.message, type: "info" });
       else if (lastMessage.type === 'success') {
-        if (lastMessage.message === "Added") return; // Suppress redundant "Success" popup for song additions
+        if (lastMessage.message === "Added") return; // Suppress redundant "Success" popup for video additions
         setToast({ message: lastMessage.payload || "Success", type: "success" });
       }
       else if (lastMessage.type === 'error') setToast({ message: lastMessage.message, type: "error" });

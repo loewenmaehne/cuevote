@@ -149,7 +149,7 @@ export function Track({
               {isFetchingSuggestions ? (
                 <div className="flex flex-col items-center justify-center py-8 text-neutral-500 gap-3">
                   <Loader2 className="animate-spin text-orange-500" size={24} />
-                  <p className="text-xs font-medium">{t('suggestions.loading', 'Finding similar songs...')}</p>
+                  <p className="text-xs font-medium">{t('suggestions.loading', 'Finding similar videos...')}</p>
                 </div>
               ) : suggestions && suggestions.length > 0 ? (
                 <Suggestions suggestions={suggestions} onAdd={onAddSuggestion || onAdd} onPreview={onPreview} queueVideoIds={queueVideoIds} />
