@@ -1,11 +1,13 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { translations } from './translations';
+import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 
 const LanguageContext = createContext();
 
+// Load translations via dynamic import so the module is never read at bundle init (avoids TDZ).
+function getTranslations() {
+	return import('./translations').then((m) => m.translations);
+}
 
-// Detect initial language in useEffect to avoid reading `translations` during module init (prevents TDZ in production bundle).
-function detectInitialLanguage() {
+function detectInitialLanguage(translations) {
 	const saved = localStorage.getItem('cuevote_language');
 	if (saved && translations[saved]) return saved;
 	const browserLang = navigator.language || navigator.userLanguage;
@@ -24,9 +26,16 @@ function detectInitialLanguage() {
 
 export function LanguageProvider({ children }) {
 	const [language, setLanguage] = useState('en');
+	const [translations, setTranslations] = useState(null);
+	const initDone = useRef(false);
 
 	useEffect(() => {
-		setLanguage(detectInitialLanguage());
+		if (initDone.current) return;
+		initDone.current = true;
+		getTranslations().then((t) => {
+			setTranslations(t);
+			setLanguage((prev) => detectInitialLanguage(t) || prev);
+		});
 	}, []);
 
 	useEffect(() => {
@@ -34,6 +43,7 @@ export function LanguageProvider({ children }) {
 	}, [language]);
 
 	const t = (key, params = {}) => {
+		if (!translations) return key;
 		const keys = key.split('.');
 		let value = translations[language];
 
@@ -41,13 +51,12 @@ export function LanguageProvider({ children }) {
 			if (value && value[k]) {
 				value = value[k];
 			} else {
-				// Fallback to English if key missing in current language
 				let fallback = translations['en'];
 				for (const fk of keys) {
 					if (fallback && fallback[fk]) {
 						fallback = fallback[fk];
 					} else {
-						return key; // Return key if not found anywhere
+						return key;
 					}
 				}
 				value = fallback;
