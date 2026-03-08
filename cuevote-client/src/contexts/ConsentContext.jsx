@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-const ConsentContext = createContext(null);
+import React, { useContext, useState, useEffect } from 'react';
+import { ConsentContext } from './ConsentContextValue.js';
 
 export function ConsentProvider({ children }) {
 	const [hasConsent, setHasConsent] = useState(() => {
