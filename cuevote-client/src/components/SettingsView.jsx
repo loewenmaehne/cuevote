@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import { HelpCircle, ChevronLeft } from "lucide-react";
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 
 export function SettingsView({
 	onClose,
@@ -28,7 +27,7 @@ export function SettingsView({
 	captionsEnabled,
 	isConnected = true
 }) {
-	const { t } = useLanguage();
+	const { t } = Language.useLanguage();
 	const [deleteChannelText, setDeleteChannelText] = React.useState("");
 	const [showDeleteChannelConfirm, setShowDeleteChannelConfirm] = React.useState(false);
 

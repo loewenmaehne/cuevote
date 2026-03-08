@@ -1,7 +1,6 @@
 import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { Consent } from '../contexts/ConsentContext';
-const { useConsent } = Consent;
 
 // Logic-only component that uses the hook (must be inside GoogleOAuthProvider)
 function RealAuthButton({ onLoginSuccess, className, render }) {
@@ -42,7 +41,7 @@ function RealAuthButton({ onLoginSuccess, className, render }) {
 
 // Wrapper that handles "No Consent" state (can be used anywhere)
 export function GoogleAuthButton({ onLoginSuccess, className, render }) {
-	const { hasConsent, askForConsent } = useConsent();
+	const { hasConsent, askForConsent } = Consent.useConsent();
 
 	if (!hasConsent) {
 		// Return a disabled button

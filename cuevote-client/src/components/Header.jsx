@@ -5,7 +5,6 @@ import { GoogleAuthButton } from "./GoogleAuthButton";
 import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, Library, X, ChevronLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 
 
 export function Header({
@@ -40,7 +39,7 @@ export function Header({
   // const [showQRCode, setShowQRCode] = React.useState(false); // Removed local state
   const [copied, setCopied] = React.useState(false);
   const [deleteConfirmationText, setDeleteConfirmationText] = React.useState("");
-  const { t } = useLanguage();
+  const { t } = Language.useLanguage();
 
   useEffect(() => {
     const handleClickOutside = (event) => {

@@ -1,6 +1,5 @@
 import React from 'react';
 import { deviceDetection } from '../utils/deviceDetection';
-const { isTV } = deviceDetection;
 import { MobileBlockPage } from './MobileBlockPage';
 
 export const MobileRedirectGuard = ({ children }) => {
@@ -37,7 +36,7 @@ export const MobileRedirectGuard = ({ children }) => {
 	const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 	const isAndroid = /android/i.test(userAgent);
 
-	if ((isAndroid || isTV()) && !isWrapper) {
+	if ((isAndroid || deviceDetection.isTV()) && !isWrapper) {
 		// Whitelist Legal Page
 		if (window.location.pathname.startsWith('/legal')) {
 			return children;

@@ -2,11 +2,10 @@ import React from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useLocation } from 'react-router-dom';
 import { Consent } from '../contexts/ConsentContext';
-const { useConsent } = Consent;
 import { CookieConsent } from './CookieConsent';
 
 export function ConditionalGoogleOAuthProvider({ children }) {
-	const { hasConsent, showBanner, giveConsent } = useConsent();
+	const { hasConsent, showBanner, giveConsent } = Consent.useConsent();
 	const location = useLocation();
 
 	// Check if we are inside a room (URLs starting with /room/)

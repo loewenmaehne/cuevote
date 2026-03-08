@@ -2,9 +2,7 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
 import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2 } from "lucide-react";
 import { deviceDetection } from '../utils/deviceDetection';
-const { isMobile, isTablet } = deviceDetection;
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 
 export function PlaybackControls({
   isPlaying,
@@ -30,7 +28,7 @@ export function PlaybackControls({
   const progressBarRef = useRef(null);
   const overlayRef = useRef(null);
   const isHoveredRef = useRef(false);
-  const { t } = useLanguage();
+  const { t } = Language.useLanguage();
 
   // Function to show controls temporarily (e.g. on video start or mouse leave)
   const activateTemporaryVisibility = () => {
@@ -61,7 +59,7 @@ export function PlaybackControls({
   }, []);
 
   const handleMouseEnter = () => {
-    if (isMobile()) return; // Disable hover logic on mobile
+    if (deviceDetection.isMobile()) return; // Disable hover logic on mobile
     // if (!isHovered) console.log("[PlaybackControls] Mouse Enter");
     setIsHovered(true);
     isHoveredRef.current = true;
@@ -73,7 +71,7 @@ export function PlaybackControls({
   };
 
   const handleMouseLeave = () => {
-    if (isMobile()) return; // Disable hover logic on mobile
+    if (deviceDetection.isMobile()) return; // Disable hover logic on mobile
     // console.log("[PlaybackControls] Mouse Leave");
     setIsHovered(false);
     isHoveredRef.current = false;
@@ -224,7 +222,7 @@ export function PlaybackControls({
             >
               {isMuted ? <VolumeX /> : <Volume2 />}
             </button>
-            {!isMobile() && (
+            {!deviceDetection.isMobile() && (
               <input
                 type="range"
                 min="0"
@@ -237,7 +235,7 @@ export function PlaybackControls({
                 disabled={!currentTrack}
               />
             )}
-            {(!isMobile() || isTablet()) && (
+            {(!deviceDetection.isMobile() || deviceDetection.isTablet()) && (
               <button
                 onClick={(event) => {
                   event.stopPropagation();

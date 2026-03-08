@@ -1,11 +1,10 @@
 import React from "react";
 import { Cookie, X } from "lucide-react";
 import { Language } from "../contexts/LanguageContext";
-const { useLanguage } = Language;
 import { useLocation } from "react-router-dom";
 
 export function CookieConsent({ onAccept }) {
-	const { t } = useLanguage();
+	const { t } = Language.useLanguage();
 	const location = useLocation();
 
 	if (location.pathname.startsWith("/room/")) return null;

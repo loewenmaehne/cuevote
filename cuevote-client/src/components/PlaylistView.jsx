@@ -3,7 +3,6 @@ import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { ArrowDown, ArrowUp, X } from "lucide-react";
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 import { Track } from "./Track";
 
 export function PlaylistView({
@@ -28,7 +27,7 @@ export function PlaylistView({
     const [expandedTrackId, setExpandedTrackId] = useState(null);
     const [showJumpToNow, setShowJumpToNow] = useState(false);
     const [jumpDirection, setJumpDirection] = useState("down");
-    const { t } = useLanguage();
+    const { t } = Language.useLanguage();
 
     const handleToggleExpand = (trackId) => {
         setExpandedTrackId((prev) => (prev === trackId ? null : trackId));
