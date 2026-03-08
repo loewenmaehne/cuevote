@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { WifiOff, RefreshCw, Loader2, ServerCrash } from "lucide-react";
-import { useLanguage } from "../contexts/LanguageContext";
+import { Language } from "../contexts/LanguageContext";
+const { useLanguage } = Language;
 
 export function LoadingScreen({ isOnline, embedded = false, message }) {
 	const { t } = useLanguage();

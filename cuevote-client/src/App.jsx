@@ -3,9 +3,11 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { deviceDetection } from './utils/deviceDetection';
 const { isTV, isMobile, isTablet, isIOS, isNativeApp } = deviceDetection;
 import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
-import { useConsent } from './contexts/ConsentContext';
+import { Consent } from './contexts/ConsentContext';
+const { useConsent } = Consent;
 import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
-import { useLanguage } from './contexts/LanguageContext';
+import { Language } from './contexts/LanguageContext';
+const { useLanguage } = Language;
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
@@ -14,7 +16,8 @@ import { Suggestions } from "./components/Suggestions";
 import { PlaylistView } from "./components/PlaylistView";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { SettingsView } from "./components/SettingsView";
-import { PendingRequests, PendingRequestsPage } from "./components/PendingRequests";
+import { PendingRequestsExports } from "./components/PendingRequests";
+const { PendingRequests, PendingRequestsPage } = PendingRequestsExports;
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
 import { ChannelLibrary } from "./components/ChannelLibrary"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";

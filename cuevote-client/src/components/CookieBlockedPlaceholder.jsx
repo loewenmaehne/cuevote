@@ -1,7 +1,9 @@
 import React from 'react';
 import { Cookie } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { useConsent } from '../contexts/ConsentContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
+import { Consent } from '../contexts/ConsentContext';
+const { useConsent } = Consent;
 
 export function CookieBlockedPlaceholder() {
 	const { t } = useLanguage();

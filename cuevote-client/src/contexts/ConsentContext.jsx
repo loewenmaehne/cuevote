@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { ConsentContext } from './ConsentContextValue.js';
 
-export function ConsentProvider({ children }) {
+function ConsentProvider({ children }) {
 	const [hasConsent, setHasConsent] = useState(() => {
 		return localStorage.getItem("cuevote_cookie_consent") === "true";
 	});
@@ -32,7 +32,8 @@ export function ConsentProvider({ children }) {
 	);
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
-export function useConsent() {
+function useConsent() {
 	return useContext(ConsentContext);
 }
+
+export const Consent = { ConsentProvider, useConsent };

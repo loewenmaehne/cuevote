@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { Check, X, Clock, ArrowLeft, Ban, Headphones } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
 
-export function PendingRequests({ requests, onApprove, onReject, onBan, onPreview, onClose }) {
+function PendingRequests({ requests, onApprove, onReject, onBan, onPreview, onClose }) {
 	const { t } = useLanguage();
 	if (!requests || requests.length === 0) return null;
 
@@ -76,7 +77,7 @@ export function PendingRequests({ requests, onApprove, onReject, onBan, onPrevie
 	);
 }
 
-export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onManageBanned, onPreview, onClose }) {
+function PendingRequestsPage({ requests, onApprove, onReject, onBan, onManageBanned, onPreview, onClose }) {
 	const { t } = useLanguage();
 	return (
 		<div className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm flex flex-col animate-in fade-in">
@@ -169,3 +170,5 @@ export function PendingRequestsPage({ requests, onApprove, onReject, onBan, onMa
 		</div>
 	);
 }
+
+export const PendingRequestsExports = { PendingRequests, PendingRequestsPage };

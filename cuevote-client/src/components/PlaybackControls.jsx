@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2 } from "lucide-react";
 import { deviceDetection } from '../utils/deviceDetection';
 const { isMobile, isTablet } = deviceDetection;
-import { useLanguage } from '../contexts/LanguageContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
 
 export function PlaybackControls({
   isPlaying,

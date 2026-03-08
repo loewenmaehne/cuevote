@@ -1,7 +1,8 @@
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, Mail, Phone, Globe, Flag, Loader2 } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
 
 export function LegalPage() {
     const navigate = useNavigate();

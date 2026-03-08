@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { ThumbsUp, ThumbsDown, Headphones, Trash2, Sparkles, Loader2, Check } from "lucide-react";
-import { useLanguage } from '../contexts/LanguageContext';
-import { useConsent } from '../contexts/ConsentContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
+import { Consent } from '../contexts/ConsentContext';
+const { useConsent } = Consent;
 import { Suggestions } from "./Suggestions";
 
 const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;

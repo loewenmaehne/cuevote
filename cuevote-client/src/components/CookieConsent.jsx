@@ -1,6 +1,7 @@
 import React from "react";
 import { Cookie, X } from "lucide-react";
-import { useLanguage } from "../contexts/LanguageContext";
+import { Language } from "../contexts/LanguageContext";
+const { useLanguage } = Language;
 import { useLocation } from "react-router-dom";
 
 export function CookieConsent({ onAccept }) {

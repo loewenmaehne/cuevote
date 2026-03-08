@@ -1,6 +1,7 @@
 import React from 'react';
 import { Ban, X, ArrowLeft, CheckCircle } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
 
 export function BannedVideosPage({ bannedVideos, onUnban, onClose }) {
 	const { t } = useLanguage();

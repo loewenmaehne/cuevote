@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { X, Search, Library, Music2 } from "lucide-react";
-import { useLanguage } from '../contexts/LanguageContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
 import { Track } from "./Track";
 
 export function ChannelLibrary({

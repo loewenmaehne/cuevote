@@ -1,7 +1,8 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { CheckCircle, Send, Clock } from "lucide-react";
-import { useLanguage } from '../contexts/LanguageContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
 import { Suggestions } from "./Suggestions"; // ADDED IMPORT
 
 export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, serverMessage, isOwner, suggestionsEnabled, isConnected = true, currentTrack, onRecommend, suggestions = [], isFetchingSuggestions = false, queueVideoIds = new Set() }) {

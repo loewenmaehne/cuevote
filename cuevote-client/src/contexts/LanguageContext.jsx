@@ -23,7 +23,7 @@ function detectInitialLanguage(translations) {
 	return 'en';
 }
 
-export function LanguageProvider({ children }) {
+function LanguageProvider({ children }) {
 	const [language, setLanguage] = useState('en');
 	const [translations, setTranslations] = useState(null);
 	const initDone = useRef(false);
@@ -85,11 +85,12 @@ export function LanguageProvider({ children }) {
 	);
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
-export function useLanguage() {
+function useLanguage() {
 	const context = useContext(LanguageContext);
 	if (context === undefined) {
 		throw new Error('useLanguage must be used within a LanguageProvider');
 	}
 	return context;
 }
+
+export const Language = { LanguageProvider, useLanguage };

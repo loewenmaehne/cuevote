@@ -1,7 +1,8 @@
 import React from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useLocation } from 'react-router-dom';
-import { useConsent } from '../contexts/ConsentContext';
+import { Consent } from '../contexts/ConsentContext';
+const { useConsent } = Consent;
 import { CookieConsent } from './CookieConsent';
 
 export function ConditionalGoogleOAuthProvider({ children }) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
-import { useConsent } from '../contexts/ConsentContext';
+import { Consent } from '../contexts/ConsentContext';
+const { useConsent } = Consent;
 
 // Logic-only component that uses the hook (must be inside GoogleOAuthProvider)
 function RealAuthButton({ onLoginSuccess, className, render }) {
