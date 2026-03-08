@@ -1,6 +1,5 @@
-import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
-
-const LanguageContext = createContext();
+import React, { useState, useContext, useEffect, useRef } from 'react';
+import { LanguageContext } from './LanguageContextValue.js';
 
 // Load translations via dynamic import so the module is never read at bundle init (avoids TDZ).
 function getTranslations() {
