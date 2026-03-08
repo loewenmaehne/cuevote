@@ -61,7 +61,7 @@ class Room {
             autoApproveKnown: true, // Default true
             autoRefill: false, // Automated Refill
             captionsEnabled: !!(metadata.captions_enabled), // Initialize from metadata
-            bannedSongs: [], // List of banned videos { videoId, title, artist, ... }
+            bannedVideos: [], // List of banned videos { videoId, title, artist, ... }
         };
 
         // Start the Room Timer
@@ -1170,7 +1170,7 @@ class Room {
             // Add to banned list
             if (!this.state.bannedVideos.some(b => b.videoId === track.videoId)) {
                 const newBanned = [
-                    ...this.state.bannedSongs,
+                    ...this.state.bannedVideos,
                     {
                         videoId: track.videoId,
                         title: track.title,
@@ -1181,7 +1181,7 @@ class Room {
                 ];
                 this.updateState({
                     pendingSuggestions: newPending,
-                    bannedSongs: newBanned
+                    bannedVideos: newBanned
                 });
             } else {
                 this.updateState({ pendingSuggestions: newPending });
@@ -1190,9 +1190,9 @@ class Room {
     }
 
     handleUnbanSong({ videoId }) {
-        const banned = this.state.bannedSongs || [];
+        const banned = this.state.bannedVideos || [];
         const newBanned = banned.filter(t => t.videoId !== videoId);
-        this.updateState({ bannedSongs: newBanned });
+        this.updateState({ bannedVideos: newBanned });
     }
 
     handleRemoveFromLibrary({ videoId }) {

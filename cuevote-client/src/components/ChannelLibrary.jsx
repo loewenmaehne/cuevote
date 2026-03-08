@@ -29,7 +29,7 @@ export function ChannelLibrary({
 
 	// Deduplicate history to get unique songs
 	// Only valid if videoId is present
-	const uniqueSongs = useMemo(() => {
+	const uniqueVideos = useMemo(() => {
 		const map = new Map();
 		history.forEach(track => {
 			if (track.videoId && !map.has(track.videoId)) {
@@ -39,11 +39,11 @@ export function ChannelLibrary({
 		return Array.from(map.values()).reverse();
 	}, [history]);
 
-	const filteredSongs = useMemo(() => {
+	const filteredVideos = useMemo(() => {
 		const now = Date.now();
 		const TWENTY_EIGHT_DAYS_MS = 28 * 24 * 60 * 60 * 1000;
 
-		let result = uniqueVideos.filter(song => {
+		let result = uniqueVideos.filter(video => {
 			if (!video.playedAt) return false;
 			const age = now - video.playedAt;
 			return age < TWENTY_EIGHT_DAYS_MS;
@@ -51,23 +51,23 @@ export function ChannelLibrary({
 
 		if (searchQuery.trim()) {
 			const lowerQ = searchQuery.toLowerCase();
-			result = result.filter(song =>
+			result = result.filter(video =>
 				(video.title && video.title.toLowerCase().includes(lowerQ)) ||
 				(video.artist && video.artist.toLowerCase().includes(lowerQ))
 			);
 		}
 
 		return result;
-	}, [uniqueSongs, searchQuery]);
+	}, [uniqueVideos, searchQuery]);
 
 	// Reset displayed count when search changes
 	useEffect(() => {
 		setDisplayedCount(50);
 	}, [searchQuery]);
 
-	const visibleSongs = useMemo(() => {
+	const visibleVideos = useMemo(() => {
 		return filteredVideos.slice(0, displayedCount);
-	}, [filteredSongs, displayedCount]);
+	}, [filteredVideos, displayedCount]);
 
 	useEffect(() => {
 		const target = observerTarget.current;
