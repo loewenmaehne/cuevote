@@ -276,9 +276,13 @@ function RoomBody() {
   useEffect(() => {
     let timeout;
     if (isConnected && isStaleState) {
-      console.warn(`[STALE DEBUG]Wanted: ${activeRoomId}, Got: ${serverRoomId}.Retrying in 3s...`);
+      if (import.meta.env.DEV) {
+        console.warn(`[STALE DEBUG] Wanted: ${activeRoomId}, Got: ${serverRoomId}. Retrying in 3s...`);
+      }
       timeout = setTimeout(() => {
-        console.warn(`[STALE DEBUG] Sending JOIN_ROOM for ${activeRoomId}`);
+        if (import.meta.env.DEV) {
+          console.warn(`[STALE DEBUG] Sending JOIN_ROOM for ${activeRoomId}`);
+        }
         sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
       }, 3000);
     }
