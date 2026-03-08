@@ -1,13 +1,10 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { deviceDetection } from './utils/deviceDetection';
-const { isTV, isMobile, isTablet, isIOS, isNativeApp } = deviceDetection;
 import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
 import { Consent } from './contexts/ConsentContext';
-const { useConsent } = Consent;
 import { CookieBlockedPlaceholder } from './components/CookieBlockedPlaceholder';
 import { Language } from './contexts/LanguageContext';
-const { useLanguage } = Language;
 import { Header } from "./components/Header";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
@@ -17,7 +14,6 @@ import { PlaylistView } from "./components/PlaylistView";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { SettingsView } from "./components/SettingsView";
 import { PendingRequestsExports } from "./components/PendingRequests";
-const { PendingRequests, PendingRequestsPage } = PendingRequestsExports;
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
 import { ChannelLibrary } from "./components/ChannelLibrary"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
@@ -39,7 +35,7 @@ const YouTubeState = {
 };
 
 function App() {
-
+  const { PendingRequests, PendingRequestsPage } = PendingRequestsExports;
   const { roomId } = useParams();
 
   const navigate = useNavigate();
@@ -50,8 +46,8 @@ function App() {
   const [controlsHeight, setControlsHeight] = useState(96); // Default 6rem ~ 96px
   const [showSettings, setShowSettings] = useState(false); // Refactored state from Header
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
-  const { hasConsent, giveConsent } = useConsent();
-  const { t } = useLanguage();
+  const { hasConsent, giveConsent } = Consent.useConsent();
+  const { t } = Language.useLanguage();
 
   // console.log("App Component MOUNTED, Room:", activeRoomId);
 
@@ -63,13 +59,13 @@ function App() {
     window.addEventListener('offline', handleStatusChange);
 
     // Inject Device Classes for CSS targeting
-    if (isMobile()) document.body.classList.add('is-mobile');
+    if (deviceDetection.isMobile()) document.body.classList.add('is-mobile');
     else document.body.classList.remove('is-mobile');
 
-    if (isTablet()) document.body.classList.add('is-tablet');
+    if (deviceDetection.isTablet()) document.body.classList.add('is-tablet');
     else document.body.classList.remove('is-tablet');
 
-    if (isTV()) document.body.classList.add('is-tv');
+    if (deviceDetection.isTV()) document.body.classList.add('is-tv');
     else document.body.classList.remove('is-tv');
 
     return () => {
@@ -168,7 +164,7 @@ function App() {
   const isOwner = user && ownerId && user.id === ownerId;
   // TV always ignores Venue Mode (shows video)
   // iOS Browsers (not native app) are FORCED into Venue Mode because video autoplay/playback is unreliable/broken in browser
-  const isVenueMode = (playlistViewMode && !isOwner && !isTV()) || (isIOS() && !isNativeApp());
+  const isVenueMode = (playlistViewMode && !isOwner && !deviceDetection.isTV()) || (deviceDetection.isIOS() && !deviceDetection.isNativeApp());
   // TV always defaults to Fullscreen (CinemaMode), unless manually exited
   const isAnyPlaylistView = isVenueMode || localPlaylistView;
 
@@ -339,7 +335,7 @@ function App() {
   const [isCinemaMode, setIsCinemaMode] = useState(() => {
     // Correctly initialize based on current state to avoid "Window Too Small" flash
     if (typeof window === 'undefined') return false;
-    return isTV() || ((isMobile() && !isTablet()) && window.matchMedia("(orientation: landscape)").matches);
+    return deviceDetection.isTV() || ((deviceDetection.isMobile() && !deviceDetection.isTablet()) && window.matchMedia("(orientation: landscape)").matches);
   });
   const [volume, setVolume] = useState(80);
   // minimized state removed
@@ -384,7 +380,7 @@ function App() {
   // Mobile Auto-Fullscreen on Landscape
   useEffect(() => {
     // Only apply to Smartphones (Mobile but not Tablet)
-    if (!isMobile() || isTablet()) return;
+    if (!deviceDetection.isMobile() || deviceDetection.isTablet()) return;
 
     const mediaQuery = window.matchMedia("(orientation: landscape)");
 
@@ -437,7 +433,7 @@ function App() {
       }
 
       // Allow "Back", "Escape", or "ArrowLeft" on TV to exit Cinema Mode
-      if (e.key === 'Escape' || e.key === 'Backspace' || (isTV() && e.key === 'ArrowLeft')) {
+      if (e.key === 'Escape' || e.key === 'Backspace' || (deviceDetection.isTV() && e.key === 'ArrowLeft')) {
         if (showPendingPage) setShowPendingPage(false);
         else if (showBannedPage) setShowBannedPage(false);
         else if (showSuggest) setShowSuggest(false);
@@ -700,7 +696,7 @@ function App() {
         console.warn(`[Player] Stall detected (Attempt ${stallRetriesRef.current}).`);
 
         // TV/main display gets more retries (slower networks, primary screen)
-        const stallLimit = isTV() ? 6 : 2;
+        const stallLimit = deviceDetection.isTV() ? 6 : 2;
         if (!isOwner && stallRetriesRef.current > stallLimit) {
           console.warn("[Player] Stall limit exceeded for guest. Assuming unavailable.");
           setPlaybackError(100); // 100 = Video Not Found / Generic Unavailable. Triggers overlay.
@@ -919,7 +915,7 @@ function App() {
   }
 
   // TOS Compliance: Window Size Blocker (Desktop only, if not blocked by mobile check)
-  if (isWindowTooSmall && !isTV()) {
+  if (isWindowTooSmall && !deviceDetection.isTV()) {
     return (
       <div className="flex flex-col h-screen w-full bg-black items-center justify-center p-6 text-center z-[100] relative overflow-hidden">
         <div className="absolute inset-0 bg-neutral-900/50" />
@@ -1493,7 +1489,7 @@ function App() {
         />
       )}
       {/* TV Unmute Overlay - only when video is visible (not in playlist-only view) */}
-      {isTV() && isMuted && isPlayerReady && !isAnyPlaylistView && (
+      {deviceDetection.isTV() && isMuted && isPlayerReady && !isAnyPlaylistView && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-500">
           <button
             onClick={() => {
