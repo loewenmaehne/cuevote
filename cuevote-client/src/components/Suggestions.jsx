@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, Headphones, Check } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
 import { deviceDetection } from '../utils/deviceDetection';
 const { isMobile } = deviceDetection;
 

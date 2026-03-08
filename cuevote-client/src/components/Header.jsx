@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import { GoogleAuthButton } from "./GoogleAuthButton";
 import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, Library, X, ChevronLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import { useLanguage } from '../contexts/LanguageContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
 
 
 export function Header({

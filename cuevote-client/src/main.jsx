@@ -9,8 +9,10 @@ import ErrorBoundary from './ErrorBoundary.jsx'
 const App = lazy(() => import('./App.jsx'))
 const LegalPage = lazy(() => import('./components/LegalPage.jsx').then(m => ({ default: m.LegalPage })))
 
-import { ConsentProvider } from './contexts/ConsentContext.jsx';
-import { LanguageProvider } from './contexts/LanguageContext.jsx';
+import { Consent } from './contexts/ConsentContext.jsx';
+const { ConsentProvider } = Consent;
+import { Language } from './contexts/LanguageContext.jsx';
+const { LanguageProvider } = Language;
 import { ConditionalGoogleOAuthProvider } from './components/ConditionalGoogleOAuthProvider.jsx';
 
 import { MobileRedirectGuard } from './components/MobileRedirectGuard.jsx';

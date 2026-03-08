@@ -2,7 +2,8 @@ import React, { useRef, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { ArrowDown, ArrowUp, X } from "lucide-react";
-import { useLanguage } from '../contexts/LanguageContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
 import { Track } from "./Track";
 
 export function PlaylistView({

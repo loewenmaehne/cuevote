@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { HelpCircle, ChevronLeft } from "lucide-react";
-import { useLanguage } from '../contexts/LanguageContext';
+import { Language } from '../contexts/LanguageContext';
+const { useLanguage } = Language;
 
 export function SettingsView({
 	onClose,
