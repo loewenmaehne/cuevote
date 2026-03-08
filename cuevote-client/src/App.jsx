@@ -1262,7 +1262,7 @@ function App() {
           ? "fixed inset-0 z-40 bg-black transition-all duration-500 ease-in-out"
           : (isAnyPlaylistView || showChannelLibrary
             ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
-            : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh]"
+            : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh] min-w-[200px] min-h-[200px]"
           )
         }
         style={{
