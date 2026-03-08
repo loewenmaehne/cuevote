@@ -225,7 +225,8 @@ module.exports = {
     const user = db.prepare('SELECT email FROM users WHERE id = ?').get(userId);
     const userEmail = user ? user.email : null;
 
-    console.log(`[DB DELETE] Starting cleanup for User ID: ${userId}, Email: ${userEmail}`);
+    // Do not log email (PII); GDPR-compliant logging
+    console.log(`[DB DELETE] Starting cleanup for User ID: ${userId}`);
 
     const transaction = db.transaction(() => {
       // Sessions
