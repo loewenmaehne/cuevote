@@ -171,12 +171,12 @@ export function SettingsView({
 								className="bg-neutral-900 text-white text-sm rounded-lg px-3 py-1.5 border border-neutral-700 focus:outline-none focus:border-orange-500 transition-colors"
 							>
 								<option value={0}>{t('header.noLimit')}</option>
-								<option value={10}>10 {t('header.songs')}</option>
-								<option value={25}>25 {t('header.songs')}</option>
-								<option value={50}>50 {t('header.songs')}</option>
-								<option value={100}>100 {t('header.songs')}</option>
-								<option value={250}>250 {t('header.songs')}</option>
-								<option value={500}>500 {t('header.songs')}</option>
+								<option value={10}>10 {t('header.videos')}</option>
+								<option value={25}>25 {t('header.videos')}</option>
+								<option value={50}>50 {t('header.videos')}</option>
+								<option value={100}>100 {t('header.videos')}</option>
+								<option value={250}>250 {t('header.videos')}</option>
+								<option value={500}>500 {t('header.videos')}</option>
 							</select>
 						</div>
 
@@ -189,11 +189,11 @@ export function SettingsView({
 								className="bg-neutral-900 text-white text-sm rounded-lg px-3 py-1.5 border border-neutral-700 focus:outline-none focus:border-orange-500 transition-colors"
 							>
 								<option value={0}>{t('header.noLimit')}</option>
-								<option value={5}>5 {t('header.songs')}</option>
-								<option value={10}>10 {t('header.songs')}</option>
-								<option value={20}>20 {t('header.songs')}</option>
-								<option value={50}>50 {t('header.songs')}</option>
-								<option value={100}>100 {t('header.songs')}</option>
+								<option value={5}>5 {t('header.videos')}</option>
+								<option value={10}>10 {t('header.videos')}</option>
+								<option value={20}>20 {t('header.videos')}</option>
+								<option value={50}>50 {t('header.videos')}</option>
+								<option value={100}>100 {t('header.videos')}</option>
 							</select>
 						</div>
 
