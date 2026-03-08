@@ -9,12 +9,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // Keep large data modules in separate chunks so they are never evaluated at entry init (avoids TDZ).
-        // Force context + deviceDetection into app-core so they run before App chunk (avoids 'oe' TDZ).
+        // Only single-export modules in app-core (ContextValue, deviceDetection, WebSocketContext).
+        // Exclude ConsentContext.jsx / LanguageContext.jsx (two exports each) so they stay in index/App and cannot TDZ inside app-core.
         manualChunks(id) {
           if (id.includes('translations.js')) return 'translations'
           if (id.includes('legalContent.js')) return 'legalContent'
-          if (id.includes('node_modules')) return undefined // let default splitting handle vendor
-          if (id.includes('deviceDetection') || id.includes('ContextValue') || id.includes('WebSocketContext.js') || id.includes('ConsentContext.jsx') || id.includes('LanguageContext.jsx')) return 'app-core'
+          if (id.includes('node_modules')) return undefined
+          if (id.includes('deviceDetection') || id.includes('ContextValue') || id.includes('WebSocketContext.js')) return 'app-core'
         },
       },
     },
