@@ -2,7 +2,6 @@ import React, { useCallback, useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { CheckCircle, Send, Clock } from "lucide-react";
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 import { Suggestions } from "./Suggestions"; // ADDED IMPORT
 
 export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, serverMessage, isOwner, suggestionsEnabled, isConnected = true, currentTrack, onRecommend, suggestions = [], isFetchingSuggestions = false, queueVideoIds = new Set() }) {
@@ -11,7 +10,7 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
   const [suggestionError, setSuggestionError] = useState("");
   const [infoMessage, setInfoMessage] = useState("");
   const [isSubmittingSuggestion, setIsSubmittingSuggestion] = useState(false);
-  const { t } = useLanguage();
+  const { t } = Language.useLanguage();
 
 
   // Clear local error when user types

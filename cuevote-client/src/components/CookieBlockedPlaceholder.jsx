@@ -1,13 +1,11 @@
 import React from 'react';
 import { Cookie } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 import { Consent } from '../contexts/ConsentContext';
-const { useConsent } = Consent;
 
 export function CookieBlockedPlaceholder() {
-	const { t } = useLanguage();
-	const { giveConsent } = useConsent();
+	const { t } = Language.useLanguage();
+	const { giveConsent } = Consent.useConsent();
 
 	return (
 		<div className="w-full h-full flex items-center justify-center bg-black relative overflow-hidden">

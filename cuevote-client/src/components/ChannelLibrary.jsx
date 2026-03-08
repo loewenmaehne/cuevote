@@ -2,7 +2,6 @@ import React, { useMemo, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { X, Search, Library, Music2 } from "lucide-react";
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 import { Track } from "./Track";
 
 export function ChannelLibrary({
@@ -18,7 +17,7 @@ export function ChannelLibrary({
 }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [expandedTrackId, setExpandedTrackId] = useState(null);
-	const { t } = useLanguage();
+	const { t } = Language.useLanguage();
 
 	// Infinite Scroll State
 	const [displayedCount, setDisplayedCount] = useState(50);

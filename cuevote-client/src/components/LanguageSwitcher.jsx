@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const languages = [
@@ -43,7 +42,7 @@ export const languages = [
 ];
 
 export function LanguageSwitcher({ minimized = false, className = "", isOpen: controlledIsOpen, onToggle: controlledOnToggle, focused = false, focusedLanguageIndex = -1 }) {
-	const { language, setLanguage } = useLanguage();
+	const { language, setLanguage } = Language.useLanguage();
 	const [internalIsOpen, setInternalIsOpen] = useState(false);
 	const dropdownRef = useRef(null);
 	const listRef = useRef(null);

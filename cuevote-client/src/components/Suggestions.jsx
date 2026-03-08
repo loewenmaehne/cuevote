@@ -1,13 +1,11 @@
 import React from 'react';
 import { Plus, Headphones, Check } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 import { deviceDetection } from '../utils/deviceDetection';
-const { isMobile } = deviceDetection;
 
 export function Suggestions({ suggestions, onAdd, onPreview, queueVideoIds }) {
-	const { t } = useLanguage();
-	const mobile = isMobile();
+	const { t } = Language.useLanguage();
+	const mobile = deviceDetection.isMobile();
 
 	// Local state to track added videos to prevent duplicates/spam
 	const [addedIds, setAddedIds] = React.useState(new Set());

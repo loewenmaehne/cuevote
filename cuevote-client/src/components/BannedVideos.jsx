@@ -1,10 +1,9 @@
 import React from 'react';
 import { Ban, X, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 
 export function BannedVideosPage({ bannedVideos, onUnban, onClose }) {
-	const { t } = useLanguage();
+	const { t } = Language.useLanguage();
 	return (
 		<div className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm flex flex-col animate-in fade-in">
 			<div className="p-6 border-b border-neutral-800 flex items-center gap-4 bg-black">

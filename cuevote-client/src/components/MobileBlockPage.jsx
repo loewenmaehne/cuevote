@@ -1,13 +1,11 @@
 import React from 'react';
 import { Download, Monitor, Smartphone, Tv, Settings } from 'lucide-react';
 import { deviceDetection } from '../utils/deviceDetection';
-const { isTV } = deviceDetection;
 import { Language } from '../contexts/LanguageContext';
-const { useLanguage } = Language;
 
 export const MobileBlockPage = () => {
-	const isTvDevice = isTV();
-	const { t } = useLanguage();
+	const isTvDevice = deviceDetection.isTV();
+	const { t } = Language.useLanguage();
 
 	return (
 		<div className="flex flex-col h-[100dvh] bg-[#050505] items-center justify-center p-6 text-center relative overflow-hidden select-none font-sans">
