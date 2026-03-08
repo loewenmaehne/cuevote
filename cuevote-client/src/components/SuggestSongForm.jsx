@@ -177,11 +177,11 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
               disabled={isFetchingSuggestions}
               className="w-full py-2 rounded-xl bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-colors text-sm font-medium disabled:opacity-50"
             >
-              {isFetchingSuggestions ? t('app.loading') : 'Load Similar Songs'}
+              {isFetchingSuggestions ? t('app.loading') : t('suggest.loadSimilar')}
             </button>
           ) : (
             <div>
-              <p className="text-xs text-neutral-400 mb-2 font-medium uppercase tracking-wider">Similar to {currentTrack.title}</p>
+              <p className="text-xs text-neutral-400 mb-2 font-medium uppercase tracking-wider">{t('suggest.similarTo')} {currentTrack.title}</p>
               <Suggestions
                 suggestions={suggestions}
                 onAdd={(videoId) => {
