@@ -233,9 +233,6 @@ export function Track({
               )
             )}
           </div>
-          <p className="text-sm italic break-words overflow-hidden text-ellipsis">
-            {track.lyrics}
-          </p>
           <a
             href={buildWatchUrl(track.videoId)}
             target="_blank"

@@ -201,11 +201,11 @@ export function PlaybackControls({
 
             <div>
               <h3 className="text-base font-semibold leading-tight">
-                {currentTrack ? `Now Playing · ${currentTrack.title}` : t('playlist.queueEmpty')}
+                {currentTrack ? `${t('playlist.nowPlaying')} · ${currentTrack.title}` : t('playlist.queueEmpty')}
               </h3>
               <p className="text-sm text-neutral-400">
                 {currentTrack
-                  ? `${currentTrack.artist} • ${activeChannel} Channel`
+                  ? `${currentTrack.artist} • ${activeChannel} ${t('playlist.channelSuffix')}`
                   : t('playlist.addSongs')}
               </p>
             </div>

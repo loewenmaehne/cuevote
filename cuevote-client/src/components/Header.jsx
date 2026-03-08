@@ -109,7 +109,7 @@ export function Header({
 
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [showSettings, showProfileModal, showDeleteConfirm, onShowSuggest, onShowQRCode]);
+  }, [showProfileModal, showDeleteConfirm, onShowSuggest, onShowQRCode]);
 
   return (
     <header
@@ -380,9 +380,12 @@ export function Header({
                 <p className="text-neutral-400 text-sm overflow-x-auto whitespace-nowrap flex-1 font-mono no-scrollbar">{window.location.href}</p>
                 <button
                   onClick={() => {
-                    navigator.clipboard.writeText(window.location.href);
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
+                    navigator.clipboard.writeText(window.location.href)
+                      .then(() => {
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      })
+                      .catch(() => { /* Clipboard denied or unavailable */ });
                   }}
                   className={`p-2 rounded-lg transition-all ${copied
                     ? "bg-green-500/10 text-green-500"
