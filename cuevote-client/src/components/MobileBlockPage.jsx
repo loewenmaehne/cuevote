@@ -11,7 +11,15 @@ export const MobileBlockPage = () => {
 		<div className="flex flex-col h-[100dvh] bg-[#050505] items-center justify-center p-6 text-center relative overflow-hidden select-none font-sans">
 			{/* Dynamic Background */}
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-900/40 via-[#050505] to-[#050505] animate-pulse-slow pointer-events-none" />
-			<div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.02] pointer-events-none mix-blend-overlay" />
+			{/* Inline SVG noise texture to avoid missing /noise.png asset at build time */}
+			<div
+				className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay"
+				style={{
+					backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(
+						'<svg xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /></filter><rect width="100%" height="100%" filter="url(%23n)"/></svg>'
+					)}")`
+				}}
+			/>
 
 			<div className="relative z-10 max-w-md w-full space-y-8 animate-in fade-in zoom-in-95 duration-700 flex flex-col items-center">
 
