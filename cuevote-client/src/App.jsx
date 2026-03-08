@@ -300,7 +300,10 @@ function App() {
     if (showSuggestRef.current) return;
 
     if (lastError) {
-      setToast({ message: lastError.message || "An error occurred", type: "error" });
+      const errorMessage = typeof lastError === 'string'
+        ? lastError
+        : lastError.message || "An error occurred";
+      setToast({ message: errorMessage, type: "error" });
     }
   }, [lastError, lastErrorTimestamp]); // showSuggestRef is stable
 
@@ -317,6 +320,16 @@ function App() {
       else if (lastMessage.type === 'error') setToast({ message: lastMessage.message, type: "error" });
     }
   }, [lastMessage]);
+
+  // Handle manual suggestion results from server
+  useEffect(() => {
+    if (!lastMessage || lastMessage.type !== "SUGGESTION_RESULT") return;
+    if (!activeSuggestionId) return; // Ignore if no suggestion panel is open
+
+    const suggestions = lastMessage.payload?.suggestions || [];
+    setManualSuggestions(suggestions);
+    setIsFetchingSuggestions(false);
+  }, [lastMessage, activeSuggestionId]);
   const [showPendingPage, setShowPendingPage] = useState(false);
   const [showBannedPage, setShowBannedPage] = useState(false); // Added this
   const [isCinemaMode, setIsCinemaMode] = useState(() => {
@@ -1260,7 +1273,9 @@ function App() {
           bottom: (isCinemaMode && controlsVisible) ? `${controlsHeight}px` : "0px"
         }}
       >
-        <div className={`absolute inset - 0 border - 4 ${previewTrack ? "border-green-500" : "border-transparent"} transition - colors duration - 300 box - border pointer - events - none z - 20`}></div>
+        <div
+          className={`absolute inset-0 border-4 ${previewTrack ? "border-green-500" : "border-transparent"} transition-colors duration-300 box-border pointer-events-none z-20`}
+        ></div>
         {showChannelLibrary ? (
           /* Channel Library View */
           <div className="w-full h-full flex flex-col overflow-hidden">
