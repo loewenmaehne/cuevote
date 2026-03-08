@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
+    sourcemap: true, // So production TDZ errors show original file/line in browser
     rollupOptions: {
       output: {
         // Keep large data modules in separate chunks so they are never evaluated at entry init (avoids TDZ).
