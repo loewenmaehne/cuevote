@@ -74,16 +74,30 @@ export const isNativeApp = () => {
 	return navigator.userAgent.toLowerCase().includes('cuevotewrapper');
 };
 
+// Inline helpers so isMobile does not call other exports (avoids TDZ when bundler reorders).
+function _isTV(userAgent) {
+	return (
+		userAgent.includes('smart-tv') || userAgent.includes('smarttv') || userAgent.includes('googletv') ||
+		userAgent.includes('appletv') || userAgent.includes('hbbtv') || userAgent.includes('pov_tv') ||
+		userAgent.includes('netcast.tv') || userAgent.includes('webos') || userAgent.includes('tizen') ||
+		userAgent.includes('android tv') || (userAgent.includes('android') && userAgent.includes('tv')) ||
+		userAgent.includes('aft') || userAgent.includes('dtv') || userAgent.includes('bravia') ||
+		userAgent.includes('viera') || userAgent.includes('philips') || userAgent.includes('crkey') ||
+		userAgent.includes('roku') || userAgent.includes('large screen')
+	);
+}
+
 export const isMobile = () => {
 	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
 	const userAgent = navigator.userAgent.toLowerCase();
-
-	// Check for TV first, as TVs are often Android-based but require different UI
-	if (isTV()) return false;
-
+	if (typeof window !== 'undefined') {
+		const params = new URLSearchParams(window.location.search);
+		if (params.get('tv') === 'true') return false;
+	}
+	if (_isTV(userAgent)) return false;
 	return (
 		/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent) ||
-		isNativeApp() || // Whitelist Native Wrapper
-		(navigator.maxTouchPoints > 0 && window.innerWidth < 768) // Fallback for touch devices
+		userAgent.includes('cuevotewrapper') ||
+		(navigator.maxTouchPoints > 0 && window.innerWidth < 768)
 	);
 };
