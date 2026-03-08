@@ -265,6 +265,10 @@ class Room {
     }
 
     async populateQueueFromHistory() {
+        if (this.state.isRefilling) {
+            console.log(`[AutoRefill] Already refilling, skip.`);
+            return;
+        }
         console.log(`[AutoRefill] Triggered for Room ${this.id}`);
         this.updateState({ isRefilling: true });
 
@@ -368,9 +372,9 @@ class Room {
                 }
             }
 
-            // Remove invalid videos from history entirely
+            // Remove invalid videos from history entirely (use current state so we don't drop entries added during async work)
             if (invalidVideoIds.size > 0) {
-                const cleanedHistory = history.filter(t => !invalidVideoIds.has(t.videoId));
+                const cleanedHistory = this.state.history.filter(t => !invalidVideoIds.has(t.videoId));
                 this.updateState({ history: cleanedHistory });
                 console.log(`[AutoRefill] Removed ${invalidVideoIds.size} invalid videos from history.`);
             }
@@ -393,6 +397,7 @@ class Room {
 
                 if (!this.state.isPlaying && newQueue.length > 0) {
                     newState.currentTrack = newQueue[0];
+                    newState.currentTrack.startedAt = Date.now();
                     newState.isPlaying = true;
                     newState.progress = 0;
                 }
