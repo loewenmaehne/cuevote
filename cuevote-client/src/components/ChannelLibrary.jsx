@@ -109,7 +109,12 @@ export function ChannelLibrary({
 					/>
 				</div>
 				<p className="text-xs text-neutral-500 text-center mt-3 font-medium">
-					<span className="text-orange-500">{filteredVideos.length}</span> {t('header.songs')} {t('library.inLibrary')}
+					<span className="text-orange-500">
+						{t(filteredVideos.length === 1 ? 'library.videosCount' : 'library.videosCountPlural', {
+							count: filteredVideos.length,
+						})}
+					</span>{' '}
+					{t('library.inLibrary')}
 				</p>
 			</div>
 
@@ -169,4 +174,5 @@ ChannelLibrary.propTypes = {
 	activeSuggestionId: PropTypes.string,
 	suggestions: PropTypes.array,
 	isFetchingSuggestions: PropTypes.bool,
+	queueVideoIds: PropTypes.array,
 };
