@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
-import { ArrowDown, ArrowUp, X } from "lucide-react";
+import { ArrowDown, ArrowUp, X, Library, List } from "lucide-react";
 import { Language } from '../contexts/LanguageContext';
 import { Track } from "./Track";
+import { ChannelLibrary } from "./ChannelLibrary";
 
 export function PlaylistView({
     history,
@@ -17,23 +18,24 @@ export function PlaylistView({
     onDelete,
     onRecommend,
     onAdd,
-    activeSuggestionId, // <--- New Prop
-    suggestions,        // <--- New Prop
-    isFetchingSuggestions, // <--- New Prop
+    activeSuggestionId,
+    suggestions,
+    isFetchingSuggestions,
     queueVideoIds,
-    disableFloatingUI = false
+    disableFloatingUI = false,
+    onLibraryDelete,
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
     const [showJumpToNow, setShowJumpToNow] = useState(false);
     const [jumpDirection, setJumpDirection] = useState("down");
+    const [activeTab, setActiveTab] = useState("playlist");
     const { t } = Language.useLanguage();
 
     const handleToggleExpand = (trackId) => {
         setExpandedTrackId((prev) => (prev === trackId ? null : trackId));
     };
 
-    // Helper to scroll to current track
     const scrollToCurrent = (smooth = true) => {
         if (scrollRef.current) {
             const currentEl = document.getElementById("playlist-current-track");
@@ -44,8 +46,8 @@ export function PlaylistView({
         }
     };
 
-    // IntersectionObserver to watch "Now Playing" visibility
     useEffect(() => {
+        if (activeTab !== "playlist") return;
         const currentEl = document.getElementById("playlist-current-track");
         if (!currentEl) return;
 
@@ -55,17 +57,12 @@ export function PlaylistView({
                 setShowJumpToNow(!isVisible);
 
                 if (!isVisible) {
-                    // Check bounding rect relative to viewport
                     const { top } = entry.boundingClientRect;
-                    // If top is negative, it rolled off the top (we are below it) -> UP
-                    // If top is positive, it rolled off the bottom (we are above it) -> DOWN
-                    // Wait, if scrolled DOWN past it, top is negative. Jump should point UP.
-                    // If scrolled UP before it, top is positive (below viewport). Jump should point DOWN.
                     setJumpDirection(top < 0 ? "up" : "down");
                 }
             },
             {
-                root: null, // Watch relative to VIEWPORT
+                root: null,
                 threshold: 0
             }
         );
@@ -75,139 +72,177 @@ export function PlaylistView({
         return () => {
             observer.disconnect();
         };
-    }, [currentTrack?.id]);
+    }, [currentTrack?.id, activeTab]);
 
-    // Initial Scroll
     useEffect(() => {
+        if (activeTab !== "playlist") return;
         if (!showJumpToNow) {
             scrollToCurrent();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentTrack?.id]);
+    }, [currentTrack?.id, activeTab]);
 
     const filteredQueue = queue.filter(t => t.id !== currentTrack?.id);
 
+    const isLibrary = activeTab === "library";
+
     return (
         <div className="flex flex-col h-full bg-[#0a0a0a] text-white relative">
-            <div
-                className="flex-1 overflow-y-auto px-4 pb-24 custom-scrollbar scroll-smooth relative"
-                ref={scrollRef}
-            >
-                {/* Exit Button - Floating Fixed */}
-                {onExit && (
-                    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-                        <button
-                            onClick={onExit}
-                            className="pointer-events-auto flex items-center gap-2 px-6 py-2.5 bg-black/80 backdrop-blur-md text-orange-500 rounded-full hover:bg-neutral-800 transition-all shadow-xl border border-white/10 hover:scale-105 active:scale-95 group"
-                        >
-                            <span className="text-sm font-bold">{t('playlist.close')}</span>
-                            <X size={18} />
-                        </button>
-                    </div>
-                )}
-
-                <div className="max-w-3xl mx-auto space-y-4 py-6 pt-2">
-                    {/* History */}
-                    {history.length > 0 && (
-                        <div className="space-y-2 opacity-60 hover:opacity-100 transition-opacity duration-300">
-                            <div className="flex items-center gap-2 px-2 pb-2 border-b border-neutral-800">
-                                <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">{t('playlist.history')}</span>
-                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-neutral-900 text-neutral-600 font-mono">
-                                    {history.length > 50 ? t('playlist.last50', { count: history.length }) : history.length}
-                                </span>
-                            </div>
-                            {history.slice(-50).map((track, i) => (
-                                <Track
-                                    key={`hist-${track.id}-${i}`}
-                                    track={track}
-                                    isActive={false}
-                                    isExpanded={expandedTrackId === `hist-${track.id}-${i}`}
-                                    vote={null}
-                                    onVote={() => { }}
-                                    onToggleExpand={() => handleToggleExpand(`hist-${track.id}-${i}`)}
-                                    readOnly={true}
-                                    votesEnabled={votesEnabled}
-                                    onRecommend={onRecommend}
-                                    onAdd={onAdd} // Enable Track Add Button
-                                    onAddSuggestion={onAdd}
-                                    onPreview={onPreview}
-                                    activeSuggestionId={activeSuggestionId}
-                                    suggestions={suggestions}
-                                    isFetchingSuggestions={isFetchingSuggestions}
-                                    queueVideoIds={queueVideoIds}
-                                />
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Current Track */}
-                    {currentTrack && (
-                        <div id="playlist-current-track" className="space-y-2 py-4">
-                            <div className="flex items-center gap-2 px-2 pb-2">
-                                <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                                <span className="text-xs font-bold text-orange-500 uppercase tracking-widest">{t('playlist.nowPlaying')}</span>
-                            </div>
-                            <Track
-                                track={currentTrack}
-                                isActive={true}
-                                isExpanded={expandedTrackId === currentTrack.id}
-                                vote={votes?.[currentTrack.id] || null}
-                                onVote={onVote}
-                                onToggleExpand={handleToggleExpand}
-                                readOnly={true}
-                                votesEnabled={votesEnabled}
-                                onDelete={onDelete}
-                                onRecommend={onRecommend}
-                                onAdd={onAdd} // Added for Re-Queue
-                                activeSuggestionId={activeSuggestionId}
-                                suggestions={suggestions}
-                                isFetchingSuggestions={isFetchingSuggestions}
-                                queueVideoIds={queueVideoIds}
-                            />
-                        </div>
-                    )}
-
-                    {/* Queue */}
-                    {filteredQueue.length > 0 ? (
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2 px-2 pb-2 border-b border-neutral-800 mt-4">
-                                <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">{t('playlist.upNext')}</span>
-                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-neutral-800 text-neutral-400 font-mono">{filteredQueue.length}</span>
-                            </div>
-                            {filteredQueue.map((track) => (
-                                <Track
-                                    key={track.id}
-                                    track={track}
-                                    isActive={false}
-                                    isExpanded={expandedTrackId === track.id}
-                                    vote={votes?.[track.id]}
-                                    onVote={onVote}
-                                    onToggleExpand={handleToggleExpand}
-                                    readOnly={false}
-                                    votesEnabled={votesEnabled}
-                                    onPreview={onPreview}
-                                    onDelete={onDelete}
-                                    onRecommend={onRecommend}
-                                    onAdd={onAdd} // Fix: Missing onAdd in Queue
-                                    activeSuggestionId={activeSuggestionId}
-                                    suggestions={suggestions}
-                                    isFetchingSuggestions={isFetchingSuggestions}
-                                    queueVideoIds={queueVideoIds}
-                                />
-                            ))}
-                        </div>
+            {/* Sticky Action Bar */}
+            <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-800 bg-[#0a0a0a]/95 backdrop-blur-md flex-shrink-0 z-40 gap-2">
+                <button
+                    onClick={() => setActiveTab(isLibrary ? "playlist" : "library")}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all active:scale-95 ${
+                        isLibrary
+                            ? "bg-orange-500/15 text-orange-500 border border-orange-500/30"
+                            : "bg-neutral-800/80 text-neutral-300 border border-neutral-700/50 hover:text-white hover:bg-neutral-700/80"
+                    }`}
+                >
+                    {isLibrary ? (
+                        <>
+                            <List size={16} />
+                            <span>{t('header.playlist')}</span>
+                        </>
                     ) : (
-                        !currentTrack && (
-                            <div className="flex h-64 w-full items-center justify-center text-neutral-500 bg-[#0a0a0a]">
-                                <span className="text-lg">{t('playlist.queueEmpty')}</span>
-                            </div>
-                        )
+                        <>
+                            <Library size={16} />
+                            <span>{t('header.library')}</span>
+                        </>
                     )}
-                </div>
+                </button>
+
+                {onExit && (
+                    <button
+                        onClick={onExit}
+                        className="flex items-center gap-2 px-4 py-2 bg-black/80 backdrop-blur-md text-orange-500 rounded-full hover:bg-neutral-800 transition-all border border-white/10 active:scale-95 text-sm font-bold"
+                    >
+                        <span>{t('playlist.close')}</span>
+                        <X size={16} />
+                    </button>
+                )}
             </div>
 
-            {/* Back to Now Button - Portal to escape potential masks/fades */}
-            {showJumpToNow && currentTrack && !disableFloatingUI && createPortal(
+            {/* Content: Library or Playlist */}
+            {isLibrary ? (
+                <ChannelLibrary
+                    history={history}
+                    onAdd={onAdd}
+                    onDelete={onLibraryDelete}
+                    onPreview={onPreview}
+                    onRecommend={onRecommend}
+                    activeSuggestionId={activeSuggestionId}
+                    suggestions={suggestions}
+                    isFetchingSuggestions={isFetchingSuggestions}
+                    queueVideoIds={queueVideoIds}
+                />
+            ) : (
+                <div
+                    className="flex-1 overflow-y-auto px-4 pb-24 custom-scrollbar scroll-smooth relative"
+                    ref={scrollRef}
+                >
+                    <div className="max-w-3xl mx-auto space-y-4 py-6 pt-2">
+                        {/* History */}
+                        {history.length > 0 && (
+                            <div className="space-y-2 opacity-60 hover:opacity-100 transition-opacity duration-300">
+                                <div className="flex items-center gap-2 px-2 pb-2 border-b border-neutral-800">
+                                    <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">{t('playlist.history')}</span>
+                                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-neutral-900 text-neutral-600 font-mono">
+                                        {history.length > 50 ? t('playlist.last50', { count: history.length }) : history.length}
+                                    </span>
+                                </div>
+                                {history.slice(-50).map((track, i) => (
+                                    <Track
+                                        key={`hist-${track.id}-${i}`}
+                                        track={track}
+                                        isActive={false}
+                                        isExpanded={expandedTrackId === `hist-${track.id}-${i}`}
+                                        vote={null}
+                                        onVote={() => { }}
+                                        onToggleExpand={() => handleToggleExpand(`hist-${track.id}-${i}`)}
+                                        readOnly={true}
+                                        votesEnabled={votesEnabled}
+                                        onRecommend={onRecommend}
+                                        onAdd={onAdd}
+                                        onAddSuggestion={onAdd}
+                                        onPreview={onPreview}
+                                        activeSuggestionId={activeSuggestionId}
+                                        suggestions={suggestions}
+                                        isFetchingSuggestions={isFetchingSuggestions}
+                                        queueVideoIds={queueVideoIds}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Current Track */}
+                        {currentTrack && (
+                            <div id="playlist-current-track" className="space-y-2 py-4">
+                                <div className="flex items-center gap-2 px-2 pb-2">
+                                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                                    <span className="text-xs font-bold text-orange-500 uppercase tracking-widest">{t('playlist.nowPlaying')}</span>
+                                </div>
+                                <Track
+                                    track={currentTrack}
+                                    isActive={true}
+                                    isExpanded={expandedTrackId === currentTrack.id}
+                                    vote={votes?.[currentTrack.id] || null}
+                                    onVote={onVote}
+                                    onToggleExpand={handleToggleExpand}
+                                    readOnly={true}
+                                    votesEnabled={votesEnabled}
+                                    onDelete={onDelete}
+                                    onRecommend={onRecommend}
+                                    onAdd={onAdd}
+                                    activeSuggestionId={activeSuggestionId}
+                                    suggestions={suggestions}
+                                    isFetchingSuggestions={isFetchingSuggestions}
+                                    queueVideoIds={queueVideoIds}
+                                />
+                            </div>
+                        )}
+
+                        {/* Queue */}
+                        {filteredQueue.length > 0 ? (
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 px-2 pb-2 border-b border-neutral-800 mt-4">
+                                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">{t('playlist.upNext')}</span>
+                                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-neutral-800 text-neutral-400 font-mono">{filteredQueue.length}</span>
+                                </div>
+                                {filteredQueue.map((track) => (
+                                    <Track
+                                        key={track.id}
+                                        track={track}
+                                        isActive={false}
+                                        isExpanded={expandedTrackId === track.id}
+                                        vote={votes?.[track.id]}
+                                        onVote={onVote}
+                                        onToggleExpand={handleToggleExpand}
+                                        readOnly={false}
+                                        votesEnabled={votesEnabled}
+                                        onPreview={onPreview}
+                                        onDelete={onDelete}
+                                        onRecommend={onRecommend}
+                                        onAdd={onAdd}
+                                        activeSuggestionId={activeSuggestionId}
+                                        suggestions={suggestions}
+                                        isFetchingSuggestions={isFetchingSuggestions}
+                                        queueVideoIds={queueVideoIds}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            !currentTrack && (
+                                <div className="flex h-64 w-full items-center justify-center text-neutral-500 bg-[#0a0a0a]">
+                                    <span className="text-lg">{t('playlist.queueEmpty')}</span>
+                                </div>
+                            )
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Back to Now Button - only in playlist tab */}
+            {!isLibrary && showJumpToNow && currentTrack && !disableFloatingUI && createPortal(
                 <div className="fixed bottom-8 right-8 z-[100] animate-fadeIn">
                     <button
                         onClick={() => scrollToCurrent(true)}
@@ -239,4 +274,7 @@ PlaylistView.propTypes = {
     activeSuggestionId: PropTypes.string,
     suggestions: PropTypes.array,
     isFetchingSuggestions: PropTypes.bool,
+    queueVideoIds: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Set)]),
+    disableFloatingUI: PropTypes.bool,
+    onLibraryDelete: PropTypes.func,
 };
