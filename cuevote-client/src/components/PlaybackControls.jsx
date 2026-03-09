@@ -206,7 +206,7 @@ export function PlaybackControls({
               <p className="text-sm text-neutral-400">
                 {currentTrack
                   ? `${currentTrack.artist} • ${activeChannel} ${t('playlist.channelSuffix')}`
-                  : t('playlist.addSongs')}
+                  : t('playlist.addVideos')}
               </p>
             </div>
           </div>
