@@ -224,13 +224,19 @@ export function Header({
             <Settings size={15} /><span>{t('header.settings')}</span>
           </button>
         )}
-        <div className="flex-1 min-w-2" />
-        <button onClick={onSuggest} disabled={suggestDisabled} className={`${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
+        <div className="hidden lg:block flex-1 min-w-2" />
+        <button onClick={onSuggest} disabled={suggestDisabled} className={`hidden lg:flex ${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
           <Send size={15} /><span>{t('header.suggest')}</span>
         </button>
       </>
     );
   };
+
+  const suggestButton = (
+    <button onClick={onSuggest} disabled={suggestDisabled} className={`${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
+      <Send size={15} /><span>{t('header.suggest')}</span>
+    </button>
+  );
 
   return (
     <header
@@ -288,11 +294,18 @@ export function Header({
 
         <div className="h-5 w-px bg-neutral-800 flex-shrink-0" />
 
-        <div
-          ref={pillsRef}
-          className={`flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
-        >
-          {renderPills()}
+        <div className="flex flex-1 min-w-0 items-center gap-1.5">
+          <div
+            ref={pillsRef}
+            className={`flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
+          >
+            {renderPills()}
+          </div>
+          {mode !== "playlist" && mode !== "library" && (
+            <div className="lg:hidden flex-shrink-0">
+              {suggestButton}
+            </div>
+          )}
         </div>
       </div>
 
