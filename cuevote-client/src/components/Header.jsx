@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { GoogleAuthButton } from "./GoogleAuthButton";
@@ -41,6 +41,7 @@ export function Header({
   const [exitConfirmIndex, setExitConfirmIndex] = React.useState(0); // 0 = Cancel, 1 = Leave
   // const [showQRCode, setShowQRCode] = React.useState(false); // Removed local state
   const [copied, setCopied] = React.useState(false);
+  const pillsRef = useRef(null);
   const [deleteConfirmationText, setDeleteConfirmationText] = React.useState("");
   const { t } = Language.useLanguage();
 
@@ -113,6 +114,12 @@ export function Header({
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, [showProfileModal, showDeleteConfirm, onShowSuggest, onShowQRCode]);
+
+  useEffect(() => {
+    if (pillsRef.current) {
+      pillsRef.current.scrollLeft = pillsRef.current.scrollWidth;
+    }
+  }, [mode]);
 
   const effectiveIsOwner = isOwner && ownerBypass;
   const suggestDisabled = !suggestionsEnabled && !effectiveIsOwner;
@@ -223,7 +230,7 @@ export function Header({
 
         <div className="h-5 w-px bg-neutral-800 flex-shrink-0" />
 
-        <div className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0">
+        <div ref={pillsRef} className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0">
           {renderPills()}
         </div>
       </div>
