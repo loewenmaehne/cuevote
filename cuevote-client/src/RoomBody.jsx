@@ -10,6 +10,7 @@ import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
 import { Suggestions } from "./components/Suggestions";
 import { PlaylistView } from "./components/PlaylistView";
+import { BottomNav } from "./components/BottomNav";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { SettingsView } from "./components/SettingsView";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
@@ -45,8 +46,10 @@ function RoomBody() {
   const activeRoomId = roomId || "synthwave";
 
   const [localPlaylistView, setLocalPlaylistView] = useState(false);
-  const [controlsHeight, setControlsHeight] = useState(96); // Default 6rem ~ 96px
-  const [showSettings, setShowSettings] = useState(false); // Refactored state from Header
+  const [controlsHeight, setControlsHeight] = useState(96);
+  const [showSettings, setShowSettings] = useState(false);
+  const [playlistActiveTab, setPlaylistActiveTab] = useState("playlist");
+  const [playlistNavState, setPlaylistNavState] = useState({ showJumpToNow: false, jumpDirection: "down", scrollToCurrent: null });
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
   const { hasConsent, giveConsent } = Consent.useConsent();
   const { t } = Language.useLanguage();
@@ -1080,7 +1083,7 @@ function RoomBody() {
 
 
   return (
-    <div className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : "min-h-screen bg-black pb-32"}`}>
+    <div className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : "min-h-screen bg-black pb-16 md:pb-32"}`}>
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header
@@ -1261,6 +1264,9 @@ function RoomBody() {
               queueVideoIds={queueVideoIds}
               disableFloatingUI={!!previewTrack}
               onLibraryDelete={isOwner ? handleRemoveFromLibrary : undefined}
+              activeTab={playlistActiveTab}
+              onSetActiveTab={setPlaylistActiveTab}
+              onNavStateChange={setPlaylistNavState}
             />
             {previewTrack && (
               <PrelistenOverlay
@@ -1388,6 +1394,7 @@ function RoomBody() {
           </div>
         ) : (
           !isAnyPlaylistView && !showPendingPage && hasConsent && (
+            <div className="hidden md:block">
             <PlaybackControls
               isPlaying={(isPlaying || isLocallyPlaying) && !isLocallyPaused}
               onPlayPause={handlePlayPause}
@@ -1407,9 +1414,39 @@ function RoomBody() {
               onHeightChange={handleControlsHeightChange}
               canShowControls={canShowControls}
             />
+            </div>
           )
         )
       }
+      {!previewTrack && !isCinemaMode && !showPendingPage && hasConsent && (
+        <BottomNav
+          isPlaylistView={isAnyPlaylistView}
+          isLibraryTab={playlistActiveTab === "library"}
+          onTogglePlaylistView={() => {
+            setLocalPlaylistView(!localPlaylistView);
+            setShowSettings(false);
+            setShowSuggest(false);
+          }}
+          onToggleSuggest={() => {
+            setShowSuggest(prev => !prev);
+            setShowSettings(false);
+          }}
+          onShare={() => {
+            setShowQRModal(true);
+            setShowSettings(false);
+            setShowSuggest(false);
+          }}
+          onToggleLibraryTab={() => setPlaylistActiveTab(prev => prev === "library" ? "playlist" : "library")}
+          onExitPlaylist={localPlaylistView ? () => setLocalPlaylistView(false) : null}
+          onBackToNow={playlistNavState.scrollToCurrent}
+          showBackToNow={playlistNavState.showJumpToNow && !previewTrack}
+          backToNowDirection={playlistNavState.jumpDirection}
+          showSuggest={showSuggest}
+          suggestionsEnabled={suggestionsEnabled}
+          isOwner={isOwner}
+          ownerBypass={ownerBypass}
+        />
+      )}
       {toast && (
         <Toast
           message={toast.message}
@@ -1417,7 +1454,7 @@ function RoomBody() {
           onClose={() => setToast(null)}
         />
       )}
-      {/* TV Unmute Overlay - only when video is visible (not in playlist-only view) */}
+      {/* TV Unmute Overlay */}
       {deviceDetection.isTV() && isMuted && isPlayerReady && !isAnyPlaylistView && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-500">
           <button
