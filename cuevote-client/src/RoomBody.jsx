@@ -1080,7 +1080,7 @@ function RoomBody() {
 
 
   return (
-    <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
+    <div className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : "min-h-screen bg-black pb-32"}`}>
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header
