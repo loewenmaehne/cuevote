@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
-import { ArrowDown, ArrowUp, X, Library, List } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { Language } from '../contexts/LanguageContext';
 import { Track } from "./Track";
 import { ChannelLibrary } from "./ChannelLibrary";
@@ -24,12 +24,12 @@ export function PlaylistView({
     queueVideoIds,
     disableFloatingUI = false,
     onLibraryDelete,
+    activeTab = "playlist",
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
     const [showJumpToNow, setShowJumpToNow] = useState(false);
     const [jumpDirection, setJumpDirection] = useState("down");
-    const [activeTab, setActiveTab] = useState("playlist");
     const { t } = Language.useLanguage();
 
     const handleToggleExpand = (trackId) => {
@@ -86,52 +86,11 @@ export function PlaylistView({
 
     const isLibrary = activeTab === "library";
 
-    const actionBarButtons = (
-        <>
-            <button
-                onClick={() => setActiveTab(isLibrary ? "playlist" : "library")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all active:scale-95 ${
-                    isLibrary
-                        ? "bg-orange-500/15 text-orange-500 border border-orange-500/30"
-                        : "bg-neutral-800/80 text-neutral-300 border border-neutral-700/50 hover:text-white hover:bg-neutral-700/80"
-                }`}
-            >
-                {isLibrary ? (
-                    <>
-                        <List size={16} />
-                        <span>{t('header.playlist')}</span>
-                    </>
-                ) : (
-                    <>
-                        <Library size={16} />
-                        <span>{t('header.library')}</span>
-                    </>
-                )}
-            </button>
-
-            {onExit && (
-                <button
-                    onClick={onExit}
-                    className="flex items-center gap-2 px-4 py-2 bg-black/80 backdrop-blur-md text-orange-500 rounded-full hover:bg-neutral-800 transition-all border border-white/10 active:scale-95 text-sm font-bold"
-                >
-                    <span>{t('playlist.close')}</span>
-                    <X size={16} />
-                </button>
-            )}
-        </>
-    );
-
     return (
         <div className="flex flex-col h-full bg-[#0a0a0a] text-white relative">
-            {/* Content: Library or Playlist */}
             {isLibrary ? (
-                <>
-                    {/* Action bar — non-scrolling for library tab */}
-                    <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-800 bg-[#0a0a0a]/95 backdrop-blur-md flex-shrink-0 z-40 gap-2">
-                        {actionBarButtons}
-                    </div>
-                    <div className="flex-1 min-h-0">
-                        <ChannelLibrary
+                <div className="flex-1 min-h-0">
+                    <ChannelLibrary
                             history={history}
                             onAdd={onAdd}
                             onDelete={onLibraryDelete}
@@ -142,18 +101,13 @@ export function PlaylistView({
                             isFetchingSuggestions={isFetchingSuggestions}
                             queueVideoIds={queueVideoIds}
                         />
-                    </div>
-                </>
+                </div>
             ) : (
                 <div
                     className="flex-1 overflow-y-auto pb-24 custom-scrollbar scroll-smooth relative"
                     ref={scrollRef}
                 >
-                    {/* Action bar — sticky inside scroll area for playlist tab */}
-                    <div className="sticky top-0 z-40 px-3 py-2 border-b border-neutral-800 bg-[#0a0a0a]/95 backdrop-blur-md flex items-center justify-between gap-2">
-                        {actionBarButtons}
-                    </div>
-                    <div className="max-w-3xl mx-auto space-y-4 py-6 pt-2 px-4">
+                    <div className="max-w-3xl mx-auto space-y-4 py-4 px-4">
                         {/* History */}
                         {history.length > 0 && (
                             <div className="space-y-2 opacity-60 hover:opacity-100 transition-opacity duration-300">
@@ -290,4 +244,5 @@ PlaylistView.propTypes = {
     queueVideoIds: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Set)]),
     disableFloatingUI: PropTypes.bool,
     onLibraryDelete: PropTypes.func,
+    activeTab: PropTypes.string,
 };
