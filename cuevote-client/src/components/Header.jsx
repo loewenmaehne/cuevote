@@ -113,36 +113,38 @@ export function Header({
   return (
     <header
       ref={headerRef}
-      className="px-2 py-1.5 md:p-4 flex flex-col items-center gap-2 md:gap-3 w-full safe-pt"
+      className="p-2 md:p-4 flex flex-col items-center gap-3 w-full safe-pt"
     >
       <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full gap-2 lg:gap-4">
-        <div className="flex items-center gap-2 justify-start min-w-0">
-          <div className="flex items-center flex-shrink-0 transition-all duration-300 gap-1.5 md:gap-2">
+        <div className="flex items-center gap-3 justify-start min-w-0">
+          <div className="flex items-center flex-shrink-0 transition-all duration-300 gap-2">
             <button
               onClick={() => {
                 setShowExitConfirm(true);
                 setExitConfirmIndex(0);
                 if (onCloseSettings) onCloseSettings();
               }}
-              className="p-1.5 md:p-2 -ml-1 text-neutral-400 hover:text-white transition-colors rounded-full hover:bg-neutral-800"
+              className="p-2 -ml-2 text-neutral-400 hover:text-white transition-colors rounded-full hover:bg-neutral-800"
               title={t('header.leave')}
             >
-              <ChevronLeft size={22} className="md:w-6 md:h-6" />
+              <ChevronLeft size={24} />
             </button>
             {user ? (
               <button
                 onClick={() => setShowProfileModal(true)}
-                className="flex items-center gap-2 px-1.5 py-1 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border border-transparent transition-all group cursor-pointer"
+                className="flex items-center gap-3 px-2 py-1 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border border-transparent transition-all group cursor-pointer"
                 title={t('header.profileSettings')}
               >
-                {user.picture ? (
-                  <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-7 h-7 md:w-8 md:h-8 rounded-full border border-neutral-700" />
-                ) : (
-                  <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
-                    {user.name?.charAt(0)}
-                  </div>
-                )}
-                <span className="hidden md:block text-sm font-medium text-neutral-300 truncate max-w-[120px] group-hover:text-white transition-colors">{user.name}</span>
+                <div className="flex items-center gap-2">
+                  {user.picture ? (
+                    <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-neutral-700" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
+                      {user.name?.charAt(0)}
+                    </div>
+                  )}
+                  <span className="text-sm font-medium text-neutral-300 truncate max-w-[120px] group-hover:text-white transition-colors">{user.name}</span>
+                </div>
               </button>
             ) : (
               <div>
@@ -152,10 +154,10 @@ export function Header({
                     <button
                       onClick={() => !disabled && performLogin()}
                       disabled={disabled}
-                      className={`group flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full border border-neutral-700 bg-neutral-800/50 transition-all shadow-sm ${disabled ? 'opacity-40 grayscale cursor-not-allowed' : 'hover:bg-neutral-700 hover:border-neutral-500 active:scale-95'}`}
+                      className={`group flex items-center justify-center w-9 h-9 rounded-full border border-neutral-700 bg-neutral-800/50 transition-all shadow-sm ${disabled ? 'opacity-40 grayscale cursor-not-allowed' : 'hover:bg-neutral-700 hover:border-neutral-500 active:scale-95'}`}
                       title={disabled ? t('header.acceptCookies') : t('header.signIn')}
                     >
-                      <svg className={`w-4 h-4 md:w-5 md:h-5 transition-colors ${disabled ? 'text-neutral-600' : 'text-neutral-400 group-hover:text-white'}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <svg className={`w-5 h-5 transition-colors ${disabled ? 'text-neutral-600' : 'text-neutral-400 group-hover:text-white'}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
                       </svg>
                     </button>
@@ -163,10 +165,15 @@ export function Header({
                 />
               </div>
             )}
+            {/* Legal Link Removed from Header - Moved to Profile Menu */}
+
+
+
           </div>
         </div>
 
         <div className="flex items-center gap-1 md:gap-3 justify-center min-w-0">
+          {/* Playlist View Toggle - Left of Logo */}
           {!(playlistViewMode && !isOwner) && (
             <button
               onClick={(event) => {
@@ -175,10 +182,10 @@ export function Header({
                 if (onCloseSettings) onCloseSettings();
                 onShowSuggest(false);
               }}
-              className="flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1.5 md:p-1 rounded-full active:scale-90"
-              title={t('header.playlist')}
+              className="hidden md:flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
+              title="Playlist View"
             >
-              <List size={18} className="md:w-[22px] md:h-[22px]" />
+              <List size={20} className="md:w-[22px] md:h-[22px]" />
               <span className="hidden xl:block text-sm font-medium whitespace-nowrap">{t('header.playlist')}</span>
             </button>
           )}
@@ -188,7 +195,7 @@ export function Header({
           </h1>
         </div>
 
-        <div className="flex items-center justify-end gap-1.5 md:gap-2 lg:gap-4 min-w-0">
+        <div className="flex items-center justify-end gap-2 lg:gap-4 min-w-0">
           <div
             className="hidden lg:flex items-center gap-2 text-orange-500 select-none"
             title={activeChannel}
@@ -210,7 +217,25 @@ export function Header({
             </div>
           </div>
 
+
+
+
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              onShowQRCode(true);
+              if (onCloseSettings) onCloseSettings();
+              onShowSuggest(false);
+            }}
+            className="hidden md:flex keep-open items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
+            title={t('header.share')}
+          >
+            <QrCode size={20} />
+          </button>
+
+          {/* Suggest Button */}
           {(() => {
+            // Treat owner as regular user if bypass is disabled
             const effectiveIsOwner = isOwner && ownerBypass;
             const isDisabled = !suggestionsEnabled && !effectiveIsOwner;
 
@@ -221,30 +246,16 @@ export function Header({
                   onShowSuggest((prev) => !prev);
                   if (onCloseSettings) onCloseSettings();
                 }}
-                className={`keep-open flex items-center gap-2 transition-colors flex-shrink-0 p-1.5 md:p-1 rounded-full active:scale-90 ${isDisabled
+                className={`keep-open flex items-center gap-2 transition-colors flex-shrink-0 ${isDisabled
                   ? "text-neutral-600 hover:text-neutral-500"
                   : "text-orange-500 hover:text-orange-400"
                   }`}
                 title={isDisabled ? t('header.suggestionsDisabled') : t('header.suggestSong')}
               >
-                <Send size={18} />
-                <span className="hidden md:inline">{t('header.suggest')}</span>
+                <Send size={18} /> <span>{t('header.suggest')}</span>
               </button>
             );
           })()}
-
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
-              onShowQRCode(true);
-              if (onCloseSettings) onCloseSettings();
-              onShowSuggest(false);
-            }}
-            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1.5 md:p-1 rounded-full active:scale-90"
-            title={t('header.share')}
-          >
-            <QrCode size={18} className="md:w-5 md:h-5" />
-          </button>
 
 
 

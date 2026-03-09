@@ -10,7 +10,6 @@ import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
 import { Suggestions } from "./components/Suggestions";
 import { PlaylistView } from "./components/PlaylistView";
-import { BottomNav } from "./components/BottomNav";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { SettingsView } from "./components/SettingsView";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
@@ -46,10 +45,8 @@ function RoomBody() {
   const activeRoomId = roomId || "synthwave";
 
   const [localPlaylistView, setLocalPlaylistView] = useState(false);
-  const [controlsHeight, setControlsHeight] = useState(96);
-  const [showSettings, setShowSettings] = useState(false);
-  const [playlistActiveTab, setPlaylistActiveTab] = useState("playlist");
-  const [playlistNavState, setPlaylistNavState] = useState({ showJumpToNow: false, jumpDirection: "down", scrollToCurrent: null });
+  const [controlsHeight, setControlsHeight] = useState(96); // Default 6rem ~ 96px
+  const [showSettings, setShowSettings] = useState(false); // Refactored state from Header
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
   const { hasConsent, giveConsent } = Consent.useConsent();
   const { t } = Language.useLanguage();
@@ -1264,9 +1261,6 @@ function RoomBody() {
               queueVideoIds={queueVideoIds}
               disableFloatingUI={!!previewTrack}
               onLibraryDelete={isOwner ? handleRemoveFromLibrary : undefined}
-              activeTab={playlistActiveTab}
-              onSetActiveTab={setPlaylistActiveTab}
-              onNavStateChange={setPlaylistNavState}
             />
             {previewTrack && (
               <PrelistenOverlay
@@ -1416,16 +1410,6 @@ function RoomBody() {
           )
         )
       }
-      {isAnyPlaylistView && !previewTrack && (
-        <BottomNav
-          isLibraryTab={playlistActiveTab === "library"}
-          onToggleLibraryTab={() => setPlaylistActiveTab(prev => prev === "library" ? "playlist" : "library")}
-          onExitPlaylist={localPlaylistView ? () => setLocalPlaylistView(false) : null}
-          onBackToNow={playlistNavState.scrollToCurrent}
-          showBackToNow={playlistNavState.showJumpToNow}
-          backToNowDirection={playlistNavState.jumpDirection}
-        />
-      )}
       {toast && (
         <Toast
           message={toast.message}
@@ -1433,7 +1417,7 @@ function RoomBody() {
           onClose={() => setToast(null)}
         />
       )}
-      {/* TV Unmute Overlay */}
+      {/* TV Unmute Overlay - only when video is visible (not in playlist-only view) */}
       {deviceDetection.isTV() && isMuted && isPlayerReady && !isAnyPlaylistView && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-500">
           <button
