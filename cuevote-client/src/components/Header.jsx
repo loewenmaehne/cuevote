@@ -154,15 +154,15 @@ export function Header({
         <button onClick={onShare} className={pillClass(false)}>
           <QrCode size={15} /><span>{t('header.share')}</span>
         </button>
-        <div className="flex-1 min-w-2" />
-        <button onClick={onSuggest} disabled={suggestDisabled} className={`${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
-          <Send size={15} /><span>{t('header.suggest')}</span>
-        </button>
         {isOwner && (
           <button onClick={onToggleSettings} className={pillClass(showSettings)}>
             <Settings size={15} /><span>{t('header.settings')}</span>
           </button>
         )}
+        <div className="flex-1 min-w-2" />
+        <button onClick={onSuggest} disabled={suggestDisabled} className={`${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
+          <Send size={15} /><span>{t('header.suggest')}</span>
+        </button>
       </>
     );
   };
