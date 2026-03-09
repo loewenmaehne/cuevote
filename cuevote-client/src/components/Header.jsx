@@ -224,7 +224,6 @@ export function Header({
             <Settings size={15} /><span>{t('header.settings')}</span>
           </button>
         )}
-        <div className="hidden lg:block flex-1 min-w-2" />
         <button onClick={onSuggest} disabled={suggestDisabled} className={`hidden lg:flex ${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
           <Send size={15} /><span>{t('header.suggest')}</span>
         </button>
