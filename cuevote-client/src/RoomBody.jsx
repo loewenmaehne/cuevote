@@ -1321,8 +1321,8 @@ function RoomBody() {
         )}
       </div>
 
-      <div className="pb-4 min-h-0 flex-1">
-        {!isAnyPlaylistView && !isCinemaMode && (
+      {!isAnyPlaylistView && !isCinemaMode && (
+        <div className="pb-4 min-h-0 flex-1">
           <Queue
             tracks={queue}
             currentTrack={currentTrack}
@@ -1336,15 +1336,13 @@ function RoomBody() {
             onDelete={isOwner ? handleDeleteSong : null}
             onRecommend={handleFetchSuggestions}
             onAdd={handleLibraryAdd}
-            // Suggestions Props
             activeSuggestionId={activeSuggestionId}
             suggestions={manualSuggestions}
             isFetchingSuggestions={isFetchingSuggestions}
             queueVideoIds={queueVideoIds}
           />
-        )}
-
-      </div>
+        </div>
+      )}
 
       {
         previewTrack ? (
