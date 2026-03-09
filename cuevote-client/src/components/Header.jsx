@@ -166,34 +166,27 @@ export function Header({
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center min-w-0">
-          <div className="flex items-center gap-1.5 md:gap-3">
-            {/* Playlist View Toggle - desktop only */}
-            {!(playlistViewMode && !isOwner) && (
-              <button
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onTogglePlaylistView();
-                  if (onCloseSettings) onCloseSettings();
-                  onShowSuggest(false);
-                }}
-                className="hidden md:flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
-                title="Playlist View"
-              >
-                <List size={20} className="md:w-[22px] md:h-[22px]" />
-                <span className="hidden xl:block text-sm font-medium whitespace-nowrap">{t('header.playlist')}</span>
-              </button>
-            )}
+        <div className="flex items-center gap-1.5 md:gap-3 justify-center min-w-0">
+          {/* Playlist View Toggle - desktop only */}
+          {!(playlistViewMode && !isOwner) && (
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                onTogglePlaylistView();
+                if (onCloseSettings) onCloseSettings();
+                onShowSuggest(false);
+              }}
+              className="hidden md:flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
+              title="Playlist View"
+            >
+              <List size={20} className="md:w-[22px] md:h-[22px]" />
+              <span className="hidden xl:block text-sm font-medium whitespace-nowrap">{t('header.playlist')}</span>
+            </button>
+          )}
 
-            <h1 className="text-lg md:text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap text-center">
-              CueVote
-            </h1>
-          </div>
-          {/* Channel name — visible on mobile, hidden on lg+ (shown in right section) */}
-          <div className="flex items-center gap-1 lg:hidden max-w-[160px] overflow-hidden">
-            <Radio size={12} className="flex-shrink-0 text-neutral-500" />
-            <span className="text-[11px] text-neutral-500 truncate">{activeChannel}</span>
-          </div>
+          <h1 className="text-lg md:text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap text-center">
+            CueVote
+          </h1>
         </div>
 
         <div className="flex items-center justify-end gap-1.5 md:gap-2 lg:gap-4 min-w-0">

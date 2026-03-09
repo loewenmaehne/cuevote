@@ -35,6 +35,9 @@ export function PlaylistView({
     const [jumpDirection, setJumpDirection] = useState("down");
     const { t } = Language.useLanguage();
 
+    const isLibrary = activeTab === "library";
+    const filteredQueue = queue.filter(t => t.id !== currentTrack?.id);
+
     const handleToggleExpand = (trackId) => {
         setExpandedTrackId((prev) => (prev === trackId ? null : trackId));
     };
@@ -96,10 +99,6 @@ export function PlaylistView({
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentTrack?.id, activeTab]);
-
-    const filteredQueue = queue.filter(t => t.id !== currentTrack?.id);
-
-    const isLibrary = activeTab === "library";
 
     const setActiveTabSafe = (tab) => {
         if (onSetActiveTab) onSetActiveTab(tab);
