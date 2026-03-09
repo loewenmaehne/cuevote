@@ -18,6 +18,7 @@ const getWebSocketUrl = () => {
 };
 
 const WEBSOCKET_URL = getWebSocketUrl();
+const SESSION_KEY = "cuevote_session_token";
 
 export function WebSocketProvider({ children }) {
   const [state, setState] = useState(null);
@@ -27,7 +28,7 @@ export function WebSocketProvider({ children }) {
   const [lastErrorTimestamp, setLastErrorTimestamp] = useState(0);
   const [lastMessage, setLastMessage] = useState(null);
   const [user, setUser] = useState(null);
-  const sessionTokenRef = useRef(null);
+  const sessionTokenRef = useRef(localStorage.getItem(SESSION_KEY));
   const [clientId] = useState(() => {
     let id = localStorage.getItem("cuevote_client_id");
     if (!id) {
@@ -55,6 +56,7 @@ export function WebSocketProvider({ children }) {
     if (token) {
       sendMessage({ type: "LOGOUT", payload: { token } });
       sessionTokenRef.current = null;
+      localStorage.removeItem(SESSION_KEY);
     }
     setUser(null);
   }, [sendMessage]);
@@ -67,10 +69,12 @@ export function WebSocketProvider({ children }) {
         setUser(lastMessage.payload.user);
         if (lastMessage.payload.sessionToken) {
           sessionTokenRef.current = lastMessage.payload.sessionToken;
+          localStorage.setItem(SESSION_KEY, lastMessage.payload.sessionToken);
         }
       } else if (lastMessage.type === "SESSION_INVALID") {
         console.warn("Session Invalid/Expired");
         sessionTokenRef.current = null;
+        localStorage.removeItem(SESSION_KEY);
         setUser(null);
       }
     }
@@ -89,7 +93,7 @@ export function WebSocketProvider({ children }) {
       const handleOpen = () => {
         console.log("WebSocket connected");
         setIsConnected(true);
-        // Try to resume session on connect (only within current tab lifetime)
+        // Try to resume session on connect (persisted in localStorage across reloads)
         const token = sessionTokenRef.current;
         if (token) {
           socket.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token } }));
