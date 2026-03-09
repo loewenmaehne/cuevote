@@ -166,8 +166,7 @@ export function Header({
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 md:gap-3 justify-center min-w-0">
-          {/* Playlist View Toggle - desktop only */}
+        <div className="flex items-center gap-1 md:gap-3 justify-center min-w-0">
           {!(playlistViewMode && !isOwner) && (
             <button
               onClick={(event) => {
@@ -176,10 +175,10 @@ export function Header({
                 if (onCloseSettings) onCloseSettings();
                 onShowSuggest(false);
               }}
-              className="hidden md:flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
-              title="Playlist View"
+              className="flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1.5 md:p-1 rounded-full active:scale-90"
+              title={t('header.playlist')}
             >
-              <List size={20} className="md:w-[22px] md:h-[22px]" />
+              <List size={18} className="md:w-[22px] md:h-[22px]" />
               <span className="hidden xl:block text-sm font-medium whitespace-nowrap">{t('header.playlist')}</span>
             </button>
           )}
@@ -211,21 +210,6 @@ export function Header({
             </div>
           </div>
 
-          {/* Share — desktop only, mobile uses BottomNav */}
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
-              onShowQRCode(true);
-              if (onCloseSettings) onCloseSettings();
-              onShowSuggest(false);
-            }}
-            className="hidden md:flex keep-open items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors"
-            title={t('header.share')}
-          >
-            <QrCode size={20} />
-          </button>
-
-          {/* Suggest — desktop only, mobile uses BottomNav */}
           {(() => {
             const effectiveIsOwner = isOwner && ownerBypass;
             const isDisabled = !suggestionsEnabled && !effectiveIsOwner;
@@ -237,16 +221,30 @@ export function Header({
                   onShowSuggest((prev) => !prev);
                   if (onCloseSettings) onCloseSettings();
                 }}
-                className={`keep-open hidden md:flex items-center gap-2 transition-colors flex-shrink-0 ${isDisabled
+                className={`keep-open flex items-center gap-2 transition-colors flex-shrink-0 p-1.5 md:p-1 rounded-full active:scale-90 ${isDisabled
                   ? "text-neutral-600 hover:text-neutral-500"
                   : "text-orange-500 hover:text-orange-400"
                   }`}
                 title={isDisabled ? t('header.suggestionsDisabled') : t('header.suggestSong')}
               >
-                <Send size={18} /> <span>{t('header.suggest')}</span>
+                <Send size={18} />
+                <span className="hidden md:inline">{t('header.suggest')}</span>
               </button>
             );
           })()}
+
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              onShowQRCode(true);
+              if (onCloseSettings) onCloseSettings();
+              onShowSuggest(false);
+            }}
+            className="keep-open flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1.5 md:p-1 rounded-full active:scale-90"
+            title={t('header.share')}
+          >
+            <QrCode size={18} className="md:w-5 md:h-5" />
+          </button>
 
 
 

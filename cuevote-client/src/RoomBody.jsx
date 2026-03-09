@@ -1083,7 +1083,7 @@ function RoomBody() {
 
 
   return (
-    <div className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : "min-h-screen bg-black pb-16 md:pb-32"}`}>
+    <div className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : "min-h-screen bg-black pb-32"}`}>
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header
@@ -1394,7 +1394,6 @@ function RoomBody() {
           </div>
         ) : (
           !isAnyPlaylistView && !showPendingPage && hasConsent && (
-            <div className="hidden md:block">
             <PlaybackControls
               isPlaying={(isPlaying || isLocallyPlaying) && !isLocallyPaused}
               onPlayPause={handlePlayPause}
@@ -1414,37 +1413,17 @@ function RoomBody() {
               onHeightChange={handleControlsHeightChange}
               canShowControls={canShowControls}
             />
-            </div>
           )
         )
       }
-      {!previewTrack && !isCinemaMode && !showPendingPage && hasConsent && (
+      {isAnyPlaylistView && !previewTrack && (
         <BottomNav
-          isPlaylistView={isAnyPlaylistView}
           isLibraryTab={playlistActiveTab === "library"}
-          onTogglePlaylistView={() => {
-            setLocalPlaylistView(!localPlaylistView);
-            setShowSettings(false);
-            setShowSuggest(false);
-          }}
-          onToggleSuggest={() => {
-            setShowSuggest(prev => !prev);
-            setShowSettings(false);
-          }}
-          onShare={() => {
-            setShowQRModal(true);
-            setShowSettings(false);
-            setShowSuggest(false);
-          }}
           onToggleLibraryTab={() => setPlaylistActiveTab(prev => prev === "library" ? "playlist" : "library")}
           onExitPlaylist={localPlaylistView ? () => setLocalPlaylistView(false) : null}
           onBackToNow={playlistNavState.scrollToCurrent}
-          showBackToNow={playlistNavState.showJumpToNow && !previewTrack}
+          showBackToNow={playlistNavState.showJumpToNow}
           backToNowDirection={playlistNavState.jumpDirection}
-          showSuggest={showSuggest}
-          suggestionsEnabled={suggestionsEnabled}
-          isOwner={isOwner}
-          ownerBypass={ownerBypass}
         />
       )}
       {toast && (
