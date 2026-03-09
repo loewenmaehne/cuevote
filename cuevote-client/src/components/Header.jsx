@@ -138,7 +138,7 @@ export function Header({
               >
                 <div className="flex items-center gap-2">
                   {user.picture ? (
-                    <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full border border-neutral-700" />
+                    <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-neutral-700" />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
                       {user.name?.charAt(0)}
@@ -423,7 +423,7 @@ export function Header({
 
               <div className="flex flex-col items-center mb-6">
                 {user?.picture ? (
-                  <img src={user.picture} alt={user.name} className="w-20 h-20 rounded-full border-2 border-neutral-700 mb-4 shadow-xl" />
+                  <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-20 h-20 rounded-full border-2 border-neutral-700 mb-4 shadow-xl" />
                 ) : (
                   <div className="w-20 h-20 rounded-full bg-neutral-800 flex items-center justify-center text-3xl font-bold text-neutral-500 mb-4 border-2 border-neutral-700">
                     {user?.name?.charAt(0)}

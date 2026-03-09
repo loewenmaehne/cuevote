@@ -544,7 +544,7 @@ export function Lobby() {
                                 className={`flex items-center gap-2 rounded-full transition-all ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 scale-105' : ''}`}
                             >
                                 {user.picture ? (
-                                    <img src={user.picture} className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
+                                    <img src={user.picture} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
                                 ) : (
                                     <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
                                         {user.name?.charAt(0)}
@@ -588,7 +588,7 @@ export function Lobby() {
                         >
                             <div className="flex items-center gap-2">
                                 {user.picture ? (
-                                    <img src={user.picture} className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
+                                    <img src={user.picture} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
                                 ) : (
                                     <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
                                         {user.name?.charAt(0)}
@@ -994,7 +994,7 @@ export function Lobby() {
                         >
                             <div className="flex flex-col items-center mb-6">
                                 {user?.picture ? (
-                                    <img src={user.picture} alt={user.name} className="w-20 h-20 rounded-full border-2 border-neutral-700 mb-4 shadow-xl" />
+                                    <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-20 h-20 rounded-full border-2 border-neutral-700 mb-4 shadow-xl" />
                                 ) : (
                                     <div className="w-20 h-20 rounded-full bg-neutral-800 flex items-center justify-center text-3xl font-bold text-neutral-500 mb-4 border-2 border-neutral-700">
                                         {user?.name?.charAt(0)}
