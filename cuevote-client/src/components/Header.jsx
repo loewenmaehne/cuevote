@@ -293,19 +293,17 @@ export function Header({
 
         <div className="h-5 w-px bg-neutral-800 flex-shrink-0" />
 
-        <div className="flex flex-1 min-w-0 items-center gap-1.5">
-          <div
-            ref={pillsRef}
-            className={`flex-1 lg:flex-none overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
-          >
-            {renderPills()}
-          </div>
-          {mode !== "playlist" && mode !== "library" && (
-            <div className="lg:hidden flex-shrink-0">
-              {suggestButton}
-            </div>
-          )}
+        <div
+          ref={pillsRef}
+          className={`flex-1 lg:flex-none overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
+        >
+          {renderPills()}
         </div>
+        {mode !== "playlist" && mode !== "library" && (
+          <div className="lg:hidden flex-shrink-0">
+            {suggestButton}
+          </div>
+        )}
       </div>
 
       {
