@@ -27,6 +27,7 @@ export function WebSocketProvider({ children }) {
   const [lastErrorTimestamp, setLastErrorTimestamp] = useState(0);
   const [lastMessage, setLastMessage] = useState(null);
   const [user, setUser] = useState(null);
+  const sessionTokenRef = useRef(null);
   const [clientId] = useState(() => {
     let id = localStorage.getItem("cuevote_client_id");
     if (!id) {
@@ -50,10 +51,10 @@ export function WebSocketProvider({ children }) {
   }, [sendMessage]);
 
   const handleLogout = useCallback(() => {
-    const token = localStorage.getItem("cuevote_auth_token");
+    const token = sessionTokenRef.current;
     if (token) {
       sendMessage({ type: "LOGOUT", payload: { token } });
-      localStorage.removeItem("cuevote_auth_token");
+      sessionTokenRef.current = null;
     }
     setUser(null);
   }, [sendMessage]);
@@ -65,11 +66,11 @@ export function WebSocketProvider({ children }) {
         console.log("Backend Login Success:", lastMessage.payload.user);
         setUser(lastMessage.payload.user);
         if (lastMessage.payload.sessionToken) {
-          localStorage.setItem("cuevote_auth_token", lastMessage.payload.sessionToken);
+          sessionTokenRef.current = lastMessage.payload.sessionToken;
         }
       } else if (lastMessage.type === "SESSION_INVALID") {
         console.warn("Session Invalid/Expired");
-        localStorage.removeItem("cuevote_auth_token");
+        sessionTokenRef.current = null;
         setUser(null);
       }
     }
@@ -88,8 +89,8 @@ export function WebSocketProvider({ children }) {
       const handleOpen = () => {
         console.log("WebSocket connected");
         setIsConnected(true);
-        // Try to resume session on connect
-        const token = localStorage.getItem("cuevote_auth_token");
+        // Try to resume session on connect (only within current tab lifetime)
+        const token = sessionTokenRef.current;
         if (token) {
           socket.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token } }));
         }
