@@ -296,7 +296,7 @@ export function Header({
         <div className="flex flex-1 min-w-0 items-center gap-1.5">
           <div
             ref={pillsRef}
-            className={`flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
+            className={`flex-1 lg:flex-none overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
           >
             {renderPills()}
           </div>
