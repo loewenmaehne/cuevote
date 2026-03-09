@@ -225,8 +225,8 @@ module.exports = {
     const user = db.prepare('SELECT email FROM users WHERE id = ?').get(userId);
     const userEmail = user ? user.email : null;
 
-    // Do not log email (PII); GDPR-compliant logging
-    console.log(`[DB DELETE] Starting cleanup for User ID: ${userId}`);
+    // Do not log email or stable user identifiers (PII); GDPR-compliant logging
+    console.log('[DB DELETE] Starting cleanup for user (ID redacted).');
 
     const transaction = db.transaction(() => {
       // Sessions
@@ -309,6 +309,14 @@ module.exports = {
 
   removeFromRoomHistory: (roomId, videoId) => {
     db.prepare('DELETE FROM room_history WHERE room_id = ? AND video_id = ?').run(roomId, videoId);
+  },
+
+  // Sessions cleanup
+  cleanupExpiredSessions: () => {
+    const now = Math.floor(Date.now() / 1000);
+    const result = db.prepare('DELETE FROM sessions WHERE expires_at <= ?').run(now);
+    console.log(`[DB Cleanup] Removed ${result.changes} expired sessions.`);
+    return result.changes;
   },
 
   cleanupRoomHistory: () => {

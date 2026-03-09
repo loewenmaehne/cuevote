@@ -2,6 +2,14 @@ console.log("Server starting...");
 require('dotenv').config();
 process.on('uncaughtException', (error) => {
     console.error('Uncaught Exception:', error);
+    // In production, crash so the process manager can restart cleanly.
+    if (process.env.NODE_ENV === 'production') {
+        try {
+            setTimeout(() => process.exit(1), 100);
+        } catch {
+            process.exit(1);
+        }
+    }
 });
 
 const WebSocket = require("ws");
@@ -12,6 +20,12 @@ const db = require('./db');
 const fs = require('fs');
 const backupScheduler = require('./backup_scheduler');
 backupScheduler.start();
+
+// Ensure global fetch is available (Node 18+ or polyfilled).
+if (typeof fetch !== 'function') {
+    console.error('[Startup] global.fetch is not available. Require Node.js 18+ or a fetch polyfill.');
+    process.exit(1);
+}
 
 const logFile = 'debug_server.log';
 // GDPR: avoid persisting user identifiers to log file; use this for any PII in messages
@@ -28,14 +42,21 @@ function logToFile(msg) {
     console.log(msg);
 }
 
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : [];
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : [];
 
 const wss = new WebSocket.Server({
     port: process.env.PORT || 8080,
     host: '0.0.0.0',
     verifyClient: (info, cb) => {
-        // If no origins configured, allow all (dev mode)
+        // In production, require an explicit allowlist.
         if (ALLOWED_ORIGINS.length === 0) {
+            if (process.env.NODE_ENV === 'production') {
+                console.error('[Security] No ALLOWED_ORIGINS configured in production. Rejecting connection.');
+                return cb(false, 503, 'Origin configuration required');
+            }
+            // Development fallback: allow all.
             return cb(true);
         }
 
@@ -578,13 +599,18 @@ setInterval(() => {
     }
 }, 5 * 60 * 1000);
 
-// Cleanup Old Room History (Once a day)
+// Cleanup Old Room History and expired sessions (Once a day)
 setInterval(() => {
-    console.log("Running room history cleanup task...");
+    console.log("Running room history + session cleanup task...");
     try {
         db.cleanupRoomHistory();
     } catch (e) {
         console.error("Failed to cleanup room history", e);
+    }
+    try {
+        db.cleanupExpiredSessions();
+    } catch (e) {
+        console.error("Failed to cleanup expired sessions", e);
     }
 }, 24 * 60 * 60 * 1000);
 
@@ -593,4 +619,11 @@ try {
     db.cleanupRoomHistory();
 } catch (e) {
     console.error("Failed to cleanup room history on startup", e);
+}
+
+// Run session cleanup once on startup as well
+try {
+    db.cleanupExpiredSessions();
+} catch (e) {
+    console.error("Failed to cleanup expired sessions on startup", e);
 }
