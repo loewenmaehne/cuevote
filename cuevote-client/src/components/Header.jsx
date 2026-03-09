@@ -42,6 +42,8 @@ export function Header({
   // const [showQRCode, setShowQRCode] = React.useState(false); // Removed local state
   const [copied, setCopied] = React.useState(false);
   const pillsRef = useRef(null);
+  const dragRef = useRef({ startX: 0, startScrollLeft: 0, isDragging: false });
+  const [isPillDragging, setIsPillDragging] = React.useState(false);
   const [deleteConfirmationText, setDeleteConfirmationText] = React.useState("");
   const { t } = Language.useLanguage();
 
@@ -134,6 +136,49 @@ export function Header({
     return () => observer.disconnect();
   }, [mode, isOwner]);
 
+  useEffect(() => {
+    const el = pillsRef.current;
+    if (!el) return;
+    const DRAG_THRESHOLD = 4;
+
+    const onMouseMove = (e) => {
+      const { startX, startScrollLeft, isDragging } = dragRef.current;
+      const dx = e.clientX - startX;
+      if (!isDragging && Math.abs(dx) > DRAG_THRESHOLD) {
+        dragRef.current.isDragging = true;
+        setIsPillDragging(true);
+      }
+      if (dragRef.current.isDragging) {
+        e.preventDefault();
+        el.scrollLeft = Math.max(0, Math.min(el.scrollWidth - el.clientWidth, startScrollLeft - dx));
+      }
+    };
+
+    const onMouseUp = () => {
+      if (dragRef.current.isDragging) setIsPillDragging(false);
+      dragRef.current = { startX: 0, startScrollLeft: 0, isDragging: false };
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+
+    const onMouseDown = (e) => {
+      dragRef.current = {
+        startX: e.clientX,
+        startScrollLeft: el.scrollLeft,
+        isDragging: false,
+      };
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+    };
+
+    el.addEventListener("mousedown", onMouseDown);
+    return () => {
+      el.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, []);
+
   const effectiveIsOwner = isOwner && ownerBypass;
   const suggestDisabled = !suggestionsEnabled && !effectiveIsOwner;
 
@@ -179,7 +224,6 @@ export function Header({
             <Settings size={15} /><span>{t('header.settings')}</span>
           </button>
         )}
-        <div className="flex-1 min-w-2" />
         <button onClick={onSuggest} disabled={suggestDisabled} className={`${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
           <Send size={15} /><span>{t('header.suggest')}</span>
         </button>
@@ -243,7 +287,10 @@ export function Header({
 
         <div className="h-5 w-px bg-neutral-800 flex-shrink-0" />
 
-        <div ref={pillsRef} className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0">
+        <div
+          ref={pillsRef}
+          className={`flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
+        >
           {renderPills()}
         </div>
       </div>
