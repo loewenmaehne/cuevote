@@ -100,13 +100,10 @@ class Room {
         console.log(`[SERVER TRACE] Room ${this.id}: Adding client. Total clients: ${this.clients.size + 1}`);
         this.clients.add(ws);
 
-        // Verification Hack: First user becomes owner
+        // Safety: if a room has no owner_id, do not silently assign ownership
         if (!this.metadata.owner_id && ws.user) {
-            console.log(`[VERIFICATION HACK] Assigning owner of Room ${this.id} to [REDACTED]`);
-            this.metadata.owner_id = ws.user.id;
-            // Also need to push updated state (ownerId) to clients?
-            // "state" object has "ownerId". Need to update it.
-            this.state.ownerId = ws.user.id;
+            console.warn(`[Room ${this.id}] Missing owner_id in metadata; treating as ownerless for this session.`);
+            this.state.ownerId = null;
         }
 
         try {
