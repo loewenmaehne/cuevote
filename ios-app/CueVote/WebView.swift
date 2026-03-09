@@ -108,7 +108,7 @@ struct WebView: UIViewRepresentable {
             if message.name == "nativeGoogleLogin" {
                 startGoogleSignInPKCE()
             } else if message.name == "toggleQRButton" {
-                // Fix: JS booleans are passed as NSNumber (0 or 1), direct cast to Bool can fail/be unreliable
+                // Parse boolean from JS payload
                 var show = false
                 if let boolVal = message.body as? Bool {
                     show = boolVal
@@ -117,9 +117,12 @@ struct WebView: UIViewRepresentable {
                 } else if let numVal = message.body as? NSNumber {
                     show = numVal.boolValue
                 }
-                
-                // Broadcast capability to ContentView
-                NotificationCenter.default.post(name: NSNotification.Name("ToggleQRButton"), object: show)
+
+                // Only honor requests from CueVote origin
+                if let host = message.webView?.url?.host,
+                   host == "cuevote.com" || host == "www.cuevote.com" {
+                    NotificationCenter.default.post(name: NSNotification.Name("ToggleQRButton"), object: show)
+                }
             }
         }
         
