@@ -2,9 +2,7 @@ import React, { useCallback, useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { CheckCircle, Send, Clock } from "lucide-react";
 import { Language } from '../contexts/LanguageContext';
-import { Suggestions } from "./Suggestions"; // ADDED IMPORT
-
-export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, serverMessage, isOwner, suggestionsEnabled, isConnected = true, currentTrack, onRecommend, suggestions = [], isFetchingSuggestions = false, queueVideoIds = new Set() }) {
+export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, serverMessage, isOwner, suggestionsEnabled, isConnected = true }) {
   const [songSuggestion, setSongSuggestion] = useState("");
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [suggestionError, setSuggestionError] = useState("");
@@ -165,34 +163,6 @@ export function SuggestSongForm({ onSongSuggested, onShowSuggest, serverError, s
         )
       }
 
-      {/* Lazy Loading Suggestions Section */}
-      {currentTrack && suggestionsEnabled && (
-        <div className="mt-4 pt-4 border-t border-neutral-800">
-          {!suggestions || suggestions.length === 0 ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRecommend(currentTrack);
-              }}
-              disabled={isFetchingSuggestions}
-              className="w-full py-2 rounded-xl bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-colors text-sm font-medium disabled:opacity-50"
-            >
-              {isFetchingSuggestions ? t('app.loading') : t('suggest.loadSimilar')}
-            </button>
-          ) : (
-            <div>
-              <p className="text-xs text-neutral-400 mb-2 font-medium uppercase tracking-wider">{t('suggest.similarTo')} {currentTrack.title}</p>
-              <Suggestions
-                suggestions={suggestions}
-                onAdd={(videoId) => {
-                  onSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
-                }}
-                queueVideoIds={queueVideoIds}
-              />
-            </div>
-          )}
-        </div>
-      )}
     </div >
   );
 }
@@ -204,10 +174,5 @@ SuggestSongForm.propTypes = {
   isOwner: PropTypes.bool,
   suggestionsEnabled: PropTypes.bool,
   suggestionMode: PropTypes.string,
-  isConnected: PropTypes.bool,
-  currentTrack: PropTypes.object,
-  onRecommend: PropTypes.func,
-  suggestions: PropTypes.array,
-  isFetchingSuggestions: PropTypes.bool,
-  queueVideoIds: PropTypes.object
+  isConnected: PropTypes.bool
 };
