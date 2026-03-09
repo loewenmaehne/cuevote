@@ -10,6 +10,7 @@ import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
 import { Suggestions } from "./components/Suggestions";
 import { PlaylistView } from "./components/PlaylistView";
+import { ActionStrip } from "./components/ActionStrip";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { SettingsView } from "./components/SettingsView";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
@@ -45,8 +46,9 @@ function RoomBody() {
   const activeRoomId = roomId || "synthwave";
 
   const [localPlaylistView, setLocalPlaylistView] = useState(false);
-  const [controlsHeight, setControlsHeight] = useState(96); // Default 6rem ~ 96px
-  const [showSettings, setShowSettings] = useState(false); // Refactored state from Header
+  const [playlistActiveTab, setPlaylistActiveTab] = useState("playlist");
+  const [controlsHeight, setControlsHeight] = useState(96);
+  const [showSettings, setShowSettings] = useState(false);
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
   const { hasConsent, giveConsent } = Consent.useConsent();
   const { t } = Language.useLanguage();
@@ -1090,44 +1092,51 @@ function RoomBody() {
             user={user}
             onLoginSuccess={handleLoginSuccess}
             onLogout={handleLogout}
-            onDeleteAccount={handleDeleteAccount} // GDPR
+            onDeleteAccount={handleDeleteAccount}
             isOwner={isOwner}
-            suggestionsEnabled={suggestionsEnabled}
-            musicOnly={musicOnly}
-            maxDuration={maxDuration}
-            allowPrelisten={allowPrelisten}
-            ownerBypass={ownerBypass}
-            maxQueueSize={maxQueueSize}
-            smartQueue={smartQueue}
-            playlistViewMode={playlistViewMode}
-            history={history} // Passed history to Header
-            duplicateCooldown={duplicateCooldown}
-            onUpdateSettings={handleUpdateSettings}
-            suggestionMode={suggestionMode}
-            ownerPopups={ownerPopups}
-            ownerQueueBypass={serverState?.ownerQueueBypass}
-            votesEnabled={serverState?.votesEnabled ?? true}
-            onManageRequests={() => setShowPendingPage(true)}
-            pendingCount={pendingSuggestions.length}
-            autoApproveKnown={autoApproveKnown}
-            autoRefill={autoRefill}
-            onTogglePlaylistView={() => {
-              console.log("[App] Toggling Playlist View", !localPlaylistView);
-              setLocalPlaylistView(!localPlaylistView);
-            }}
             showQRCode={showQRModal}
             onShowQRCode={setShowQRModal}
-            onDeleteChannel={handleDeleteChannel}
             showSettings={showSettings}
             onToggleSettings={() => {
               setShowSettings(!showSettings);
-              if (!showSettings) setShowSuggest(false); // Close suggest if opening settings
+              if (!showSettings) setShowSuggest(false);
             }}
             onCloseSettings={() => setShowSettings(false)}
-            captionsEnabled={captionsEnabled}
+          />
+          <ActionStrip
+            mode={isAnyPlaylistView ? playlistActiveTab : "default"}
+            onPlaylist={() => {
+              if (isAnyPlaylistView) {
+                setPlaylistActiveTab("playlist");
+              } else {
+                setLocalPlaylistView(true);
+                setPlaylistActiveTab("playlist");
+                setShowSettings(false);
+                setShowSuggest(false);
+              }
+            }}
+            onLibrary={() => setPlaylistActiveTab("library")}
+            onSuggest={() => {
+              setShowSuggest(prev => !prev);
+              setShowSettings(false);
+            }}
+            onShare={() => {
+              setShowQRModal(true);
+              setShowSettings(false);
+              setShowSuggest(false);
+            }}
+            onClosePlaylist={localPlaylistView ? () => {
+              setLocalPlaylistView(false);
+              setPlaylistActiveTab("playlist");
+            } : null}
+            showSuggest={showSuggest}
+            suggestionsEnabled={suggestionsEnabled}
+            isOwner={isOwner}
+            ownerBypass={ownerBypass}
+            playlistViewMode={playlistViewMode}
           />
           {showSuggest && (
-            <div className="px-6 pb-4">
+            <div className="px-4 pb-3">
               <SuggestSongForm
                 onSongSuggested={handleSongSuggested}
                 onShowSuggest={setShowSuggest}
@@ -1261,6 +1270,7 @@ function RoomBody() {
               queueVideoIds={queueVideoIds}
               disableFloatingUI={!!previewTrack}
               onLibraryDelete={isOwner ? handleRemoveFromLibrary : undefined}
+              activeTab={playlistActiveTab}
             />
             {previewTrack && (
               <PrelistenOverlay
