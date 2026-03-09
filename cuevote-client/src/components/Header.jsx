@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { GoogleAuthButton } from "./GoogleAuthButton";
@@ -115,11 +115,24 @@ export function Header({
     return () => window.removeEventListener('keydown', handleEscape);
   }, [showProfileModal, showDeleteConfirm, onShowSuggest, onShowQRCode]);
 
-  useEffect(() => {
-    if (pillsRef.current) {
-      pillsRef.current.scrollLeft = pillsRef.current.scrollWidth;
+  const scrollPillsToRight = () => {
+    const el = pillsRef.current;
+    if (el) {
+      el.scrollLeft = el.scrollWidth;
     }
-  }, [mode]);
+  };
+
+  useLayoutEffect(() => {
+    scrollPillsToRight();
+  }, [mode, isOwner]);
+
+  useEffect(() => {
+    const el = pillsRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => scrollPillsToRight());
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [mode, isOwner]);
 
   const effectiveIsOwner = isOwner && ownerBypass;
   const suggestDisabled = !suggestionsEnabled && !effectiveIsOwner;
