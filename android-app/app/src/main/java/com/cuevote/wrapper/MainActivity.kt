@@ -188,8 +188,8 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         // Set Content View
         setContentView(container)
         
-        // Pass FAB reference to Interface
-        webView.addJavascriptInterface(WebAppInterface(this, fab), "CueVoteAndroid")
+        // Pass WebView and FAB reference to Interface
+        webView.addJavascriptInterface(WebAppInterface(this, webView, fab), "CueVoteAndroid")
         // Handle Back Press properly
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -240,7 +240,11 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
 }
 
 @Keep
-class WebAppInterface(private val mContext: Context, private val fab: FloatingActionButton) {
+class WebAppInterface(
+    private val mContext: Context,
+    private val webView: WebView,
+    private val fab: FloatingActionButton
+) {
     @JavascriptInterface
     fun isNative(): Boolean {
         return true
@@ -248,6 +252,18 @@ class WebAppInterface(private val mContext: Context, private val fab: FloatingAc
 
     @JavascriptInterface
     fun toggleQRButton(show: Boolean) {
+        // Only honor requests from trusted CueVote origins
+        val currentUrl = webView.url
+        val uri = try {
+            if (currentUrl.isNullOrBlank()) null else android.net.Uri.parse(currentUrl)
+        } catch (e: Exception) {
+            null
+        }
+        val host = uri?.host ?: ""
+        if (host != "cuevote.com" && host != "www.cuevote.com") {
+            return
+        }
+
         // Must run UI updates on Main Thread
         val activity = mContext as? MainActivity
         activity?.runOnUiThread {
