@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { GoogleAuthButton } from "./GoogleAuthButton";
-import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, Library, X, ChevronLeft } from "lucide-react";
+import { Radio, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, Library, X, ChevronLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
 
@@ -249,29 +249,6 @@ export function Header({
             <QrCode size={20} />
           </button>
 
-          {/* Suggest Button */}
-          {(() => {
-            // Treat owner as regular user if bypass is disabled
-            const effectiveIsOwner = isOwner && ownerBypass;
-            const isDisabled = !suggestionsEnabled && !effectiveIsOwner;
-
-            return (
-              <button
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onShowSuggest((prev) => !prev);
-                  if (onCloseSettings) onCloseSettings();
-                }}
-                className={`keep-open flex items-center gap-2 transition-colors flex-shrink-0 ${isDisabled
-                  ? "text-neutral-600 hover:text-neutral-500"
-                  : "text-orange-500 hover:text-orange-400"
-                  }`}
-                title={isDisabled ? t('header.suggestionsDisabled') : t('header.suggestSong')}
-              >
-                <Send size={18} /> <span>{t('header.suggest')}</span>
-              </button>
-            );
-          })()}
 
 
 
