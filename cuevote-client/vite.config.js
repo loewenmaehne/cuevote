@@ -26,9 +26,12 @@ export default defineConfig({
     host: '0.0.0.0', // Force IPv4 binding
     port: 5173,
     strictPort: true,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
+    // For local development only; avoid exposing this dev server to the public internet.
+    headers: process.env.NODE_ENV === 'development'
+      ? {
+          'Access-Control-Allow-Origin': 'http://localhost:5173',
+        }
+      : {},
     // Explicitly handle .apk MIME type
     configureServer: (server) => {
       server.middlewares.use((req, res, next) => {
