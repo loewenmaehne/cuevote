@@ -13,7 +13,6 @@ import { PlaylistView } from "./components/PlaylistView";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { SettingsView } from "./components/SettingsView";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
-import { ChannelLibrary } from "./components/ChannelLibrary"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
 
@@ -361,7 +360,6 @@ function RoomBody() {
   const [progress, setProgress] = useState(0);
   const [playbackError, setPlaybackError] = useState(null); // New State: Track playback errors
   const [roomNotFound, setRoomNotFound] = useState(false);
-  const [showChannelLibrary, setShowChannelLibrary] = useState(false); // <--- Added this
   const [controlsVisible, setControlsVisible] = useState(true); // Track footer visibility
   const [isWindowTooSmall, setIsWindowTooSmall] = useState(false);
 
@@ -451,7 +449,6 @@ function RoomBody() {
         else if (showBannedPage) setShowBannedPage(false);
         else if (showSuggest) setShowSuggest(false);
         else if (showQRModal) setShowQRModal(false);
-        else if (showChannelLibrary) setShowChannelLibrary(false);
         else if (showPasswordModal) { /* navigate('/'); */ }
         else if (isCinemaMode) {
           setIsCinemaMode(false);
@@ -461,7 +458,7 @@ function RoomBody() {
 
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [showPendingPage, showBannedPage, showSuggest, showQRModal, showPasswordModal, showChannelLibrary, isCinemaMode]);
+  }, [showPendingPage, showBannedPage, showSuggest, showQRModal, showPasswordModal, isCinemaMode]);
 
   // Auth: Resume Session logic moved to Provider
 
@@ -1083,7 +1080,7 @@ function RoomBody() {
 
 
   return (
-    <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView || showChannelLibrary ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
+    <div className={`min-h-screen text-white flex flex-col ${isAnyPlaylistView ? "bg-[#0a0a0a] pb-0" : "bg-black pb-32"}`}>
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header
@@ -1116,15 +1113,10 @@ function RoomBody() {
             autoRefill={autoRefill}
             onTogglePlaylistView={() => {
               console.log("[App] Toggling Playlist View", !localPlaylistView);
-              if (!localPlaylistView) setShowChannelLibrary(false);
               setLocalPlaylistView(!localPlaylistView);
             }}
             showQRCode={showQRModal}
             onShowQRCode={setShowQRModal}
-            onToggleChannelLibrary={() => {
-              if (!showChannelLibrary) setLocalPlaylistView(false); // Close Playlist View
-              setShowChannelLibrary(!showChannelLibrary);
-            }}
             onDeleteChannel={handleDeleteChannel}
             showSettings={showSettings}
             onToggleSettings={() => {
@@ -1225,7 +1217,7 @@ function RoomBody() {
       <div
         className={isCinemaMode
           ? "fixed inset-0 z-40 bg-black transition-all duration-500 ease-in-out"
-          : (isAnyPlaylistView || showChannelLibrary
+          : (isAnyPlaylistView
             ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
             : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh] min-w-[200px] min-h-[200px]"
           )
@@ -1238,34 +1230,7 @@ function RoomBody() {
         <div
           className={`absolute inset-0 border-4 ${previewTrack ? "border-green-500" : "border-transparent"} transition-colors duration-300 box-border pointer-events-none z-20`}
         ></div>
-        {showChannelLibrary ? (
-          /* Channel Library View */
-          <div className="w-full h-full flex flex-col overflow-hidden">
-            <ChannelLibrary
-              history={history}
-              activeChannel={activeChannel}
-              onExit={() => setShowChannelLibrary(false)}
-              onAdd={handleLibraryAdd}
-              isOwner={isOwner}
-              onDelete={isOwner ? handleRemoveFromLibrary : undefined}
-              onPreview={allowPrelisten ? handlePreviewTrack : null}
-              onRecommend={handleFetchSuggestions}
-              activeSuggestionId={activeSuggestionId}
-              suggestions={manualSuggestions}
-              isFetchingSuggestions={isFetchingSuggestions}
-              queueVideoIds={queueVideoIds}
-            />
-            {previewTrack && (
-              <PrelistenOverlay
-                hasConsent={hasConsent}
-                playbackError={playbackError}
-                playerContainerRef={playerContainerRef}
-                isCinemaMode={isCinemaMode}
-                t={t}
-              />
-            )}
-          </div>
-        ) : isAnyPlaylistView ? (
+        {isAnyPlaylistView ? (
           /* Venue Mode: Only Playlist View */
           <div className="w-full h-full flex flex-col overflow-hidden">
             <PlaylistView
@@ -1295,6 +1260,7 @@ function RoomBody() {
               isFetchingSuggestions={isFetchingSuggestions}
               queueVideoIds={queueVideoIds}
               disableFloatingUI={!!previewTrack}
+              onLibraryDelete={isOwner ? handleRemoveFromLibrary : undefined}
             />
             {previewTrack && (
               <PrelistenOverlay
@@ -1356,7 +1322,7 @@ function RoomBody() {
       </div>
 
       <div className="pb-4 min-h-0 flex-1">
-        {!isAnyPlaylistView && !isCinemaMode && !showChannelLibrary && (
+        {!isAnyPlaylistView && !isCinemaMode && (
           <Queue
             tracks={queue}
             currentTrack={currentTrack}
@@ -1423,7 +1389,7 @@ function RoomBody() {
             </div>
           </div>
         ) : (
-          !isAnyPlaylistView && !showChannelLibrary && !showPendingPage && hasConsent && (
+          !isAnyPlaylistView && !showPendingPage && hasConsent && (
             <PlaybackControls
               isPlaying={(isPlaying || isLocallyPlaying) && !isLocallyPaused}
               onPlayPause={handlePlayPause}

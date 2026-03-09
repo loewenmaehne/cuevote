@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { GoogleAuthButton } from "./GoogleAuthButton";
-import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, Library, X, ChevronLeft } from "lucide-react";
+import { Radio, Send, LogOut, Settings, HelpCircle, QrCode, Copy, Check, List, Scale, X, ChevronLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
 
@@ -23,7 +23,6 @@ export function Header({
   showQRCode, // <--- Added prop
   onShowQRCode,
   onDeleteAccount, // GDPR: Right to Erasure
-  onToggleChannelLibrary,
   showSettings,
   onToggleSettings,
   onCloseSettings
@@ -194,21 +193,6 @@ export function Header({
           <h1 className="text-lg md:text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap text-center">
             CueVote
           </h1>
-
-          {/* Channel Library Toggle - Right of Logo */}
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
-              if (onToggleChannelLibrary) onToggleChannelLibrary();
-              if (onCloseSettings) onCloseSettings();
-              onShowSuggest(false);
-            }}
-            className="hidden md:flex items-center gap-2 text-orange-500 hover:text-orange-400 transition-colors p-1"
-            title="Channel Library"
-          >
-            <Library size={20} className="md:w-[22px] md:h-[22px]" />
-            <span className="hidden xl:block text-sm font-medium whitespace-nowrap">{t('header.library')}</span>
-          </button>
         </div>
 
         <div className="flex items-center justify-end gap-2 lg:gap-4 min-w-0">
@@ -530,6 +514,5 @@ Header.propTypes = {
   showQRCode: PropTypes.bool,
   onShowQRCode: PropTypes.func,
   onDeleteAccount: PropTypes.func,
-  onToggleChannelLibrary: PropTypes.func,
   onCloseSettings: PropTypes.func,
 };
