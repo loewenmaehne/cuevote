@@ -171,6 +171,11 @@ function RoomBody() {
   // TV always defaults to Fullscreen (CinemaMode), unless manually exited
   const isAnyPlaylistView = isVenueMode || localPlaylistView;
 
+  const [isCinemaMode, setIsCinemaMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return deviceDetection.isTV() || ((deviceDetection.isMobile() && !deviceDetection.isTablet()) && window.matchMedia("(orientation: landscape)").matches);
+  });
+
   // Force exit cinema mode when Venue Mode is activated
   useEffect(() => {
     if (isVenueMode) {
@@ -242,6 +247,8 @@ function RoomBody() {
       }
     }
   }, [lastErrorCode, lastErrorTimestamp]);
+
+  const [showQRModal, setShowQRModal] = useState(false);
 
   // Clear modal on successful join
   useEffect(() => {
@@ -344,11 +351,6 @@ function RoomBody() {
   }, [lastMessage, activeSuggestionId]);
   const [showPendingPage, setShowPendingPage] = useState(false);
   const [showBannedPage, setShowBannedPage] = useState(false); // Added this
-  const [isCinemaMode, setIsCinemaMode] = useState(() => {
-    // Correctly initialize based on current state to avoid "Window Too Small" flash
-    if (typeof window === 'undefined') return false;
-    return deviceDetection.isTV() || ((deviceDetection.isMobile() && !deviceDetection.isTablet()) && window.matchMedia("(orientation: landscape)").matches);
-  });
   const [volume, setVolume] = useState(80);
   // minimized state removed
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
@@ -359,7 +361,6 @@ function RoomBody() {
   const [progress, setProgress] = useState(0);
   const [playbackError, setPlaybackError] = useState(null); // New State: Track playback errors
   const [roomNotFound, setRoomNotFound] = useState(false);
-  const [showQRModal, setShowQRModal] = useState(false); // <--- Added this
   const [showChannelLibrary, setShowChannelLibrary] = useState(false); // <--- Added this
   const [controlsVisible, setControlsVisible] = useState(true); // Track footer visibility
   const [isWindowTooSmall, setIsWindowTooSmall] = useState(false);
