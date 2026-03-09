@@ -2,13 +2,12 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { GoogleAuthButton } from "./GoogleAuthButton";
-import { Radio, LogOut, Settings, QrCode, Copy, Check, Scale, X, ChevronLeft } from "lucide-react";
+import { LogOut, Settings, List, Send, QrCode, Library, Copy, Check, Scale, X, ChevronLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
 
 
 export function Header({
-  activeChannel,
   onGoHome,
   onShowSuggest,
   user,
@@ -20,7 +19,17 @@ export function Header({
   onDeleteAccount,
   showSettings,
   onToggleSettings,
-  onCloseSettings
+  onCloseSettings,
+  mode,
+  onPlaylist,
+  onSuggest,
+  onShare,
+  onLibrary,
+  onClosePlaylist,
+  showSuggest,
+  suggestionsEnabled,
+  ownerBypass,
+  playlistViewMode,
 }) {
   const headerRef = React.useRef(null);
   const [showExitConfirm, setShowExitConfirm] = React.useState(false);
@@ -105,93 +114,122 @@ export function Header({
     return () => window.removeEventListener('keydown', handleEscape);
   }, [showProfileModal, showDeleteConfirm, onShowSuggest, onShowQRCode]);
 
+  const effectiveIsOwner = isOwner && ownerBypass;
+  const suggestDisabled = !suggestionsEnabled && !effectiveIsOwner;
+
+  const pillClass = (active) =>
+    `keep-open flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all active:scale-95 flex-shrink-0 ${
+      active
+        ? "bg-orange-500/15 text-orange-500 border border-orange-500/30"
+        : "text-orange-500/70 hover:text-orange-400 hover:bg-orange-500/10 border border-transparent"
+    }`;
+
+  const renderPills = () => {
+    if (mode === "playlist" || mode === "library") {
+      return (
+        <>
+          <button onClick={onPlaylist} className={pillClass(mode === "playlist")}>
+            <List size={15} /><span>{t('header.playlist')}</span>
+          </button>
+          <button onClick={onLibrary} className={pillClass(mode === "library")}>
+            <Library size={15} /><span>{t('header.library')}</span>
+          </button>
+          {isOwner && (
+            <button onClick={onToggleSettings} className={pillClass(showSettings)}>
+              <Settings size={15} /><span>{t('header.settings')}</span>
+            </button>
+          )}
+          {onClosePlaylist && (
+            <button onClick={onClosePlaylist} className={pillClass(false)}>
+              <X size={15} /><span>{t('playlist.close')}</span>
+            </button>
+          )}
+        </>
+      );
+    }
+
+    return (
+      <>
+        {!(playlistViewMode && !isOwner) && (
+          <button onClick={onPlaylist} className={pillClass(false)}>
+            <List size={15} /><span>{t('header.playlist')}</span>
+          </button>
+        )}
+        <button onClick={onSuggest} disabled={suggestDisabled} className={`${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
+          <Send size={15} /><span>{t('header.suggest')}</span>
+        </button>
+        <button onClick={onShare} className={pillClass(false)}>
+          <QrCode size={15} /><span>{t('header.share')}</span>
+        </button>
+        {isOwner && (
+          <button onClick={onToggleSettings} className={pillClass(showSettings)}>
+            <Settings size={15} /><span>{t('header.settings')}</span>
+          </button>
+        )}
+      </>
+    );
+  };
+
   return (
     <header
       ref={headerRef}
-      className="px-2 py-1.5 md:px-4 md:py-2 w-full safe-pt"
+      className="px-2 py-1.5 md:px-3 md:py-2 w-full safe-pt"
     >
-      <div className="flex items-center justify-between w-full gap-2">
-        <div className="flex items-center flex-shrink-0 gap-1.5">
-          <button
-            onClick={() => {
-              setShowExitConfirm(true);
-              setExitConfirmIndex(0);
-              if (onCloseSettings) onCloseSettings();
-            }}
-            className="p-1.5 -ml-1 text-neutral-400 hover:text-white transition-colors rounded-full hover:bg-neutral-800"
-            title={t('header.leave')}
-          >
-            <ChevronLeft size={22} />
-          </button>
-          {user ? (
-            <button
-              onClick={() => setShowProfileModal(true)}
-              className="flex items-center gap-2 px-1.5 py-1 rounded-full hover:bg-neutral-800/50 border border-transparent hover:border-neutral-700 transition-all group cursor-pointer"
-              title={t('header.profileSettings')}
-            >
-              {user.picture ? (
-                <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-7 h-7 rounded-full border border-neutral-700" />
-              ) : (
-                <div className="w-7 h-7 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
-                  {user.name?.charAt(0)}
-                </div>
-              )}
-              <span className="hidden md:block text-sm font-medium text-neutral-300 truncate max-w-[100px] group-hover:text-white transition-colors">{user.name}</span>
-            </button>
-          ) : (
-            <GoogleAuthButton
-              onLoginSuccess={onLoginSuccess}
-              render={(performLogin, disabled) => (
-                <button
-                  onClick={() => !disabled && performLogin()}
-                  disabled={disabled}
-                  className={`group flex items-center justify-center w-8 h-8 rounded-full border border-neutral-700 bg-neutral-800/50 transition-all shadow-sm ${disabled ? 'opacity-40 grayscale cursor-not-allowed' : 'hover:bg-neutral-700 hover:border-neutral-500 active:scale-95'}`}
-                  title={disabled ? t('header.acceptCookies') : t('header.signIn')}
-                >
-                  <svg className={`w-4 h-4 transition-colors ${disabled ? 'text-neutral-600' : 'text-neutral-400 group-hover:text-white'}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
-                  </svg>
-                </button>
-              )}
-            />
-          )}
-        </div>
-
-        <h1 className="text-lg md:text-xl font-bold text-orange-500 tracking-tight whitespace-nowrap">
+      <div className="flex items-center w-full gap-2">
+        <h1 className="text-lg font-bold text-orange-500 tracking-tight whitespace-nowrap flex-shrink-0">
           CueVote
         </h1>
 
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          <div className="hidden lg:flex items-center gap-2 text-orange-500 select-none mr-2" title={activeChannel}>
-            <Radio size={18} className="flex-shrink-0" />
-            <span className="text-sm truncate max-w-[160px]">{activeChannel}</span>
-          </div>
+        <button
+          onClick={() => {
+            setShowExitConfirm(true);
+            setExitConfirmIndex(0);
+            if (onCloseSettings) onCloseSettings();
+          }}
+          className="p-1.5 text-orange-500/70 hover:text-orange-400 transition-colors rounded-full hover:bg-orange-500/10 flex-shrink-0"
+          title={t('header.leave')}
+        >
+          <ChevronLeft size={20} />
+        </button>
 
-          {isOwner && (
-            <>
+        {user ? (
+          <button
+            onClick={() => setShowProfileModal(true)}
+            className="flex-shrink-0 rounded-full hover:ring-2 hover:ring-orange-500/30 transition-all"
+            title={t('header.profileSettings')}
+          >
+            {user.picture ? (
+              <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-7 h-7 rounded-full border border-neutral-700" />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-orange-500 border border-neutral-700">
+                {user.name?.charAt(0)}
+              </div>
+            )}
+          </button>
+        ) : (
+          <GoogleAuthButton
+            onLoginSuccess={onLoginSuccess}
+            render={(performLogin, disabled) => (
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleSettings();
-                  onShowSuggest(false);
-                }}
-                className={`keep-open p-2 rounded-full transition-colors ${showSettings ? "text-orange-500 bg-neutral-800" : "text-neutral-400 hover:text-white"}`}
-                title={t('header.settings')}
+                onClick={() => !disabled && performLogin()}
+                disabled={disabled}
+                className={`flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full border border-neutral-700 bg-neutral-800/50 transition-all ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:ring-2 hover:ring-orange-500/30 active:scale-95'}`}
+                title={disabled ? t('header.acceptCookies') : t('header.signIn')}
               >
-                <Settings size={20} />
+                <svg className="w-3.5 h-3.5 text-orange-500/70" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
+                </svg>
               </button>
-              {showSettings && (
-                <div className="keep-open absolute right-0 top-full mt-2 w-10 h-10 opacity-0 pointer-events-none" />
-              )}
-            </>
-          )}
+            )}
+          />
+        )}
+
+        <div className="h-5 w-px bg-neutral-800 flex-shrink-0" />
+
+        <div className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0">
+          {renderPills()}
         </div>
       </div>
-
-      {/* Push-Down Settings Drawer */}
-      {/* Push-Down Settings Drawer (Desktop) / Full Screen Overlay (Mobile) */}
-      {/* Push-Down Settings Drawer REMOVED */}
-      {/* Settings Drawer Removed */}
 
       {
         showExitConfirm && createPortal(
@@ -405,7 +443,6 @@ export function Header({
 }
 
 Header.propTypes = {
-  activeChannel: PropTypes.string.isRequired,
   onGoHome: PropTypes.func.isRequired,
   onShowSuggest: PropTypes.func.isRequired,
   user: PropTypes.object,
@@ -418,4 +455,14 @@ Header.propTypes = {
   showSettings: PropTypes.bool,
   onToggleSettings: PropTypes.func,
   onCloseSettings: PropTypes.func,
+  mode: PropTypes.string,
+  onPlaylist: PropTypes.func,
+  onSuggest: PropTypes.func,
+  onShare: PropTypes.func,
+  onLibrary: PropTypes.func,
+  onClosePlaylist: PropTypes.func,
+  showSuggest: PropTypes.bool,
+  suggestionsEnabled: PropTypes.bool,
+  ownerBypass: PropTypes.bool,
+  playlistViewMode: PropTypes.bool,
 };

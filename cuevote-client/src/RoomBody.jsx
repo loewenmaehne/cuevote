@@ -10,7 +10,6 @@ import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
 import { Suggestions } from "./components/Suggestions";
 import { PlaylistView } from "./components/PlaylistView";
-import { ActionStrip } from "./components/ActionStrip";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { SettingsView } from "./components/SettingsView";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
@@ -1086,7 +1085,6 @@ function RoomBody() {
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header
-            activeChannel={activeChannel}
             onGoHome={() => navigate("/")}
             onShowSuggest={setShowSuggest}
             user={user}
@@ -1102,8 +1100,6 @@ function RoomBody() {
               if (!showSettings) setShowSuggest(false);
             }}
             onCloseSettings={() => setShowSettings(false)}
-          />
-          <ActionStrip
             mode={isAnyPlaylistView ? playlistActiveTab : "default"}
             onPlaylist={() => {
               if (isAnyPlaylistView) {
@@ -1131,7 +1127,6 @@ function RoomBody() {
             } : null}
             showSuggest={showSuggest}
             suggestionsEnabled={suggestionsEnabled}
-            isOwner={isOwner}
             ownerBypass={ownerBypass}
             playlistViewMode={playlistViewMode}
           />
