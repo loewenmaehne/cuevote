@@ -124,13 +124,6 @@ export function Header({
         : "text-orange-500/70 hover:text-orange-400 hover:bg-orange-500/10 border border-transparent"
     }`;
 
-  const ctaClass = (active) =>
-    `keep-open flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all active:scale-95 flex-shrink-0 ${
-      active
-        ? "bg-orange-500 text-white shadow-md shadow-orange-500/20 border border-orange-500"
-        : "bg-orange-500/15 text-orange-500 hover:bg-orange-500/25 border border-orange-500/30"
-    }`;
-
   const renderPills = () => {
     if (mode === "playlist" || mode === "library") {
       return (
@@ -162,7 +155,7 @@ export function Header({
           <QrCode size={15} /><span>{t('header.share')}</span>
         </button>
         <div className="flex-1 min-w-2" />
-        <button onClick={onSuggest} disabled={suggestDisabled} className={`${ctaClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
+        <button onClick={onSuggest} disabled={suggestDisabled} className={`${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
           <Send size={15} /><span>{t('header.suggest')}</span>
         </button>
         {isOwner && (
