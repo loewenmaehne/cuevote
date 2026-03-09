@@ -294,10 +294,7 @@ function RoomBody() {
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
 
-  // Suggestion state (must be declared before effects that use it)
-  const [manualSuggestions, setManualSuggestions] = useState([]);
-  const [activeSuggestionId, setActiveSuggestionId] = useState(null); // ID of track currently showing suggestions
-  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
+
 
   // Fix: Use Ref to track showSuggeststate to suppress global toasts when bar is open
   const showSuggestRef = useRef(showSuggest);
@@ -808,6 +805,10 @@ function RoomBody() {
   };
 
 
+
+  const [manualSuggestions, setManualSuggestions] = useState([]);
+  const [activeSuggestionId, setActiveSuggestionId] = useState(null); // ID of track currently showing suggestions
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
 
   const handleSongSuggested = useCallback((query) => {
     if (!user) {
