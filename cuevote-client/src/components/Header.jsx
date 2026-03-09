@@ -224,7 +224,7 @@ export function Header({
             <Settings size={15} /><span>{t('header.settings')}</span>
           </button>
         )}
-        <button onClick={onSuggest} disabled={suggestDisabled} className={`hidden lg:flex ${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
+        <button onClick={onSuggest} disabled={suggestDisabled} className={`hidden md:flex ${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
           <Send size={15} /><span>{t('header.suggest')}</span>
         </button>
       </>
@@ -295,12 +295,12 @@ export function Header({
 
         <div
           ref={pillsRef}
-          className={`flex-1 lg:flex-none overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
+          className={`flex-1 md:flex-none overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
         >
           {renderPills()}
         </div>
         {mode !== "playlist" && mode !== "library" && (
-          <div className="lg:hidden flex-shrink-0">
+          <div className="md:hidden flex-shrink-0">
             {suggestButton}
           </div>
         )}
