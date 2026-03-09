@@ -5,6 +5,7 @@ import { GoogleAuthButton } from "./GoogleAuthButton";
 import { LogOut, Settings, List, Send, QrCode, Library, Copy, Check, Scale, X, ChevronLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
+import { deviceDetection } from '../utils/deviceDetection';
 
 
 export function Header({
@@ -46,6 +47,7 @@ export function Header({
   const [isPillDragging, setIsPillDragging] = React.useState(false);
   const [deleteConfirmationText, setDeleteConfirmationText] = React.useState("");
   const { t } = Language.useLanguage();
+  const isTouchDevice = deviceDetection.isMobile() || deviceDetection.isTablet();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -224,9 +226,11 @@ export function Header({
             <Settings size={15} /><span>{t('header.settings')}</span>
           </button>
         )}
-        <button onClick={onSuggest} disabled={suggestDisabled} className={`hidden md:flex ${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
-          <Send size={15} /><span>{t('header.suggest')}</span>
-        </button>
+        {!isTouchDevice && (
+          <button onClick={onSuggest} disabled={suggestDisabled} className={`${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
+            <Send size={15} /><span>{t('header.suggest')}</span>
+          </button>
+        )}
       </>
     );
   };
@@ -295,12 +299,12 @@ export function Header({
 
         <div
           ref={pillsRef}
-          className={`flex-1 md:flex-none overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
+          className={`${isTouchDevice ? "flex-1" : "flex-none"} overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
         >
           {renderPills()}
         </div>
-        {mode !== "playlist" && mode !== "library" && (
-          <div className="md:hidden flex-shrink-0">
+        {mode !== "playlist" && mode !== "library" && isTouchDevice && (
+          <div className="flex-shrink-0">
             {suggestButton}
           </div>
         )}
