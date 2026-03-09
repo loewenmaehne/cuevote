@@ -39,3 +39,6 @@ cuevote.db
 
 # Backups
 backups/
+
+# Server-specific backup directories
+cuevote-server/backups/
