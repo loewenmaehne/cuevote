@@ -24,12 +24,15 @@ export function PlaylistView({
     queueVideoIds,
     disableFloatingUI = false,
     onLibraryDelete,
+    activeTab = "playlist",
+    onSetActiveTab,
+    onNavStateChange,
 }) {
     const scrollRef = useRef(null);
+    const scrollToCurrentRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
     const [showJumpToNow, setShowJumpToNow] = useState(false);
     const [jumpDirection, setJumpDirection] = useState("down");
-    const [activeTab, setActiveTab] = useState("playlist");
     const { t } = Language.useLanguage();
 
     const handleToggleExpand = (trackId) => {
@@ -45,6 +48,18 @@ export function PlaylistView({
             }
         }
     };
+
+    scrollToCurrentRef.current = scrollToCurrent;
+
+    useEffect(() => {
+        if (onNavStateChange) {
+            onNavStateChange({
+                showJumpToNow: !isLibrary && showJumpToNow,
+                jumpDirection,
+                scrollToCurrent: () => scrollToCurrentRef.current?.(true),
+            });
+        }
+    }, [showJumpToNow, jumpDirection, isLibrary, onNavStateChange]);
 
     useEffect(() => {
         if (activeTab !== "playlist") return;
@@ -86,10 +101,14 @@ export function PlaylistView({
 
     const isLibrary = activeTab === "library";
 
+    const setActiveTabSafe = (tab) => {
+        if (onSetActiveTab) onSetActiveTab(tab);
+    };
+
     const actionBarButtons = (
         <>
             <button
-                onClick={() => setActiveTab(isLibrary ? "playlist" : "library")}
+                onClick={() => setActiveTabSafe(isLibrary ? "playlist" : "library")}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all active:scale-95 ${
                     isLibrary
                         ? "bg-orange-500/15 text-orange-500 border border-orange-500/30"
@@ -126,8 +145,8 @@ export function PlaylistView({
             {/* Content: Library or Playlist */}
             {isLibrary ? (
                 <>
-                    {/* Action bar — non-scrolling for library tab */}
-                    <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-800 bg-[#0a0a0a]/95 backdrop-blur-md flex-shrink-0 z-40 gap-2">
+                    {/* Action bar — hidden on mobile (BottomNav handles it) */}
+                    <div className="hidden md:flex items-center justify-between px-3 py-2 border-b border-neutral-800 bg-[#0a0a0a]/95 backdrop-blur-md flex-shrink-0 z-40 gap-2">
                         {actionBarButtons}
                     </div>
                     <div className="flex-1 min-h-0">
@@ -146,11 +165,11 @@ export function PlaylistView({
                 </>
             ) : (
                 <div
-                    className="flex-1 overflow-y-auto pb-24 custom-scrollbar scroll-smooth relative"
+                    className="flex-1 overflow-y-auto pb-20 md:pb-24 custom-scrollbar scroll-smooth relative"
                     ref={scrollRef}
                 >
-                    {/* Action bar — sticky inside scroll area for playlist tab */}
-                    <div className="sticky top-0 z-40 px-3 py-2 border-b border-neutral-800 bg-[#0a0a0a]/95 backdrop-blur-md flex items-center justify-between gap-2">
+                    {/* Action bar — hidden on mobile (BottomNav handles it), sticky on desktop */}
+                    <div className="hidden md:flex sticky top-0 z-40 px-3 py-2 border-b border-neutral-800 bg-[#0a0a0a]/95 backdrop-blur-md items-center justify-between gap-2">
                         {actionBarButtons}
                     </div>
                     <div className="max-w-3xl mx-auto space-y-4 py-6 pt-2 px-4">
@@ -254,9 +273,9 @@ export function PlaylistView({
                 </div>
             )}
 
-            {/* Back to Now Button - only in playlist tab */}
+            {/* Back to Now FAB — desktop only (mobile uses BottomNav) */}
             {!isLibrary && showJumpToNow && currentTrack && !disableFloatingUI && createPortal(
-                <div className="fixed bottom-8 right-8 z-[100] animate-fadeIn">
+                <div className="hidden md:block fixed bottom-8 right-8 z-[100] animate-fadeIn">
                     <button
                         onClick={() => scrollToCurrent(true)}
                         className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 hover:shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0 font-medium text-sm"
@@ -290,4 +309,7 @@ PlaylistView.propTypes = {
     queueVideoIds: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Set)]),
     disableFloatingUI: PropTypes.bool,
     onLibraryDelete: PropTypes.func,
+    activeTab: PropTypes.string,
+    onSetActiveTab: PropTypes.func,
+    onNavStateChange: PropTypes.func,
 };
