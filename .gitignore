@@ -1,8 +1,41 @@
 node_modules
-.DS_Store
+
 .env
+
+# Logs
+logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build output
+dist
+dist-ssr
+
+# Local config
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Databases
 cuevote.db
 *.sqlite
 *.sqlite3
 *.db
+*.db-shm
+*.db-wal
+
+# Backups
+backups/
