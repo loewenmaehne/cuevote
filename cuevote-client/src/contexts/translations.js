@@ -1196,7 +1196,7 @@ export const translations = {
 			upNext: "In coda",
 			queueEmpty: "Coda vuota",
 			backToNow: "Torna a ora",
-			addVideos: "Aggiungi brani per iniziare"
+			addVideos: "Aggiungi video per iniziare"
 		},
 		mobile: {
 			tagline: "Il Jukebox Democratico",
@@ -2629,7 +2629,7 @@ export const translations = {
 			upNext: "Tiếp theo",
 			queueEmpty: "Hàng đợi trống",
 			backToNow: "Về hiện tại",
-			addVideos: "Thêm bài hát để bắt đầu phát"
+			addVideos: "Thêm video để bắt đầu phát"
 		},
 		mobile: {
 			tagline: "Jukebox Dân chủ",
@@ -3311,7 +3311,7 @@ export const translations = {
 			upNext: "Następne",
 			queueEmpty: "Kolejka pusta",
 			backToNow: "Wróć do teraz",
-			addVideos: "Dodaj utwory, aby rozpocząć"
+			addVideos: "Dodaj wideo, aby rozpocząć"
 		},
 		mobile: {
 			tagline: "Demokratyczna Szafa Grająca",
@@ -3485,7 +3485,7 @@ export const translations = {
 			upNext: "Nästa",
 			queueEmpty: "Kön är tom",
 			backToNow: "Tillbaka till nu",
-			addVideos: "Lägg till låtar för att börja"
+			addVideos: "Lägg till videor för att börja"
 		},
 		mobile: {
 			tagline: "Den Demokratiska Jukeboxen",
@@ -3659,7 +3659,7 @@ export const translations = {
 			upNext: "Næste",
 			queueEmpty: "Kø er tom",
 			backToNow: "Tilbage til nu",
-			addVideos: "Tilføj sange for at starte afspilning"
+			addVideos: "Tilføj videoer for at starte afspilning"
 		},
 		mobile: {
 			tagline: "Den Demokratiske Jukebox",
@@ -3833,7 +3833,7 @@ export const translations = {
 			upNext: "Neste",
 			queueEmpty: "Køen er tom",
 			backToNow: "Tilbake til nå",
-			addVideos: "Legg til sanger for å starte"
+			addVideos: "Legg til videoer for å starte"
 		},
 		mobile: {
 			tagline: "Den Demokratiske Jukeboksen",
@@ -4007,7 +4007,7 @@ export const translations = {
 			upNext: "Seuraava",
 			queueEmpty: "Jono tyhjä",
 			backToNow: "Takaisin nykyiseen",
-			addVideos: "Lisää kappaleita aloittaaksesi"
+			addVideos: "Lisää videoita aloittaaksesi"
 		},
 		mobile: {
 			tagline: "Demokraattinen Jukebox",
@@ -4355,7 +4355,7 @@ export const translations = {
 			upNext: "Επόμενο",
 			queueEmpty: "Η ουρά είναι άδεια",
 			backToNow: "Επιστροφή στο Τώρα",
-			addVideos: "Προσθέστε βίντεοα για έναρξη"
+			addVideos: "Προσθέστε βίντεο για έναρξη"
 		},
 		mobile: {
 			tagline: "Το Δημοκρατικό Jukebox",
@@ -4704,7 +4704,7 @@ export const translations = {
 			upNext: "Далі",
 			queueEmpty: "Черга порожня",
 			backToNow: "Повернутися до поточного",
-			addVideos: "Додайте пісні, щоб почати"
+			addVideos: "Додайте відео, щоб почати"
 		},
 		mobile: {
 			tagline: "Демократичний Джукбокс",
@@ -4878,7 +4878,7 @@ export const translations = {
 			upNext: "Další",
 			queueEmpty: "Fronta je prázdná",
 			backToNow: "Zpět na aktuální",
-			addVideos: "Přidejte skladby pro zahájení"
+			addVideos: "Přidejte videa pro zahájení"
 		},
 		mobile: {
 			tagline: "Demokratický Jukebox",
@@ -5052,7 +5052,7 @@ export const translations = {
 			upNext: "Következő",
 			queueEmpty: "A sor üres",
 			backToNow: "Vissza a jelenbe",
-			addVideos: "Adjon hozzá dalokat a kezdéshez"
+			addVideos: "Adjon hozzá videókat a kezdéshez"
 		},
 		mobile: {
 			tagline: "A Demokratikus Jukebox",
@@ -5574,7 +5574,7 @@ export const translations = {
 			upNext: "Sljedeće",
 			queueEmpty: "Red je prazan",
 			backToNow: "Natrag na Slušanje",
-			addVideos: "Dodaj pjesme za početak"
+			addVideos: "Dodaj videe za početak"
 		},
 		mobile: {
 			tagline: "Demokratski Jukebox",
@@ -5748,7 +5748,7 @@ export const translations = {
 			upNext: "Sledeće",
 			queueEmpty: "Red je prazan",
 			backToNow: "Nazad na Trenutno",
-			addVideos: "Dodaj pesme za početak"
+			addVideos: "Dodaj video za početak"
 		},
 		mobile: {
 			tagline: "Demokratski Džuboks",
@@ -5922,7 +5922,7 @@ export const translations = {
 			upNext: "Ďalšie",
 			queueEmpty: "Fronta je prázdna",
 			backToNow: "Späť na Teraz",
-			addVideos: "Pridajte skladby pre začiatok"
+			addVideos: "Pridajte videá pre začiatok"
 		},
 		mobile: {
 			tagline: "Demokratický Jukebox",
