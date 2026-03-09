@@ -183,7 +183,7 @@ export function Header({
   const suggestDisabled = !suggestionsEnabled && !effectiveIsOwner;
 
   const pillClass = (active) =>
-    `keep-open flex items-center gap-1.5 lg:gap-2 px-3 py-1.5 lg:px-4 lg:py-2 rounded-full text-sm lg:text-base font-semibold whitespace-nowrap transition-all active:scale-95 flex-shrink-0 ${
+    `keep-open flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all active:scale-95 flex-shrink-0 ${
       active
         ? "bg-orange-500/15 text-orange-500 border border-orange-500/30"
         : "text-orange-500/70 hover:text-orange-400 hover:bg-orange-500/10 border border-transparent"
@@ -194,15 +194,15 @@ export function Header({
       return (
         <>
           <button onClick={onPlaylist} className={pillClass(mode === "playlist")}>
-            <List size={15} className="shrink-0 lg:w-4 lg:h-4" /><span>{t('header.playlist')}</span>
+            <List size={15} /><span>{t('header.playlist')}</span>
           </button>
           <button onClick={onLibrary} className={pillClass(mode === "library")}>
-            <Library size={15} className="shrink-0 lg:w-4 lg:h-4" /><span>{t('header.library')}</span>
+            <Library size={15} /><span>{t('header.library')}</span>
           </button>
           <div className="flex-1 min-w-2" />
           {onClosePlaylist && (
             <button onClick={onClosePlaylist} className={pillClass(false)}>
-              <X size={15} className="shrink-0 lg:w-4 lg:h-4" /><span>{t('playlist.close')}</span>
+              <X size={15} /><span>{t('playlist.close')}</span>
             </button>
           )}
         </>
@@ -213,20 +213,20 @@ export function Header({
       <>
         {!(playlistViewMode && !isOwner) && (
           <button onClick={onPlaylist} className={pillClass(false)}>
-            <List size={15} className="shrink-0 lg:w-4 lg:h-4" /><span>{t('header.playlist')}</span>
+            <List size={15} /><span>{t('header.playlist')}</span>
           </button>
         )}
         <button onClick={onShare} className={pillClass(false)}>
-          <QrCode size={15} className="shrink-0 lg:w-4 lg:h-4" /><span>{t('header.share')}</span>
+          <QrCode size={15} /><span>{t('header.share')}</span>
         </button>
         {isOwner && (
           <button onClick={onToggleSettings} className={pillClass(showSettings)}>
-            <Settings size={15} className="shrink-0 lg:w-4 lg:h-4" /><span>{t('header.settings')}</span>
+            <Settings size={15} /><span>{t('header.settings')}</span>
           </button>
         )}
         <div className="flex-1 min-w-2" />
         <button onClick={onSuggest} disabled={suggestDisabled} className={`${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
-          <Send size={15} className="shrink-0 lg:w-4 lg:h-4" /><span>{t('header.suggest')}</span>
+          <Send size={15} /><span>{t('header.suggest')}</span>
         </button>
       </>
     );
@@ -235,10 +235,10 @@ export function Header({
   return (
     <header
       ref={headerRef}
-      className="px-2 py-1.5 md:px-3 md:py-2 lg:px-4 lg:py-3 xl:px-5 xl:py-3.5 w-full safe-pt"
+      className="px-2 py-1.5 md:px-3 md:py-2 w-full safe-pt"
     >
-      <div className="flex items-center w-full gap-2 md:gap-3 lg:gap-4">
-        <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-orange-500 tracking-tight whitespace-nowrap flex-shrink-0">
+      <div className="flex items-center w-full gap-2">
+        <h1 className="text-lg font-bold text-orange-500 tracking-tight whitespace-nowrap flex-shrink-0">
           CueVote
         </h1>
 
@@ -248,10 +248,10 @@ export function Header({
             setExitConfirmIndex(0);
             if (onCloseSettings) onCloseSettings();
           }}
-          className="p-1.5 md:p-2 lg:p-2.5 text-orange-500/70 hover:text-orange-400 transition-colors rounded-full hover:bg-orange-500/10 flex-shrink-0"
+          className="p-1.5 text-orange-500/70 hover:text-orange-400 transition-colors rounded-full hover:bg-orange-500/10 flex-shrink-0"
           title={t('header.leave')}
         >
-          <ChevronLeft size={20} className="shrink-0 w-5 h-5 lg:w-6 lg:h-6" />
+          <ChevronLeft size={20} />
         </button>
 
         {user ? (
@@ -261,9 +261,9 @@ export function Header({
             title={t('header.profileSettings')}
           >
             {user.picture ? (
-              <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-neutral-700" />
+              <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-7 h-7 rounded-full border border-neutral-700" />
             ) : (
-              <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs lg:text-sm font-bold text-orange-500 border border-neutral-700">
+              <div className="w-7 h-7 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-orange-500 border border-neutral-700">
                 {user.name?.charAt(0)}
               </div>
             )}
@@ -275,7 +275,7 @@ export function Header({
               <button
                 onClick={() => !disabled && performLogin()}
                 disabled={disabled}
-                className={`flex-shrink-0 flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-neutral-700 bg-neutral-800/50 transition-all ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:ring-2 hover:ring-orange-500/30 active:scale-95'}`}
+                className={`flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full border border-neutral-700 bg-neutral-800/50 transition-all ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:ring-2 hover:ring-orange-500/30 active:scale-95'}`}
                 title={disabled ? t('header.acceptCookies') : t('header.signIn')}
               >
                 <svg className="w-3.5 h-3.5 text-orange-500/70" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -286,7 +286,7 @@ export function Header({
           />
         )}
 
-        <div className="h-5 lg:h-6 w-px bg-neutral-800 flex-shrink-0" />
+        <div className="h-5 w-px bg-neutral-800 flex-shrink-0" />
 
         <div
           ref={pillsRef}
