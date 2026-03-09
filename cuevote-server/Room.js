@@ -278,8 +278,7 @@ class Room {
                 maxQueueSize,
                 maxDuration,
                 duplicateCooldown,
-                musicOnly,
-                apiKey
+                musicOnly
             } = this.state;
 
             // 1. Target Size: Half of maxQueueSize (def 50 -> 25), or total history if less

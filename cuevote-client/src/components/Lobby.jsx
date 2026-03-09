@@ -216,6 +216,31 @@ export function Lobby() {
 
     const visibleRooms = filteredRooms.slice(roomSliceStart, roomSliceEnd);
 
+    const handleCreateRoomClick = () => {
+        if (!user) {
+            if (!hasConsent) {
+                alert(t('lobby.acceptCookies') + "!");
+            } else {
+                alert(t('lobby.loginToCreate') + "!");
+            }
+            return;
+        }
+        setIsCreatingRoom(true);
+        setIsPrivate(channelType === 'private');
+        setCreatePassword("");
+    };
+
+    const handleRoomClick = (room) => {
+        if (room.is_protected) {
+            setPasswordRoomId(room.id);
+            setShowPasswordModal(true);
+            setPasswordInput("");
+            setPasswordError("");
+        } else {
+            navigate(`/room/${room.id}`);
+        }
+    };
+
     // Handle Keyboard Navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -456,31 +481,6 @@ export function Lobby() {
             }
         }
     }, [lastErrorCode, showPasswordModal]);
-
-    const handleCreateRoomClick = () => {
-        if (!user) {
-            if (!hasConsent) {
-                alert(t('lobby.acceptCookies') + "!");
-            } else {
-                alert(t('lobby.loginToCreate') + "!");
-            }
-            return;
-        }
-        setIsCreatingRoom(true);
-        setIsPrivate(channelType === 'private');
-        setCreatePassword("");
-    };
-
-    const handleRoomClick = (room) => {
-        if (room.is_protected) {
-            setPasswordRoomId(room.id);
-            setShowPasswordModal(true);
-            setPasswordInput("");
-            setPasswordError("");
-        } else {
-            navigate(`/room/${room.id}`);
-        }
-    };
 
     const submitCreateRoom = (e) => {
         e.preventDefault();
