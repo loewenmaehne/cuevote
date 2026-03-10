@@ -73,6 +73,16 @@ db.exec(`
   );
 `);
 
+// Room state persistence for crash recovery
+db.exec(`
+  CREATE TABLE IF NOT EXISTS room_state (
+    room_id TEXT PRIMARY KEY,
+    state_json TEXT NOT NULL,
+    saved_at INTEGER DEFAULT (unixepoch()),
+    FOREIGN KEY(room_id) REFERENCES rooms(id) ON DELETE CASCADE
+  );
+`);
+
 // Migration: Add captions_enabled if missing
 try {
   db.prepare("ALTER TABLE rooms ADD COLUMN captions_enabled INTEGER DEFAULT 0").run();
@@ -317,6 +327,39 @@ module.exports = {
     const result = db.prepare('DELETE FROM sessions WHERE expires_at <= ?').run(now);
     console.log(`[DB Cleanup] Removed ${result.changes} expired sessions.`);
     return result.changes;
+  },
+
+  saveRoomState: (roomId, state) => {
+    const minimal = {
+      queue: state.queue || [],
+      currentTrack: state.currentTrack || null,
+      progress: state.progress || 0,
+      isPlaying: state.isPlaying || false,
+    };
+    const json = JSON.stringify(minimal);
+    db.prepare(`
+      INSERT INTO room_state (room_id, state_json, saved_at)
+      VALUES (?, ?, unixepoch())
+      ON CONFLICT(room_id) DO UPDATE SET
+        state_json = excluded.state_json,
+        saved_at = unixepoch()
+    `).run(roomId, json);
+  },
+
+  loadRoomState: (roomId) => {
+    const row = db.prepare('SELECT state_json, saved_at FROM room_state WHERE room_id = ?').get(roomId);
+    if (!row) return null;
+    const ageSeconds = Math.floor(Date.now() / 1000) - row.saved_at;
+    if (ageSeconds > 3600) return null;
+    try {
+      return JSON.parse(row.state_json);
+    } catch (e) {
+      return null;
+    }
+  },
+
+  deleteRoomState: (roomId) => {
+    db.prepare('DELETE FROM room_state WHERE room_id = ?').run(roomId);
   },
 
   cleanupRoomHistory: () => {
