@@ -26,6 +26,7 @@ export function WebSocketProvider({ children }) {
   const [lastError, setLastError] = useState(null);
   const [lastErrorCode, setLastErrorCode] = useState(null);
   const [lastErrorTimestamp, setLastErrorTimestamp] = useState(0);
+  const errorClearTimer = useRef(null);
   const [lastMessage, setLastMessage] = useState(null);
   const [user, setUser] = useState(null);
   const sessionTokenRef = useRef(localStorage.getItem(SESSION_KEY));
@@ -129,13 +130,15 @@ export function WebSocketProvider({ children }) {
           } else {
             setLastMessage(message);
             if (message.type === "error") {
+              if (errorClearTimer.current) clearTimeout(errorClearTimer.current);
               setLastError(message.message);
               setLastErrorCode(message.code || null);
               setLastErrorTimestamp(Date.now());
               console.warn("[CLIENT TRACE] <<< ERROR:", message.message);
-              setTimeout(() => {
+              errorClearTimer.current = setTimeout(() => {
                 setLastError(null);
                 setLastErrorCode(null);
+                errorClearTimer.current = null;
               }, 5000);
             }
           }
