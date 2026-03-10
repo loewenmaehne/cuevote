@@ -457,12 +457,20 @@ class Room {
     }
 
     async handleMessage(ws, message) {
+        const sendAck = () => {
+            if (message.msgId && ws.readyState === 1) {
+                ws.send(JSON.stringify({ type: "ACK", msgId: message.msgId }));
+            }
+        };
+
         switch (message.type) {
             case "SUGGEST_SONG":
                 await this.handleSuggestSong(ws, message.payload);
+                sendAck();
                 break;
             case "VOTE":
                 this.handleVote(ws, message.payload);
+                sendAck();
                 break;
             case "PLAY_PAUSE":
                 if (isOwner(this, ws)) {
