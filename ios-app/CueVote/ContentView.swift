@@ -1,7 +1,26 @@
 import SwiftUI
+import Network
+
+class NetworkMonitor: ObservableObject {
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue(label: "NetworkMonitor")
+    @Published var isConnected = true
+
+    init() {
+        monitor.pathUpdateHandler = { [weak self] path in
+            DispatchQueue.main.async {
+                self?.isConnected = path.status == .satisfied
+            }
+        }
+        monitor.start(queue: queue)
+    }
+
+    deinit { monitor.cancel() }
+}
 
 struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
+    @StateObject private var networkMonitor = NetworkMonitor()
     @State private var currentUrl: URL = URL(string: "https://cuevote.com")!
     @State private var isButtonVisible = false // Default hidden
     @State private var isScanning = false
@@ -88,6 +107,15 @@ struct ContentView: View {
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
                 NotificationCenter.default.post(name: NSNotification.Name("AppDidBecomeActive"), object: nil)
+            }
+        }
+        .onChange(of: networkMonitor.isConnected) { connected in
+            if connected && isOffline {
+                isLoading = true
+                isOffline = false
+                reloadKey = UUID()
+            } else if !connected {
+                isOffline = true
             }
         }
         // Custom Sheet Overlay for Consistent Landscape 90% Height
