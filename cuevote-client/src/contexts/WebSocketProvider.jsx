@@ -19,6 +19,8 @@ const getWebSocketUrl = () => {
 
 const WEBSOCKET_URL = getWebSocketUrl();
 const SESSION_KEY = "cuevote_session_token";
+const ACKABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM"];
+const QUEUEABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "PLAY_PAUSE", "NEXT_TRACK"];
 
 export function WebSocketProvider({ children }) {
   const [state, setState] = useState(null);
@@ -48,9 +50,6 @@ export function WebSocketProvider({ children }) {
   const messageQueue = useRef([]);
   const pendingAcks = useRef(new Map());
   const ackCounter = useRef(0);
-
-  const ACKABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM"];
-  const QUEUEABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "PLAY_PAUSE", "NEXT_TRACK"];
 
   const sendMessage = useCallback((message) => {
     const isAckable = ACKABLE_TYPES.includes(message.type);

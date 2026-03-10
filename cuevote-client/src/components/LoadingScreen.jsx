@@ -45,7 +45,7 @@ export function LoadingScreen({ isOnline, embedded = false, message, reconnectAt
 					icon: <ServerCrash size={48} className="text-orange-500 mb-6" />,
 					title: t('app.connectionIssue', "Connection Issue"),
 					sub: reconnectAttempt > 1
-						? t('app.reconnectAttempt', `Reconnect attempt ${reconnectAttempt}...`)
+						? `${t('app.reconnecting', "Reconnecting")}... (${reconnectAttempt})`
 						: t('app.takingTooLong', "Taking longer than usual..."),
 					action: true
 				};
