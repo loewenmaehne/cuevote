@@ -259,21 +259,19 @@ class WebAppInterface(
 
     @JavascriptInterface
     fun toggleQRButton(show: Boolean) {
-        // Only honor requests from trusted CueVote origins
-        val currentUrl = webView.url
-        val uri = try {
-            if (currentUrl.isNullOrBlank()) null else android.net.Uri.parse(currentUrl)
-        } catch (e: Exception) {
-            null
-        }
-        val host = uri?.host ?: ""
-        if (host != "cuevote.com" && host != "www.cuevote.com") {
-            return
-        }
+        val activity = mContext as? MainActivity ?: return
+        activity.runOnUiThread {
+            val currentUrl = webView.url
+            val uri = try {
+                if (currentUrl.isNullOrBlank()) null else android.net.Uri.parse(currentUrl)
+            } catch (e: Exception) {
+                null
+            }
+            val host = uri?.host ?: ""
+            if (host != "cuevote.com" && host != "www.cuevote.com") {
+                return@runOnUiThread
+            }
 
-        // Must run UI updates on Main Thread
-        val activity = mContext as? MainActivity
-        activity?.runOnUiThread {
             if (show) {
                 fab.show()
             } else {
