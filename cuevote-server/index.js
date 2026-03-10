@@ -59,10 +59,7 @@ const server = http.createServer((req, res) => {
 
 const wss = new WebSocket.Server({
     server,
-    perMessageDeflate: {
-        zlibDeflateOptions: { chunkSize: 1024, memLevel: 7, level: 3 },
-        threshold: 128,
-    },
+    perMessageDeflate: false,
     verifyClient: (info, cb) => {
         if (ALLOWED_ORIGINS.length === 0) {
             if (process.env.NODE_ENV === 'production') {
