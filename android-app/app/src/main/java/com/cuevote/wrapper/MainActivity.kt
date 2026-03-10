@@ -111,9 +111,9 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
 
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: android.webkit.WebResourceError?) {
                 super.onReceivedError(view, request, error)
-                // Show Offline Screen
+                if (request?.isForMainFrame != true) return
                 runOnUiThread {
-                    loadingView.visibility = android.view.View.GONE // Ensure loader is hidden
+                    loadingView.visibility = android.view.View.GONE
                     webView.visibility = android.view.View.GONE
                     offlineView.visibility = android.view.View.VISIBLE
                 }
