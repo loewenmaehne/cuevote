@@ -163,6 +163,8 @@ export function WebSocketProvider({ children }) {
 
           if (message.type === "state") {
             setState(message.payload);
+          } else if (message.type === "progress") {
+            setState(prev => prev ? { ...prev, progress: message.payload } : prev);
           } else {
             setLastMessage(message);
             if (message.type === "error") {

@@ -226,10 +226,9 @@ class Room {
                     this.updateState(newState);
                 }
             } else {
-                // Only broadcast if progress changed (it should every second)
-                // or just broadcast to keep clients in sync
                 if (newProgress !== this.state.progress) {
-                    this.updateState({ progress: newProgress });
+                    this.state.progress = newProgress;
+                    this.broadcast({ type: "progress", payload: newProgress });
                 }
             }
 
