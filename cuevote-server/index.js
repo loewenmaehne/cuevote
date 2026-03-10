@@ -70,6 +70,10 @@ const wss = new WebSocket.Server({
         return cb(false, 403, 'Forbidden');
     }
 });
+wss.on('error', (err) => {
+    console.error('[WSS] WebSocket server error:', err);
+});
+
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
@@ -581,6 +585,14 @@ wss.on("connection", (ws, req) => {
 
         } catch (error) {
             console.error("Failed to handle message:", error);
+        }
+    });
+
+    ws.on("error", (err) => {
+        console.error(`[WS Error] Client ${ws.id}:`, err.message);
+        clients.delete(ws);
+        if (ws.roomId && rooms.has(ws.roomId)) {
+            rooms.get(ws.roomId).removeClient(ws);
         }
     });
 
