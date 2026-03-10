@@ -303,7 +303,7 @@ export function Header({
         >
           {renderPills()}
         </div>
-        {mode !== "playlist" && mode !== "library" && isTouchDevice && (
+        {isTouchDevice && (
           <div className="flex-shrink-0">
             {suggestButton}
           </div>
