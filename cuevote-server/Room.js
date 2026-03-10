@@ -67,15 +67,36 @@ class Room {
         // Start the Room Timer
         this.interval = setInterval(() => this.tick(), 1000);
 
+        this.stateSaveCounter = 0;
+        this.stateSaveInterval = setInterval(() => {
+            if (this.state.currentTrack || this.state.queue.length > 0) {
+                try { db.saveRoomState(this.id, this.state); } catch (e) { /* ignore */ }
+            }
+        }, 30000);
+
         // Load History from Database (Persistent Library)
         try {
             const savedHistory = db.getRoomHistory(this.id);
             if (savedHistory && savedHistory.length > 0) {
-                // Cap memory to the most recent 200 tracks
                 this.state.history = savedHistory.slice(-200);
             }
         } catch (error) {
             console.error(`[Room ${this.id}] Failed to load history from DB:`, error);
+        }
+
+        // Restore saved playback state (crash recovery)
+        try {
+            const saved = db.loadRoomState(this.id);
+            if (saved) {
+                if (saved.queue && saved.queue.length > 0) this.state.queue = saved.queue;
+                if (saved.currentTrack) this.state.currentTrack = saved.currentTrack;
+                if (saved.progress) this.state.progress = saved.progress;
+                if (saved.isPlaying) this.state.isPlaying = saved.isPlaying;
+                console.log(`[Room ${this.id}] Restored saved state (queue: ${this.state.queue.length}, playing: ${this.state.isPlaying})`);
+                db.deleteRoomState(this.id);
+            }
+        } catch (error) {
+            console.error(`[Room ${this.id}] Failed to restore saved state:`, error);
         }
     }
 
@@ -1316,6 +1337,8 @@ class Room {
 
     destroy() {
         clearInterval(this.interval);
+        clearInterval(this.stateSaveInterval);
+        try { db.saveRoomState(this.id, this.state); } catch (e) { /* ignore */ }
     }
 }
 
