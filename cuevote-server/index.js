@@ -178,6 +178,16 @@ wss.on("connection", (ws, req) => {
 
     if (clientId) {
         ws.id = clientId;
+        for (const existing of clients) {
+            if (existing.id === clientId && existing !== ws) {
+                console.log(`[Reconnect] Evicting stale socket for clientId: ${clientId}`);
+                if (existing.roomId && rooms.has(existing.roomId)) {
+                    rooms.get(existing.roomId).removeClient(existing);
+                }
+                clients.delete(existing);
+                existing.terminate();
+            }
+        }
     } else {
         ws.id = crypto.randomUUID();
     }
