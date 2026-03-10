@@ -203,6 +203,13 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (::webView.isInitialized) {
+            webView.evaluateJavascript("window.cuevoteReconnect && window.cuevoteReconnect()", null)
+        }
+    }
+
     private fun startQRScan() {
         val scannerFragment = QRScannerBottomSheet()
         scannerFragment.show(supportFragmentManager, "QRScanner")

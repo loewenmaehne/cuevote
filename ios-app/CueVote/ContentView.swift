@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var currentUrl: URL = URL(string: "https://cuevote.com")!
     @State private var isButtonVisible = false // Default hidden
     @State private var isScanning = false
@@ -82,6 +83,11 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ToggleQRButton"))) { note in
             if let show = note.object as? Bool {
                 self.isButtonVisible = show
+            }
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                NotificationCenter.default.post(name: NSNotification.Name("AppDidBecomeActive"), object: nil)
             }
         }
         // Custom Sheet Overlay for Consistent Landscape 90% Height
