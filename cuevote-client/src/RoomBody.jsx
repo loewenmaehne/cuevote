@@ -211,27 +211,33 @@ function RoomBody() {
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const lastPasswordAttemptRef = useRef(null); // Track the last password we sent
+  const prevIsConnectedRef = useRef(false);
 
   useEffect(() => {
     if (isConnected) {
-      // If we joined from the lobby (verified password there), we don't need to join again.
-      // However, we should ensure the server state matches.
-      if (location.state?.alreadyJoined && activeRoomId === serverRoomId) {
-        console.log("[App] Skipping join, already joined from Lobby");
-        return;
+      const isNewConnection = !prevIsConnectedRef.current;
+      prevIsConnectedRef.current = true;
+
+      if (!isNewConnection) {
+        // Only apply "already in room" guards when NOT reconnecting.
+        // After a reconnect the server has forgotten this client, so we must rejoin.
+        if (location.state?.alreadyJoined && activeRoomId === serverRoomId) {
+          console.log("[App] Skipping join, already joined from Lobby");
+          return;
+        }
+        if (serverRoomId && activeRoomId && serverRoomId.toString().trim().toLowerCase() === activeRoomId.toString().trim().toLowerCase()) {
+          console.log("[App] Skipping join, already in target room:", activeRoomId);
+          return;
+        }
+      } else {
+        console.log("[App] New connection detected, forcing room join:", activeRoomId);
       }
 
-      // NEW: If we are already in the target room (according to server state), skip redundant join.
-      // This prevents the "double unlock" bug where a state update triggers a second join without password.
-      if (serverRoomId && activeRoomId && serverRoomId.toString().trim().toLowerCase() === activeRoomId.toString().trim().toLowerCase()) {
-        console.log("[App] Skipping join, already in target room:", activeRoomId);
-        return;
-      }
-
-      // console.log(`Joining room: ${ activeRoomId } `);
       const password = location.state?.password;
-      lastPasswordAttemptRef.current = password; // Track it
+      lastPasswordAttemptRef.current = password;
       sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password } });
+    } else {
+      prevIsConnectedRef.current = false;
     }
   }, [isConnected, activeRoomId, sendMessage, location.state, serverRoomId]);
 

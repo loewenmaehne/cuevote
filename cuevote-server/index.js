@@ -356,7 +356,7 @@ wss.on("connection", (ws, req) => {
                 }
                 case "STATE_ACK": {
                     console.log(`[SERVER TRACE] Client ${ws.id} ACKNOWLEDGED state for room: ${parsedMessage.payload.roomId}`);
-                    break;
+                    return;
                 }
                 case "JOIN_ROOM": {
                     const { roomId, password } = parsedMessage.payload;
@@ -571,6 +571,9 @@ wss.on("connection", (ws, req) => {
             // Delegate Room-Specific Messages
             if (ws.roomId && rooms.has(ws.roomId)) {
                 await rooms.get(ws.roomId).handleMessage(ws, parsedMessage);
+            } else {
+                console.warn(`[SERVER] Unrouted message type="${parsedMessage.type}" from client ${ws.id} (roomId=${ws.roomId})`);
+                ws.send(JSON.stringify({ type: "error", message: "Not connected to a channel. Please rejoin." }));
             }
 
         } catch (error) {
