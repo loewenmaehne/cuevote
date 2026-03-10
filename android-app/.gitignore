@@ -8,7 +8,22 @@ build/
 .externalNativeBuild
 .cxx
 *.apk
+*.aab
 *.ap_
+*.dex
+*.class
 
+# Signing keys - never push these publicly
+*.jks
+*.keystore
+
+# Google Services / Firebase config
+google-services.json
+
+# Profiling and heap dumps
+*.hprof
+
+# Android Studio misc
+.navigation/
 output-metadata.json
 baselineProfiles/
