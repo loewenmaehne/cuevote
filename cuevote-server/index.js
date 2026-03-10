@@ -59,6 +59,10 @@ const server = http.createServer((req, res) => {
 
 const wss = new WebSocket.Server({
     server,
+    perMessageDeflate: {
+        zlibDeflateOptions: { chunkSize: 1024, memLevel: 7, level: 3 },
+        threshold: 128,
+    },
     verifyClient: (info, cb) => {
         if (ALLOWED_ORIGINS.length === 0) {
             if (process.env.NODE_ENV === 'production') {
@@ -654,6 +658,21 @@ setInterval(() => {
         ws.ping();
     });
 }, WS_HEARTBEAT_INTERVAL);
+
+// Periodic sweep: remove clients that are no longer in OPEN state
+setInterval(() => {
+    let cleaned = 0;
+    for (const ws of clients) {
+        if (ws.readyState !== WebSocket.OPEN) {
+            clients.delete(ws);
+            if (ws.roomId && rooms.has(ws.roomId)) {
+                rooms.get(ws.roomId).removeClient(ws);
+            }
+            cleaned++;
+        }
+    }
+    if (cleaned > 0) console.log(`[Sweep] Cleaned ${cleaned} stale client entries.`);
+}, 60000);
 
 // Cleanup Idle Rooms (Every 5 minutes)
 setInterval(() => {
