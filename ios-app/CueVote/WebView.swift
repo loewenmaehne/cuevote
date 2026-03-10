@@ -41,6 +41,10 @@ struct WebView: UIViewRepresentable {
             }
         }
 
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("AppDidBecomeActive"), object: nil, queue: .main) { _ in
+            webView.evaluateJavaScript("window.cuevoteReconnect && window.cuevoteReconnect()", completionHandler: nil)
+        }
+
         // WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0)) { }
 
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 30)

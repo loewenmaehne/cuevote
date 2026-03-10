@@ -178,6 +178,9 @@ wss.on("connection", (ws, req) => {
         ws.id = crypto.randomUUID();
     }
 
+    ws.isAlive = true;
+    ws.on('pong', () => { ws.isAlive = true; });
+
     clients.add(ws);
 
     // Default Join (Lobby or specific room)
@@ -589,6 +592,24 @@ wss.on("connection", (ws, req) => {
         }
     });
 });
+
+// Server-side WebSocket heartbeat: detect and terminate dead connections that
+// never sent a clean close (e.g. network drop, OS killed the app).
+const WS_HEARTBEAT_INTERVAL = 30000;
+setInterval(() => {
+    wss.clients.forEach((ws) => {
+        if (ws.isAlive === false) {
+            console.log(`[Heartbeat] Terminating dead connection: ${ws.id}`);
+            clients.delete(ws);
+            if (ws.roomId && rooms.has(ws.roomId)) {
+                rooms.get(ws.roomId).removeClient(ws);
+            }
+            return ws.terminate();
+        }
+        ws.isAlive = false;
+        ws.ping();
+    });
+}, WS_HEARTBEAT_INTERVAL);
 
 // Cleanup Idle Rooms (Every 5 minutes)
 setInterval(() => {

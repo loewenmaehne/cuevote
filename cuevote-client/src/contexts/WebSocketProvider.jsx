@@ -82,6 +82,9 @@ export function WebSocketProvider({ children }) {
 
   useEffect(() => {
     let reconnectTimeout = null;
+    let reconnectDelay = 1000;
+    const MAX_RECONNECT_DELAY = 30000;
+    let lastResumeTime = 0;
 
     const connect = () => {
       const wsUrl = new URL(WEBSOCKET_URL);
@@ -93,7 +96,7 @@ export function WebSocketProvider({ children }) {
       const handleOpen = () => {
         console.log("WebSocket connected");
         setIsConnected(true);
-        // Try to resume session on connect (persisted in localStorage across reloads)
+        reconnectDelay = 1000;
         const token = sessionTokenRef.current;
         if (token) {
           socket.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token } }));
@@ -104,7 +107,8 @@ export function WebSocketProvider({ children }) {
         console.log("WebSocket disconnected");
         setIsConnected(false);
         if (reconnectTimeout) clearTimeout(reconnectTimeout);
-        reconnectTimeout = setTimeout(connect, 5000);
+        reconnectTimeout = setTimeout(connect, reconnectDelay);
+        reconnectDelay = Math.min(reconnectDelay * 2, MAX_RECONNECT_DELAY);
       };
 
       const handleError = (error) => {
@@ -116,19 +120,14 @@ export function WebSocketProvider({ children }) {
           const message = JSON.parse(event.data);
 
           if (message.type === "PONG") {
-            // console.log("[WS] PONG received");
-            // Heartbeat valid, handled in the interval check logic implicitly by liveness timestamp?
-            // Actually, we need to let the loop know.
-            // Let's us a ref on the outer scope of connect or just a property on the socket?
             socket.lastPong = Date.now();
             return;
           }
 
           if (message.type === "state") {
-            // console.log(`[CLIENT TRACE] <<< INCOMING STATE. RoomId: ${message.payload.roomId}`);
             setState(message.payload);
           } else {
-            setLastMessage(message); // Broadcast non-state messages (events)
+            setLastMessage(message);
             if (message.type === "error") {
               setLastError(message.message);
               setLastErrorCode(message.code || null);
@@ -138,8 +137,6 @@ export function WebSocketProvider({ children }) {
                 setLastError(null);
                 setLastErrorCode(null);
               }, 5000);
-            } else if (message.type === "INFO") {
-              // console.log("[CLIENT TRACE] <<< INFO:", message.payload);
             }
           }
         } catch (error) {
@@ -154,49 +151,55 @@ export function WebSocketProvider({ children }) {
       socket.addEventListener("error", handleError);
       socket.addEventListener("message", handleMessage);
 
-      // Heartbeat Loop (Aggressive)
-      // Send PING every 5s. If lastPong > 5s + threshold, kill it.
       const pingInterval = setInterval(() => {
         if (socket.readyState === WebSocket.OPEN) {
           socket.send(JSON.stringify({ type: "PING" }));
 
-          // Check for timeout (only if we have sent at least one ping before?)
-          // If lastPong was ages ago, we might be dead.
-          // Give 2s grace period for network latency on the Pong.
           const now = Date.now();
-          if (socket.lastPong && (now - socket.lastPong > 7000)) {
+          const inGracePeriod = lastResumeTime > 0 && (now - lastResumeTime < 10000);
+          if (!inGracePeriod && socket.lastPong && (now - socket.lastPong > 7000)) {
             console.warn("[WS] Heartbeat timeout! No PONG in 7s. Force closing.");
             socket.close();
           }
         }
-      }, 5000); // 5s Interval
+      }, 5000);
 
-      // Initialize lastPong to avoid immediate kill
       socket.lastPong = Date.now();
 
-      // Detect stale connections when the user returns to a backgrounded tab.
-      // Browser timers are throttled in background tabs, so the PING/PONG heartbeat
-      // may not run. When the tab becomes visible, send an immediate PING and
-      // force-close if the connection turns out to be dead.
-      const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible' && socket.readyState === WebSocket.OPEN) {
+      // Shared handler for app resume (visibility change or native lifecycle callback).
+      // Resets the heartbeat grace period, probes the connection with a PING,
+      // and triggers an immediate reconnect if the socket is already dead.
+      const handleResume = () => {
+        lastResumeTime = Date.now();
+        socket.lastPong = Date.now();
+
+        if (socket.readyState === WebSocket.OPEN) {
           try {
             socket.send(JSON.stringify({ type: "PING" }));
           } catch (e) { /* socket may be closing */ }
 
-          const timeSinceLastPong = Date.now() - (socket.lastPong || 0);
-          if (timeSinceLastPong > 15000) {
-            setTimeout(() => {
-              if (socket.readyState !== WebSocket.OPEN) return;
-              if (Date.now() - (socket.lastPong || 0) > 15000) {
-                console.warn("[WS] Connection stale after visibility change. Reconnecting.");
-                socket.close();
-              }
-            }, 3000);
-          }
+          setTimeout(() => {
+            if (socket.readyState !== WebSocket.OPEN) return;
+            if (Date.now() - (socket.lastPong || 0) > 5000) {
+              console.warn("[WS] Connection stale after resume. Reconnecting.");
+              socket.close();
+            }
+          }, 3000);
+        } else if (socket.readyState === WebSocket.CLOSED || socket.readyState === WebSocket.CLOSING) {
+          if (reconnectTimeout) clearTimeout(reconnectTimeout);
+          reconnectDelay = 1000;
+          reconnectTimeout = setTimeout(connect, 500);
+        }
+      };
+
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          handleResume();
         }
       };
       document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      window.cuevoteReconnect = handleResume;
 
       const originalClose = socket.close.bind(socket);
       socket.close = () => {
@@ -210,8 +213,8 @@ export function WebSocketProvider({ children }) {
 
     return () => {
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      delete window.cuevoteReconnect;
       if (ws.current) {
-        // We can't easily remove specific listeners here without lifting functions out, but closing the socket removes listeners automatically attached to it.
         ws.current.close();
       }
     };
