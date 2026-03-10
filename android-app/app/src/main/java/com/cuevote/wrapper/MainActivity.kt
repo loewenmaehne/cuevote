@@ -16,8 +16,10 @@ import android.view.Gravity
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-// ZXing Imports
-
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 
 import androidx.annotation.Keep
 
@@ -28,6 +30,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
 
     private lateinit var webView: WebView
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,8 +71,7 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
             javaScriptCanOpenWindowsAutomatically = true
             setSupportMultipleWindows(true)
             
-            // Cache settings (Optional, good for PWA feel)
-            cacheMode = WebSettings.LOAD_DEFAULT
+            cacheMode = WebSettings.LOAD_NO_CACHE
 
             // Custom User Agent for detection
             val defaultUserAgent = userAgentString
@@ -201,13 +203,53 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
                 }
             }
         })
+
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val request = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                runOnUiThread {
+                    if (::webView.isInitialized) {
+                        offlineView.visibility = android.view.View.GONE
+                        webView.visibility = android.view.View.VISIBLE
+                        webView.evaluateJavascript("window.cuevoteReconnect && window.cuevoteReconnect()", null)
+                    }
+                }
+            }
+            override fun onLost(network: Network) {
+                runOnUiThread {
+                    if (::webView.isInitialized) {
+                        offlineView.visibility = android.view.View.VISIBLE
+                    }
+                }
+            }
+        }
+        cm.registerNetworkCallback(request, networkCallback!!)
     }
 
     override fun onResume() {
         super.onResume()
         if (::webView.isInitialized) {
+            webView.onResume()
             webView.evaluateJavascript("window.cuevoteReconnect && window.cuevoteReconnect()", null)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (::webView.isInitialized) {
+            webView.onPause()
+        }
+    }
+
+    override fun onDestroy() {
+        networkCallback?.let {
+            val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            cm.unregisterNetworkCallback(it)
+        }
+        super.onDestroy()
     }
 
     private fun startQRScan() {
