@@ -12,6 +12,7 @@ process.on('uncaughtException', (error) => {
     }
 });
 
+const http = require("http");
 const WebSocket = require("ws");
 const crypto = require("crypto");
 const { OAuth2Client } = require('google-auth-library');
@@ -46,22 +47,28 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
     : [];
 
+const server = http.createServer((req, res) => {
+    if (req.url === '/health' && req.method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ status: 'ok', clients: clients.size, rooms: rooms.size, uptime: process.uptime() }));
+        return;
+    }
+    res.writeHead(404);
+    res.end();
+});
+
 const wss = new WebSocket.Server({
-    port: process.env.PORT || 8080,
-    host: '0.0.0.0',
+    server,
     verifyClient: (info, cb) => {
-        // In production, require an explicit allowlist.
         if (ALLOWED_ORIGINS.length === 0) {
             if (process.env.NODE_ENV === 'production') {
                 console.error('[Security] No ALLOWED_ORIGINS configured in production. Rejecting connection.');
                 return cb(false, 503, 'Origin configuration required');
             }
-            // Development fallback: allow all.
             return cb(true);
         }
 
         const origin = info.origin;
-        // Check if origin is allowed
         if (ALLOWED_ORIGINS.includes(origin)) {
             return cb(true);
         }
@@ -73,6 +80,8 @@ const wss = new WebSocket.Server({
 wss.on('error', (err) => {
     console.error('[WSS] WebSocket server error:', err);
 });
+
+server.listen(process.env.PORT || 8080, '0.0.0.0');
 
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -688,8 +697,10 @@ function gracefulShutdown(signal) {
     }
     rooms.clear();
     wss.close(() => {
-        console.log('[Shutdown] WebSocket server closed.');
-        process.exit(0);
+        server.close(() => {
+            console.log('[Shutdown] Server closed.');
+            process.exit(0);
+        });
     });
     setTimeout(() => process.exit(0), 3000);
 }

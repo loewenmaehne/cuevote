@@ -128,6 +128,13 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
+    # Health check endpoint
+    location /health {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
     # Proxy WebSocket connections
     location /ws {
         proxy_pass http://localhost:8080;
