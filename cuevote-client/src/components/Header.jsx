@@ -119,23 +119,9 @@ export function Header({
     return () => window.removeEventListener('keydown', handleEscape);
   }, [showProfileModal, showDeleteConfirm, onShowSuggest, onShowQRCode]);
 
-  const scrollPillsToEnd = () => {
-    const el = pillsRef.current;
-    if (el && isTouchDevice) {
-      el.scrollLeft = el.scrollWidth;
-    }
-  };
-
   useLayoutEffect(() => {
-    scrollPillsToEnd();
-  }, [mode, isOwner]);
-
-  useEffect(() => {
     const el = pillsRef.current;
-    if (!el || !isTouchDevice) return;
-    const observer = new ResizeObserver(() => scrollPillsToEnd());
-    observer.observe(el);
-    return () => observer.disconnect();
+    if (el) el.scrollLeft = 0;
   }, [mode, isOwner]);
 
   useEffect(() => {
