@@ -42,15 +42,25 @@ export function WebSocketProvider({ children }) {
 
   const ws = useRef(null);
   const messageQueue = useRef([]);
+  const pendingAcks = useRef(new Map());
+  const ackCounter = useRef(0);
+
+  const ACKABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM"];
+  const QUEUEABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "PLAY_PAUSE", "NEXT_TRACK"];
 
   const sendMessage = useCallback((message) => {
+    const isAckable = ACKABLE_TYPES.includes(message.type);
+    if (isAckable) {
+      const msgId = `${++ackCounter.current}`;
+      message = { ...message, msgId };
+      pendingAcks.current.set(msgId, { message, timestamp: Date.now() });
+      setTimeout(() => { pendingAcks.current.delete(msgId); }, 10000);
+    }
+
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify(message));
-    } else {
-      const QUEUEABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "PLAY_PAUSE", "NEXT_TRACK"];
-      if (QUEUEABLE_TYPES.includes(message.type)) {
-        messageQueue.current.push(message);
-      }
+    } else if (QUEUEABLE_TYPES.includes(message.type)) {
+      messageQueue.current.push(message);
     }
   }, []);
 
@@ -136,6 +146,11 @@ export function WebSocketProvider({ children }) {
 
           if (message.type === "PONG") {
             socket.lastPong = Date.now();
+            return;
+          }
+
+          if (message.type === "ACK") {
+            pendingAcks.current.delete(message.msgId);
             return;
           }
 

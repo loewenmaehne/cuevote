@@ -220,6 +220,13 @@ wss.on("connection", (ws, req) => {
     ws.on("message", async (message) => {
         try {
             const parsedMessage = JSON.parse(message);
+            const msgId = parsedMessage.msgId;
+
+            const sendAck = () => {
+                if (msgId && ws.readyState === 1) {
+                    ws.send(JSON.stringify({ type: "ACK", msgId }));
+                }
+            };
 
             // Handle Global Messages (Auth, Routing)
             switch (parsedMessage.type) {
@@ -427,6 +434,7 @@ wss.on("connection", (ws, req) => {
                         ws.roomId = room.id;
                         room.addClient(ws);
                         db.updateRoomActivity(room.id);
+                        sendAck();
                     } else {
                         ws.send(JSON.stringify({ type: "error", code: "ROOM_NOT_FOUND", message: "Room not found" }));
                     }
