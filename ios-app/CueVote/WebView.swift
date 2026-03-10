@@ -57,7 +57,7 @@ struct WebView: UIViewRepresentable {
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
         if uiView.url?.absoluteString != url.absoluteString && !isOffline {
-            let request = URLRequest(url: url)
+            let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 30)
             uiView.load(request)
         }
     }
