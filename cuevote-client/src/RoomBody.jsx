@@ -87,12 +87,14 @@ function RoomBody() {
     sendMessage,
     lastError,
     lastErrorCode,
-    lastErrorTimestamp, // <--- Added this
-    lastMessage, // <--- Added this
+    lastErrorTimestamp,
+    lastMessage,
     clientId,
     user,
     handleLogout,
     handleLoginSuccess,
+    reconnectAttempt,
+    forceReconnect,
   } = useWebSocketContext();
 
 
@@ -1042,7 +1044,7 @@ function RoomBody() {
   if ((!serverState || isStaleState)) {
     return (
       <>
-        <LoadingScreen isOnline={isOnline} isConnected={isConnected} />
+        <LoadingScreen isOnline={isOnline} isConnected={isConnected} reconnectAttempt={reconnectAttempt} onForceReconnect={forceReconnect} />
         {passwordModalContent}
       </>
     );

@@ -29,6 +29,7 @@ export function WebSocketProvider({ children }) {
   const errorClearTimer = useRef(null);
   const [lastMessage, setLastMessage] = useState(null);
   const [user, setUser] = useState(null);
+  const [reconnectAttempt, setReconnectAttempt] = useState(0);
   const sessionTokenRef = useRef(localStorage.getItem(SESSION_KEY));
   const [clientId] = useState(() => {
     let id = localStorage.getItem("cuevote_client_id");
@@ -103,6 +104,7 @@ export function WebSocketProvider({ children }) {
       const handleOpen = () => {
         console.log("WebSocket connected");
         setIsConnected(true);
+        setReconnectAttempt(0);
         reconnectDelay = 1000;
         const token = sessionTokenRef.current;
         if (token) {
@@ -118,6 +120,7 @@ export function WebSocketProvider({ children }) {
         console.log("WebSocket disconnected");
         setIsConnected(false);
         setState(null);
+        setReconnectAttempt(prev => prev + 1);
         if (reconnectTimeout) clearTimeout(reconnectTimeout);
         reconnectTimeout = setTimeout(connect, reconnectDelay);
         reconnectDelay = Math.min(reconnectDelay * 2, MAX_RECONNECT_DELAY);
@@ -234,7 +237,7 @@ export function WebSocketProvider({ children }) {
   }, [clientId]);
 
   return (
-    <WebSocketContext.Provider value={{ state, isConnected, sendMessage, lastError, lastErrorCode, lastErrorTimestamp, lastMessage, clientId, user, handleLoginSuccess, handleLogout, clearMessage: () => setLastMessage(null) }}>
+    <WebSocketContext.Provider value={{ state, isConnected, sendMessage, lastError, lastErrorCode, lastErrorTimestamp, lastMessage, clientId, user, handleLoginSuccess, handleLogout, clearMessage: () => setLastMessage(null), reconnectAttempt, forceReconnect: () => { if (window.cuevoteReconnect) window.cuevoteReconnect(); } }}>
       {children}
     </WebSocketContext.Provider>
   );
