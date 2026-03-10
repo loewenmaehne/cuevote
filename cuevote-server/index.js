@@ -190,9 +190,13 @@ wss.on("connection", (ws, req) => {
         for (const existing of clients) {
             if (existing.id === clientId && existing !== ws) {
                 console.log(`[Reconnect] Evicting stale socket for clientId: ${clientId}`);
-                if (existing.roomId && rooms.has(existing.roomId)) {
-                    rooms.get(existing.roomId).removeClient(existing);
+                if (existing.roomId) {
+                    ws.lastRoomId = existing.roomId;
+                    if (rooms.has(existing.roomId)) {
+                        rooms.get(existing.roomId).removeClient(existing);
+                    }
                 }
+                if (existing.user) ws.user = existing.user;
                 clients.delete(existing);
                 existing.terminate();
             }
@@ -282,10 +286,11 @@ wss.on("connection", (ws, req) => {
                         const user = db.getUser(session.user_id);
                         if (user) {
                             ws.user = user;
-                            // Refresh token?
+                            const resumePayload = { user: ws.user, sessionToken: token };
+                            if (ws.lastRoomId) resumePayload.lastRoomId = ws.lastRoomId;
                             ws.send(JSON.stringify({
                                 type: "LOGIN_SUCCESS",
-                                payload: { user: ws.user, sessionToken: token }
+                                payload: resumePayload
                             }));
                         } else {
                             // Session exists but user is gone (deleted?)
