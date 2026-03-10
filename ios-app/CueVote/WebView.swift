@@ -34,16 +34,18 @@ struct WebView: UIViewRepresentable {
         webView.scrollView.backgroundColor = .black
         webView.scrollView.contentInsetAdjustmentBehavior = .never
         
-        NotificationCenter.default.addObserver(forName: NSNotification.Name("InjectGoogleToken"), object: nil, queue: .main) { note in
+        let tokenObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name("InjectGoogleToken"), object: nil, queue: .main) { note in
             if let token = note.object as? String {
                 let js = "window.handleNativeGoogleLogin && window.handleNativeGoogleLogin('\(token)');"
                 webView.evaluateJavaScript(js, completionHandler: nil)
             }
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name("AppDidBecomeActive"), object: nil, queue: .main) { _ in
+        let resumeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name("AppDidBecomeActive"), object: nil, queue: .main) { _ in
             webView.evaluateJavaScript("window.cuevoteReconnect && window.cuevoteReconnect()", completionHandler: nil)
         }
+
+        context.coordinator.observers.append(contentsOf: [tokenObserver, resumeObserver])
 
         // WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0)) { }
 
@@ -66,8 +68,14 @@ struct WebView: UIViewRepresentable {
         var parent: WebView
         var webAuthSession: ASWebAuthenticationSession?
         var codeVerifier: String?
+        var observers: [NSObjectProtocol] = []
 
         init(parent: WebView) { self.parent = parent }
+
+        deinit {
+            observers.forEach { NotificationCenter.default.removeObserver($0) }
+            observers.removeAll()
+        }
 
         // Start
         func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
@@ -98,6 +106,14 @@ struct WebView: UIViewRepresentable {
                 self.parent.isOffline = true
                 self.parent.isLoading = false
             }
+        }
+
+        func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+            print("[WKWebView] Content process terminated (likely OOM). Reloading.")
+            DispatchQueue.main.async {
+                self.parent.isLoading = true
+            }
+            webView.reload()
         }
 
         func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
