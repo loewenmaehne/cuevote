@@ -132,7 +132,6 @@ export function WebSocketProvider({ children }) {
       const handleClose = () => {
         console.log("WebSocket disconnected");
         setIsConnected(false);
-        setState(null);
         setReconnectAttempt(prev => prev + 1);
         if (reconnectTimeout) clearTimeout(reconnectTimeout);
         reconnectTimeout = setTimeout(connect, reconnectDelay);
@@ -191,25 +190,25 @@ export function WebSocketProvider({ children }) {
       socket.addEventListener("error", handleError);
       socket.addEventListener("message", handleMessage);
 
+      socket.lastPong = Date.now();
+      let wasHidden = false;
+
       const pingInterval = setInterval(() => {
         if (socket.readyState === WebSocket.OPEN) {
+          if (wasHidden) return;
+
           socket.lastPingSent = Date.now();
           socket.send(JSON.stringify({ type: "PING" }));
 
           const now = Date.now();
-          const inGracePeriod = lastResumeTime > 0 && (now - lastResumeTime < 10000);
-          if (!inGracePeriod && socket.lastPong && (now - socket.lastPong > 7000)) {
-            console.warn("[WS] Heartbeat timeout! No PONG in 7s. Force closing.");
+          const inGracePeriod = lastResumeTime > 0 && (now - lastResumeTime < 15000);
+          if (!inGracePeriod && socket.lastPong && (now - socket.lastPong > 12000)) {
+            console.warn("[WS] Heartbeat timeout! No PONG in 12s. Force closing.");
             socket.close();
           }
         }
       }, 5000);
 
-      socket.lastPong = Date.now();
-
-      // Shared handler for app resume (visibility change or native lifecycle callback).
-      // Resets the heartbeat grace period, probes the connection with a PING,
-      // and triggers an immediate reconnect if the socket is already dead.
       const handleResume = () => {
         lastResumeTime = Date.now();
 
@@ -220,11 +219,11 @@ export function WebSocketProvider({ children }) {
 
           setTimeout(() => {
             if (socket.readyState !== WebSocket.OPEN) return;
-            if (Date.now() - (socket.lastPong || 0) > 5000) {
+            if (Date.now() - (socket.lastPong || 0) > 8000) {
               console.warn("[WS] Connection stale after resume. Reconnecting.");
               socket.close();
             }
-          }, 3000);
+          }, 4000);
         } else if (socket.readyState === WebSocket.CLOSED || socket.readyState === WebSocket.CLOSING) {
           if (reconnectTimeout) clearTimeout(reconnectTimeout);
           reconnectDelay = 1000;
@@ -234,7 +233,10 @@ export function WebSocketProvider({ children }) {
 
       const handleVisibilityChange = () => {
         if (document.visibilityState === 'visible') {
+          wasHidden = false;
           handleResume();
+        } else {
+          wasHidden = true;
         }
       };
       document.addEventListener('visibilitychange', handleVisibilityChange);

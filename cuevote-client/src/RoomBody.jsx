@@ -1099,6 +1099,31 @@ function RoomBody() {
 
   return (
     <div className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : "min-h-screen bg-black pb-32"}`}>
+      {!isConnected && serverState && !isStaleState && (
+        <div className={`fixed top-0 left-0 right-0 z-[100] ${!isOnline ? 'bg-red-600/95' : 'bg-orange-600/95'} backdrop-blur-sm text-white text-center py-1.5 text-xs font-medium`}>
+          <div className="flex items-center justify-center gap-2">
+            {!isOnline ? (
+              <>
+                <WifiOff size={12} />
+                <span>{t('app.noInternet', 'No Internet Connection')}</span>
+              </>
+            ) : (
+              <>
+                <RefreshCw size={12} className="animate-spin" />
+                <span>{t('app.reconnecting', 'Reconnecting')}...</span>
+              </>
+            )}
+            {reconnectAttempt > 3 && (
+              <button
+                onClick={forceReconnect}
+                className="ml-1 px-2 py-0.5 rounded bg-white/20 hover:bg-white/30 transition-colors"
+              >
+                {t('app.retry', 'Retry')}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
           <Header
