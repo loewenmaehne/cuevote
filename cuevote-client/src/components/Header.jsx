@@ -119,21 +119,21 @@ export function Header({
     return () => window.removeEventListener('keydown', handleEscape);
   }, [showProfileModal, showDeleteConfirm, onShowSuggest, onShowQRCode]);
 
-  const scrollPillsToRight = () => {
+  const scrollPillsToEnd = () => {
     const el = pillsRef.current;
-    if (el) {
+    if (el && isTouchDevice) {
       el.scrollLeft = el.scrollWidth;
     }
   };
 
   useLayoutEffect(() => {
-    scrollPillsToRight();
+    scrollPillsToEnd();
   }, [mode, isOwner]);
 
   useEffect(() => {
     const el = pillsRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver(() => scrollPillsToRight());
+    if (!el || !isTouchDevice) return;
+    const observer = new ResizeObserver(() => scrollPillsToEnd());
     observer.observe(el);
     return () => observer.disconnect();
   }, [mode, isOwner]);
@@ -299,7 +299,7 @@ export function Header({
 
         <div
           ref={pillsRef}
-          className={`${isTouchDevice ? "flex-1" : "flex-none"} overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
+          className={`flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
         >
           {renderPills()}
         </div>
