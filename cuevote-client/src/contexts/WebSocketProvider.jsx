@@ -174,14 +174,34 @@ export function WebSocketProvider({ children }) {
       // Initialize lastPong to avoid immediate kill
       socket.lastPong = Date.now();
 
-      // Cleanup listeners on close is handled by standard garbage collection if checks are mostly ensuring single instance?
-      // Actually, we must manually cleanup if we were re-running this function, but this function runs inside `connect`.
-      // The `cleanup` logic in useEffect handles the `ws.close()`.
+      // Detect stale connections when the user returns to a backgrounded tab.
+      // Browser timers are throttled in background tabs, so the PING/PONG heartbeat
+      // may not run. When the tab becomes visible, send an immediate PING and
+      // force-close if the connection turns out to be dead.
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible' && socket.readyState === WebSocket.OPEN) {
+          try {
+            socket.send(JSON.stringify({ type: "PING" }));
+          } catch (e) { /* socket may be closing */ }
 
-      // Monkey-patch close to clear interval logic inside this scope
+          const timeSinceLastPong = Date.now() - (socket.lastPong || 0);
+          if (timeSinceLastPong > 15000) {
+            setTimeout(() => {
+              if (socket.readyState !== WebSocket.OPEN) return;
+              if (Date.now() - (socket.lastPong || 0) > 15000) {
+                console.warn("[WS] Connection stale after visibility change. Reconnecting.");
+                socket.close();
+              }
+            }, 3000);
+          }
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
       const originalClose = socket.close.bind(socket);
       socket.close = () => {
         clearInterval(pingInterval);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
         originalClose();
       };
     };
