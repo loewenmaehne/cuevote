@@ -37,7 +37,10 @@ export function WebSocketProvider({ children }) {
       id = crypto.randomUUID ? crypto.randomUUID() : `user-${Date.now()}-${Math.random()}`;
       localStorage.setItem("cuevote_client_id", id);
     }
-    return id;
+    const tabId = sessionStorage.getItem("cuevote_tab_id") ||
+      (crypto.randomUUID ? crypto.randomUUID() : `tab-${Date.now()}-${Math.random()}`);
+    sessionStorage.setItem("cuevote_tab_id", tabId);
+    return `${id}_${tabId}`;
   });
 
   const ws = useRef(null);
