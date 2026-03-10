@@ -2,39 +2,35 @@ import React, { useState, useEffect } from "react";
 import { WifiOff, RefreshCw, Loader2, ServerCrash } from "lucide-react";
 import { Language } from "../contexts/LanguageContext";
 
-export function LoadingScreen({ isOnline, embedded = false, message }) {
+export function LoadingScreen({ isOnline, embedded = false, message, reconnectAttempt = 0, onForceReconnect }) {
 	const { t } = Language.useLanguage();
 	const [showTimeoutCheck, setShowTimeoutCheck] = useState(false);
 	const [isRetrying, setIsRetrying] = useState(false);
 
 	useEffect(() => {
-		// Reset state when status changes to OFFLINE (pause timer?) 
-		// Actually, we just want a simple timer that runs on mount.
-		// If we are offline, the state is 'offline' anyway.
-
-		// Start a "stuck" timer
 		const timer = setTimeout(() => {
 			setShowTimeoutCheck(true);
-		}, 5000); // 5 seconds grace period before showing retry options
+		}, 5000);
 
 		return () => clearTimeout(timer);
-	}, []); // Run once on mount
+	}, []);
 
 	const handleRetry = () => {
+		if (onForceReconnect) {
+			onForceReconnect();
+			return;
+		}
 		setIsRetrying(true);
-		// Simulate a brief "trying" state visually before actual reload or just reload
 		setTimeout(() => {
 			window.location.reload();
 		}, 500);
 	};
 
-	// Determine State
-	let state = 'loading'; // loading | offline | error
+	let state = 'loading';
 	if (!isOnline) state = 'offline';
-	else if (showTimeoutCheck) state = 'error'; // Took too long (socket or data)
-	else state = 'loading'; // Just connecting normally
+	else if (showTimeoutCheck || reconnectAttempt > 1) state = 'error';
+	else state = 'loading';
 
-	// Content Configuration
 	const getConfig = () => {
 		switch (state) {
 			case 'offline':
@@ -47,8 +43,10 @@ export function LoadingScreen({ isOnline, embedded = false, message }) {
 			case 'error':
 				return {
 					icon: <ServerCrash size={48} className="text-orange-500 mb-6" />,
-					title: t('app.connectionIssue', "Connection Issue"), // New key or fallback
-					sub: t('app.takingTooLong', "Taking longer than usual..."),
+					title: t('app.connectionIssue', "Connection Issue"),
+					sub: reconnectAttempt > 1
+						? t('app.reconnectAttempt', `Reconnect attempt ${reconnectAttempt}...`)
+						: t('app.takingTooLong', "Taking longer than usual..."),
 					action: true
 				};
 			case 'loading':
