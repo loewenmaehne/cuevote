@@ -40,10 +40,16 @@ export function WebSocketProvider({ children }) {
   });
 
   const ws = useRef(null);
+  const messageQueue = useRef([]);
 
   const sendMessage = useCallback((message) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify(message));
+    } else {
+      const QUEUEABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "PLAY_PAUSE", "NEXT_TRACK"];
+      if (QUEUEABLE_TYPES.includes(message.type)) {
+        messageQueue.current.push(message);
+      }
     }
   }, []);
 
@@ -102,11 +108,16 @@ export function WebSocketProvider({ children }) {
         if (token) {
           socket.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token } }));
         }
+        while (messageQueue.current.length > 0) {
+          const queued = messageQueue.current.shift();
+          socket.send(JSON.stringify(queued));
+        }
       };
 
       const handleClose = () => {
         console.log("WebSocket disconnected");
         setIsConnected(false);
+        setState(null);
         if (reconnectTimeout) clearTimeout(reconnectTimeout);
         reconnectTimeout = setTimeout(connect, reconnectDelay);
         reconnectDelay = Math.min(reconnectDelay * 2, MAX_RECONNECT_DELAY);
@@ -174,7 +185,6 @@ export function WebSocketProvider({ children }) {
       // and triggers an immediate reconnect if the socket is already dead.
       const handleResume = () => {
         lastResumeTime = Date.now();
-        socket.lastPong = Date.now();
 
         if (socket.readyState === WebSocket.OPEN) {
           try {
