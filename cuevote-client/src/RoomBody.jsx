@@ -285,6 +285,18 @@ function RoomBody() {
     // setPasswordInput("");
   };
 
+  // Connected-but-no-state guard: if WebSocket is connected but we never received
+  // state (e.g. JOIN_ROOM was lost, or server response was corrupted), retry.
+  useEffect(() => {
+    if (!isConnected || serverState) return;
+    const timer = setTimeout(() => {
+      console.warn("[App] Connected but no state received in 5s. Resending JOIN_ROOM.");
+      const password = lastPasswordAttemptRef.current || location.state?.password;
+      sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password } });
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [isConnected, serverState, activeRoomId, sendMessage, location.state]);
+
   // Stale State Guard: If we switched rooms but serverState is still from the old room, show loading.
   const isStaleState = serverState && serverRoomId && (serverRoomId.toString().trim().toLowerCase() !== activeRoomId.toString().trim().toLowerCase());
 
