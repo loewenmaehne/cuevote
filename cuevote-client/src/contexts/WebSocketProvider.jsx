@@ -30,6 +30,7 @@ export function WebSocketProvider({ children }) {
   const [lastMessage, setLastMessage] = useState(null);
   const [user, setUser] = useState(null);
   const [reconnectAttempt, setReconnectAttempt] = useState(0);
+  const [connectionQuality, setConnectionQuality] = useState('good');
   const sessionTokenRef = useRef(localStorage.getItem(SESSION_KEY));
   const [clientId] = useState(() => {
     let id = localStorage.getItem("cuevote_client_id");
@@ -136,7 +137,8 @@ export function WebSocketProvider({ children }) {
         setReconnectAttempt(prev => prev + 1);
         if (reconnectTimeout) clearTimeout(reconnectTimeout);
         reconnectTimeout = setTimeout(connect, reconnectDelay);
-        reconnectDelay = Math.min(reconnectDelay * 2, MAX_RECONNECT_DELAY);
+        const jitter = Math.random() * 0.3 * reconnectDelay;
+        reconnectDelay = Math.min(reconnectDelay * 2 + jitter, MAX_RECONNECT_DELAY);
       };
 
       const handleError = (error) => {
@@ -148,7 +150,11 @@ export function WebSocketProvider({ children }) {
           const message = JSON.parse(event.data);
 
           if (message.type === "PONG") {
+            const latency = Date.now() - (socket.lastPingSent || Date.now());
             socket.lastPong = Date.now();
+            if (latency < 300) setConnectionQuality('good');
+            else if (latency < 1000) setConnectionQuality('fair');
+            else setConnectionQuality('poor');
             return;
           }
 
@@ -188,6 +194,7 @@ export function WebSocketProvider({ children }) {
 
       const pingInterval = setInterval(() => {
         if (socket.readyState === WebSocket.OPEN) {
+          socket.lastPingSent = Date.now();
           socket.send(JSON.stringify({ type: "PING" }));
 
           const now = Date.now();
@@ -255,7 +262,7 @@ export function WebSocketProvider({ children }) {
   }, [clientId]);
 
   return (
-    <WebSocketContext.Provider value={{ state, isConnected, sendMessage, lastError, lastErrorCode, lastErrorTimestamp, lastMessage, clientId, user, handleLoginSuccess, handleLogout, clearMessage: () => setLastMessage(null), reconnectAttempt, forceReconnect: () => { if (window.cuevoteReconnect) window.cuevoteReconnect(); } }}>
+    <WebSocketContext.Provider value={{ state, isConnected, sendMessage, lastError, lastErrorCode, lastErrorTimestamp, lastMessage, clientId, user, handleLoginSuccess, handleLogout, clearMessage: () => setLastMessage(null), reconnectAttempt, forceReconnect: () => { if (window.cuevoteReconnect) window.cuevoteReconnect(); }, connectionQuality }}>
       {children}
     </WebSocketContext.Provider>
   );
