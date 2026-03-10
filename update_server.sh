@@ -17,11 +17,18 @@ if ! command -v pm2 &> /dev/null; then
     exit 1
 fi
 
-# 1. Pull latest changes
-echo "[1/4] Pulling latest changes from git..."
-git pull
-if [ $? -ne 0 ]; then
-    echo "Error: git pull failed."
+# 1. Sync to latest remote main (force server to match GitHub)
+echo "[1/4] Updating code from git (reset to origin/main)..."
+
+# Fetch latest commits from origin
+if ! git fetch origin; then
+    echo "Error: git fetch failed."
+    exit 1
+fi
+
+# Reset local main to exactly match origin/main
+if ! git reset --hard origin/main; then
+    echo "Error: git reset --hard origin/main failed."
     exit 1
 fi
 
