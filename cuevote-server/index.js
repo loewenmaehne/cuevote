@@ -673,3 +673,26 @@ try {
 } catch (e) {
     console.error("Failed to cleanup expired sessions on startup", e);
 }
+
+function gracefulShutdown(signal) {
+    console.log(`[Shutdown] ${signal} received. Closing ${wss.clients.size} connections...`);
+    const shutdownMsg = JSON.stringify({ type: "error", code: "SERVER_RESTARTING", message: "Server is restarting. Reconnecting..." });
+    wss.clients.forEach((ws) => {
+        try {
+            ws.send(shutdownMsg);
+            ws.close(1012, 'Server restarting');
+        } catch (e) { /* ignore */ }
+    });
+    for (const [id, room] of rooms.entries()) {
+        room.destroy();
+    }
+    rooms.clear();
+    wss.close(() => {
+        console.log('[Shutdown] WebSocket server closed.');
+        process.exit(0);
+    });
+    setTimeout(() => process.exit(0), 3000);
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
