@@ -29,10 +29,11 @@ struct ContentView: View {
     
     @State private var isOffline = false
     @State private var isLoading = true
+    @State private var pageLoaded = false
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) { // Revert to Bottom Right
-            WebView(url: currentUrl, isOffline: $isOffline, isLoading: $isLoading, reloadKey: reloadKey)
+            WebView(url: currentUrl, isOffline: $isOffline, isLoading: $isLoading, pageLoaded: $pageLoaded, reloadKey: reloadKey)
                 .ignoresSafeArea()
             
             // Loading Overlay
@@ -111,9 +112,13 @@ struct ContentView: View {
         }
         .onChange(of: networkMonitor.isConnected) { connected in
             if connected && isOffline {
-                isLoading = true
                 isOffline = false
-                reloadKey = UUID()
+                if pageLoaded {
+                    NotificationCenter.default.post(name: NSNotification.Name("AppDidBecomeActive"), object: nil)
+                } else {
+                    isLoading = true
+                    reloadKey = UUID()
+                }
             } else if !connected {
                 isOffline = true
             }

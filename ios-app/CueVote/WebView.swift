@@ -7,6 +7,7 @@ struct WebView: UIViewRepresentable {
     let url: URL
     @Binding var isOffline: Bool
     @Binding var isLoading: Bool
+    @Binding var pageLoaded: Bool
     var reloadKey: UUID = UUID()
     
     func makeUIView(context: Context) -> WKWebView {
@@ -87,6 +88,7 @@ struct WebView: UIViewRepresentable {
             DispatchQueue.main.async {
                 self.parent.isOffline = false
                 self.parent.isLoading = false
+                self.parent.pageLoaded = true
             }
         }
         
