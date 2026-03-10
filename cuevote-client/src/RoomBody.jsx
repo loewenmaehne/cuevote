@@ -482,6 +482,8 @@ function RoomBody() {
   const volumeRef = useRef(volume);
   const isMutedRef = useRef(isMuted);
   const isPlayingRef = useRef(isPlaying); // Track latest server state for event handlers
+  const isOwnerRef = useRef(isOwner);
+  const tRef = useRef(t);
 
   useEffect(() => {
     volumeRef.current = volume;
@@ -494,6 +496,14 @@ function RoomBody() {
   useEffect(() => {
     isPlayingRef.current = isPlaying;
   }, [isPlaying]);
+
+  useEffect(() => {
+    isOwnerRef.current = isOwner;
+  }, [isOwner]);
+
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
 
   const currentTrackRef = useRef(currentTrack);
   useEffect(() => {
@@ -591,28 +601,23 @@ function RoomBody() {
           },
           onError: (event) => {
             console.error("YouTube Player Error:", event.data);
-            // Handle Playback Restrictions (100, 101, 150) - Owner Autoplay
             const errorCode = event.data;
             if ([100, 101, 150].includes(errorCode)) {
-              if (isOwner) {
+              if (isOwnerRef.current) {
                 console.warn("[Player] Video restricted/unavailable. Skipping...", currentTrackRef.current?.title);
 
-                // Show feedback to owner why it skipped
                 setToast({
-                  message: t('playlist.skippedRestricted', { title: currentTrackRef.current?.title || 'Track' }),
-                  type: "error" // Use error type for visibility
+                  message: tRef.current('playlist.skippedRestricted', { title: currentTrackRef.current?.title || 'Track' }),
+                  type: "error"
                 });
 
-                // Force skip to next track
                 sendMessage({ type: "NEXT_TRACK" });
               } else {
-                // Show sticky toast or generic error?
                 console.warn("[Player] Playback Error shown to guest:", errorCode);
-                setPlaybackError(errorCode); // Set error state to unmount player and show overlay
+                setPlaybackError(errorCode);
               }
             } else {
-              // Catch-all for other errors (e.g. 105, 1000, etc)
-              if (!isOwner) {
+              if (!isOwnerRef.current) {
                 setPlaybackError(errorCode);
               }
             }
@@ -620,7 +625,7 @@ function RoomBody() {
         },
       });
     });
-  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled, t, isOwner]);
+  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled]);
 
   const playerContainerRef = useCallback(node => {
     if (!hasConsent) return; // Gate Ref Handling
