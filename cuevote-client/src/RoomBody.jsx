@@ -478,6 +478,7 @@ function RoomBody() {
 
   // YouTube Player state
   const playerRef = useRef(null);
+  const playerInitIdRef = useRef(0);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
   const volumeRef = useRef(volume);
   const isMutedRef = useRef(isMuted);
@@ -546,10 +547,14 @@ function RoomBody() {
 
   // Player Initialization
   const initializePlayer = useCallback((container) => {
-    if (!hasConsent) return; // Gate Initialization
-    // console.log("[Player] Initializing...", container);
+    if (!hasConsent) return;
+    const initId = ++playerInitIdRef.current;
     loadYouTubeAPI().then((YT) => {
-      // console.log("[Player] YT loaded, creating player instance");
+      if (initId !== playerInitIdRef.current) return;
+      if (playerRef.current && typeof playerRef.current.destroy === 'function') {
+        try { playerRef.current.destroy(); } catch (e) { /* already gone */ }
+        playerRef.current = null;
+      }
       playerRef.current = new YT.Player(container, {
         host: 'https://www.youtube.com',
         playerVars: {
@@ -628,19 +633,17 @@ function RoomBody() {
   }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled]);
 
   const playerContainerRef = useCallback(node => {
-    if (!hasConsent) return; // Gate Ref Handling
-    console.log("[Player] Container ref called", node);
+    if (!hasConsent) return;
     if (node !== null) {
       initializePlayer(node);
     } else {
-      // console.log("[Player] Container ref null (unmount)");
-      // Cleanup on unmount
+      playerInitIdRef.current++;
       if (playerRef.current && typeof playerRef.current.destroy === 'function') {
         try {
           playerRef.current.destroy();
         } catch (e) { console.error("Player cleanup error", e); }
         playerRef.current = null;
-        setIsPlayerReady(false); // Reset player ready state so it triggers updates when re-initialized
+        setIsPlayerReady(false);
       }
     }
   }, [initializePlayer, hasConsent]);
