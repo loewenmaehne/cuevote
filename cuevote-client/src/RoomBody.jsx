@@ -296,11 +296,12 @@ function RoomBody() {
         if (import.meta.env.DEV) {
           console.warn(`[STALE DEBUG] Sending JOIN_ROOM for ${activeRoomId}`);
         }
-        sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId } });
+        const password = lastPasswordAttemptRef.current || location.state?.password;
+        sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password } });
       }, 3000);
     }
     return () => clearTimeout(timeout);
-  }, [isConnected, isStaleState, activeRoomId, serverRoomId, sendMessage]);
+  }, [isConnected, isStaleState, activeRoomId, serverRoomId, sendMessage, location.state]);
 
   // Local UI state
   const [expandedTrackId, setExpandedTrackId] = useState(null);
