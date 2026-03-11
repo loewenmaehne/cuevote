@@ -677,7 +677,9 @@ function RoomBody() {
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
-      if (previewTrack) {
+      if (showQRModal) {
+        playerRef.current.pauseVideo?.();
+      } else if (previewTrack) {
         playerRef.current.playVideo?.();
       } else if ((isPlaying || isLocallyPlaying) && !isLocallyPaused) {
         playerRef.current.playVideo?.();
@@ -685,7 +687,7 @@ function RoomBody() {
         playerRef.current.pauseVideo?.();
       }
     }
-  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack]);
+  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, showQRModal]);
 
   useEffect(() => {
     if (!isPlayerReady || !playerRef.current || !isPlaying || previewTrack) return;
