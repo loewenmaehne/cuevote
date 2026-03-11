@@ -31,6 +31,7 @@ export function Header({
   suggestionsEnabled,
   ownerBypass,
   playlistViewMode,
+  onFullscreenOverlay,
 }) {
   const headerRef = React.useRef(null);
   const [showExitConfirm, setShowExitConfirm] = React.useState(false);
@@ -42,6 +43,10 @@ export function Header({
   const [exitConfirmIndex, setExitConfirmIndex] = React.useState(0); // 0 = Cancel, 1 = Leave
   // const [showQRCode, setShowQRCode] = React.useState(false); // Removed local state
   const [copied, setCopied] = React.useState(false);
+
+  useEffect(() => {
+    onFullscreenOverlay?.(showExitConfirm || showProfileModal);
+  }, [showExitConfirm, showProfileModal, onFullscreenOverlay]);
   const pillsRef = useRef(null);
   const dragRef = useRef({ startX: 0, startScrollLeft: 0, isDragging: false });
   const [isPillDragging, setIsPillDragging] = React.useState(false);
@@ -530,4 +535,5 @@ Header.propTypes = {
   suggestionsEnabled: PropTypes.bool,
   ownerBypass: PropTypes.bool,
   playlistViewMode: PropTypes.bool,
+  onFullscreenOverlay: PropTypes.func,
 };

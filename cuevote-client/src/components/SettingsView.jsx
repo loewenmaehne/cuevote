@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { HelpCircle, ChevronLeft } from "lucide-react";
 import { Language } from '../contexts/LanguageContext';
@@ -25,11 +25,16 @@ export function SettingsView({
 	ownerPopups,
 	onDeleteChannel,
 	captionsEnabled,
-	isConnected = true
+	isConnected = true,
+	onFullscreenOverlay,
 }) {
 	const { t } = Language.useLanguage();
 	const [deleteChannelText, setDeleteChannelText] = React.useState("");
 	const [showDeleteChannelConfirm, setShowDeleteChannelConfirm] = React.useState(false);
+
+	useEffect(() => {
+		onFullscreenOverlay?.(showDeleteChannelConfirm);
+	}, [showDeleteChannelConfirm, onFullscreenOverlay]);
 
 	return (
 		<div className="w-full h-full bg-[#1a1a1a] px-4 md:px-8 pt-[calc(1rem+env(safe-area-inset-top))] pb-[calc(1rem+env(safe-area-inset-bottom))] overflow-y-auto custom-scrollbar">
@@ -483,5 +488,6 @@ SettingsView.propTypes = {
 	ownerPopups: PropTypes.bool,
 	onDeleteChannel: PropTypes.func,
 	captionsEnabled: PropTypes.bool,
-	isConnected: PropTypes.bool
+	isConnected: PropTypes.bool,
+	onFullscreenOverlay: PropTypes.func,
 };

@@ -258,6 +258,8 @@ function RoomBody() {
   }, [lastErrorCode, lastErrorTimestamp]);
 
   const [showQRModal, setShowQRModal] = useState(false);
+  const [headerOverlay, setHeaderOverlay] = useState(false);
+  const [settingsOverlay, setSettingsOverlay] = useState(false);
 
   // Clear modal on successful join
   useEffect(() => {
@@ -675,9 +677,11 @@ function RoomBody() {
     }
   }, [isPlayerReady, currentTrack, previewTrack, progressRef]);
 
+  const hasFullscreenOverlay = showQRModal || headerOverlay || settingsOverlay;
+
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
-      if (showQRModal) {
+      if (hasFullscreenOverlay) {
         playerRef.current.pauseVideo?.();
       } else if (previewTrack) {
         playerRef.current.playVideo?.();
@@ -687,7 +691,7 @@ function RoomBody() {
         playerRef.current.pauseVideo?.();
       }
     }
-  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, showQRModal]);
+  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay]);
 
   useEffect(() => {
     if (!isPlayerReady || !playerRef.current || !isPlaying || previewTrack) return;
@@ -1111,6 +1115,7 @@ function RoomBody() {
           onDeleteChannel={handleDeleteChannel}
           captionsEnabled={captionsEnabled}
           isConnected={isConnected}
+          onFullscreenOverlay={setSettingsOverlay}
         />
       </div>
     );
@@ -1192,6 +1197,7 @@ function RoomBody() {
             suggestionsEnabled={suggestionsEnabled}
             ownerBypass={ownerBypass}
             playlistViewMode={playlistViewMode}
+            onFullscreenOverlay={setHeaderOverlay}
           />
           {showSuggest && (
             <div className="px-4 pb-3">
