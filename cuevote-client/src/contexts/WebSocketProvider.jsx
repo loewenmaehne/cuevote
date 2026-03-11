@@ -105,7 +105,7 @@ export function WebSocketProvider({ children }) {
   useEffect(() => {
     let reconnectTimeout = null;
     let reconnectDelay = 1000;
-    const MAX_RECONNECT_DELAY = 30000;
+    const MAX_RECONNECT_DELAY = 10000;
     let lastResumeTime = 0;
 
     const connect = () => {
@@ -245,12 +245,25 @@ export function WebSocketProvider({ children }) {
       };
       document.addEventListener('visibilitychange', handleVisibilityChange);
 
+      const handleOnline = () => {
+        console.log("[WS] Browser came back online. Reconnecting immediately.");
+        if (socket.readyState === WebSocket.CLOSED || socket.readyState === WebSocket.CLOSING) {
+          if (reconnectTimeout) clearTimeout(reconnectTimeout);
+          reconnectDelay = 1000;
+          reconnectTimeout = setTimeout(connect, 300);
+        } else if (socket.readyState === WebSocket.OPEN) {
+          handleResume();
+        }
+      };
+      window.addEventListener('online', handleOnline);
+
       window.cuevoteReconnect = handleResume;
 
       const originalClose = socket.close.bind(socket);
       socket.close = () => {
         clearInterval(pingInterval);
         document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('online', handleOnline);
         originalClose();
       };
     };
