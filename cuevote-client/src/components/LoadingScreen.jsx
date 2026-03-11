@@ -10,7 +10,7 @@ export function LoadingScreen({ isOnline, embedded = false, message, reconnectAt
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setShowTimeoutCheck(true);
-		}, 5000);
+		}, 12000);
 
 		return () => clearTimeout(timer);
 	}, []);
@@ -28,7 +28,7 @@ export function LoadingScreen({ isOnline, embedded = false, message, reconnectAt
 
 	let state = 'loading';
 	if (!isOnline) state = 'offline';
-	else if (showTimeoutCheck || reconnectAttempt > 1) state = 'error';
+	else if (showTimeoutCheck && reconnectAttempt > 3) state = 'error';
 	else state = 'loading';
 
 	const getConfig = () => {
@@ -49,14 +49,18 @@ export function LoadingScreen({ isOnline, embedded = false, message, reconnectAt
 						: t('app.takingTooLong', "Taking longer than usual..."),
 					action: true
 				};
-			case 'loading':
-			default:
-				return {
-					icon: <Loader2 size={48} className="text-orange-500 animate-spin mb-6" />,
-					title: message || t('app.connecting', "Connecting to server..."),
-					sub: null,
-					action: false
-				};
+		case 'loading':
+		default:
+			return {
+				icon: <Loader2 size={48} className="text-orange-500 animate-spin mb-6" />,
+				title: message || (reconnectAttempt > 0
+					? t('app.reconnecting', "Reconnecting") + "..."
+					: t('app.connecting', "Connecting to server...")),
+				sub: reconnectAttempt > 1
+					? `${t('app.attempt', "Attempt")} ${reconnectAttempt}`
+					: null,
+				action: reconnectAttempt > 3
+			};
 		}
 	};
 
