@@ -50,6 +50,7 @@ export function WebSocketProvider({ children }) {
   const messageQueue = useRef([]);
   const pendingAcks = useRef(new Map());
   const ackCounter = useRef(0);
+  const progressRef = useRef(0);
 
   const sendMessage = useCallback((message) => {
     const isAckable = ACKABLE_TYPES.includes(message.type);
@@ -163,8 +164,9 @@ export function WebSocketProvider({ children }) {
 
           if (message.type === "state") {
             setState(message.payload);
+            progressRef.current = message.payload.progress || 0;
           } else if (message.type === "progress") {
-            setState(prev => prev ? { ...prev, progress: message.payload } : prev);
+            progressRef.current = message.payload;
           } else {
             setLastMessage(message);
             if (message.type === "error") {
@@ -265,7 +267,7 @@ export function WebSocketProvider({ children }) {
   }, [clientId]);
 
   return (
-    <WebSocketContext.Provider value={{ state, isConnected, sendMessage, lastError, lastErrorCode, lastErrorTimestamp, lastMessage, clientId, user, handleLoginSuccess, handleLogout, clearMessage: () => setLastMessage(null), reconnectAttempt, forceReconnect: () => { if (window.cuevoteReconnect) window.cuevoteReconnect(); }, connectionQuality }}>
+    <WebSocketContext.Provider value={{ state, isConnected, sendMessage, lastError, lastErrorCode, lastErrorTimestamp, lastMessage, clientId, user, handleLoginSuccess, handleLogout, clearMessage: () => setLastMessage(null), reconnectAttempt, forceReconnect: () => { if (window.cuevoteReconnect) window.cuevoteReconnect(); }, connectionQuality, progressRef }}>
       {children}
     </WebSocketContext.Provider>
   );

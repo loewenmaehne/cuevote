@@ -228,7 +228,10 @@ class Room {
             } else {
                 if (newProgress !== this.state.progress) {
                     this.state.progress = newProgress;
-                    this.broadcast({ type: "progress", payload: newProgress });
+                    if (!this._lastProgressBroadcast || (Date.now() - this._lastProgressBroadcast >= 5000)) {
+                        this._lastProgressBroadcast = Date.now();
+                        this.broadcast({ type: "progress", payload: newProgress });
+                    }
                 }
             }
 
