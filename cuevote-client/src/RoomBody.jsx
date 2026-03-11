@@ -95,6 +95,7 @@ function RoomBody() {
     handleLoginSuccess,
     reconnectAttempt,
     forceReconnect,
+    progressRef,
   } = useWebSocketContext();
 
 
@@ -131,7 +132,7 @@ function RoomBody() {
     queue = [],
     currentTrack = null,
     isPlaying = false,
-    progress: serverProgress = 0,
+    progress: _serverProgress = 0,
     activeChannel = "Synthwave",
     ownerId = null,
     suggestionsEnabled = true,
@@ -666,13 +667,13 @@ function RoomBody() {
     if (isPlayerReady && playerRef.current && targetTrack) {
       const currentVideoIdInPlayer = playerRef.current.getVideoData?.()?.video_id;
       if (targetTrack.videoId !== currentVideoIdInPlayer) {
-        const startTime = previewTrack ? 0 : serverProgress;
+        const startTime = previewTrack ? 0 : progressRef.current;
         playerRef.current.loadVideoById?.(targetTrack.videoId, startTime);
       }
     } else if (isPlayerReady && playerRef.current && !targetTrack) {
       playerRef.current.stopVideo?.();
     }
-  }, [isPlayerReady, currentTrack, previewTrack, serverProgress]);
+  }, [isPlayerReady, currentTrack, previewTrack, progressRef]);
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
@@ -687,14 +688,16 @@ function RoomBody() {
   }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack]);
 
   useEffect(() => {
-    if (isPlayerReady && playerRef.current && isPlaying && !previewTrack) {
-      if (playerRef.current.getPlayerState?.() === YouTubeState.ENDED) return;
-      const localProgress = playerRef.current.getCurrentTime?.();
-      if (localProgress && Math.abs(localProgress - serverProgress) > 2) {
-        playerRef.current.seekTo?.(serverProgress);
+    if (!isPlayerReady || !playerRef.current || !isPlaying || previewTrack) return;
+    const interval = setInterval(() => {
+      if (playerRef.current?.getPlayerState?.() === YouTubeState.ENDED) return;
+      const localProgress = playerRef.current?.getCurrentTime?.();
+      if (localProgress && Math.abs(localProgress - progressRef.current) > 3) {
+        playerRef.current?.seekTo?.(progressRef.current);
       }
-    }
-  }, [isPlayerReady, serverProgress, isPlaying, previewTrack]);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isPlayerReady, isPlaying, previewTrack, progressRef]);
 
   // Autoplay detection
   useEffect(() => {
@@ -746,7 +749,7 @@ function RoomBody() {
 
         console.warn("[Player] Force-reloading video...");
         // Re-load current video at current time
-        const currentTime = playerRef.current.getCurrentTime?.() || serverProgress;
+        const currentTime = playerRef.current.getCurrentTime?.() || progressRef.current;
         playerRef.current.loadVideoById?.(currentTrackRef.current?.videoId, currentTime);
       } else {
         // Reset retries if we are playing or in a good state
@@ -757,19 +760,23 @@ function RoomBody() {
     }, 8000); // Check every 8 seconds
 
     return () => clearInterval(checkInterval);
-  }, [isPlaying, isPlayerReady, serverProgress, isOwner]);
+  }, [isPlaying, isPlayerReady, isOwner, progressRef]);
 
-  // Progress bar update
+  // Progress bar update (polls ref to avoid re-renders from progress messages)
   useEffect(() => {
-    if (playerRef.current && playerRef.current.getDuration) {
-      const duration = playerRef.current.getDuration?.();
+    if (!isPlayerReady) return;
+    const update = () => {
+      const duration = playerRef.current?.getDuration?.() || 0;
       if (duration > 0) {
-        setProgress((serverProgress / duration) * 100);
+        setProgress((progressRef.current / duration) * 100);
+      } else {
+        setProgress(0);
       }
-    } else {
-      setProgress(0);
-    }
-  }, [serverProgress]);
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [isPlayerReady, progressRef]);
 
   // Event Handlers
 
@@ -905,8 +912,8 @@ function RoomBody() {
   const handleStopPreview = useCallback(() => {
     setPreviewTrack(null);
     setIsLocallyPaused(false);
-    playerRef.current?.seekTo?.(serverProgress);
-  }, [serverProgress]);
+    playerRef.current?.seekTo?.(progressRef.current);
+  }, [progressRef]);
 
   // Watch for Room Not Found Error
   useEffect(() => {
