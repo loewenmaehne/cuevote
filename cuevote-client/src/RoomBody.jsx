@@ -324,6 +324,19 @@ function RoomBody() {
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
+  const userHasInteractedRef = useRef(false);
+
+  useEffect(() => {
+    const markInteracted = () => { userHasInteractedRef.current = true; };
+    window.addEventListener('click', markInteracted, { once: true, capture: true });
+    window.addEventListener('keydown', markInteracted, { once: true, capture: true });
+    window.addEventListener('touchstart', markInteracted, { once: true, capture: true });
+    return () => {
+      window.removeEventListener('click', markInteracted, { capture: true });
+      window.removeEventListener('keydown', markInteracted, { capture: true });
+      window.removeEventListener('touchstart', markInteracted, { capture: true });
+    };
+  }, []);
 
 
 
@@ -574,7 +587,7 @@ function RoomBody() {
         host: 'https://www.youtube.com',
         playerVars: {
           autoplay: 0,
-          controls: 0,
+          controls: 1,
           origin: window.location.origin,
           widget_referrer: window.location.origin,
           cc_load_policy: captionsEnabled ? 1 : 0,
@@ -677,15 +690,16 @@ function RoomBody() {
     }
   }, [isPlayerReady, currentTrack, previewTrack, progressRef]);
 
-  const hasFullscreenOverlay = showQRModal || headerOverlay || settingsOverlay;
+  const tvUnmuteVisible = deviceDetection.isTV() && isMuted && isPlayerReady && !isAnyPlaylistView;
+  const hasFullscreenOverlay = showQRModal || headerOverlay || settingsOverlay || tvUnmuteVisible;
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
       if (hasFullscreenOverlay) {
         playerRef.current.pauseVideo?.();
-      } else if (previewTrack) {
+      } else if (userHasInteractedRef.current && previewTrack) {
         playerRef.current.playVideo?.();
-      } else if ((isPlaying || isLocallyPlaying) && !isLocallyPaused) {
+      } else if (userHasInteractedRef.current && (isPlaying || isLocallyPlaying) && !isLocallyPaused) {
         playerRef.current.playVideo?.();
       } else {
         playerRef.current.pauseVideo?.();
