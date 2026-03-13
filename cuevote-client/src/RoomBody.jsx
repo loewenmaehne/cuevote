@@ -349,6 +349,7 @@ function RoomBody() {
   const [manualSuggestions, setManualSuggestions] = useState([]);
   const [activeSuggestionId, setActiveSuggestionId] = useState(null);
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
+  const [networkThrottle, setNetworkThrottle] = useState(null); // { until: timestamp } when YouTube throttles the venue IP
 
   // Fix: Use Ref to track showSuggeststate to suppress global toasts when bar is open
   const showSuggestRef = useRef(showSuggest);
@@ -440,7 +441,6 @@ function RoomBody() {
   // const [user, setUser] = useState(null); // Now from Context
   const [progress, setProgress] = useState(0);
   const [playbackError, setPlaybackError] = useState(null); // New State: Track playback errors
-  const [networkThrottle, setNetworkThrottle] = useState(null); // { until: timestamp } when YouTube throttles the venue IP
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true); // Track footer visibility
   const [isWindowTooSmall, setIsWindowTooSmall] = useState(false);
