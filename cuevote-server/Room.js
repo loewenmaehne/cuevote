@@ -610,33 +610,67 @@ class Room {
         }
     }
 
-    async handleFetchSuggestions(ws, { videoId, title, artist }) {
-        if (!videoId) return;
+    async handleFetchSuggestions(ws, { videoId, trackId, title, artist }) {
+        const sourceId = videoId || trackId;
+        if (!sourceId) return;
+
+        const isAppleMusicRoom = this.state.musicSource === 'apple_music';
+        const cacheKey = isAppleMusicRoom ? `am:${sourceId}` : sourceId;
 
         try {
-            // 1. Check Cache
-            const cached = db.getRelatedVideos(videoId);
+            const cached = db.getRelatedVideos(cacheKey);
             if (cached) {
                 const age = Math.floor(Date.now() / 1000) - cached.fetched_at;
                 if (age < 2592000) {
-                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: videoId, suggestions: cached.data } }));
+                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: cached.data } }));
                     return;
                 }
             }
 
+            if (isAppleMusicRoom) {
+                if (!appleMusic.isConfigured()) {
+                    ws.send(JSON.stringify({ type: "error", message: "Apple Music is not configured." }));
+                    return;
+                }
+
+                let query = "";
+                if (artist && artist.toLowerCase() !== "unknown artist") {
+                    query = artist;
+                } else {
+                    query = title;
+                }
+
+                const results = await appleMusic.searchAppleMusic(query, appleMusic.getStorefront(), 6);
+                if (results && results.length > 0) {
+                    const suggestions = results
+                        .filter(r => r.trackId !== trackId)
+                        .map(r => ({
+                            trackId: r.trackId,
+                            title: r.title,
+                            artist: r.artist,
+                            thumbnail: r.thumbnail,
+                            source: 'apple_music'
+                        }));
+
+                    db.saveRelatedVideos(cacheKey, suggestions);
+                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions } }));
+                } else {
+                    ws.send(JSON.stringify({ type: "error", message: "No suggestions found." }));
+                }
+                return;
+            }
+
+            // YouTube path
             if (!this.apiKey) {
                 ws.send(JSON.stringify({ type: "error", message: "Suggestions unavailable (No API Key)." }));
                 return;
             }
 
-            // 2. Fetch from API (Search by keyword)
-            // Strategy: Search for the ARTIST to get "More from this artist".
-            //Searching for "Title + Artist" mostly returns covers/versions of the same video.
             let query = "";
             if (artist && artist.toLowerCase() !== "unknown artist") {
-                query = artist; // Best for variety (other videos by same artist)
+                query = artist;
             } else {
-                query = title; // Fallback
+                query = title;
             }
 
             const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&maxResults=6&key=${this.apiKey}`;
@@ -650,7 +684,7 @@ class Room {
 
             if (data.items) {
                 const suggestions = data.items
-                    .filter(item => item.id.videoId !== videoId) // Exclude self
+                    .filter(item => item.id.videoId !== videoId)
                     .map(item => ({
                         videoId: item.id.videoId,
                         title: item.snippet.title,
@@ -658,10 +692,7 @@ class Room {
                         thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url
                     }));
 
-                // Save to Cache
                 db.saveRelatedVideos(videoId, suggestions);
-
-                // Send to Client
                 ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: videoId, suggestions } }));
             } else {
                 console.error("[Suggestions] No items found in response:", data);
