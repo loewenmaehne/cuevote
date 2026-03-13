@@ -837,7 +837,7 @@ class Room {
         let track = null;
 
         // Check if banned before anything else
-        if (this.state.bannedVideos.some(b => b.videoId === videoId)) {
+        if (this.state.bannedVideos.some(b => getSourceId(b) === videoId)) {
             ws.send(JSON.stringify({ type: "error", message: "This video has been banned from this channel." }));
             return;
         }
@@ -1010,10 +1010,9 @@ class Room {
             // Manual Review Check
             if (this.state.suggestionMode === 'manual' && !canBypass) {
                 // Check if video is known and auto-approve is enabled
-                const isKnown = this.knownVideos.has(track.videoId);
+                const isKnown = this.knownVideos.has(getSourceId(track));
                 if (this.state.autoApproveKnown && isKnown) {
-                    // Auto-approve: Skip adding to pending, proceed to queue
-                    console.log(`[Auto-Approve] Video ${track.title} (${track.videoId}) is known. Bypassing review.`);
+                    console.log(`[Auto-Approve] Video ${track.title} (${getSourceId(track)}) is known. Bypassing review.`);
                     // Fallthrough to add to queue and send success at the end
                 } else {
                     const newPending = [...(this.state.pendingSuggestions || []), track];
@@ -1345,17 +1344,31 @@ class Room {
         this.updateState(newState);
     }
 
-    async handlePlaybackError(ws, { videoId, errorCode }) {
-        if (!videoId || !this.state.currentTrack || this.state.currentTrack.videoId !== videoId) return;
+    async handlePlaybackError(ws, { videoId, trackId, errorCode }) {
+        const errorSourceId = videoId || trackId;
+        const currentSourceId = getSourceId(this.state.currentTrack);
+        if (!errorSourceId || !this.state.currentTrack || currentSourceId !== errorSourceId) return;
 
+        // Apple Music: no IP block detection, just skip on media errors
+        if (this.state.musicSource === 'apple_music') {
+            console.log(`[PlaybackError] Apple Music error for ${errorSourceId}: ${errorCode}`);
+            if (errorCode === 'APPLE_MUSIC_AUTH_ERROR') {
+                this.broadcast({ type: "APPLE_MUSIC_REAUTH", payload: {} });
+                this.updateState({ isPlaying: false });
+            } else {
+                this.handleNextTrack();
+            }
+            return;
+        }
+
+        // YouTube path (unchanged)
         const now = Date.now();
-        const THROTTLE_WINDOW_MS = 6 * 60 * 60 * 1000; // 6 hours — IP blocks typically last hours, not minutes
-        const CACHE_TTL_MS = 5 * 60 * 1000;            // Re-check same video after 5 min
+        const THROTTLE_WINDOW_MS = 6 * 60 * 60 * 1000;
+        const CACHE_TTL_MS = 5 * 60 * 1000;
 
         let isGenuinelyUnavailable = true;
         let reason = 'unavailable';
 
-        // If the network is already in throttle mode, skip the API call entirely and pause.
         if (now < this.networkThrottleUntil) {
             console.log(`[PlaybackError] Network throttle active. Pausing playback instead of skipping.`);
             this.updateState({ isPlaying: false });
@@ -1363,7 +1376,6 @@ class Room {
             return;
         }
 
-        // Check per-video cache to avoid burning quota for the same video
         const cached = this.videoStatusCache.get(videoId);
         if (cached && (now - cached.checkedAt) < CACHE_TTL_MS) {
             reason = cached.reason;
@@ -1393,9 +1405,7 @@ class Room {
                             reason = 'ip_blocked';
                         }
                     }
-                    // If items exists but status is fine, video is playable from server's IP → IP block
                 } else {
-                    // No items: video deleted or private (not returned by API)
                     reason = 'unavailable';
                 }
             } catch (e) {
@@ -1423,8 +1433,6 @@ class Room {
             });
             this.consecutiveIPErrors += 1;
 
-            // Any confirmed IP block: stop immediately and warn. IP blocks are all-or-nothing —
-            // every subsequent video on the same network will also fail.
             this.networkThrottleUntil = now + THROTTLE_WINDOW_MS;
             console.warn(`[PlaybackError] IP block confirmed. Entering network throttle mode (6h). Consecutive: ${this.consecutiveIPErrors}`);
             this.updateState({ isPlaying: false });
@@ -1504,9 +1512,8 @@ class Room {
             const newPending = [...pending];
             newPending.splice(index, 1);
 
-            // Add to queue logic (simplified version of handleSuggestSong end)
             const newQueue = [...this.state.queue, track];
-            this.knownVideos.add(track.videoId); // Remember this video
+            this.knownVideos.add(getSourceId(track));
             const newState = {
                 queue: newQueue,
                 pendingSuggestions: newPending
@@ -1543,12 +1550,14 @@ class Room {
             const newPending = [...pending];
             newPending.splice(index, 1);
 
-            // Add to banned list
-            if (!this.state.bannedVideos.some(b => b.videoId === track.videoId)) {
+            const sourceId = getSourceId(track);
+            if (!this.state.bannedVideos.some(b => getSourceId(b) === sourceId)) {
                 const newBanned = [
                     ...this.state.bannedVideos,
                     {
-                        videoId: track.videoId,
+                        videoId: track.videoId || null,
+                        trackId: track.trackId || null,
+                        source: track.source || 'youtube',
                         title: track.title,
                         artist: track.artist,
                         thumbnail: track.thumbnail,
@@ -1565,30 +1574,31 @@ class Room {
         }
     }
 
-    handleUnbanSong({ videoId }) {
+    handleUnbanSong({ videoId, trackId }) {
+        const sourceId = videoId || trackId;
+        if (!sourceId) return;
         const banned = this.state.bannedVideos || [];
-        const newBanned = banned.filter(t => t.videoId !== videoId);
+        const newBanned = banned.filter(t => getSourceId(t) !== sourceId);
         this.updateState({ bannedVideos: newBanned });
     }
 
-    handleRemoveFromLibrary({ videoId }) {
-        if (!videoId) return;
+    handleRemoveFromLibrary({ videoId, trackId }) {
+        const sourceId = videoId || trackId;
+        if (!sourceId) return;
         const initialCount = this.state.history.length;
-        // Filter out all instances of this videoId
-        const newHistory = this.state.history.filter(t => t.videoId !== videoId);
+        const newHistory = this.state.history.filter(t => getSourceId(t) !== sourceId);
 
-        // Also remove from knownSongs cache
-        if (this.knownVideos.has(videoId)) {
-            this.knownVideos.delete(videoId);
+        if (this.knownVideos.has(sourceId)) {
+            this.knownVideos.delete(sourceId);
         }
 
         if (newHistory.length !== initialCount) {
-            console.log(`[Room ${this.id}] Removed video ${videoId} from history.`);
+            console.log(`[Room ${this.id}] Removed track ${sourceId} from history.`);
             this.updateState({ history: newHistory });
 
-            // Delete from persistent database as well
+            const dbId = trackId ? `am:${trackId}` : videoId;
             try {
-                db.removeFromRoomHistory(this.id, videoId);
+                db.removeFromRoomHistory(this.id, dbId);
             } catch (err) {
                 console.error(`[Room ${this.id}] Failed to remove track from DB history:`, err);
             }
