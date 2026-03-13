@@ -443,6 +443,8 @@ function RoomBody() {
   const [playbackError, setPlaybackError] = useState(null); // New State: Track playback errors
   const ipBlockedVideosRef = useRef(new Set());
   const recentSkipTimesRef = useRef([]);
+  const trackFailTimesRef = useRef([]);
+  const lastSuccessfulPlayRef = useRef(Date.now());
   const [ipBlockDetected, setIpBlockDetected] = useState(false);
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true); // Track footer visibility
@@ -584,7 +586,17 @@ function RoomBody() {
   const currentTrackRef = useRef(currentTrack);
   useEffect(() => {
     currentTrackRef.current = currentTrack;
-    setPlaybackError(null); // Reset error on track change
+    setPlaybackError(null);
+
+    // Track-cycling detection: if 3+ tracks change within 30s without any successful playback, it's systemic
+    if (currentTrack) {
+      const now = Date.now();
+      trackFailTimesRef.current = [...trackFailTimesRef.current.filter(t => now - t < 30000), now];
+      if (trackFailTimesRef.current.length >= 3 && now - lastSuccessfulPlayRef.current > 10000) {
+        console.warn("[Player] IP block detected — rapid track cycling without playback");
+        setIpBlockDetected(true);
+      }
+    }
     if (isPlayerReady && playerRef.current) {
       try {
         if (captionsEnabled && currentTrack?.language) {
@@ -656,6 +668,8 @@ function RoomBody() {
             const state = event.data;
             if (state === YouTubeState.PLAYING) {
               setIsLocallyPaused(false);
+              lastSuccessfulPlayRef.current = Date.now();
+              trackFailTimesRef.current = [];
 
               // Only set override if the SERVER is not currently playing.
               // If Server IS playing, then this event is likely just a sync result, so we are synced (local=false).
@@ -828,8 +842,12 @@ function RoomBody() {
               }
             });
           } else {
-            console.warn("[Player] Stall limit exceeded for guest. Assuming unavailable.");
+            console.warn("[Player] Stall limit exceeded for guest. Triggering IP block overlay.");
             setPlaybackError(100);
+            ipBlockedVideosRef.current.add(currentTrackRef.current?.videoId);
+            if (ipBlockedVideosRef.current.size >= 2) {
+              setIpBlockDetected(true);
+            }
           }
           clearInterval(checkInterval);
           return;
