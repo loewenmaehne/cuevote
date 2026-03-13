@@ -39,7 +39,11 @@ export const translations = {
 			errorGeneric: "An error occurred while playing this video.",
 			errorNotFound: "This video is unavailable.",
 			errorRestricted: "This video is not available in your country.",
-			errorIPBlocked: "YouTube is limiting playback on this network."
+			errorIPBlocked: "YouTube is limiting playback on this network.",
+			ipBlockTitle: "Playback Unavailable",
+			ipBlockMessage: "Videos can't be played on your current network. Try switching to mobile data or a different Wi-Fi network, or use Party Mode to keep voting and suggesting songs.",
+			ipBlockPartyMode: "Switch to Party Mode",
+			ipBlockRetry: "Reload Page"
 		},
 		cookie: {
 			title: "Privacy & Playback",
@@ -257,7 +261,11 @@ export const translations = {
 			errorGeneric: "Er is een fout opgetreden bij het afspelen.",
 			errorNotFound: "Deze video is niet beschikbaar.",
 			errorRestricted: "Deze video is niet beschikbaar in jouw land.",
-			errorIPBlocked: "YouTube beperkt het afspelen op dit netwerk."
+			errorIPBlocked: "YouTube beperkt het afspelen op dit netwerk.",
+			ipBlockTitle: "Afspelen niet beschikbaar",
+			ipBlockMessage: "Video's kunnen niet worden afgespeeld op je huidige netwerk. Probeer over te schakelen naar mobiele data of een ander Wi-Fi-netwerk, of gebruik Party Modus om te blijven stemmen en nummers voor te stellen.",
+			ipBlockPartyMode: "Schakel over naar Party Modus",
+			ipBlockRetry: "Pagina herladen"
 		},
 		cookie: {
 			title: "Privacy & Afspelen",
@@ -466,7 +474,11 @@ export const translations = {
 			errorGeneric: "Ein Fehler ist bei der Wiedergabe aufgetreten.",
 			errorNotFound: "Dieses Video ist nicht verfügbar.",
 			errorRestricted: "Dieses Video ist in deinem Land nicht verfügbar.",
-			errorIPBlocked: "YouTube beschränkt die Wiedergabe in diesem Netzwerk."
+			errorIPBlocked: "YouTube beschränkt die Wiedergabe in diesem Netzwerk.",
+			ipBlockTitle: "Wiedergabe nicht verfügbar",
+			ipBlockMessage: "Videos können in deinem aktuellen Netzwerk nicht abgespielt werden. Versuche, zu mobilen Daten oder einem anderen WLAN-Netzwerk zu wechseln, oder nutze den Partymodus, um weiter abzustimmen und Songs vorzuschlagen.",
+			ipBlockPartyMode: "Zum Partymodus wechseln",
+			ipBlockRetry: "Seite neu laden"
 		},
 		cookie: {
 			title: "Datenschutz & Wiedergabe",
@@ -675,7 +687,11 @@ export const translations = {
 			errorGeneric: "Une erreur est survenue lors de la lecture.",
 			errorNotFound: "Cette vidéo n'est pas disponible.",
 			errorRestricted: "Cette vidéo n'est pas disponible dans votre pays.",
-			errorIPBlocked: "YouTube limite la lecture sur ce réseau."
+			errorIPBlocked: "YouTube limite la lecture sur ce réseau.",
+			ipBlockTitle: "Lecture indisponible",
+			ipBlockMessage: "Les vidéos ne peuvent pas être lues sur votre réseau actuel. Essayez de passer aux données mobiles ou à un autre réseau Wi-Fi, ou utilisez le Mode Fête pour continuer à voter et suggérer des chansons.",
+			ipBlockPartyMode: "Passer en Mode Fête",
+			ipBlockRetry: "Recharger la page"
 		},
 		cookie: {
 			title: "Confidentialité & Lecture",
@@ -884,7 +900,11 @@ export const translations = {
 			errorGeneric: "Ocurrió un error al reproducir este video.",
 			errorNotFound: "Este video no está disponible.",
 			errorRestricted: "Este video no está disponible en tu país.",
-			errorIPBlocked: "YouTube está limitando la reproducción en esta red."
+			errorIPBlocked: "YouTube está limitando la reproducción en esta red.",
+			ipBlockTitle: "Reproducción no disponible",
+			ipBlockMessage: "Los videos no se pueden reproducir en tu red actual. Intenta cambiar a datos móviles o una red Wi-Fi diferente, o usa el Modo Fiesta para seguir votando y sugiriendo canciones.",
+			ipBlockPartyMode: "Cambiar a Modo Fiesta",
+			ipBlockRetry: "Recargar página"
 		},
 
 		cookie: {
@@ -1089,7 +1109,11 @@ export const translations = {
 			errorGeneric: "Si è verificato un errore durante la riproduzione.",
 			errorNotFound: "Questo video non è disponibile.",
 			errorRestricted: "Questo video non è disponibile nel tuo paese.",
-			errorIPBlocked: "YouTube sta limitando la riproduzione su questa rete."
+			errorIPBlocked: "YouTube sta limitando la riproduzione su questa rete.",
+			ipBlockTitle: "Riproduzione non disponibile",
+			ipBlockMessage: "I video non possono essere riprodotti sulla tua rete attuale. Prova a passare ai dati mobili o a una rete Wi-Fi diversa, oppure usa la Modalità Festa per continuare a votare e suggerire brani.",
+			ipBlockPartyMode: "Passa alla Modalità Festa",
+			ipBlockRetry: "Ricarica pagina"
 		},
 		cookie: {
 			title: "Privacy e Riproduzione",
@@ -1283,7 +1307,11 @@ export const translations = {
 			errorGeneric: "Ocorreu um erro ao reproduzir este vídeo.",
 			errorNotFound: "Este vídeo não está disponível.",
 			errorRestricted: "Este vídeo não está disponível no seu país.",
-			errorIPBlocked: "O YouTube está limitando a reprodução nesta rede."
+			errorIPBlocked: "O YouTube está limitando a reprodução nesta rede.",
+			ipBlockTitle: "Reprodução indisponível",
+			ipBlockMessage: "Os vídeos não podem ser reproduzidos na sua rede atual. Tente mudar para dados móveis ou uma rede Wi-Fi diferente, ou use o Modo Festa para continuar votando e sugerindo músicas.",
+			ipBlockPartyMode: "Mudar para Modo Festa",
+			ipBlockRetry: "Recarregar página"
 		},
 		cookie: {
 			title: "Privacidade e Reprodução",
@@ -1477,7 +1505,11 @@ export const translations = {
 			errorGeneric: "播放此视频时发生错误。",
 			errorNotFound: "此视频不可用。",
 			errorRestricted: "此视频在您所在的国家/地区不可用。",
-			errorIPBlocked: "YouTube 正在限制此网络上的播放。"
+			errorIPBlocked: "YouTube 正在限制此网络上的播放。",
+			ipBlockTitle: "无法播放",
+			ipBlockMessage: "视频无法在当前网络上播放。请尝试切换到移动数据或其他 Wi-Fi 网络，或使用派对模式继续投票和推荐歌曲。",
+			ipBlockPartyMode: "切换到派对模式",
+			ipBlockRetry: "重新加载页面"
 		},
 		cookie: {
 			title: "隐私与播放",
@@ -1667,7 +1699,11 @@ export const translations = {
 			errorGeneric: "播放此視頻時發生錯誤。",
 			errorNotFound: "此視頻無法使用。",
 			errorRestricted: "此視頻在您所在的國家/地區無法使用。",
-			errorIPBlocked: "YouTube 正在限制此網路上的播放。"
+			errorIPBlocked: "YouTube 正在限制此網路上的播放。",
+			ipBlockTitle: "無法播放",
+			ipBlockMessage: "影片無法在目前的網路上播放。請嘗試切換到行動數據或其他 Wi-Fi 網路，或使用派對模式繼續投票和推薦歌曲。",
+			ipBlockPartyMode: "切換到派對模式",
+			ipBlockRetry: "重新載入頁面"
 		},
 		cookie: {
 			title: "隱私與播放",
@@ -1857,7 +1893,11 @@ export const translations = {
 			errorGeneric: "この動画の再生中にエラーが発生しました。",
 			errorNotFound: "この動画は再生できません。",
 			errorRestricted: "この動画はお住まいの国では視聴できません。",
-			errorIPBlocked: "YouTubeがこのネットワークで再生を制限しています。"
+			errorIPBlocked: "YouTubeがこのネットワークで再生を制限しています。",
+			ipBlockTitle: "再生できません",
+			ipBlockMessage: "現在のネットワークでは動画を再生できません。モバイルデータや別のWi-Fiネットワークに切り替えるか、パーティーモードを使って投票や曲の提案を続けてください。",
+			ipBlockPartyMode: "パーティーモードに切替",
+			ipBlockRetry: "ページを再読み込み"
 		},
 		cookie: {
 			title: "プライバシーと再生",
