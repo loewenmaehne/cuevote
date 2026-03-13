@@ -30,8 +30,8 @@ export function BannedVideosPage({ bannedVideos, onUnban, onClose }) {
 					</div>
 				) : (
 					<div className="grid gap-4">
-						{bannedVideos.map((track) => (
-							<div key={track.videoId} className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 hover:border-neutral-700 transition-colors">
+					{bannedVideos.map((track) => (
+						<div key={track.videoId || track.trackId} className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 hover:border-neutral-700 transition-colors">
 								<div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
 									<div className="w-16 h-12 sm:w-24 sm:h-16 rounded-lg bg-neutral-800 flex items-center justify-center flex-shrink-0 shadow-sm border border-neutral-700">
 										<Ban size={24} className="text-neutral-500" />
@@ -48,7 +48,7 @@ export function BannedVideosPage({ bannedVideos, onUnban, onClose }) {
 
 								<div className="flex items-center gap-2 flex-shrink-0 sm:pl-4 pt-1 sm:pt-0">
 									<button
-										onClick={() => onUnban(track.videoId)}
+										onClick={() => onUnban(track.videoId || track.trackId)}
 										className="p-2 sm:px-4 sm:py-2 rounded-lg bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-colors font-medium flex items-center gap-2 border border-neutral-700"
 										title={t('banned.unban')}
 									>

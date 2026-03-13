@@ -206,8 +206,12 @@ function RoomBody() {
     sendMessage({ type: "BAN_SUGGESTION", payload: { trackId } });
   };
 
-  const handleUnbanSong = (videoId) => {
-    sendMessage({ type: "UNBAN_SONG", payload: { videoId } });
+  const handleUnbanSong = (sourceId) => {
+    if (musicSource === 'apple_music') {
+      sendMessage({ type: "UNBAN_SONG", payload: { trackId: sourceId } });
+    } else {
+      sendMessage({ type: "UNBAN_SONG", payload: { videoId: sourceId } });
+    }
   };
 
   // Trace Render Cycle
@@ -1118,10 +1122,14 @@ function RoomBody() {
     return handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
   }, [handleSongSuggested]);
 
-  const handleRemoveFromLibrary = useCallback((videoId) => {
-    console.log("[App] Removing from Library:", videoId);
-    sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { videoId } });
-  }, [sendMessage]);
+  const handleRemoveFromLibrary = useCallback((sourceId) => {
+    console.log("[App] Removing from Library:", sourceId);
+    if (musicSource === 'apple_music') {
+      sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { trackId: sourceId } });
+    } else {
+      sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { videoId: sourceId } });
+    }
+  }, [sendMessage, musicSource]);
 
   const handleFetchSuggestions = useCallback((track) => {
     // Toggle if clicking same track
@@ -1138,7 +1146,8 @@ function RoomBody() {
     sendMessage({
       type: "FETCH_SUGGESTIONS",
       payload: {
-        videoId: track.videoId,
+        videoId: track.videoId || null,
+        trackId: track.trackId || null,
         title: track.title,
         artist: track.artist
       }
