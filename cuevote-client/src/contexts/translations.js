@@ -41,7 +41,7 @@ export const translations = {
 			errorRestricted: "This video is not available in your country.",
 			errorIPBlocked: "YouTube is limiting playback on this network.",
 			ipBlockTitle: "Playback Unavailable",
-			ipBlockMessage: "YouTube is restricting video playback on your current network. Try switching to mobile data or a different Wi-Fi connection.",
+			ipBlockMessage: "YouTube is restricting video playback on your current network. Try switching to mobile data or a different Wi-Fi network.",
 			ipBlockPartyMode: "Switch to Party Mode",
 			ipBlockRetryPlayback: "Retry Playback",
 			ipBlockRetry: "Reload Page"
@@ -158,6 +158,7 @@ export const translations = {
 			confirmDelete: "Confirm Delete",
 			delete: "Delete Video",
 			watch: "Watch on YouTube",
+			listenAppleMusic: "Listen on Apple Music",
 			recommend: "Get Suggestions"
 		},
 		library: {
@@ -264,7 +265,7 @@ export const translations = {
 			errorRestricted: "Deze video is niet beschikbaar in jouw land.",
 			errorIPBlocked: "YouTube beperkt het afspelen op dit netwerk.",
 			ipBlockTitle: "Afspelen niet beschikbaar",
-			ipBlockMessage: "YouTube beperkt het afspelen van video's op je huidige netwerk. Probeer over te schakelen naar mobiele data of een andere Wi-Fi-verbinding.",
+			ipBlockMessage: "YouTube beperkt het afspelen van video's op je huidige netwerk. Probeer over te schakelen naar mobiele data of een ander Wi-Fi-netwerk.",
 			ipBlockPartyMode: "Schakel over naar Party Modus",
 			ipBlockRetry: "Pagina herladen"
 		},
@@ -379,6 +380,7 @@ export const translations = {
 			confirmDelete: "Bevestig",
 			delete: "Verwijder",
 			watch: "Op YouTube",
+			listenAppleMusic: "Luister op Apple Music",
 			recommend: "Krijg Suggesties"
 		},
 		library: {
@@ -477,7 +479,7 @@ export const translations = {
 			errorRestricted: "Dieses Video ist in deinem Land nicht verfügbar.",
 			errorIPBlocked: "YouTube beschränkt die Wiedergabe in diesem Netzwerk.",
 			ipBlockTitle: "Wiedergabe nicht verfügbar",
-			ipBlockMessage: "YouTube beschränkt die Videowiedergabe in deinem aktuellen Netzwerk. Versuche, zu mobilen Daten oder einer anderen WLAN-Verbindung zu wechseln.",
+			ipBlockMessage: "YouTube beschränkt die Videowiedergabe in deinem aktuellen Netzwerk. Versuche, zu mobilen Daten oder einem anderen WLAN-Netzwerk zu wechseln.",
 			ipBlockPartyMode: "Zum Partymodus wechseln",
 			ipBlockRetry: "Seite neu laden"
 		},
@@ -592,6 +594,7 @@ export const translations = {
 			confirmDelete: "Bestätigen",
 			delete: "Löschen",
 			watch: "Auf YouTube",
+			listenAppleMusic: "Auf Apple Music hören",
 			recommend: "Vorschläge erhalten"
 		},
 		library: {
@@ -690,7 +693,7 @@ export const translations = {
 			errorRestricted: "Cette vidéo n'est pas disponible dans votre pays.",
 			errorIPBlocked: "YouTube limite la lecture sur ce réseau.",
 			ipBlockTitle: "Lecture indisponible",
-			ipBlockMessage: "YouTube restreint la lecture vidéo sur votre réseau actuel. Essayez de passer aux données mobiles ou à une autre connexion Wi-Fi.",
+			ipBlockMessage: "YouTube restreint la lecture vidéo sur votre réseau actuel. Essayez de passer aux données mobiles ou à un autre réseau Wi-Fi.",
 			ipBlockPartyMode: "Passer en Mode Fête",
 			ipBlockRetry: "Recharger la page"
 		},
@@ -805,6 +808,7 @@ export const translations = {
 			confirmDelete: "Confirmer",
 			delete: "Supprimer",
 			watch: "Sur YouTube",
+			listenAppleMusic: "Écouter sur Apple Music",
 			recommend: "Obtenir des suggestions"
 		},
 		library: {
@@ -903,7 +907,7 @@ export const translations = {
 			errorRestricted: "Este video no está disponible en tu país.",
 			errorIPBlocked: "YouTube está limitando la reproducción en esta red.",
 			ipBlockTitle: "Reproducción no disponible",
-			ipBlockMessage: "YouTube está restringiendo la reproducción de video en tu red actual. Intenta cambiar a datos móviles o a otra conexión Wi-Fi.",
+			ipBlockMessage: "YouTube está restringiendo la reproducción de video en tu red actual. Intenta cambiar a datos móviles o una red Wi-Fi diferente.",
 			ipBlockPartyMode: "Cambiar a Modo Fiesta",
 			ipBlockRetry: "Recargar página"
 		},
@@ -1015,6 +1019,7 @@ export const translations = {
 			confirmDelete: "Confirmar",
 			delete: "Eliminar",
 			watch: "En YouTube",
+			listenAppleMusic: "Escuchar en Apple Music",
 			recommend: "Obtener Sugerencias"
 		},
 		library: {
@@ -1112,7 +1117,7 @@ export const translations = {
 			errorRestricted: "Questo video non è disponibile nel tuo paese.",
 			errorIPBlocked: "YouTube sta limitando la riproduzione su questa rete.",
 			ipBlockTitle: "Riproduzione non disponibile",
-			ipBlockMessage: "YouTube sta limitando la riproduzione video sulla tua rete attuale. Prova a passare ai dati mobili o a una diversa connessione Wi-Fi.",
+			ipBlockMessage: "YouTube sta limitando la riproduzione video sulla tua rete attuale. Prova a passare ai dati mobili o a una rete Wi-Fi diversa.",
 			ipBlockPartyMode: "Passa alla Modalità Festa",
 			ipBlockRetry: "Ricarica pagina"
 		},
@@ -1213,7 +1218,8 @@ export const translations = {
 			cancel: "Annulla",
 			confirmDelete: "Conferma",
 			delete: "Elimina",
-			watch: "Su YouTube"
+			watch: "Su YouTube",
+			listenAppleMusic: "Ascolta su Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Cerca nella libreria...",
@@ -1310,7 +1316,7 @@ export const translations = {
 			errorRestricted: "Este vídeo não está disponível no seu país.",
 			errorIPBlocked: "O YouTube está limitando a reprodução nesta rede.",
 			ipBlockTitle: "Reprodução indisponível",
-			ipBlockMessage: "O YouTube está restringindo a reprodução de vídeo na sua rede atual. Tente mudar para dados móveis ou outra conexão Wi-Fi.",
+			ipBlockMessage: "O YouTube está restringindo a reprodução de vídeo na sua rede atual. Tente mudar para dados móveis ou uma rede Wi-Fi diferente.",
 			ipBlockPartyMode: "Mudar para Modo Festa",
 			ipBlockRetry: "Recarregar página"
 		},
@@ -1412,7 +1418,8 @@ export const translations = {
 			cancel: "Cancelar",
 			confirmDelete: "Confirmar",
 			delete: "Excluir",
-			watch: "No YouTube"
+			watch: "No YouTube",
+			listenAppleMusic: "Ouvir no Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Buscar na biblioteca...",
@@ -1508,7 +1515,7 @@ export const translations = {
 			errorRestricted: "此视频在您所在的国家/地区不可用。",
 			errorIPBlocked: "YouTube 正在限制此网络上的播放。",
 			ipBlockTitle: "无法播放",
-			ipBlockMessage: "YouTube 正在限制您当前网络上的视频播放。请尝试切换到移动数据或其他 Wi-Fi 连接。",
+			ipBlockMessage: "YouTube 正在限制您当前网络上的视频播放。请尝试切换到移动数据或其他 Wi-Fi 网络。",
 			ipBlockPartyMode: "切换到派对模式",
 			ipBlockRetry: "重新加载页面"
 		},
@@ -1605,7 +1612,8 @@ export const translations = {
 			cancel: "取消",
 			confirmDelete: "确认删除",
 			delete: "删除",
-			watch: "在 YouTube 观看"
+			watch: "在 YouTube 观看",
+			listenAppleMusic: "在 Apple Music 收听"
 		},
 		library: {
 			searchPlaceholder: "搜索媒体库...",
@@ -1702,7 +1710,7 @@ export const translations = {
 			errorRestricted: "此視頻在您所在的國家/地區無法使用。",
 			errorIPBlocked: "YouTube 正在限制此網路上的播放。",
 			ipBlockTitle: "無法播放",
-			ipBlockMessage: "YouTube 正在限制您目前網路上的影片播放。請嘗試切換到行動數據或其他 Wi-Fi 連線。",
+			ipBlockMessage: "YouTube 正在限制您目前網路上的影片播放。請嘗試切換到行動數據或其他 Wi-Fi 網路。",
 			ipBlockPartyMode: "切換到派對模式",
 			ipBlockRetry: "重新載入頁面"
 		},
@@ -1799,7 +1807,8 @@ export const translations = {
 			cancel: "取消",
 			confirmDelete: "確認刪除",
 			delete: "刪除",
-			watch: "在 YouTube 觀看"
+			watch: "在 YouTube 觀看",
+			listenAppleMusic: "在 Apple Music 收聽"
 		},
 		library: {
 			searchPlaceholder: "搜尋媒體庫...",
@@ -1896,7 +1905,7 @@ export const translations = {
 			errorRestricted: "この動画はお住まいの国では視聴できません。",
 			errorIPBlocked: "YouTubeがこのネットワークで再生を制限しています。",
 			ipBlockTitle: "再生できません",
-			ipBlockMessage: "YouTubeが現在のネットワークでの動画再生を制限しています。モバイルデータや別のWi-Fi接続に切り替えてみてください。",
+			ipBlockMessage: "YouTubeが現在のネットワークでの動画再生を制限しています。モバイルデータや別のWi-Fiネットワークに切り替えてみてください。",
 			ipBlockPartyMode: "パーティーモードに切替",
 			ipBlockRetry: "ページを再読み込み"
 		},
@@ -1993,7 +2002,8 @@ export const translations = {
 			cancel: "キャンセル",
 			confirmDelete: "削除確認",
 			delete: "削除",
-			watch: "YouTubeで見る"
+			watch: "YouTubeで見る",
+			listenAppleMusic: "Apple Musicで聴く"
 		},
 		library: {
 			searchPlaceholder: "ライブラリを検索...",
@@ -2090,7 +2100,7 @@ export const translations = {
 			errorRestricted: "이 동영상은 해당 국가에서 사용할 수 없습니다.",
 			errorIPBlocked: "YouTube가 이 네트워크에서 재생을 제한하고 있습니다.",
 			ipBlockTitle: "재생 불가",
-			ipBlockMessage: "YouTube가 현재 네트워크에서 동영상 재생을 제한하고 있습니다. 모바일 데이터 또는 다른 Wi-Fi 연결로 전환해 보세요.",
+			ipBlockMessage: "YouTube가 현재 네트워크에서 동영상 재생을 제한하고 있습니다. 모바일 데이터 또는 다른 Wi-Fi 네트워크로 전환해 보세요.",
 			ipBlockPartyMode: "파티 모드로 전환",
 			ipBlockRetry: "페이지 새로고침"
 		},
@@ -2186,7 +2196,8 @@ export const translations = {
 			cancel: "취소",
 			confirmDelete: "확인",
 			delete: "삭제",
-			watch: "YouTube에서 보기"
+			watch: "YouTube에서 보기",
+			listenAppleMusic: "Apple Music에서 듣기"
 		},
 		library: {
 			searchPlaceholder: "라이브러리 검색...",
@@ -2283,7 +2294,7 @@ export const translations = {
 			errorRestricted: "यह वीडियो आपके देश में उपलब्ध नहीं है।",
 			errorIPBlocked: "YouTube इस नेटवर्क पर प्लेबैक सीमित कर रहा है।",
 			ipBlockTitle: "प्लेबैक अनुपलब्ध",
-			ipBlockMessage: "YouTube आपके वर्तमान नेटवर्क पर वीडियो प्लेबैक को प्रतिबंधित कर रहा है। मोबाइल डेटा या किसी अन्य Wi-Fi कनेक्शन पर स्विच करके देखें।",
+			ipBlockMessage: "YouTube आपके वर्तमान नेटवर्क पर वीडियो प्लेबैक को प्रतिबंधित कर रहा है। मोबाइल डेटा या किसी अन्य Wi-Fi नेटवर्क पर स्विच करके देखें।",
 			ipBlockPartyMode: "पार्टी मोड में स्विच करें",
 			ipBlockRetry: "पेज रीलोड करें"
 		},
@@ -2380,7 +2391,8 @@ export const translations = {
 			cancel: "रद्द करें",
 			confirmDelete: "पुष्टि करें",
 			delete: "हटाएं",
-			watch: "YouTube पर देखें"
+			watch: "YouTube पर देखें",
+			listenAppleMusic: "Apple Music पर सुनें"
 		},
 		library: {
 			searchPlaceholder: "लाइब्रेरी खोजें...",
@@ -2477,7 +2489,7 @@ export const translations = {
 			errorRestricted: "วิดีโอนี้ไม่พร้อมใช้งานในประเทศของคุณ",
 			errorIPBlocked: "YouTube กำลังจำกัดการเล่นบนเครือข่ายนี้",
 			ipBlockTitle: "ไม่สามารถเล่นได้",
-			ipBlockMessage: "YouTube กำลังจำกัดการเล่นวิดีโอบนเครือข่ายปัจจุบันของคุณ ลองเปลี่ยนไปใช้ข้อมูลมือถือหรือการเชื่อมต่อ Wi-Fi อื่น",
+			ipBlockMessage: "YouTube กำลังจำกัดการเล่นวิดีโอบนเครือข่ายปัจจุบันของคุณ ลองเปลี่ยนไปใช้ข้อมูลมือถือหรือเครือข่าย Wi-Fi อื่น",
 			ipBlockPartyMode: "สลับไปโหมดปาร์ตี้",
 			ipBlockRetry: "โหลดหน้าใหม่"
 		},
@@ -2569,7 +2581,8 @@ export const translations = {
 			cancel: "ยกเลิก",
 			confirmDelete: "ยืนยัน",
 			delete: "ลบ",
-			watch: "ดูบน YouTube"
+			watch: "ดูบน YouTube",
+			listenAppleMusic: "ฟังบน Apple Music"
 		},
 		library: {
 			searchPlaceholder: "ค้นหาคลังวิดีโอ...",
@@ -2666,7 +2679,7 @@ export const translations = {
 			errorRestricted: "Video này không khả dụng ở quốc gia của bạn.",
 			errorIPBlocked: "YouTube đang giới hạn phát lại trên mạng này.",
 			ipBlockTitle: "Không thể phát",
-			ipBlockMessage: "YouTube đang hạn chế phát video trên mạng hiện tại của bạn. Hãy thử chuyển sang dữ liệu di động hoặc kết nối Wi-Fi khác.",
+			ipBlockMessage: "YouTube đang hạn chế phát video trên mạng hiện tại của bạn. Hãy thử chuyển sang dữ liệu di động hoặc mạng Wi-Fi khác.",
 			ipBlockPartyMode: "Chuyển sang Chế độ Tiệc",
 			ipBlockRetry: "Tải lại trang"
 		},
@@ -2758,7 +2771,8 @@ export const translations = {
 			cancel: "Hủy",
 			confirmDelete: "Xác nhận",
 			delete: "Xóa",
-			watch: "Xem trên YouTube"
+			watch: "Xem trên YouTube",
+			listenAppleMusic: "Nghe trên Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Tìm kiếm thư viện...",
@@ -2855,7 +2869,7 @@ export const translations = {
 			errorRestricted: "Video ini tidak tersedia di negara Anda.",
 			errorIPBlocked: "YouTube membatasi pemutaran di jaringan ini.",
 			ipBlockTitle: "Pemutaran Tidak Tersedia",
-			ipBlockMessage: "YouTube membatasi pemutaran video di jaringan Anda saat ini. Coba beralih ke data seluler atau koneksi Wi-Fi yang berbeda.",
+			ipBlockMessage: "YouTube membatasi pemutaran video di jaringan Anda saat ini. Coba beralih ke data seluler atau jaringan Wi-Fi yang berbeda.",
 			ipBlockPartyMode: "Beralih ke Mode Pesta",
 			ipBlockRetry: "Muat Ulang Halaman"
 		},
@@ -2947,7 +2961,8 @@ export const translations = {
 			cancel: "Batal",
 			confirmDelete: "Konfirmasi",
 			delete: "Hapus",
-			watch: "Tonton di YouTube"
+			watch: "Tonton di YouTube",
+			listenAppleMusic: "Dengarkan di Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Cari pustaka...",
@@ -3044,7 +3059,7 @@ export const translations = {
 			errorRestricted: "Video ini tidak tersedia di negara anda.",
 			errorIPBlocked: "YouTube mengehadkan main balik di rangkaian ini.",
 			ipBlockTitle: "Main Balik Tidak Tersedia",
-			ipBlockMessage: "YouTube mengehadkan main balik video di rangkaian semasa anda. Cuba tukar ke data mudah alih atau sambungan Wi-Fi lain.",
+			ipBlockMessage: "YouTube mengehadkan main balik video di rangkaian semasa anda. Cuba tukar ke data mudah alih atau rangkaian Wi-Fi lain.",
 			ipBlockPartyMode: "Tukar ke Mod Parti",
 			ipBlockRetry: "Muat Semula Halaman"
 		},
@@ -3136,7 +3151,8 @@ export const translations = {
 			cancel: "Batal",
 			confirmDelete: "Sahkan",
 			delete: "Padam",
-			watch: "Tonton di YouTube"
+			watch: "Tonton di YouTube",
+			listenAppleMusic: "Dengar di Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Cari pustaka...",
@@ -3232,7 +3248,7 @@ export const translations = {
 			errorRestricted: "Hindi available ang video na ito sa iyong bansa.",
 			errorIPBlocked: "Nililimitahan ng YouTube ang pag-play sa network na ito.",
 			ipBlockTitle: "Hindi Available ang Playback",
-			ipBlockMessage: "Nililimitahan ng YouTube ang pag-play ng video sa kasalukuyang network mo. Subukang lumipat sa mobile data o ibang koneksyon ng Wi-Fi.",
+			ipBlockMessage: "Nililimitahan ng YouTube ang pag-play ng video sa kasalukuyang network mo. Subukang lumipat sa mobile data o ibang Wi-Fi network.",
 			ipBlockPartyMode: "Lumipat sa Party Mode",
 			ipBlockRetry: "I-reload ang Pahina"
 		},
@@ -3324,7 +3340,8 @@ export const translations = {
 			cancel: "Kanselahin",
 			confirmDelete: "Kumpirmahin",
 			delete: "Tanggalin",
-			watch: "Panoorin sa YouTube"
+			watch: "Panoorin sa YouTube",
+			listenAppleMusic: "Pakinggan sa Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Maghanap sa library...",
@@ -3404,7 +3421,7 @@ export const translations = {
 			errorRestricted: "To wideo jest niedostępne w Twoim kraju.",
 			errorIPBlocked: "YouTube ogranicza odtwarzanie w tej sieci.",
 			ipBlockTitle: "Odtwarzanie niedostępne",
-			ipBlockMessage: "YouTube ogranicza odtwarzanie wideo w Twojej obecnej sieci. Spróbuj przełączyć się na dane mobilne lub inne połączenie Wi-Fi.",
+			ipBlockMessage: "YouTube ogranicza odtwarzanie wideo w Twojej obecnej sieci. Spróbuj przełączyć się na dane mobilne lub inną sieć Wi-Fi.",
 			ipBlockPartyMode: "Przełącz na Tryb Imprezowy",
 			ipBlockRetry: "Przeładuj stronę"
 		},
@@ -3496,7 +3513,8 @@ export const translations = {
 			cancel: "Anuluj",
 			confirmDelete: "Potwierdź",
 			delete: "Usuń",
-			watch: "Oglądaj na YouTube"
+			watch: "Oglądaj na YouTube",
+			listenAppleMusic: "Słuchaj na Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Szukaj w bibliotece...",
@@ -3593,7 +3611,7 @@ export const translations = {
 			errorRestricted: "Den här videon är inte tillgänglig i ditt land.",
 			errorIPBlocked: "YouTube begränsar uppspelning i det här nätverket.",
 			ipBlockTitle: "Uppspelning otillgänglig",
-			ipBlockMessage: "YouTube begränsar videouppspelning på ditt nuvarande nätverk. Prova att byta till mobildata eller en annan Wi-Fi-anslutning.",
+			ipBlockMessage: "YouTube begränsar videouppspelning på ditt nuvarande nätverk. Prova att byta till mobildata eller ett annat Wi-Fi-nätverk.",
 			ipBlockPartyMode: "Byt till Festläge",
 			ipBlockRetry: "Ladda om sidan"
 		},
@@ -3685,7 +3703,8 @@ export const translations = {
 			cancel: "Avbryt",
 			confirmDelete: "Bekräfta",
 			delete: "Ta bort",
-			watch: "Titta på YouTube"
+			watch: "Titta på YouTube",
+			listenAppleMusic: "Lyssna på Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Sök i biblioteket...",
@@ -3781,7 +3800,7 @@ export const translations = {
 			errorRestricted: "Denne video er ikke tilgængelig i dit land.",
 			errorIPBlocked: "YouTube begrænser afspilning på dette netværk.",
 			ipBlockTitle: "Afspilning utilgængelig",
-			ipBlockMessage: "YouTube begrænser videoafspilning på dit nuværende netværk. Prøv at skifte til mobildata eller en anden Wi-Fi-forbindelse.",
+			ipBlockMessage: "YouTube begrænser videoafspilning på dit nuværende netværk. Prøv at skifte til mobildata eller et andet Wi-Fi-netværk.",
 			ipBlockPartyMode: "Skift til Festtilstand",
 			ipBlockRetry: "Genindlæs side"
 		},
@@ -3873,7 +3892,8 @@ export const translations = {
 			cancel: "Annuller",
 			confirmDelete: "Bekræft",
 			delete: "Slet",
-			watch: "Se på YouTube"
+			watch: "Se på YouTube",
+			listenAppleMusic: "Lyt på Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Søg i bibliotek...",
@@ -3969,7 +3989,7 @@ export const translations = {
 			errorRestricted: "Denne videoen er ikke tilgjengelig i landet ditt.",
 			errorIPBlocked: "YouTube begrenser avspilling i dette nettverket.",
 			ipBlockTitle: "Avspilling utilgjengelig",
-			ipBlockMessage: "YouTube begrenser videoavspilling på ditt nåværende nettverk. Prøv å bytte til mobildata eller en annen Wi-Fi-tilkobling.",
+			ipBlockMessage: "YouTube begrenser videoavspilling på ditt nåværende nettverk. Prøv å bytte til mobildata eller et annet Wi-Fi-nettverk.",
 			ipBlockPartyMode: "Bytt til Festmodus",
 			ipBlockRetry: "Last inn siden på nytt"
 		},
@@ -4061,7 +4081,8 @@ export const translations = {
 			cancel: "Avbryt",
 			confirmDelete: "Bekreft",
 			delete: "Slett",
-			watch: "Se på YouTube"
+			watch: "Se på YouTube",
+			listenAppleMusic: "Lytt på Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Søk i bibliotek...",
@@ -4157,7 +4178,7 @@ export const translations = {
 			errorRestricted: "Tämä video ei ole saatavilla maassasi.",
 			errorIPBlocked: "YouTube rajoittaa toistoa tässä verkossa.",
 			ipBlockTitle: "Toisto ei saatavilla",
-			ipBlockMessage: "YouTube rajoittaa videon toistoa nykyisessä verkossasi. Kokeile vaihtaa mobiilidataan tai toiseen Wi-Fi-yhteyteen.",
+			ipBlockMessage: "YouTube rajoittaa videon toistoa nykyisessä verkossasi. Kokeile vaihtaa mobiilidataan tai toiseen Wi-Fi-verkkoon.",
 			ipBlockPartyMode: "Vaihda Juhlatilaan",
 			ipBlockRetry: "Lataa sivu uudelleen"
 		},
@@ -4249,7 +4270,8 @@ export const translations = {
 			cancel: "Peruuta",
 			confirmDelete: "Vahvista",
 			delete: "Poista",
-			watch: "Katso YouTubessa"
+			watch: "Katso YouTubessa",
+			listenAppleMusic: "Kuuntele Apple Musicissa"
 		},
 		library: {
 			searchPlaceholder: "Etsi kirjastosta...",
@@ -4345,7 +4367,7 @@ export const translations = {
 			errorRestricted: "Bu video ülkenizde kullanılamıyor.",
 			errorIPBlocked: "YouTube bu ağda oynatmayı kısıtlıyor.",
 			ipBlockTitle: "Oynatma Kullanılamıyor",
-			ipBlockMessage: "YouTube mevcut ağınızda video oynatmayı kısıtlıyor. Mobil veriye veya farklı bir Wi-Fi bağlantısına geçmeyi deneyin.",
+			ipBlockMessage: "YouTube mevcut ağınızda video oynatmayı kısıtlıyor. Mobil veriye veya farklı bir Wi-Fi ağına geçmeyi deneyin.",
 			ipBlockPartyMode: "Parti Moduna Geç",
 			ipBlockRetry: "Sayfayı Yenile"
 		},
@@ -4437,7 +4459,8 @@ export const translations = {
 			cancel: "İptal",
 			confirmDelete: "Onayla",
 			delete: "Sil",
-			watch: "YouTube'da İzle"
+			watch: "YouTube'da İzle",
+			listenAppleMusic: "Apple Music'te Dinle"
 		},
 		library: {
 			searchPlaceholder: "Kütüphanede ara...",
@@ -4533,7 +4556,7 @@ export const translations = {
 			errorRestricted: "Αυτό το βίντεο δεν είναι διαθέσιμο στη χώρα σας.",
 			errorIPBlocked: "Το YouTube περιορίζει την αναπαραγωγή σε αυτό το δίκτυο.",
 			ipBlockTitle: "Η αναπαραγωγή δεν είναι διαθέσιμη",
-			ipBlockMessage: "Το YouTube περιορίζει την αναπαραγωγή βίντεο στο τρέχον δίκτυό σας. Δοκιμάστε να αλλάξετε σε δεδομένα κινητού ή σε διαφορετική σύνδεση Wi-Fi.",
+			ipBlockMessage: "Το YouTube περιορίζει την αναπαραγωγή βίντεο στο τρέχον δίκτυό σας. Δοκιμάστε να αλλάξετε σε δεδομένα κινητού ή σε διαφορετικό δίκτυο Wi-Fi.",
 			ipBlockPartyMode: "Αλλαγή σε Λειτουργία Πάρτι",
 			ipBlockRetry: "Επαναφόρτωση σελίδας"
 		},
@@ -4625,7 +4648,8 @@ export const translations = {
 			cancel: "Ακύρωση",
 			confirmDelete: "Επιβεβαίωση",
 			delete: "Διαγραφή",
-			watch: "Δείτε στο YouTube"
+			watch: "Δείτε στο YouTube",
+			listenAppleMusic: "Ακούστε στο Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Αναζήτηση βιβλιοθήκης...",
@@ -4721,7 +4745,7 @@ export const translations = {
 			errorRestricted: "Это видео недоступно в вашей стране.",
 			errorIPBlocked: "YouTube ограничивает воспроизведение в этой сети.",
 			ipBlockTitle: "Воспроизведение недоступно",
-			ipBlockMessage: "YouTube ограничивает воспроизведение видео в вашей текущей сети. Попробуйте переключиться на мобильные данные или другое Wi-Fi-соединение.",
+			ipBlockMessage: "YouTube ограничивает воспроизведение видео в вашей текущей сети. Попробуйте переключиться на мобильные данные или другую сеть Wi-Fi.",
 			ipBlockPartyMode: "Перейти в Режим Вечеринки",
 			ipBlockRetry: "Перезагрузить страницу"
 		},
@@ -4813,7 +4837,8 @@ export const translations = {
 			cancel: "Отмена",
 			confirmDelete: "Подтвердить",
 			delete: "Удалить",
-			watch: "Смотреть на YouTube"
+			watch: "Смотреть на YouTube",
+			listenAppleMusic: "Слушать в Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Поиск в библиотеке...",
@@ -4909,7 +4934,7 @@ export const translations = {
 			errorRestricted: "Це відео недоступне у вашій країні.",
 			errorIPBlocked: "YouTube обмежує відтворення у цій мережі.",
 			ipBlockTitle: "Відтворення недоступне",
-			ipBlockMessage: "YouTube обмежує відтворення відео у вашій поточній мережі. Спробуйте переключитися на мобільні дані або інше Wi-Fi-з'єднання.",
+			ipBlockMessage: "YouTube обмежує відтворення відео у вашій поточній мережі. Спробуйте переключитися на мобільні дані або іншу мережу Wi-Fi.",
 			ipBlockPartyMode: "Перейти в Режим Вечірки",
 			ipBlockRetry: "Перезавантажити сторінку"
 		},
@@ -5001,7 +5026,8 @@ export const translations = {
 			cancel: "Скасувати",
 			confirmDelete: "Підтвердити",
 			delete: "Видалити",
-			watch: "Дивитися на YouTube"
+			watch: "Дивитися на YouTube",
+			listenAppleMusic: "Слухати в Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Пошук у бібліотеці...",
@@ -5098,7 +5124,7 @@ export const translations = {
 			errorRestricted: "Toto video není dostupné ve vaší zemi.",
 			errorIPBlocked: "YouTube omezuje přehrávání v této síti.",
 			ipBlockTitle: "Přehrávání nedostupné",
-			ipBlockMessage: "YouTube omezuje přehrávání videa ve vaší aktuální síti. Zkuste přepnout na mobilní data nebo jiné Wi-Fi připojení.",
+			ipBlockMessage: "YouTube omezuje přehrávání videa ve vaší aktuální síti. Zkuste přepnout na mobilní data nebo jinou Wi-Fi síť.",
 			ipBlockPartyMode: "Přepnout na Párty režim",
 			ipBlockRetry: "Znovu načíst stránku"
 		},
@@ -5190,7 +5216,8 @@ export const translations = {
 			cancel: "Zrušit",
 			confirmDelete: "Potvrdit",
 			delete: "Smazat",
-			watch: "Sledovat na YouTube"
+			watch: "Sledovat na YouTube",
+			listenAppleMusic: "Poslouchejte na Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Hledat v knihovně...",
@@ -5286,7 +5313,7 @@ export const translations = {
 			errorRestricted: "Ez a videó nem érhető el az Ön országában.",
 			errorIPBlocked: "A YouTube korlátozza a lejátszást ezen a hálózaton.",
 			ipBlockTitle: "A lejátszás nem érhető el",
-			ipBlockMessage: "A YouTube korlátozza a videólejátszást az aktuális hálózaton. Próbáljon átváltani mobiladatra vagy másik Wi-Fi kapcsolatra.",
+			ipBlockMessage: "A YouTube korlátozza a videólejátszást az aktuális hálózaton. Próbáljon átváltani mobiladatra vagy másik Wi-Fi hálózatra.",
 			ipBlockPartyMode: "Váltás Buli módra",
 			ipBlockRetry: "Oldal újratöltése"
 		},
@@ -5378,7 +5405,8 @@ export const translations = {
 			cancel: "Mégse",
 			confirmDelete: "Megerősítés",
 			delete: "Törlés",
-			watch: "Megtekintés YouTube-on"
+			watch: "Megtekintés YouTube-on",
+			listenAppleMusic: "Hallgass Apple Music-on"
 		},
 		library: {
 			searchPlaceholder: "Keresés a könyvtárban...",
@@ -5474,7 +5502,7 @@ export const translations = {
 			errorRestricted: "Acest videoclip nu este disponibil în țara dvs.",
 			errorIPBlocked: "YouTube restricționează redarea pe această rețea.",
 			ipBlockTitle: "Redare indisponibilă",
-			ipBlockMessage: "YouTube restricționează redarea video pe rețeaua dvs. actuală. Încercați să treceți la date mobile sau la o altă conexiune Wi-Fi.",
+			ipBlockMessage: "YouTube restricționează redarea video pe rețeaua dvs. actuală. Încercați să treceți la date mobile sau la o altă rețea Wi-Fi.",
 			ipBlockPartyMode: "Treceți la Modul Petrecere",
 			ipBlockRetry: "Reîncărcați pagina"
 		},
@@ -5566,7 +5594,8 @@ export const translations = {
 			cancel: "Anulează",
 			confirmDelete: "Confirmă",
 			delete: "Șterge",
-			watch: "Vezi pe YouTube"
+			watch: "Vezi pe YouTube",
+			listenAppleMusic: "Ascultă pe Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Caută în bibliotecă...",
@@ -5662,7 +5691,7 @@ export const translations = {
 			errorRestricted: "Това видео не е достъпно в твоята страна.",
 			errorIPBlocked: "YouTube ограничава възпроизвеждането в тази мрежа.",
 			ipBlockTitle: "Възпроизвеждането не е налично",
-			ipBlockMessage: "YouTube ограничава възпроизвеждането на видео в текущата ви мрежа. Опитайте да превключите на мобилни данни или друга Wi-Fi връзка.",
+			ipBlockMessage: "YouTube ограничава възпроизвеждането на видео в текущата ви мрежа. Опитайте да превключите на мобилни данни или друга Wi-Fi мрежа.",
 			ipBlockPartyMode: "Превключи на Парти режим",
 			ipBlockRetry: "Презареди страницата"
 		},
@@ -5754,7 +5783,8 @@ export const translations = {
 			cancel: "Отказ",
 			confirmDelete: "Потвърди",
 			delete: "Изтрий",
-			watch: "Гледай в YouTube"
+			watch: "Гледай в YouTube",
+			listenAppleMusic: "Слушай в Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Търсене в библиотеката...",
@@ -5850,7 +5880,7 @@ export const translations = {
 			errorRestricted: "Ovaj video nije dostupan u vašoj zemlji.",
 			errorIPBlocked: "YouTube ograničava reprodukciju na ovoj mreži.",
 			ipBlockTitle: "Reprodukcija nedostupna",
-			ipBlockMessage: "YouTube ograničava reprodukciju videa na vašoj trenutnoj mreži. Pokušajte se prebaciti na mobilne podatke ili drugu Wi-Fi vezu.",
+			ipBlockMessage: "YouTube ograničava reprodukciju videa na vašoj trenutnoj mreži. Pokušajte se prebaciti na mobilne podatke ili drugu Wi-Fi mrežu.",
 			ipBlockPartyMode: "Prebaci na Party način",
 			ipBlockRetry: "Ponovno učitaj stranicu"
 		},
@@ -5942,7 +5972,8 @@ export const translations = {
 			cancel: "Odustani",
 			confirmDelete: "Potvrdi",
 			delete: "Izbriši",
-			watch: "Gledaj na YouTubeu"
+			watch: "Gledaj na YouTubeu",
+			listenAppleMusic: "Slušaj na Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Traži u knjižnici...",
@@ -6038,7 +6069,7 @@ export const translations = {
 			errorRestricted: "Ovaj video nije dostupan u vašoj zemlji.",
 			errorIPBlocked: "YouTube ograničava reprodukciju na ovoj mreži.",
 			ipBlockTitle: "Reprodukcija nedostupna",
-			ipBlockMessage: "YouTube ograničava reprodukciju videa na vašoj trenutnoj mreži. Pokušajte da se prebacite na mobilne podatke ili drugu Wi-Fi vezu.",
+			ipBlockMessage: "YouTube ograničava reprodukciju videa na vašoj trenutnoj mreži. Pokušajte da se prebacite na mobilne podatke ili drugu Wi-Fi mrežu.",
 			ipBlockPartyMode: "Prebaci na Party režim",
 			ipBlockRetry: "Ponovo učitaj stranicu"
 		},
@@ -6130,7 +6161,8 @@ export const translations = {
 			cancel: "Otkaži",
 			confirmDelete: "Potvrdi",
 			delete: "Obriši",
-			watch: "Gledaj na YouTube-u"
+			watch: "Gledaj na YouTube-u",
+			listenAppleMusic: "Slušaj na Apple Music-u"
 		},
 		library: {
 			searchPlaceholder: "Traži u biblioteci...",
@@ -6226,7 +6258,7 @@ export const translations = {
 			errorRestricted: "Toto video nie je k dispozícii vo vašej krajine.",
 			errorIPBlocked: "YouTube obmedzuje prehrávanie v tejto sieti.",
 			ipBlockTitle: "Prehrávanie nedostupné",
-			ipBlockMessage: "YouTube obmedzuje prehrávanie videa vo vašej aktuálnej sieti. Skúste prepnúť na mobilné dáta alebo iné Wi-Fi pripojenie.",
+			ipBlockMessage: "YouTube obmedzuje prehrávanie videa vo vašej aktuálnej sieti. Skúste prepnúť na mobilné dáta alebo inú Wi-Fi sieť.",
 			ipBlockPartyMode: "Prepnúť na Párty režim",
 			ipBlockRetry: "Znova načítať stránku"
 		},
@@ -6318,7 +6350,8 @@ export const translations = {
 			cancel: "Zrušiť",
 			confirmDelete: "Potvrdiť",
 			delete: "Zmazať",
-			watch: "Sledovať na YouTube"
+			watch: "Sledovať na YouTube",
+			listenAppleMusic: "Počúvajte na Apple Music"
 		},
 		library: {
 			searchPlaceholder: "Hľadať v knižnici...",
@@ -6414,7 +6447,7 @@ export const translations = {
 			errorRestricted: "هذا الفيديو غير متاح في بلدك.",
 			errorIPBlocked: "يقوم YouTube بتقييد التشغيل على هذه الشبكة.",
 			ipBlockTitle: "التشغيل غير متاح",
-			ipBlockMessage: "يقوم YouTube بتقييد تشغيل الفيديو على شبكتك الحالية. حاول التبديل إلى بيانات الهاتف المحمول أو اتصال Wi-Fi مختلف.",
+			ipBlockMessage: "يقوم YouTube بتقييد تشغيل الفيديو على شبكتك الحالية. حاول التبديل إلى بيانات الهاتف المحمول أو شبكة Wi-Fi مختلفة.",
 			ipBlockPartyMode: "التبديل إلى وضع الحفلة",
 			ipBlockRetry: "إعادة تحميل الصفحة"
 		},
@@ -6506,7 +6539,8 @@ export const translations = {
 			cancel: "إلغاء",
 			confirmDelete: "تأكيد",
 			delete: "حذف",
-			watch: "مشاهدة على YouTube"
+			watch: "مشاهدة على YouTube",
+			listenAppleMusic: "استمع على Apple Music"
 		},
 		library: {
 			searchPlaceholder: "بحث في المكتبة...",
@@ -6602,7 +6636,7 @@ export const translations = {
 			errorRestricted: "סרטון זה אינו זמין במדינתך.",
 			errorIPBlocked: "YouTube מגביל את ההפעלה ברשת זו.",
 			ipBlockTitle: "ההפעלה לא זמינה",
-			ipBlockMessage: "YouTube מגביל את ניגון הווידאו ברשת הנוכחית שלך. נסה לעבור לנתוני סלולר או חיבור Wi-Fi אחר.",
+			ipBlockMessage: "YouTube מגביל את ניגון הווידאו ברשת הנוכחית שלך. נסה לעבור לנתוני סלולר או רשת Wi-Fi אחרת.",
 			ipBlockPartyMode: "עבור למצב מסיבה",
 			ipBlockRetry: "טען מחדש את הדף"
 		},
@@ -6694,7 +6728,8 @@ export const translations = {
 			cancel: "ביטול",
 			confirmDelete: "אשר",
 			delete: "מחק",
-			watch: "צפה ב-YouTube"
+			watch: "צפה ב-YouTube",
+			listenAppleMusic: "האזן ב-Apple Music"
 		},
 		library: {
 			searchPlaceholder: "חפש בספרייה...",
