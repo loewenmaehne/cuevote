@@ -4906,7 +4906,11 @@ export const translations = {
 			errorGeneric: "Під час відтворення цього відео сталася помилка.",
 			errorNotFound: "Це відео недоступне.",
 			errorRestricted: "Це відео недоступне у вашій країні.",
-			errorIPBlocked: "YouTube обмежує відтворення у цій мережі."
+			errorIPBlocked: "YouTube обмежує відтворення у цій мережі.",
+			ipBlockTitle: "Відтворення недоступне",
+			ipBlockMessage: "Відео не можуть бути відтворені у вашій поточній мережі. Спробуйте переключитися на мобільні дані або іншу мережу Wi-Fi, або використовуйте Режим Вечірки, щоб продовжити голосувати та пропонувати пісні.",
+			ipBlockPartyMode: "Перейти в Режим Вечірки",
+			ipBlockRetry: "Перезавантажити сторінку"
 		},
 		cookie: {
 			title: "Конфіденційність та відтворення",
@@ -5091,7 +5095,11 @@ export const translations = {
 			errorGeneric: "Při přehrávání tohoto videa došlo k chybě.",
 			errorNotFound: "Toto video není dostupné.",
 			errorRestricted: "Toto video není dostupné ve vaší zemi.",
-			errorIPBlocked: "YouTube omezuje přehrávání v této síti."
+			errorIPBlocked: "YouTube omezuje přehrávání v této síti.",
+			ipBlockTitle: "Přehrávání nedostupné",
+			ipBlockMessage: "Videa nelze přehrávat ve vaší aktuální síti. Zkuste přepnout na mobilní data nebo jinou Wi-Fi síť, nebo použijte Párty režim pro pokračování v hlasování a navrhování písní.",
+			ipBlockPartyMode: "Přepnout na Párty režim",
+			ipBlockRetry: "Znovu načíst stránku"
 		},
 		cookie: {
 			title: "Soukromí a přehrávání",
@@ -5275,7 +5283,11 @@ export const translations = {
 			errorGeneric: "Hiba történt a videó lejátszása közben.",
 			errorNotFound: "Ez a videó nem érhető el.",
 			errorRestricted: "Ez a videó nem érhető el az Ön országában.",
-			errorIPBlocked: "A YouTube korlátozza a lejátszást ezen a hálózaton."
+			errorIPBlocked: "A YouTube korlátozza a lejátszást ezen a hálózaton.",
+			ipBlockTitle: "A lejátszás nem érhető el",
+			ipBlockMessage: "A videók nem játszhatók le az aktuális hálózaton. Próbáljon átváltani mobiladatra vagy másik Wi-Fi hálózatra, vagy használja a Buli módot a szavazás és dalajánlás folytatásához.",
+			ipBlockPartyMode: "Váltás Buli módra",
+			ipBlockRetry: "Oldal újratöltése"
 		},
 		cookie: {
 			title: "Adatvédelem és Lejátszás",
@@ -5459,7 +5471,11 @@ export const translations = {
 			errorGeneric: "A apărut o eroare la redarea acestui videoclip.",
 			errorNotFound: "Acest videoclip nu este disponibil.",
 			errorRestricted: "Acest videoclip nu este disponibil în țara dvs.",
-			errorIPBlocked: "YouTube restricționează redarea pe această rețea."
+			errorIPBlocked: "YouTube restricționează redarea pe această rețea.",
+			ipBlockTitle: "Redare indisponibilă",
+			ipBlockMessage: "Videoclipurile nu pot fi redate pe rețeaua dvs. actuală. Încercați să treceți la date mobile sau la o altă rețea Wi-Fi, sau utilizați Modul Petrecere pentru a continua să votați și să sugerați melodii.",
+			ipBlockPartyMode: "Treceți la Modul Petrecere",
+			ipBlockRetry: "Reîncărcați pagina"
 		},
 		cookie: {
 			title: "Confidențialitate și Redare",
@@ -5643,7 +5659,11 @@ export const translations = {
 			errorGeneric: "Възникна грешка при възпроизвеждането на това видео.",
 			errorNotFound: "Това видео не е достъпно.",
 			errorRestricted: "Това видео не е достъпно в твоята страна.",
-			errorIPBlocked: "YouTube ограничава възпроизвеждането в тази мрежа."
+			errorIPBlocked: "YouTube ограничава възпроизвеждането в тази мрежа.",
+			ipBlockTitle: "Възпроизвеждането не е налично",
+			ipBlockMessage: "Видеоклиповете не могат да бъдат възпроизведени в текущата ви мрежа. Опитайте да превключите на мобилни данни или друга Wi-Fi мрежа, или използвайте Парти режим, за да продължите да гласувате и предлагате песни.",
+			ipBlockPartyMode: "Превключи на Парти режим",
+			ipBlockRetry: "Презареди страницата"
 		},
 		cookie: {
 			title: "Поверителност и възпроизвеждане",
@@ -5827,7 +5847,11 @@ export const translations = {
 			errorGeneric: "Došlo je do pogreške pri reproduciranju ovog videa.",
 			errorNotFound: "Ovaj video nije dostupan.",
 			errorRestricted: "Ovaj video nije dostupan u vašoj zemlji.",
-			errorIPBlocked: "YouTube ograničava reprodukciju na ovoj mreži."
+			errorIPBlocked: "YouTube ograničava reprodukciju na ovoj mreži.",
+			ipBlockTitle: "Reprodukcija nedostupna",
+			ipBlockMessage: "Videozapisi se ne mogu reproducirati na vašoj trenutnoj mreži. Pokušajte se prebaciti na mobilne podatke ili drugu Wi-Fi mrežu, ili koristite Party način za nastavak glasovanja i predlaganja pjesama.",
+			ipBlockPartyMode: "Prebaci na Party način",
+			ipBlockRetry: "Ponovno učitaj stranicu"
 		},
 		cookie: {
 			title: "Privatnost i reprodukcija",
@@ -6011,7 +6035,11 @@ export const translations = {
 			errorGeneric: "Došlo je do greške pri reprodukovanju ovog videa.",
 			errorNotFound: "Ovaj video nije dostupan.",
 			errorRestricted: "Ovaj video nije dostupan u vašoj zemlji.",
-			errorIPBlocked: "YouTube ograničava reprodukciju na ovoj mreži."
+			errorIPBlocked: "YouTube ograničava reprodukciju na ovoj mreži.",
+			ipBlockTitle: "Reprodukcija nedostupna",
+			ipBlockMessage: "Video zapisi ne mogu da se reprodukuju na vašoj trenutnoj mreži. Pokušajte da se prebacite na mobilne podatke ili drugu Wi-Fi mrežu, ili koristite Party režim da nastavite da glasate i predlažete pesme.",
+			ipBlockPartyMode: "Prebaci na Party režim",
+			ipBlockRetry: "Ponovo učitaj stranicu"
 		},
 		cookie: {
 			title: "Privatnost i reprodukcija",
@@ -6195,7 +6223,11 @@ export const translations = {
 			errorGeneric: "Pri prehrávaní tohto videa sa vyskytla chyba.",
 			errorNotFound: "Toto video nie je k dispozícii.",
 			errorRestricted: "Toto video nie je k dispozícii vo vašej krajine.",
-			errorIPBlocked: "YouTube obmedzuje prehrávanie v tejto sieti."
+			errorIPBlocked: "YouTube obmedzuje prehrávanie v tejto sieti.",
+			ipBlockTitle: "Prehrávanie nedostupné",
+			ipBlockMessage: "Videá nie je možné prehrávať vo vašej aktuálnej sieti. Skúste prepnúť na mobilné dáta alebo inú Wi-Fi sieť, alebo použite Párty režim na pokračovanie v hlasovaní a navrhovaní piesní.",
+			ipBlockPartyMode: "Prepnúť na Párty režim",
+			ipBlockRetry: "Znova načítať stránku"
 		},
 		cookie: {
 			title: "Súkromie a prehrávanie",
@@ -6379,7 +6411,11 @@ export const translations = {
 			errorGeneric: "حدث خطأ أثناء تشغيل هذا الفيديو.",
 			errorNotFound: "هذا الفيديو غير متاح.",
 			errorRestricted: "هذا الفيديو غير متاح في بلدك.",
-			errorIPBlocked: "يقوم YouTube بتقييد التشغيل على هذه الشبكة."
+			errorIPBlocked: "يقوم YouTube بتقييد التشغيل على هذه الشبكة.",
+			ipBlockTitle: "التشغيل غير متاح",
+			ipBlockMessage: "لا يمكن تشغيل مقاطع الفيديو على شبكتك الحالية. حاول التبديل إلى بيانات الهاتف المحمول أو شبكة Wi-Fi مختلفة، أو استخدم وضع الحفلة لمواصلة التصويت واقتراح الأغاني.",
+			ipBlockPartyMode: "التبديل إلى وضع الحفلة",
+			ipBlockRetry: "إعادة تحميل الصفحة"
 		},
 		cookie: {
 			title: "الخصوصية والتشغيل",
@@ -6563,7 +6599,11 @@ export const translations = {
 			errorGeneric: "אירעה שגיאה בעת הפעלת הסרטון הזה.",
 			errorNotFound: "סרטון זה אינו זמין.",
 			errorRestricted: "סרטון זה אינו זמין במדינתך.",
-			errorIPBlocked: "YouTube מגביל את ההפעלה ברשת זו."
+			errorIPBlocked: "YouTube מגביל את ההפעלה ברשת זו.",
+			ipBlockTitle: "ההפעלה לא זמינה",
+			ipBlockMessage: "לא ניתן לנגן סרטונים ברשת הנוכחית שלך. נסה לעבור לנתוני סלולר או רשת Wi-Fi אחרת, או השתמש במצב מסיבה כדי להמשיך להצביע ולהציע שירים.",
+			ipBlockPartyMode: "עבור למצב מסיבה",
+			ipBlockRetry: "טען מחדש את הדף"
 		},
 		cookie: {
 			title: "פרטיות וניגון",
