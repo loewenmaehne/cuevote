@@ -141,7 +141,7 @@ export const translations = {
 			connectionIssue: "Connection Issue",
 			takingTooLong: "Taking longer than usual...",
 			checkConnection: "Please check your internet connection.",
-			networkThrottle: "YouTube is limiting video playback on this network. Playback paused.",
+			networkThrottle: "YouTube has blocked this network's IP. Playback paused. Try switching to a mobile hotspot.",
 			retryPlayback: "Retry"
 		},
 		track: {
@@ -358,7 +358,7 @@ export const translations = {
 			connectionIssue: "Verbindingsprobleem",
 			takingTooLong: "Duurt langer dan gewoonlijk...",
 			checkConnection: "Controleer je internetverbinding.",
-			networkThrottle: "YouTube beperkt het afspelen van video op dit netwerk. Afspelen gepauzeerd.",
+			networkThrottle: "YouTube heeft het IP-adres van dit netwerk geblokkeerd. Afspelen gepauzeerd. Probeer over te schakelen naar een mobiele hotspot.",
 			retryPlayback: "Opnieuw"
 		},
 		track: {
@@ -567,7 +567,7 @@ export const translations = {
 			connectionIssue: "Verbindungsproblem",
 			takingTooLong: "Dauert länger als gewöhnlich...",
 			checkConnection: "Bitte überprüfen Sie Ihre Internetverbindung.",
-			networkThrottle: "YouTube beschränkt die Videowiedergabe in diesem Netzwerk. Wiedergabe pausiert.",
+			networkThrottle: "YouTube hat die IP-Adresse dieses Netzwerks gesperrt. Wiedergabe pausiert. Versuche, zu einem mobilen Hotspot zu wechseln.",
 			retryPlayback: "Erneut versuchen"
 		},
 		track: {
@@ -776,7 +776,7 @@ export const translations = {
 			connectionIssue: "Problème de connexion",
 			takingTooLong: "Cela prend plus de temps que d'habitude...",
 			checkConnection: "Veuillez vérifier votre connexion internet.",
-			networkThrottle: "YouTube limite la lecture vidéo sur ce réseau. Lecture en pause.",
+			networkThrottle: "YouTube a bloqué l'IP de ce réseau. Lecture en pause. Essayez de passer à un point d'accès mobile.",
 			retryPlayback: "Réessayer"
 		},
 		track: {
@@ -982,7 +982,7 @@ export const translations = {
 			connectionIssue: "Problema de conexión",
 			takingTooLong: "Tarda más de lo habitual...",
 			checkConnection: "Por favor, comprueba tu conexión a internet.",
-			networkThrottle: "YouTube está limitando la reproducción en esta red. Reproducción en pausa.",
+			networkThrottle: "YouTube ha bloqueado la IP de esta red. Reproducción en pausa. Intenta cambiar a un punto de acceso móvil.",
 			retryPlayback: "Reintentar"
 		},
 		track: {

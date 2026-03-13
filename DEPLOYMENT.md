@@ -124,6 +124,11 @@ server {
         log_not_found off;
     }
 
+    # Security headers
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+
     location / {
         try_files $uri $uri/ /index.html;
     }
