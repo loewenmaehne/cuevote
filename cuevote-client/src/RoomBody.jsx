@@ -407,10 +407,8 @@ function RoomBody() {
     if (!lastMessage || lastMessage.type !== "NETWORK_THROTTLE") return;
     const { until } = lastMessage.payload || {};
     setNetworkThrottle({ until: until || (Date.now() + 15 * 60 * 1000) });
-    if (!isOwner) {
-      setIpBlockDetected(true);
-    }
-  }, [lastMessage, isOwner]);
+    setIpBlockDetected(true);
+  }, [lastMessage]);
 
   // No auto-clear for network throttle — IP blocks last hours, not minutes.
   // The banner clears only when the owner presses Retry and playback succeeds
@@ -1215,7 +1213,7 @@ function RoomBody() {
           </div>
         </div>
       )}
-      {ipBlockDetected && !isOwner && (
+      {ipBlockDetected && (
         <div className="fixed inset-0 z-[100] bg-[#050505] text-white flex items-center justify-center p-6 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-[#050505] to-[#050505] pointer-events-none" />
           <div className="relative z-10 w-full flex flex-col items-center justify-center text-center max-w-md animate-in fade-in zoom-in-95 duration-500">
@@ -1229,13 +1227,23 @@ function RoomBody() {
               {t('player.ipBlockMessage', "Videos can't be played on your current network. Try switching to mobile data or a different Wi-Fi network, or use Party Mode to keep voting and suggesting songs.")}
             </p>
             <div className="flex flex-col gap-3 w-full">
-              <button
-                onClick={() => { setLocalPlaylistView(true); setIpBlockDetected(false); }}
-                className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all"
-              >
-                <Music size={20} />
-                {t('player.ipBlockPartyMode', 'Switch to Party Mode')}
-              </button>
+              {isOwner ? (
+                <button
+                  onClick={() => { setNetworkThrottle(null); setIpBlockDetected(false); sendMessage({ type: "PLAY_PAUSE", payload: true }); }}
+                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+                >
+                  <PlayCircle size={20} />
+                  {t('player.ipBlockRetryPlayback', 'Retry Playback')}
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setLocalPlaylistView(true); setIpBlockDetected(false); }}
+                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+                >
+                  <Music size={20} />
+                  {t('player.ipBlockPartyMode', 'Switch to Party Mode')}
+                </button>
+              )}
               <button
                 onClick={() => window.location.reload()}
                 className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium transition-all"

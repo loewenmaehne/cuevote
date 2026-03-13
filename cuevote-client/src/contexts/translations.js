@@ -43,6 +43,7 @@ export const translations = {
 			ipBlockTitle: "Playback Unavailable",
 			ipBlockMessage: "Videos can't be played on your current network. Try switching to mobile data or a different Wi-Fi network, or use Party Mode to keep voting and suggesting songs.",
 			ipBlockPartyMode: "Switch to Party Mode",
+			ipBlockRetryPlayback: "Retry Playback",
 			ipBlockRetry: "Reload Page"
 		},
 		cookie: {
