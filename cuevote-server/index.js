@@ -19,6 +19,7 @@ const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const db = require('./db');
 const fs = require('fs');
+const appleMusicUtil = require('./appleMusic');
 const backupScheduler = require('./backup_scheduler');
 backupScheduler.start();
 
@@ -51,6 +52,22 @@ const server = http.createServer((req, res) => {
     if (req.url === '/health' && req.method === 'GET') {
         res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
         res.end(JSON.stringify({ status: 'ok', clients: clients.size, rooms: rooms.size, uptime: process.uptime() }));
+        return;
+    }
+    if (req.url === '/api/apple-music-token' && req.method === 'GET') {
+        const token = appleMusicUtil.getDeveloperToken();
+        if (token) {
+            res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify({ token }));
+        } else {
+            res.writeHead(503, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify({ error: 'Apple Music not configured' }));
+        }
+        return;
+    }
+    if (req.method === 'OPTIONS') {
+        res.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' });
+        res.end();
         return;
     }
     res.writeHead(404);
@@ -447,7 +464,7 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "CREATE_ROOM": {
-                    const { name, description, color, isPrivate, password, captionsEnabled } = parsedMessage.payload;
+                    const { name, description, color, isPrivate, password, captionsEnabled, musicSource } = parsedMessage.payload;
                     if (!ws.user) {
                         ws.send(JSON.stringify({ type: "error", message: "You must be logged in to create a room." }));
                         return;
@@ -462,7 +479,6 @@ wss.on("connection", (ws, req) => {
                     let success = false;
                     while (attempts < 3 && !success) {
                         attempts++;
-                        // Generate ID (4 bytes = 8 hex chars)
                         const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + crypto.randomBytes(4).toString('hex');
 
                         try {
@@ -474,7 +490,8 @@ wss.on("connection", (ws, req) => {
                                 color: color || "from-gray-700 to-black",
                                 is_public: isPrivate ? 0 : 1,
                                 password: (isPrivate && password) ? password : null,
-                                captions_enabled: captionsEnabled ? 1 : 0
+                                captions_enabled: captionsEnabled ? 1 : 0,
+                                music_source: (musicSource === 'apple_music') ? 'apple_music' : 'youtube'
                             };
 
                             db.createRoom(roomData);
