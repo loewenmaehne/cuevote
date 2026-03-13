@@ -1598,6 +1598,8 @@ function RoomBody() {
                 ) : (
                   <Player
                     playerContainerRef={playerContainerRef}
+                    musicSource={musicSource}
+                    currentTrack={previewTrack || currentTrack}
                   />
                 )
               ) : (CookieBlockedPlaceholderComponent ? <CookieBlockedPlaceholderComponent /> : <div className="w-full h-full flex items-center justify-center bg-black text-neutral-500">Loading…</div>)}
@@ -1672,6 +1674,8 @@ function RoomBody() {
                 playerContainerRef={playerContainerRef}
                 isCinemaMode={isCinemaMode}
                 t={t}
+                musicSource={musicSource}
+                currentTrack={previewTrack}
               />
             )}
           </div>
@@ -1700,6 +1704,8 @@ function RoomBody() {
                         ) : (
                           <Player
                             playerContainerRef={playerContainerRef}
+                            musicSource={musicSource}
+                            currentTrack={currentTrack}
                           />
                         )}
                       </PlayerErrorBoundary>
