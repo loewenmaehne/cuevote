@@ -56,17 +56,6 @@ function RoomBody() {
 
   // Online Status & Device Class Injection
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-
-  // Debounce the reconnecting banner — brief mobile disconnects (< 2.5 s) shouldn't flash a banner
-  const [showReconnectBanner, setShowReconnectBanner] = useState(false);
-  useEffect(() => {
-    if (isConnected) {
-      setShowReconnectBanner(false);
-      return;
-    }
-    const timer = setTimeout(() => setShowReconnectBanner(true), 2500);
-    return () => clearTimeout(timer);
-  }, [isConnected]);
   useEffect(() => {
     const handleStatusChange = () => setIsOnline(navigator.onLine);
     window.addEventListener('online', handleStatusChange);
@@ -109,11 +98,16 @@ function RoomBody() {
     progressRef,
   } = useWebSocketContext();
 
-
-
-  // console.log("Server State:", serverState);
-
-
+  // Debounce the reconnecting banner — brief mobile disconnects (< 2.5 s) shouldn't flash a banner
+  const [showReconnectBanner, setShowReconnectBanner] = useState(false);
+  useEffect(() => {
+    if (isConnected) {
+      setShowReconnectBanner(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowReconnectBanner(true), 2500);
+    return () => clearTimeout(timer);
+  }, [isConnected]);
 
   // Handle Delete Account Success (Moved up to avoid conditional hook call error)
   useEffect(() => {
