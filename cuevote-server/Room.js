@@ -30,7 +30,8 @@ class Room {
             owner_id: metadata.owner_id,
             is_public: metadata.is_public !== undefined ? metadata.is_public : 1,
             password: metadata.password || null,
-            captions_enabled: metadata.captions_enabled !== undefined ? metadata.captions_enabled : 0
+            captions_enabled: metadata.captions_enabled !== undefined ? metadata.captions_enabled : 0,
+            music_source: metadata.music_source || 'youtube'
         };
         this.clients = new Set();
         this.knownVideos = new Set(); // Stores videoIds of approved videos
@@ -64,8 +65,9 @@ class Room {
             duplicateCooldown: 10, // Default 10 songs
             autoApproveKnown: true, // Default true
             autoRefill: false, // Automated Refill
-            captionsEnabled: !!(metadata.captions_enabled), // Initialize from metadata
-            bannedVideos: [], // List of banned videos { videoId, title, artist, ... }
+            captionsEnabled: !!(metadata.captions_enabled),
+            musicSource: metadata.music_source || 'youtube',
+            bannedVideos: [],
         };
 
         // Start the Room Timer
@@ -112,6 +114,7 @@ class Room {
             color: this.metadata.color,
             listeners: this.clients.size,
             currentTrack: this.state.currentTrack,
+            musicSource: this.state.musicSource,
             isActive: true
         };
     }
