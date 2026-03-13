@@ -56,6 +56,17 @@ function RoomBody() {
 
   // Online Status & Device Class Injection
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  // Debounce the reconnecting banner — brief mobile disconnects (< 2.5 s) shouldn't flash a banner
+  const [showReconnectBanner, setShowReconnectBanner] = useState(false);
+  useEffect(() => {
+    if (isConnected) {
+      setShowReconnectBanner(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowReconnectBanner(true), 2500);
+    return () => clearTimeout(timer);
+  }, [isConnected]);
   useEffect(() => {
     const handleStatusChange = () => setIsOnline(navigator.onLine);
     window.addEventListener('online', handleStatusChange);
@@ -1139,7 +1150,7 @@ function RoomBody() {
 
   return (
     <div className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : "min-h-screen bg-black pb-32"}`}>
-      {!isConnected && serverState && !isStaleState && (
+      {showReconnectBanner && serverState && !isStaleState && (
         <div className={`fixed top-0 left-0 right-0 z-[100] ${!isOnline ? 'bg-red-600/95' : 'bg-orange-600/95'} backdrop-blur-sm text-white text-center py-1.5 text-xs font-medium`}>
           <div className="flex items-center justify-center gap-2">
             {!isOnline ? (
