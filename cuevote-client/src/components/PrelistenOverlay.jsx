@@ -3,7 +3,7 @@ import { AlertTriangle, Maximize2 } from 'lucide-react';
 import { Player } from './Player';
 import PlayerErrorBoundary from './PlayerErrorBoundary';
 
-export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef, t, isCinemaMode }) {
+export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef, t, isCinemaMode, musicSource, currentTrack }) {
 	const containerRef = useRef(null);
 	const [isTooSmall, setIsTooSmall] = useState(false);
 	const [CookieBlockedPlaceholderComponent, setCookieBlockedPlaceholder] = useState(null);
@@ -66,9 +66,11 @@ export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef
 									</div>
 								</div>
 							) : (
-								<Player
-									playerContainerRef={playerContainerRef}
-								/>
+							<Player
+								playerContainerRef={playerContainerRef}
+								musicSource={musicSource}
+								currentTrack={currentTrack}
+							/>
 							)
 						) : (CookieBlockedPlaceholderComponent ? <CookieBlockedPlaceholderComponent /> : <div className="absolute inset-0 flex items-center justify-center bg-black text-neutral-500">Loading…</div>)}
 					</PlayerErrorBoundary>
