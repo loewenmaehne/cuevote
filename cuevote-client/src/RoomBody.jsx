@@ -389,10 +389,10 @@ function RoomBody() {
     const { videoId, status } = lastMessage.payload || {};
     if (!videoId) return;
 
-    // Detect rapid skipping — if 2+ tracks are skipped within 60s, something systemic is wrong
-    const now = Date.now();
-    recentSkipTimesRef.current = [...recentSkipTimesRef.current.filter(t => now - t < 60000), now];
+    // Detect repeated skipping — if 2+ videos are skipped in this session, something systemic is wrong
+    recentSkipTimesRef.current.push(Date.now());
     if (recentSkipTimesRef.current.length >= 2) {
+      console.warn("[Player] IP block detected — multiple videos skipped by server");
       setIpBlockDetected(true);
     }
 
@@ -588,12 +588,11 @@ function RoomBody() {
     currentTrackRef.current = currentTrack;
     setPlaybackError(null);
 
-    // Track-cycling detection: if 3+ tracks change within 30s without any successful playback, it's systemic
+    // Track-cycling detection: if 2+ tracks load without any successful playback, something systemic is wrong
     if (currentTrack) {
-      const now = Date.now();
-      trackFailTimesRef.current = [...trackFailTimesRef.current.filter(t => now - t < 30000), now];
-      if (trackFailTimesRef.current.length >= 3 && now - lastSuccessfulPlayRef.current > 10000) {
-        console.warn("[Player] IP block detected — rapid track cycling without playback");
+      trackFailTimesRef.current.push(Date.now());
+      if (trackFailTimesRef.current.length >= 2 && Date.now() - lastSuccessfulPlayRef.current > 5000) {
+        console.warn("[Player] IP block detected — tracks keep failing without playback");
         setIpBlockDetected(true);
       }
     }
@@ -709,16 +708,15 @@ function RoomBody() {
               } else {
                 console.warn("[Player] Playback Error shown to guest:", errorCode);
                 setPlaybackError(errorCode);
-                if (errorCode === 101 || errorCode === 150) {
-                  const videoId = currentTrackRef.current?.videoId;
-                  if (videoId) {
-                    ipBlockedVideosRef.current.add(videoId);
-                    if (ipBlockedVideosRef.current.size >= 2 || isPlayingRef.current) {
-                      console.warn("[Player] IP block detected:", isPlayingRef.current
-                        ? "owner is playing fine but guest got error 150 — network-level block"
-                        : "multiple videos restricted", [...ipBlockedVideosRef.current]);
-                      setIpBlockDetected(true);
-                    }
+              }
+              // Track restricted errors for IP block detection (both owner and guest)
+              if (errorCode === 101 || errorCode === 150) {
+                const videoId = currentTrackRef.current?.videoId;
+                if (videoId) {
+                  ipBlockedVideosRef.current.add(videoId);
+                  if (ipBlockedVideosRef.current.size >= 2) {
+                    console.warn("[Player] IP block detected — multiple videos restricted:", [...ipBlockedVideosRef.current]);
+                    setIpBlockDetected(true);
                   }
                 }
               }
