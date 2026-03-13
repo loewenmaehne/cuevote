@@ -1248,21 +1248,37 @@ function RoomBody() {
               {t('player.ipBlockTitle', 'Playback Unavailable')}
             </h2>
             <p className="text-neutral-400 font-medium mb-8 leading-relaxed">
-              {t('player.ipBlockMessage', "Videos can't be played on your current network. Try switching to mobile data or a different Wi-Fi network, or use Party Mode to keep voting and suggesting songs.")}
+              {t('player.ipBlockMessage', "YouTube is restricting video playback on your current network. Try switching to mobile data or a different Wi-Fi network.")}
             </p>
-            <div className="flex flex-col gap-3 w-full">
+            <div
+              className="flex flex-col gap-3 w-full"
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  const buttons = e.currentTarget.querySelectorAll('button');
+                  const current = [...buttons].indexOf(document.activeElement);
+                  if (e.key === 'ArrowDown') {
+                    buttons[Math.min(current + 1, buttons.length - 1)]?.focus();
+                  } else {
+                    buttons[Math.max(current - 1, 0)]?.focus();
+                  }
+                }
+              }}
+            >
               {isOwner ? (
                 <button
+                  autoFocus
                   onClick={() => { setNetworkThrottle(null); setIpBlockDetected(false); sendMessage({ type: "PLAY_PAUSE", payload: true }); }}
-                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#050505]"
                 >
                   <PlayCircle size={20} />
                   {t('player.ipBlockRetryPlayback', 'Retry Playback')}
                 </button>
               ) : (
                 <button
+                  autoFocus
                   onClick={() => { setLocalPlaylistView(true); setIpBlockDetected(false); }}
-                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#050505]"
                 >
                   <Music size={20} />
                   {t('player.ipBlockPartyMode', 'Switch to Party Mode')}
@@ -1270,7 +1286,7 @@ function RoomBody() {
               )}
               <button
                 onClick={() => window.location.reload()}
-                className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium transition-all"
+                className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#050505]"
               >
                 <RefreshCw size={18} />
                 {t('player.ipBlockRetry', 'Reload Page')}
