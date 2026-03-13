@@ -505,6 +505,11 @@ class Room {
                 break;
             case "PLAY_PAUSE":
                 if (isOwner(this, ws)) {
+                    if (message.payload === true) {
+                        // Owner explicitly resuming — treat as manual retry after throttle
+                        this.networkThrottleUntil = 0;
+                        this.consecutiveIPErrors = 0;
+                    }
                     this.updateState({ isPlaying: message.payload });
                 }
                 break;
@@ -1126,8 +1131,8 @@ class Room {
         if (!videoId || !this.state.currentTrack || this.state.currentTrack.videoId !== videoId) return;
 
         const now = Date.now();
-        const THROTTLE_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-        const CACHE_TTL_MS = 5 * 60 * 1000;        // Re-check same video after 5 min
+        const THROTTLE_WINDOW_MS = 6 * 60 * 60 * 1000; // 6 hours — IP blocks typically last hours, not minutes
+        const CACHE_TTL_MS = 5 * 60 * 1000;            // Re-check same video after 5 min
 
         let isGenuinelyUnavailable = true;
         let reason = 'unavailable';
@@ -1196,16 +1201,12 @@ class Room {
             });
             this.consecutiveIPErrors += 1;
 
-            if (this.consecutiveIPErrors >= 2) {
-                // Two consecutive IP blocks: stop draining the queue, pause and warn the owner.
-                this.networkThrottleUntil = now + THROTTLE_WINDOW_MS;
-                console.warn(`[PlaybackError] 2 consecutive IP blocks. Entering network throttle mode for 15 min.`);
-                this.updateState({ isPlaying: false });
-                this.broadcast({ type: "NETWORK_THROTTLE", payload: { until: this.networkThrottleUntil } });
-            } else {
-                // First IP block: skip this one video and try the next
-                this.handleSkipError();
-            }
+            // Any confirmed IP block: stop immediately and warn. IP blocks are all-or-nothing —
+            // every subsequent video on the same network will also fail.
+            this.networkThrottleUntil = now + THROTTLE_WINDOW_MS;
+            console.warn(`[PlaybackError] IP block confirmed. Entering network throttle mode (6h). Consecutive: ${this.consecutiveIPErrors}`);
+            this.updateState({ isPlaying: false });
+            this.broadcast({ type: "NETWORK_THROTTLE", payload: { until: this.networkThrottleUntil } });
         }
     }
 

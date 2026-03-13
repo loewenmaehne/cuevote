@@ -392,10 +392,7 @@ function RoomBody() {
     if (isOwner) {
       const title = currentTrack?.title || 'Track';
       if (status === 'ip_blocked' || status === 'check_failed' || status === 'no_api_key') {
-        setToast({
-          message: t('playlist.skippedIPBlocked', { title }),
-          type: "error"
-        });
+        // NETWORK_THROTTLE banner follows immediately — no toast needed to avoid duplicate messaging
       } else {
         setToast({
           message: t('playlist.skippedRestricted', { title }),
@@ -412,14 +409,9 @@ function RoomBody() {
     setNetworkThrottle({ until: until || (Date.now() + 15 * 60 * 1000) });
   }, [lastMessage]);
 
-  // Auto-clear network throttle banner when time expires
-  useEffect(() => {
-    if (!networkThrottle) return;
-    const remaining = networkThrottle.until - Date.now();
-    if (remaining <= 0) { setNetworkThrottle(null); return; }
-    const timer = setTimeout(() => setNetworkThrottle(null), remaining);
-    return () => clearTimeout(timer);
-  }, [networkThrottle]);
+  // No auto-clear for network throttle — IP blocks last hours, not minutes.
+  // The banner clears only when the owner presses Retry and playback succeeds
+  // (server resets state on PLAY_PAUSE:true and UPDATE_DURATION).
 
   // Handle manual suggestion results from server
   useEffect(() => {
@@ -1194,7 +1186,7 @@ function RoomBody() {
         <div className="fixed top-0 left-0 right-0 z-[101] bg-yellow-600/95 backdrop-blur-sm text-white text-center py-1.5 text-xs font-medium">
           <div className="flex items-center justify-center gap-2">
             <AlertTriangle size={12} />
-            <span>{t('app.networkThrottle', 'YouTube is limiting video playback on this network. Playback paused.')}</span>
+            <span>{t('app.networkThrottle', "YouTube has blocked this network's IP. Playback paused. Try switching to a mobile hotspot.")}</span>
             {isOwner && (
               <button
                 onClick={() => { setNetworkThrottle(null); sendMessage({ type: "PLAY_PAUSE", payload: true }); }}

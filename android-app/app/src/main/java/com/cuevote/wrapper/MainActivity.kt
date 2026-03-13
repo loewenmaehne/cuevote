@@ -15,6 +15,8 @@ import android.widget.FrameLayout
 import android.view.Gravity
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.content.res.Configuration
+import android.app.UiModeManager
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.Network
@@ -71,12 +73,15 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
             javaScriptCanOpenWindowsAutomatically = true
             setSupportMultipleWindows(true)
             
-            cacheMode = WebSettings.LOAD_NO_CACHE
+            cacheMode = WebSettings.LOAD_DEFAULT
 
             // Custom User Agent for detection
             val defaultUserAgent = userAgentString
             val sanitizedUserAgent = defaultUserAgent.replace("; wv", "")
-            userAgentString = "$sanitizedUserAgent CueVoteWrapper/1.0"
+            val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+            val isTelevision = uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+            val tvSuffix = if (isTelevision) " AndroidTV" else ""
+            userAgentString = "$sanitizedUserAgent CueVoteWrapper/1.0$tvSuffix"
         }
 
         // 3. Inject Offline Layout
