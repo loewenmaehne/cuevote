@@ -1157,7 +1157,11 @@ class Room {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
 
-                if (data.items && data.items.length > 0) {
+                if (!response.ok || data.error) {
+                    console.error("[PlaybackError] YouTube API returned error:", data.error?.message || `HTTP ${response.status}`);
+                    isGenuinelyUnavailable = false;
+                    reason = 'check_failed';
+                } else if (data.items && data.items.length > 0) {
                     const status = data.items[0].status;
                     if (status) {
                         if (status.privacyStatus === 'private') {

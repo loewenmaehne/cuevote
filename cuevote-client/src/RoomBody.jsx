@@ -389,6 +389,13 @@ function RoomBody() {
     const { videoId, status } = lastMessage.payload || {};
     if (!videoId) return;
 
+    // Detect rapid skipping — if 2+ tracks are skipped within 60s, something systemic is wrong
+    const now = Date.now();
+    recentSkipTimesRef.current = [...recentSkipTimesRef.current.filter(t => now - t < 60000), now];
+    if (recentSkipTimesRef.current.length >= 2) {
+      setIpBlockDetected(true);
+    }
+
     if (isOwner) {
       const title = currentTrack?.title || 'Track';
       if (status === 'ip_blocked' || status === 'check_failed' || status === 'no_api_key') {
@@ -435,6 +442,7 @@ function RoomBody() {
   const [progress, setProgress] = useState(0);
   const [playbackError, setPlaybackError] = useState(null); // New State: Track playback errors
   const ipBlockedVideosRef = useRef(new Set());
+  const recentSkipTimesRef = useRef([]);
   const [ipBlockDetected, setIpBlockDetected] = useState(false);
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true); // Track footer visibility
