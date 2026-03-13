@@ -37,11 +37,15 @@ export function PlaylistView({
     };
 
     const scrollToCurrent = (smooth = true) => {
-        if (scrollRef.current) {
+        const container = scrollRef.current;
+        if (container) {
             const currentEl = document.getElementById("playlist-current-track");
             if (currentEl) {
                 setShowJumpToNow(false);
-                currentEl.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
+                const containerRect = container.getBoundingClientRect();
+                const elementRect = currentEl.getBoundingClientRect();
+                const scrollTop = container.scrollTop + elementRect.top - containerRect.top - containerRect.height / 2 + elementRect.height / 2;
+                container.scrollTo({ top: scrollTop, behavior: smooth ? "smooth" : "auto" });
             }
         }
     };
@@ -62,7 +66,7 @@ export function PlaylistView({
                 }
             },
             {
-                root: null,
+                root: scrollRef.current,
                 threshold: 0
             }
         );
