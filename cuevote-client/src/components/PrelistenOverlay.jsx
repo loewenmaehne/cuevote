@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AlertTriangle, Maximize2 } from 'lucide-react';
+import { AlertTriangle, Maximize2, Music } from 'lucide-react';
 import { Player } from './Player';
 import PlayerErrorBoundary from './PlayerErrorBoundary';
 
 export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef, t, isCinemaMode, musicSource, currentTrack }) {
 	const containerRef = useRef(null);
+	const audioRef = useRef(null);
 	const [isTooSmall, setIsTooSmall] = useState(false);
 	const [CookieBlockedPlaceholderComponent, setCookieBlockedPlaceholder] = useState(null);
 	useEffect(() => {
@@ -16,7 +17,6 @@ export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef
 		const resizeObserver = new ResizeObserver((entries) => {
 			for (const entry of entries) {
 				const { width, height } = entry.contentRect;
-				// Check if smaller than 200x200
 				const tooSmall = width < 200 || height < 200;
 				setIsTooSmall(tooSmall);
 			}
@@ -29,11 +29,23 @@ export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef
 		};
 	}, []);
 
-	// Optimize padding for Mobile Landscape (CinemaMode) where Header is hidden
+	// Auto-play Apple Music preview audio
+	useEffect(() => {
+		if (musicSource === 'apple_music' && currentTrack?.previewUrl && audioRef.current) {
+			audioRef.current.play().catch(() => {});
+		}
+		return () => {
+			if (audioRef.current) {
+				audioRef.current.pause();
+				audioRef.current.currentTime = 0;
+			}
+		};
+	}, [musicSource, currentTrack]);
+
 	const paddingTop = isCinemaMode ? 'pt-4' : 'pt-20';
-	// Back to Radio bar is smaller in landscape/mobile usually, but let's be safe. 
-	// pb-24 (96px) is safe for standard, pb-20 (80px) for tight landscape.
 	const paddingBottom = isCinemaMode ? 'pb-20' : 'pb-24';
+
+	const isAppleMusic = musicSource === 'apple_music';
 
 	return (
 		<div className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center ${paddingTop} ${paddingBottom} px-4 animate-fadeIn`}>
@@ -50,6 +62,30 @@ export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef
 						<p className="text-xs text-neutral-400">
 							Resize to view
 						</p>
+					</div>
+				) : isAppleMusic ? (
+					<div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-900 to-black relative overflow-hidden">
+						{currentTrack?.thumbnail && (
+							<img src={currentTrack.thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20 blur-2xl scale-110" />
+						)}
+						<div className="relative z-10 flex flex-col items-center gap-4 p-6 text-center">
+							{currentTrack?.thumbnail ? (
+								<img src={currentTrack.thumbnail} alt={currentTrack.title} className="w-40 h-40 rounded-2xl shadow-2xl ring-1 ring-white/10" />
+							) : (
+								<div className="w-40 h-40 rounded-2xl bg-neutral-800 flex items-center justify-center">
+									<Music size={48} className="text-neutral-500" />
+								</div>
+							)}
+							<div className="max-w-xs">
+								<p className="text-white font-bold text-lg truncate">{currentTrack?.title}</p>
+								<p className="text-neutral-400 text-sm truncate">{currentTrack?.artist}</p>
+							</div>
+							{currentTrack?.previewUrl ? (
+								<audio ref={audioRef} src={currentTrack.previewUrl} controls className="mt-2 w-64" />
+							) : (
+								<p className="text-neutral-500 text-xs mt-2">{t('player.noPreview', 'No preview available')}</p>
+							)}
+						</div>
 					</div>
 				) : (
 					<PlayerErrorBoundary>
