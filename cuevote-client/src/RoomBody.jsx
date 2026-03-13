@@ -693,8 +693,10 @@ function RoomBody() {
                   const videoId = currentTrackRef.current?.videoId;
                   if (videoId) {
                     ipBlockedVideosRef.current.add(videoId);
-                    if (ipBlockedVideosRef.current.size >= 2) {
-                      console.warn("[Player] IP block detected — multiple videos restricted:", [...ipBlockedVideosRef.current]);
+                    if (ipBlockedVideosRef.current.size >= 2 || isPlayingRef.current) {
+                      console.warn("[Player] IP block detected:", isPlayingRef.current
+                        ? "owner is playing fine but guest got error 150 — network-level block"
+                        : "multiple videos restricted", [...ipBlockedVideosRef.current]);
                       setIpBlockDetected(true);
                     }
                   }
