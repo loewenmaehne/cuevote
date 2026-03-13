@@ -1247,8 +1247,8 @@ function RoomBody() {
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
               {t('player.ipBlockTitle', 'Playback Unavailable')}
             </h2>
-            <p className="text-neutral-400 font-medium mb-8 leading-relaxed">
-              {t('player.ipBlockMessage', "YouTube is restricting video playback on your current network. Try switching to mobile data or a different Wi-Fi connection.")}
+            <p className="text-neutral-400 font-medium mb-8 leading-relaxed text-balance">
+              {t('player.ipBlockMessage', "YouTube is restricting video playback on your current network. Try switching to mobile data or a different Wi-Fi network.")}
             </p>
             <div
               className="flex flex-col gap-3 w-full"
