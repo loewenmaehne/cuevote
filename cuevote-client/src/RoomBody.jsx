@@ -382,6 +382,28 @@ function RoomBody() {
     }
   }, [lastMessage]);
 
+  // Handle VIDEO_STATUS from server (playback error diagnosis)
+  useEffect(() => {
+    if (!lastMessage || lastMessage.type !== "VIDEO_STATUS") return;
+    const { videoId, status } = lastMessage.payload || {};
+    if (!videoId) return;
+
+    if (isOwner) {
+      const title = currentTrack?.title || 'Track';
+      if (status === 'ip_blocked' || status === 'check_failed' || status === 'no_api_key') {
+        setToast({
+          message: t('playlist.skippedIPBlocked', { title }),
+          type: "error"
+        });
+      } else {
+        setToast({
+          message: t('playlist.skippedRestricted', { title }),
+          type: "error"
+        });
+      }
+    }
+  }, [lastMessage, isOwner, currentTrack, t]);
+
   // Handle manual suggestion results from server
   useEffect(() => {
     if (!lastMessage || lastMessage.type !== "SUGGESTION_RESULT") return;
@@ -642,14 +664,14 @@ function RoomBody() {
             const errorCode = event.data;
             if ([100, 101, 150].includes(errorCode)) {
               if (isOwnerRef.current) {
-                console.warn("[Player] Video restricted/unavailable. Skipping...", currentTrackRef.current?.title);
-
-                setToast({
-                  message: tRef.current('playlist.skippedRestricted', { title: currentTrackRef.current?.title || 'Track' }),
-                  type: "error"
+                console.warn("[Player] Video error. Sending to server for verification...", currentTrackRef.current?.title);
+                sendMessage({
+                  type: "PLAYBACK_ERROR",
+                  payload: {
+                    videoId: currentTrackRef.current?.videoId,
+                    errorCode
+                  }
                 });
-
-                sendMessage({ type: "NEXT_TRACK" });
               } else {
                 console.warn("[Player] Playback Error shown to guest:", errorCode);
                 setPlaybackError(errorCode);
@@ -758,34 +780,41 @@ function RoomBody() {
 
     const checkInterval = setInterval(() => {
       const state = playerRef.current.getPlayerState?.();
-      // If we are supposed to be playing (isPlaying=true) but player is stuck in BUFFERING (3) or UNSTARTED (-1)
       if (state === YouTubeState.BUFFERING || state === YouTubeState.UNSTARTED) {
         stallRetriesRef.current += 1;
         console.warn(`[Player] Stall detected (Attempt ${stallRetriesRef.current}).`);
 
-        // TV/main display gets more retries (slower networks, primary screen)
-        const stallLimit = deviceDetection.isTV() ? 6 : 2;
-        if (!isOwner && stallRetriesRef.current > stallLimit) {
-          console.warn("[Player] Stall limit exceeded for guest. Assuming unavailable.");
-          setPlaybackError(100); // 100 = Video Not Found / Generic Unavailable. Triggers overlay.
-          clearInterval(checkInterval); // Stop trying
+        const stallLimit = deviceDetection.isTV() ? 6 : (isOwner ? 4 : 2);
+        if (stallRetriesRef.current > stallLimit) {
+          if (isOwner) {
+            console.warn("[Player] Stall limit exceeded for owner. Reporting as playback error.");
+            sendMessage({
+              type: "PLAYBACK_ERROR",
+              payload: {
+                videoId: currentTrackRef.current?.videoId,
+                errorCode: 'stall'
+              }
+            });
+          } else {
+            console.warn("[Player] Stall limit exceeded for guest. Assuming unavailable.");
+            setPlaybackError(100);
+          }
+          clearInterval(checkInterval);
           return;
         }
 
         console.warn("[Player] Force-reloading video...");
-        // Re-load current video at current time
         const currentTime = playerRef.current.getCurrentTime?.() || progressRef.current;
         playerRef.current.loadVideoById?.(currentTrackRef.current?.videoId, currentTime);
       } else {
-        // Reset retries if we are playing or in a good state
         if (state === YouTubeState.PLAYING) {
           stallRetriesRef.current = 0;
         }
       }
-    }, 8000); // Check every 8 seconds
+    }, 8000);
 
     return () => clearInterval(checkInterval);
-  }, [isPlaying, isPlayerReady, isOwner, progressRef]);
+  }, [isPlaying, isPlayerReady, isOwner, progressRef, sendMessage]);
 
   // Progress bar update (polls ref to avoid re-renders from progress messages)
   useEffect(() => {
