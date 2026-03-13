@@ -35,6 +35,9 @@ class Room {
         this.clients = new Set();
         this.knownVideos = new Set(); // Stores videoIds of approved videos
         this.ipBlockedVideos = new Map(); // videoId -> { failCount, lastFailedAt } for IP-blocked cooldown
+        this.consecutiveIPErrors = 0;    // Consecutive confirmed IP-block events
+        this.networkThrottleUntil = 0;   // Timestamp: suppress API calls and pause queue during throttle window
+        this.videoStatusCache = new Map(); // videoId -> { reason, checkedAt } to avoid redundant API calls
 
         this.state = {
             roomId: id, // Send ID to client for validation
@@ -517,6 +520,9 @@ class Room {
                 break;
             case "UPDATE_DURATION":
                 if (isOwner(this, ws) && this.state.currentTrack) {
+                    // A duration update means the video is actually playing — reset IP error counters
+                    this.consecutiveIPErrors = 0;
+                    this.networkThrottleUntil = 0;
                     this.updateState({
                         currentTrack: { ...this.state.currentTrack, duration: message.payload },
                     });
@@ -1119,19 +1125,35 @@ class Room {
     async handlePlaybackError(ws, { videoId, errorCode }) {
         if (!videoId || !this.state.currentTrack || this.state.currentTrack.videoId !== videoId) return;
 
+        const now = Date.now();
+        const THROTTLE_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+        const CACHE_TTL_MS = 5 * 60 * 1000;        // Re-check same video after 5 min
+
         let isGenuinelyUnavailable = true;
         let reason = 'unavailable';
 
-        if (this.apiKey) {
+        // If the network is already in throttle mode, skip the API call entirely and pause.
+        if (now < this.networkThrottleUntil) {
+            console.log(`[PlaybackError] Network throttle active. Pausing playback instead of skipping.`);
+            this.updateState({ isPlaying: false });
+            this.broadcast({ type: "NETWORK_THROTTLE", payload: { until: this.networkThrottleUntil } });
+            return;
+        }
+
+        // Check per-video cache to avoid burning quota for the same video
+        const cached = this.videoStatusCache.get(videoId);
+        if (cached && (now - cached.checkedAt) < CACHE_TTL_MS) {
+            reason = cached.reason;
+            isGenuinelyUnavailable = (reason !== 'ip_blocked' && reason !== 'check_failed' && reason !== 'no_api_key');
+            console.log(`[PlaybackError] Using cached status for ${videoId}: ${reason}`);
+        } else if (this.apiKey) {
             try {
                 const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=status,contentDetails&key=${this.apiKey}`;
                 const response = await fetch(apiUrl);
                 const data = await response.json();
 
                 if (data.items && data.items.length > 0) {
-                    const item = data.items[0];
-                    const status = item.status;
-
+                    const status = data.items[0].status;
                     if (status) {
                         if (status.privacyStatus === 'private') {
                             reason = 'private';
@@ -1144,34 +1166,47 @@ class Room {
                             reason = 'ip_blocked';
                         }
                     }
+                    // If items exists but status is fine, video is playable from server's IP → IP block
+                } else {
+                    // No items: video deleted or private (not returned by API)
+                    reason = 'unavailable';
                 }
-                // If no items returned, video was deleted/doesn't exist
             } catch (e) {
                 console.error("[PlaybackError] API check failed:", e);
                 isGenuinelyUnavailable = false;
                 reason = 'check_failed';
             }
+            this.videoStatusCache.set(videoId, { reason, checkedAt: now });
         } else {
             isGenuinelyUnavailable = false;
             reason = 'no_api_key';
         }
 
+        this.broadcast({ type: "VIDEO_STATUS", payload: { videoId, status: reason } });
+
         if (isGenuinelyUnavailable) {
             console.log(`[PlaybackError] Video ${videoId} genuinely unavailable (${reason}). Skipping with history.`);
+            this.consecutiveIPErrors = 0;
             this.handleNextTrack();
         } else {
-            console.log(`[PlaybackError] Video ${videoId} likely IP-blocked (${reason}). Skipping without history.`);
+            console.log(`[PlaybackError] Video ${videoId} likely IP-blocked (${reason}). Consecutive: ${this.consecutiveIPErrors + 1}`);
             this.ipBlockedVideos.set(videoId, {
                 failCount: (this.ipBlockedVideos.get(videoId)?.failCount || 0) + 1,
-                lastFailedAt: Date.now()
+                lastFailedAt: now
             });
-            this.handleSkipError();
-        }
+            this.consecutiveIPErrors += 1;
 
-        this.broadcast({
-            type: "VIDEO_STATUS",
-            payload: { videoId, status: reason }
-        });
+            if (this.consecutiveIPErrors >= 2) {
+                // Two consecutive IP blocks: stop draining the queue, pause and warn the owner.
+                this.networkThrottleUntil = now + THROTTLE_WINDOW_MS;
+                console.warn(`[PlaybackError] 2 consecutive IP blocks. Entering network throttle mode for 15 min.`);
+                this.updateState({ isPlaying: false });
+                this.broadcast({ type: "NETWORK_THROTTLE", payload: { until: this.networkThrottleUntil } });
+            } else {
+                // First IP block: skip this one video and try the next
+                this.handleSkipError();
+            }
+        }
     }
 
     handleSkipError() {

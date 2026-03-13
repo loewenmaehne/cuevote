@@ -404,6 +404,22 @@ function RoomBody() {
     }
   }, [lastMessage, isOwner, currentTrack, t]);
 
+  // Handle NETWORK_THROTTLE from server (venue IP is being throttled by YouTube)
+  useEffect(() => {
+    if (!lastMessage || lastMessage.type !== "NETWORK_THROTTLE") return;
+    const { until } = lastMessage.payload || {};
+    setNetworkThrottle({ until: until || (Date.now() + 15 * 60 * 1000) });
+  }, [lastMessage]);
+
+  // Auto-clear network throttle banner when time expires
+  useEffect(() => {
+    if (!networkThrottle) return;
+    const remaining = networkThrottle.until - Date.now();
+    if (remaining <= 0) { setNetworkThrottle(null); return; }
+    const timer = setTimeout(() => setNetworkThrottle(null), remaining);
+    return () => clearTimeout(timer);
+  }, [networkThrottle]);
+
   // Handle manual suggestion results from server
   useEffect(() => {
     if (!lastMessage || lastMessage.type !== "SUGGESTION_RESULT") return;
@@ -424,6 +440,7 @@ function RoomBody() {
   // const [user, setUser] = useState(null); // Now from Context
   const [progress, setProgress] = useState(0);
   const [playbackError, setPlaybackError] = useState(null); // New State: Track playback errors
+  const [networkThrottle, setNetworkThrottle] = useState(null); // { until: timestamp } when YouTube throttles the venue IP
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true); // Track footer visibility
   const [isWindowTooSmall, setIsWindowTooSmall] = useState(false);
@@ -1173,6 +1190,22 @@ function RoomBody() {
 
   return (
     <div className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : "min-h-screen bg-black pb-32"}`}>
+      {networkThrottle && (
+        <div className="fixed top-0 left-0 right-0 z-[101] bg-yellow-600/95 backdrop-blur-sm text-white text-center py-1.5 text-xs font-medium">
+          <div className="flex items-center justify-center gap-2">
+            <AlertTriangle size={12} />
+            <span>{t('app.networkThrottle', 'YouTube is limiting video playback on this network. Playback paused.')}</span>
+            {isOwner && (
+              <button
+                onClick={() => { setNetworkThrottle(null); sendMessage({ type: "PLAY_PAUSE", payload: true }); }}
+                className="ml-1 px-2 py-0.5 rounded bg-white/20 hover:bg-white/30 transition-colors"
+              >
+                {t('app.retryPlayback', 'Retry')}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
       {showReconnectBanner && serverState && !isStaleState && (
         <div className={`fixed top-0 left-0 right-0 z-[100] ${!isOnline ? 'bg-red-600/95' : 'bg-orange-600/95'} backdrop-blur-sm text-white text-center py-1.5 text-xs font-medium`}>
           <div className="flex items-center justify-center gap-2">
