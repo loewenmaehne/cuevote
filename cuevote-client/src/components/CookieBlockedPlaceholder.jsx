@@ -3,13 +3,13 @@ import { Cookie } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
 import { Consent } from '../contexts/ConsentContext';
 
-export function CookieBlockedPlaceholder() {
+export function CookieBlockedPlaceholder({ musicSource } = {}) {
 	const { t } = Language.useLanguage();
 	const { giveConsent } = Consent.useConsent();
+	const isAppleMusic = musicSource === 'apple_music';
 
 	return (
 		<div className="w-full h-full flex items-center justify-center bg-black relative overflow-hidden">
-			{/* Background Gradient similar to CookieConsent */}
 			<div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-purple-500/5 pointer-events-none" />
 
 			<div className="bg-[#111] border border-white/10 p-8 rounded-2xl shadow-2xl shadow-black/50 backdrop-blur-xl relative max-w-md w-full mx-4 text-center">
@@ -23,7 +23,7 @@ export function CookieBlockedPlaceholder() {
 						<div className="text-neutral-400 text-sm leading-relaxed max-w-xs mx-auto">
 							<p>{t('cookie.description')}</p>
 							<p className="mt-2 text-xs text-neutral-500">
-								{t('cookie.youtubeConsent')}
+								{isAppleMusic ? t('cookie.appleConsent', 'This room uses Apple Music. Accepting enables MusicKit JS and Apple cookies.') : t('cookie.youtubeConsent')}
 								<br />
 								<a href="/legal" target="_blank" className="text-orange-500 hover:text-orange-400 underline underline-offset-2 mt-1 inline-block">
 									{t('cookie.policy')}
