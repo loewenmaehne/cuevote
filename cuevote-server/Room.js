@@ -34,6 +34,7 @@ class Room {
         };
         this.clients = new Set();
         this.knownVideos = new Set(); // Stores videoIds of approved videos
+        this.ipBlockedVideos = new Map(); // videoId -> { failCount, lastFailedAt } for IP-blocked cooldown
 
         this.state = {
             roomId: id, // Send ID to client for validation
@@ -345,6 +346,10 @@ class Room {
                 // Duration Check
                 if (maxDuration > 0 && track.duration > maxDuration) continue;
 
+                // IP Cooldown Check — skip videos that recently failed due to IP blocks (30 min cooldown)
+                const ipEntry = this.ipBlockedVideos.get(track.videoId);
+                if (ipEntry && (Date.now() - ipEntry.lastFailedAt) < 1800000) continue;
+
                 // Repetition Check (History cooldown)
                 const title = track.title.toLowerCase().trim();
                 // Check if title is in recent history
@@ -503,6 +508,11 @@ class Room {
             case "NEXT_TRACK":
                 if (isOwner(this, ws)) {
                     this.handleNextTrack();
+                }
+                break;
+            case "PLAYBACK_ERROR":
+                if (isOwner(this, ws)) {
+                    await this.handlePlaybackError(ws, message.payload);
                 }
                 break;
             case "UPDATE_DURATION":
@@ -1104,6 +1114,91 @@ class Room {
             newState.isPlaying = false;
         }
         this.updateState(newState);
+    }
+
+    async handlePlaybackError(ws, { videoId, errorCode }) {
+        if (!videoId || !this.state.currentTrack || this.state.currentTrack.videoId !== videoId) return;
+
+        let isGenuinelyUnavailable = true;
+        let reason = 'unavailable';
+
+        if (this.apiKey) {
+            try {
+                const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=status,contentDetails&key=${this.apiKey}`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.items && data.items.length > 0) {
+                    const item = data.items[0];
+                    const status = item.status;
+
+                    if (status) {
+                        if (status.privacyStatus === 'private') {
+                            reason = 'private';
+                        } else if (status.uploadStatus === 'rejected') {
+                            reason = 'rejected';
+                        } else if (status.embeddable === false) {
+                            reason = 'not_embeddable';
+                        } else {
+                            isGenuinelyUnavailable = false;
+                            reason = 'ip_blocked';
+                        }
+                    }
+                }
+                // If no items returned, video was deleted/doesn't exist
+            } catch (e) {
+                console.error("[PlaybackError] API check failed:", e);
+                isGenuinelyUnavailable = false;
+                reason = 'check_failed';
+            }
+        } else {
+            isGenuinelyUnavailable = false;
+            reason = 'no_api_key';
+        }
+
+        if (isGenuinelyUnavailable) {
+            console.log(`[PlaybackError] Video ${videoId} genuinely unavailable (${reason}). Skipping with history.`);
+            this.handleNextTrack();
+        } else {
+            console.log(`[PlaybackError] Video ${videoId} likely IP-blocked (${reason}). Skipping without history.`);
+            this.ipBlockedVideos.set(videoId, {
+                failCount: (this.ipBlockedVideos.get(videoId)?.failCount || 0) + 1,
+                lastFailedAt: Date.now()
+            });
+            this.handleSkipError();
+        }
+
+        this.broadcast({
+            type: "VIDEO_STATUS",
+            payload: { videoId, status: reason }
+        });
+    }
+
+    handleSkipError() {
+        const newQueue = [...this.state.queue];
+
+        newQueue.shift();
+        const newCurrentTrack = newQueue[0] || null;
+
+        if (newCurrentTrack) {
+            newCurrentTrack.startedAt = Date.now();
+        }
+
+        const newState = {
+            queue: newQueue,
+            currentTrack: newCurrentTrack,
+            progress: 0,
+            isPlaying: !!newCurrentTrack,
+        };
+
+        if (!newCurrentTrack && this.state.autoRefill && this.state.history.length > 0) {
+            this.updateState(newState);
+            if (!this.state.isRefilling) {
+                this.populateQueueFromHistory();
+            }
+        } else {
+            this.updateState(newState);
+        }
     }
 
     handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled }) {

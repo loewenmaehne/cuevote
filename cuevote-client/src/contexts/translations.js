@@ -38,7 +38,8 @@ export const translations = {
 		player: {
 			errorGeneric: "An error occurred while playing this video.",
 			errorNotFound: "This video is unavailable.",
-			errorRestricted: "This video is not available in your country."
+			errorRestricted: "This video is not available in your country.",
+			errorIPBlocked: "YouTube is limiting playback on this network."
 		},
 		cookie: {
 			title: "Privacy & Playback",
@@ -193,7 +194,8 @@ export const translations = {
 			queueEmpty: "Queue empty",
 			errorNotFound: "Video not found",
 			errorRestricted: "Video not available in your country",
-			skippedRestricted: "Skipped '{title}' (Region Restricted)",
+			skippedRestricted: "Skipped '{title}' (Unavailable)",
+			skippedIPBlocked: "Skipped '{title}' — YouTube is limiting this network",
 			backToNow: "Back to Now",
 			addVideos: "Add videos to start playback"
 		},
@@ -252,7 +254,8 @@ export const translations = {
 		player: {
 			errorGeneric: "Er is een fout opgetreden bij het afspelen.",
 			errorNotFound: "Deze video is niet beschikbaar.",
-			errorRestricted: "Deze video is niet beschikbaar in jouw land."
+			errorRestricted: "Deze video is niet beschikbaar in jouw land.",
+			errorIPBlocked: "YouTube beperkt het afspelen op dit netwerk."
 		},
 		cookie: {
 			title: "Privacy & Afspelen",
@@ -398,7 +401,8 @@ export const translations = {
 			queueEmpty: "Wachtrij leeg",
 			errorNotFound: "Video niet gevonden",
 			errorRestricted: "Video niet beschikbaar in jouw land",
-			skippedRestricted: "'{title}' overgeslagen (Regio Geblokkeerd)",
+			skippedRestricted: "'{title}' overgeslagen (Niet beschikbaar)",
+			skippedIPBlocked: "'{title}' overgeslagen — YouTube beperkt dit netwerk",
 			backToNow: "Terug naar Nu",
 			addVideos: "Voeg videos toe om af te spelen"
 		},
@@ -457,7 +461,8 @@ export const translations = {
 		player: {
 			errorGeneric: "Ein Fehler ist bei der Wiedergabe aufgetreten.",
 			errorNotFound: "Dieses Video ist nicht verfügbar.",
-			errorRestricted: "Dieses Video ist in deinem Land nicht verfügbar."
+			errorRestricted: "Dieses Video ist in deinem Land nicht verfügbar.",
+			errorIPBlocked: "YouTube beschränkt die Wiedergabe in diesem Netzwerk."
 		},
 		cookie: {
 			title: "Datenschutz & Wiedergabe",
@@ -603,7 +608,8 @@ export const translations = {
 			queueEmpty: "Warteschlange leer",
 			errorNotFound: "Video nicht gefunden",
 			errorRestricted: "Video in deinem Land nicht verfügbar",
-			skippedRestricted: "'{title}' übersprungen (Ländersperre)",
+			skippedRestricted: "'{title}' übersprungen (Nicht verfügbar)",
+			skippedIPBlocked: "'{title}' übersprungen — YouTube beschränkt dieses Netzwerk",
 			backToNow: "Zurück zum Aktuellen",
 			addVideos: "Füge Videos hinzu, um zu starten"
 		},
@@ -662,7 +668,8 @@ export const translations = {
 		player: {
 			errorGeneric: "Une erreur est survenue lors de la lecture.",
 			errorNotFound: "Cette vidéo n'est pas disponible.",
-			errorRestricted: "Cette vidéo n'est pas disponible dans votre pays."
+			errorRestricted: "Cette vidéo n'est pas disponible dans votre pays.",
+			errorIPBlocked: "YouTube limite la lecture sur ce réseau."
 		},
 		cookie: {
 			title: "Confidentialité & Lecture",
@@ -808,7 +815,8 @@ export const translations = {
 			queueEmpty: "File d'attente vide",
 			errorNotFound: "Vidéo introuvable",
 			errorRestricted: "Vidéo indisponible dans votre pays",
-			skippedRestricted: "'{title}' passé (Restriction géographique)",
+			skippedRestricted: "'{title}' passé (Indisponible)",
+			skippedIPBlocked: "'{title}' passé — YouTube limite ce réseau",
 			backToNow: "Retour au direct",
 			addVideos: "Ajoutez des vidéos pour commencer"
 		},
@@ -867,7 +875,8 @@ export const translations = {
 		player: {
 			errorGeneric: "Ocurrió un error al reproducir este video.",
 			errorNotFound: "Este video no está disponible.",
-			errorRestricted: "Este video no está disponible en tu país."
+			errorRestricted: "Este video no está disponible en tu país.",
+			errorIPBlocked: "YouTube está limitando la reproducción en esta red."
 		},
 
 		cookie: {
@@ -1010,7 +1019,8 @@ export const translations = {
 			queueEmpty: "Cola vacía",
 			errorNotFound: "Video no encontrado",
 			errorRestricted: "Video no disponible en tu país",
-			skippedRestricted: "'{title}' saltada (Restricción Regional)",
+			skippedRestricted: "'{title}' saltada (No disponible)",
+			skippedIPBlocked: "'{title}' saltada — YouTube está limitando esta red",
 			backToNow: "Volver al actual",
 			addVideos: "Añade videos para empezar"
 		},
