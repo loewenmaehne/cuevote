@@ -2087,7 +2087,11 @@ export const translations = {
 			errorGeneric: "이 동영상을 재생하는 중 오류가 발생했습니다.",
 			errorNotFound: "이 동영상은 사용할 수 없습니다.",
 			errorRestricted: "이 동영상은 해당 국가에서 사용할 수 없습니다.",
-			errorIPBlocked: "YouTube가 이 네트워크에서 재생을 제한하고 있습니다."
+			errorIPBlocked: "YouTube가 이 네트워크에서 재생을 제한하고 있습니다.",
+			ipBlockTitle: "재생 불가",
+			ipBlockMessage: "현재 네트워크에서 동영상을 재생할 수 없습니다. 모바일 데이터 또는 다른 Wi-Fi 네트워크로 전환하거나, 파티 모드를 사용하여 투표하고 노래를 추천하세요.",
+			ipBlockPartyMode: "파티 모드로 전환",
+			ipBlockRetry: "페이지 새로고침"
 		},
 		cookie: {
 			title: "개인정보 및 재생",
@@ -2276,7 +2280,11 @@ export const translations = {
 			errorGeneric: "इस वीडियो को चलाते समय एक त्रुटि हुई।",
 			errorNotFound: "यह वीडियो उपलब्ध नहीं है।",
 			errorRestricted: "यह वीडियो आपके देश में उपलब्ध नहीं है।",
-			errorIPBlocked: "YouTube इस नेटवर्क पर प्लेबैक सीमित कर रहा है।"
+			errorIPBlocked: "YouTube इस नेटवर्क पर प्लेबैक सीमित कर रहा है।",
+			ipBlockTitle: "प्लेबैक अनुपलब्ध",
+			ipBlockMessage: "आपके वर्तमान नेटवर्क पर वीडियो नहीं चलाए जा सकते। मोबाइल डेटा या किसी अन्य Wi-Fi नेटवर्क पर स्विच करें, या वोट देने और गाने सुझाने के लिए पार्टी मोड का उपयोग करें।",
+			ipBlockPartyMode: "पार्टी मोड में स्विच करें",
+			ipBlockRetry: "पेज रीलोड करें"
 		},
 		cookie: {
 			title: "गोपनीयता और प्लेबैक",
@@ -2466,7 +2474,11 @@ export const translations = {
 			errorGeneric: "เกิดข้อผิดพลาดขณะเล่นวิดีโอนี้",
 			errorNotFound: "วิดีโอนี้ไม่พร้อมใช้งาน",
 			errorRestricted: "วิดีโอนี้ไม่พร้อมใช้งานในประเทศของคุณ",
-			errorIPBlocked: "YouTube กำลังจำกัดการเล่นบนเครือข่ายนี้"
+			errorIPBlocked: "YouTube กำลังจำกัดการเล่นบนเครือข่ายนี้",
+			ipBlockTitle: "ไม่สามารถเล่นได้",
+			ipBlockMessage: "ไม่สามารถเล่นวิดีโอบนเครือข่ายปัจจุบันของคุณได้ ลองเปลี่ยนไปใช้ข้อมูลมือถือหรือเครือข่าย Wi-Fi อื่น หรือใช้โหมดปาร์ตี้เพื่อโหวตและแนะนำเพลงต่อไป",
+			ipBlockPartyMode: "สลับไปโหมดปาร์ตี้",
+			ipBlockRetry: "โหลดหน้าใหม่"
 		},
 		cookie: {
 			title: "ความเป็นส่วนตัวและการเล่น",
@@ -2651,7 +2663,11 @@ export const translations = {
 			errorGeneric: "Đã xảy ra lỗi khi phát video này.",
 			errorNotFound: "Video này không khả dụng.",
 			errorRestricted: "Video này không khả dụng ở quốc gia của bạn.",
-			errorIPBlocked: "YouTube đang giới hạn phát lại trên mạng này."
+			errorIPBlocked: "YouTube đang giới hạn phát lại trên mạng này.",
+			ipBlockTitle: "Không thể phát",
+			ipBlockMessage: "Video không thể phát trên mạng hiện tại của bạn. Hãy thử chuyển sang dữ liệu di động hoặc mạng Wi-Fi khác, hoặc sử dụng Chế độ Tiệc để tiếp tục bình chọn và đề xuất bài hát.",
+			ipBlockPartyMode: "Chuyển sang Chế độ Tiệc",
+			ipBlockRetry: "Tải lại trang"
 		},
 		cookie: {
 			title: "Quyền riêng tư & Phát lại",
@@ -2836,7 +2852,11 @@ export const translations = {
 			errorGeneric: "Terjadi kesalahan saat memutar video ini.",
 			errorNotFound: "Video ini tidak tersedia.",
 			errorRestricted: "Video ini tidak tersedia di negara Anda.",
-			errorIPBlocked: "YouTube membatasi pemutaran di jaringan ini."
+			errorIPBlocked: "YouTube membatasi pemutaran di jaringan ini.",
+			ipBlockTitle: "Pemutaran Tidak Tersedia",
+			ipBlockMessage: "Video tidak dapat diputar di jaringan Anda saat ini. Coba beralih ke data seluler atau jaringan Wi-Fi yang berbeda, atau gunakan Mode Pesta untuk terus memilih dan menyarankan lagu.",
+			ipBlockPartyMode: "Beralih ke Mode Pesta",
+			ipBlockRetry: "Muat Ulang Halaman"
 		},
 		cookie: {
 			title: "Privasi & Pemutaran",
@@ -3021,7 +3041,11 @@ export const translations = {
 			errorGeneric: "Ralat berlaku semasa memainkan video ini.",
 			errorNotFound: "Video ini tidak tersedia.",
 			errorRestricted: "Video ini tidak tersedia di negara anda.",
-			errorIPBlocked: "YouTube mengehadkan main balik di rangkaian ini."
+			errorIPBlocked: "YouTube mengehadkan main balik di rangkaian ini.",
+			ipBlockTitle: "Main Balik Tidak Tersedia",
+			ipBlockMessage: "Video tidak dapat dimainkan di rangkaian semasa anda. Cuba tukar ke data mudah alih atau rangkaian Wi-Fi lain, atau gunakan Mod Parti untuk terus mengundi dan mencadangkan lagu.",
+			ipBlockPartyMode: "Tukar ke Mod Parti",
+			ipBlockRetry: "Muat Semula Halaman"
 		},
 		cookie: {
 			title: "Privasi & Main Semula",
@@ -3205,7 +3229,11 @@ export const translations = {
 			errorGeneric: "May naganap na error habang sine-play ang video na ito.",
 			errorNotFound: "Hindi available ang video na ito.",
 			errorRestricted: "Hindi available ang video na ito sa iyong bansa.",
-			errorIPBlocked: "Nililimitahan ng YouTube ang pag-play sa network na ito."
+			errorIPBlocked: "Nililimitahan ng YouTube ang pag-play sa network na ito.",
+			ipBlockTitle: "Hindi Available ang Playback",
+			ipBlockMessage: "Hindi ma-play ang mga video sa kasalukuyang network mo. Subukang lumipat sa mobile data o ibang Wi-Fi network, o gamitin ang Party Mode para patuloy na bumoto at mag-suggest ng mga kanta.",
+			ipBlockPartyMode: "Lumipat sa Party Mode",
+			ipBlockRetry: "I-reload ang Pahina"
 		},
 		cookie: {
 			title: "Privacy at Playback",
