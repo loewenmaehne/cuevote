@@ -199,7 +199,11 @@ module.exports = {
         video_id = excluded.video_id,
         created_at = unixepoch()
     `);
-    stmt.run(term, videoId);
+    try {
+      stmt.run(term, videoId);
+    } catch (err) {
+      if (err.code !== 'SQLITE_CONSTRAINT_FOREIGNKEY') throw err;
+    }
   },
   getSearchTermVideo: (term) => {
     const row = db.prepare('SELECT video_id FROM search_cache WHERE term = ?').get(term);
