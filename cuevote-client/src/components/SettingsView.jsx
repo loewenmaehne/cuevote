@@ -25,11 +25,15 @@ export function SettingsView({
 	ownerPopups,
 	onDeleteChannel,
 	captionsEnabled,
+	musicSource = 'youtube',
 	isConnected = true,
 	onFullscreenOverlay,
 }) {
 	const { t } = Language.useLanguage();
 	const [deleteChannelText, setDeleteChannelText] = React.useState("");
+	const [showSourceWarning, setShowSourceWarning] = React.useState(false);
+	const [pendingSource, setPendingSource] = React.useState(null);
+	const isAppleMusic = musicSource === 'apple_music';
 	const [showDeleteChannelConfirm, setShowDeleteChannelConfirm] = React.useState(false);
 
 	useEffect(() => {
@@ -136,6 +140,7 @@ export function SettingsView({
 					<div className="space-y-4">
 						<h4 className="text-xs font-semibold text-neutral-500 uppercase">{t('header.queuePlayback')}</h4>
 
+						{!isAppleMusic && (
 						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
 							<label className="text-sm font-medium text-white">{t('header.musicOnly')}</label>
 							<button
@@ -150,6 +155,7 @@ export function SettingsView({
 								/>
 							</button>
 						</div>
+					)}
 
 						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
 							<label className="text-sm font-medium text-white">{t('header.maxLength')}</label>
@@ -254,6 +260,26 @@ export function SettingsView({
 					<div className="space-y-4">
 						<h4 className="text-xs font-semibold text-neutral-500 uppercase">{t('header.features')}</h4>
 
+						{/* Music Source Selector */}
+						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
+							<label className="text-sm font-medium text-white">{t('settings.musicSource', 'Music Source')}</label>
+							<select
+								value={musicSource}
+								onChange={(e) => {
+									const newSource = e.target.value;
+									if (newSource !== musicSource) {
+										setPendingSource(newSource);
+										setShowSourceWarning(true);
+									}
+								}}
+								onClick={(e) => e.stopPropagation()}
+								className="bg-neutral-900 text-white text-sm rounded-lg px-3 py-1.5 border border-neutral-700 focus:outline-none focus:border-orange-500 transition-colors"
+							>
+								<option value="youtube">YouTube</option>
+								<option value="apple_music">Apple Music</option>
+							</select>
+						</div>
+
 						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
 							<div className="flex items-center gap-2">
 								<label className="text-sm font-medium text-white">{t('header.venueMode')}</label>
@@ -292,6 +318,7 @@ export function SettingsView({
 							</button>
 						</div>
 
+						{!isAppleMusic && (
 						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
 							<div className="flex items-center gap-2">
 								<label className="text-sm font-medium text-white">{t('lobby.startWithCaptions')}</label>
@@ -315,6 +342,7 @@ export function SettingsView({
 								/>
 							</button>
 						</div>
+						)}
 
 						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
 							<label className="text-sm font-medium text-white">{t('header.allowVoting')}</label>
@@ -414,7 +442,35 @@ export function SettingsView({
 				</div>
 			</div>
 
-			{/* Delete Channel Confirmation Modal - Rendered locally within SettingsView is fine, or Portal */}
+			{showSourceWarning && (
+				<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+					<div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl">
+						<h3 className="text-xl font-bold text-white mb-2 text-center">{t('settings.switchSourceTitle', 'Switch Music Source?')}</h3>
+						<p className="text-neutral-400 mb-6 text-center text-sm">
+							{t('settings.switchSourceWarning', 'Changing the music source will clear the current queue and stop playback.')}
+						</p>
+						<div className="flex gap-3">
+							<button
+								onClick={() => { setShowSourceWarning(false); setPendingSource(null); }}
+								className="flex-1 px-4 py-3 rounded-xl border border-neutral-700 text-neutral-300 font-medium hover:bg-neutral-800 transition-all"
+							>
+								{t('lobby.cancel')}
+							</button>
+							<button
+								onClick={() => {
+									onUpdateSettings({ musicSource: pendingSource });
+									setShowSourceWarning(false);
+									setPendingSource(null);
+								}}
+								className="flex-1 px-4 py-3 rounded-xl bg-orange-600 text-white font-bold hover:bg-orange-500 transition-all shadow-lg"
+							>
+								{t('settings.switchConfirm', 'Switch')}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+
 			{
 				showDeleteChannelConfirm && (
 					<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
@@ -488,6 +544,7 @@ SettingsView.propTypes = {
 	ownerPopups: PropTypes.bool,
 	onDeleteChannel: PropTypes.func,
 	captionsEnabled: PropTypes.bool,
+	musicSource: PropTypes.string,
 	isConnected: PropTypes.bool,
 	onFullscreenOverlay: PropTypes.func,
 };
