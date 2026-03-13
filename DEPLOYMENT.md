@@ -59,7 +59,16 @@ ALLOWED_ORIGINS=https://cuevote.com
 # Optional Configuration
 LOAD_ACTIVE_CHANNELS=true
 ACTIVE_CHANNEL_DAYS=60
+
+# Apple Music (Optional - enables Apple Music as alternative music source)
+# Obtain these from https://developer.apple.com/account/resources/authkeys/
+APPLE_MUSIC_TEAM_ID=your_apple_team_id
+APPLE_MUSIC_KEY_ID=your_musickit_key_id
+APPLE_MUSIC_PRIVATE_KEY_PATH=/path/to/AuthKey_XXXXXXXXXX.p8
+APPLE_MUSIC_STOREFRONT=us
 ```
+
+> **Apple Music Setup:** Create a MusicKit key in Apple Developer > Certificates, Identifiers & Profiles > Keys. Download the `.p8` file and set `APPLE_MUSIC_PRIVATE_KEY_PATH` to its location. For Docker/cloud deployments, set `APPLE_MUSIC_PRIVATE_KEY` to the key file contents instead.
 
 ### Start Backend
 ```bash
@@ -133,8 +142,14 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
-    # Health check endpoint
+    # API endpoints (health check, Apple Music token)
     location /health {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /api/ {
         proxy_pass http://localhost:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
