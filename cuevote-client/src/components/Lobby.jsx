@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from "react-router-dom";
-import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale, ChevronLeft, ChevronRight } from "lucide-react";
+import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale, ChevronLeft, ChevronRight, Music } from "lucide-react";
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { Consent } from '../contexts/ConsentContext';
 import { Language } from '../contexts/LanguageContext';
@@ -74,6 +74,7 @@ export function Lobby() {
     const [newRoomName, setNewRoomName] = useState("");
     const [isPrivate, setIsPrivate] = useState(false);
     const [createPassword, setCreatePassword] = useState("");
+    const [newRoomMusicSource, setNewRoomMusicSource] = useState("youtube");
 
     // Joining State (Password)
     const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -493,13 +494,15 @@ export function Lobby() {
                 description: `Hosted by ${user.name}`,
                 color: "from-gray-700 to-black",
                 isPrivate,
-                password: isPrivate ? createPassword : null
+                password: isPrivate ? createPassword : null,
+                musicSource: newRoomMusicSource
             }
         });
         setIsCreatingRoom(false);
         setNewRoomName("");
         setIsPrivate(false);
         setCreatePassword("");
+        setNewRoomMusicSource("youtube");
     };
 
     const submitPasswordJoin = (e) => {
@@ -913,6 +916,26 @@ export function Lobby() {
                                             />
                                         </div>
                                     )}
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-neutral-400 mb-1">{t('lobby.musicSource', 'Music Source')}</label>
+                                        <div className="flex gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewRoomMusicSource("youtube")}
+                                                className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${newRoomMusicSource === 'youtube' ? 'bg-orange-500/10 border-orange-500 text-orange-500' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
+                                            >
+                                                <Radio size={18} /> YouTube
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewRoomMusicSource("apple_music")}
+                                                className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${newRoomMusicSource === 'apple_music' ? 'bg-orange-500/10 border-orange-500 text-orange-500' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
+                                            >
+                                                <Music size={18} /> Apple Music
+                                            </button>
+                                        </div>
+                                    </div>
 
                                 </div>
 
