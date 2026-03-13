@@ -407,7 +407,10 @@ function RoomBody() {
     if (!lastMessage || lastMessage.type !== "NETWORK_THROTTLE") return;
     const { until } = lastMessage.payload || {};
     setNetworkThrottle({ until: until || (Date.now() + 15 * 60 * 1000) });
-  }, [lastMessage]);
+    if (!isOwner) {
+      setIpBlockDetected(true);
+    }
+  }, [lastMessage, isOwner]);
 
   // No auto-clear for network throttle — IP blocks last hours, not minutes.
   // The banner clears only when the owner presses Retry and playback succeeds
@@ -1194,7 +1197,7 @@ function RoomBody() {
 
   return (
     <div className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : "min-h-screen bg-black pb-32"}`}>
-      {networkThrottle && (
+      {networkThrottle && !ipBlockDetected && (
         <div className="fixed top-0 left-0 right-0 z-[101] bg-yellow-600/95 backdrop-blur-sm text-white text-center py-1.5 text-xs font-medium">
           <div className="flex items-center justify-center gap-2">
             <AlertTriangle size={12} />
