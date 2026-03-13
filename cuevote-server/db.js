@@ -97,6 +97,20 @@ try {
   // Ignore duplicate column error
 }
 
+// Migration: Add music_source to rooms
+try {
+  db.prepare("ALTER TABLE rooms ADD COLUMN music_source TEXT DEFAULT 'youtube'").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
+
+// Migration: Add source to videos (distinguishes youtube vs apple_music entries)
+try {
+  db.prepare("ALTER TABLE videos ADD COLUMN source TEXT DEFAULT 'youtube'").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
+
 module.exports = {
   getUser: (id) => db.prepare('SELECT * FROM users WHERE id = ?').get(id),
   getUserByEmail: (email) => db.prepare('SELECT * FROM users WHERE email = ?').get(email),
@@ -129,11 +143,11 @@ module.exports = {
   // Room Management
   createRoom: (room) => {
     const stmt = db.prepare(`
-        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled)
-        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled)
+        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled, music_source)
+        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled, @music_source)
     `);
-    // Ensure default
     if (room.captions_enabled === undefined) room.captions_enabled = 0;
+    if (room.music_source === undefined) room.music_source = 'youtube';
 
     stmt.run(room);
     return db.prepare('SELECT * FROM rooms WHERE id = ?').get(room.id);
@@ -166,6 +180,11 @@ module.exports = {
       values.push(settings.captions_enabled ? 1 : 0);
     }
 
+    if (settings.music_source !== undefined) {
+      updates.push("music_source = ?");
+      values.push(settings.music_source);
+    }
+
     if (updates.length > 0) {
       values.push(id);
       db.prepare(`UPDATE rooms SET ${updates.join(', ')} WHERE id = ?`).run(...values);
@@ -174,9 +193,10 @@ module.exports = {
 
   // Video Caching
   upsertVideo: (video) => {
+    if (!video.source) video.source = 'youtube';
     const stmt = db.prepare(`
-      INSERT INTO videos (id, title, artist, thumbnail, duration, category_id, language, fetched_at)
-      VALUES (@id, @title, @artist, @thumbnail, @duration, @category_id, @language, unixepoch())
+      INSERT INTO videos (id, title, artist, thumbnail, duration, category_id, language, source, fetched_at)
+      VALUES (@id, @title, @artist, @thumbnail, @duration, @category_id, @language, @source, unixepoch())
       ON CONFLICT(id) DO UPDATE SET
         title = @title,
         artist = @artist,
@@ -184,6 +204,7 @@ module.exports = {
         duration = @duration,
         category_id = @category_id,
         language = @language,
+        source = @source,
         fetched_at = unixepoch()
     `);
     stmt.run(video);
@@ -278,20 +299,23 @@ module.exports = {
 
   // Room History
   addToRoomHistory: (roomId, track) => {
-    if (!track.videoId) return;
+    const sourceId = track.videoId || track.trackId;
+    if (!sourceId) return;
 
-    // 1. Ensure the video exists in the videos table first
+    const isAppleMusic = track.source === 'apple_music';
+    const dbId = isAppleMusic ? `am:${track.trackId}` : track.videoId;
+
     module.exports.upsertVideo({
-      id: track.videoId,
+      id: dbId,
       title: track.title,
       artist: track.artist,
       thumbnail: track.thumbnail,
       duration: track.duration,
-      category_id: track.category_id || '10', // Default to music if unknown
-      language: track.language || null
+      category_id: track.category_id || '10',
+      language: track.language || null,
+      source: track.source || 'youtube'
     });
 
-    // 2. Insert or update the history record
     const playedAt = track.playedAt ? Math.floor(track.playedAt / 1000) : Math.floor(Date.now() / 1000);
     const stmt = db.prepare(`
       INSERT INTO room_history (room_id, video_id, played_at)
@@ -299,11 +323,10 @@ module.exports = {
       ON CONFLICT(room_id, video_id) DO UPDATE SET
         played_at = excluded.played_at
     `);
-    stmt.run(roomId, track.videoId, playedAt);
+    stmt.run(roomId, dbId, playedAt);
   },
 
   getRoomHistory: (roomId) => {
-    // Return history from the last 28 days
     const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
     const rows = db.prepare(`
         SELECT v.*, h.played_at 
@@ -313,12 +336,17 @@ module.exports = {
         ORDER BY h.played_at ASC
     `).all(roomId, threshold);
 
-    // Map DB rows back to the track object format expected by the frontend/Room.js
-    return rows.map(row => ({
-      ...row, // Contains title, artist, duration etc from videos table
-      videoId: row.id,
-      playedAt: row.played_at * 1000 // Convert back to milliseconds
-    }));
+    return rows.map(row => {
+      const isAppleMusic = row.source === 'apple_music';
+      const rawId = isAppleMusic ? row.id.replace(/^am:/, '') : row.id;
+      return {
+        ...row,
+        videoId: isAppleMusic ? null : rawId,
+        trackId: isAppleMusic ? rawId : null,
+        source: row.source || 'youtube',
+        playedAt: row.played_at * 1000
+      };
+    });
   },
 
   removeFromRoomHistory: (roomId, videoId) => {
