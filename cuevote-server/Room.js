@@ -1467,7 +1467,7 @@ class Room {
         }
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled, musicSource }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
@@ -1486,18 +1486,35 @@ class Room {
         if (typeof autoRefill === 'boolean') updates.autoRefill = autoRefill;
         if (typeof captionsEnabled === 'boolean') updates.captionsEnabled = captionsEnabled;
 
+        // Switching music source clears the queue to avoid mixed-source tracks
+        if (musicSource === 'youtube' || musicSource === 'apple_music') {
+            if (musicSource !== this.state.musicSource) {
+                updates.musicSource = musicSource;
+                updates.queue = [];
+                updates.currentTrack = null;
+                updates.isPlaying = false;
+                updates.progress = 0;
+                updates.pendingSuggestions = [];
+            }
+        }
+
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
 
-            // Persist DB Settings (captions_enabled)
             if (updates.captionsEnabled !== undefined) {
-                this.metadata.captions_enabled = updates.captionsEnabled ? 1 : 0; // Update memory metadata
+                this.metadata.captions_enabled = updates.captionsEnabled ? 1 : 0;
                 try {
                     db.updateRoomSettings(this.id, { captions_enabled: updates.captionsEnabled });
                 } catch (e) { console.error("Failed to persist room settings", e); }
             }
 
-            // Trigger Auto-Refill if enabled and queue is empty
+            if (updates.musicSource !== undefined) {
+                this.metadata.music_source = updates.musicSource;
+                try {
+                    db.updateRoomSettings(this.id, { music_source: updates.musicSource });
+                } catch (e) { console.error("Failed to persist music source", e); }
+            }
+
             if (updates.autoRefill === true && this.state.queue.length === 0 && this.state.history.length >= 5) {
                 this.populateQueueFromHistory();
             }
