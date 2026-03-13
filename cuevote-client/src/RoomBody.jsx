@@ -385,13 +385,13 @@ function RoomBody() {
     }
   }, [lastMessage]);
 
-  // Handle VIDEO_STATUS from server (playback error diagnosis)
+  // Handle VIDEO_STATUS from server (playback error diagnosis — YouTube only)
   useEffect(() => {
+    if (musicSource === 'apple_music') return;
     if (!lastMessage || lastMessage.type !== "VIDEO_STATUS") return;
     const { videoId, status } = lastMessage.payload || {};
     if (!videoId) return;
 
-    // Detect repeated skipping — if 2+ videos are skipped in this session, something systemic is wrong
     recentSkipTimesRef.current.push(Date.now());
     if (recentSkipTimesRef.current.length >= 2) {
       console.warn("[Player] IP block detected — multiple videos skipped by server");
@@ -411,13 +411,14 @@ function RoomBody() {
     }
   }, [lastMessage, isOwner, currentTrack, t]);
 
-  // Handle NETWORK_THROTTLE from server (venue IP is being throttled by YouTube)
+  // Handle NETWORK_THROTTLE from server (YouTube only)
   useEffect(() => {
+    if (musicSource === 'apple_music') return;
     if (!lastMessage || lastMessage.type !== "NETWORK_THROTTLE") return;
     const { until } = lastMessage.payload || {};
     setNetworkThrottle({ until: until || (Date.now() + 15 * 60 * 1000) });
     setIpBlockDetected(true);
-  }, [lastMessage]);
+  }, [lastMessage, musicSource]);
 
   // No auto-clear for network throttle — IP blocks last hours, not minutes.
   // The banner clears only when the owner presses Retry and playback succeeds
@@ -590,8 +591,7 @@ function RoomBody() {
     currentTrackRef.current = currentTrack;
     setPlaybackError(null);
 
-    // Track-cycling detection: if 2+ tracks load without any successful playback, something systemic is wrong
-    if (currentTrack) {
+    if (musicSource !== 'apple_music' && currentTrack) {
       trackFailTimesRef.current.push(Date.now());
       if (trackFailTimesRef.current.length >= 2 && Date.now() - lastSuccessfulPlayRef.current > 5000) {
         console.warn("[Player] IP block detected — tracks keep failing without playback");
@@ -733,8 +733,172 @@ function RoomBody() {
     });
   }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled]);
 
+  // Apple Music API Loading
+  const loadAppleMusicAPI = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      if (!hasConsent) return reject("No Consent");
+      if (window.MusicKit) return resolve(window.MusicKit);
+      const script = document.createElement("script");
+      script.src = "https://js-cdn.music.apple.com/musickit/v3/musickit.js";
+      script.onload = () => {
+        document.addEventListener('musickitloaded', () => {
+          resolve(window.MusicKit);
+        });
+      };
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }, [hasConsent]);
+
+  // Apple Music Player Initialization
+  const initializeAppleMusicPlayer = useCallback(async () => {
+    if (!hasConsent) return;
+    const initId = ++playerInitIdRef.current;
+    try {
+      const MusicKit = await loadAppleMusicAPI();
+      if (initId !== playerInitIdRef.current) return;
+
+      const serverUrl = import.meta.env.VITE_WS_URL?.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws', '') || window.location.origin;
+      const tokenRes = await fetch(`${serverUrl}/api/apple-music-token`);
+      const tokenData = await tokenRes.json();
+      if (!tokenData.token) {
+        console.error("[Apple Music] No developer token available");
+        return;
+      }
+
+      const music = await MusicKit.configure({
+        developerToken: tokenData.token,
+        app: { name: 'CueVote', build: '1.0' }
+      });
+
+      if (isOwnerRef.current) {
+        await music.authorize();
+      }
+
+      playerRef.current = music;
+      setIsPlayerReady(true);
+
+      music.volume = volumeRef.current / 100;
+
+      music.addEventListener('playbackStateDidChange', (event) => {
+        const state = event.state;
+        if (state === MusicKit.PlaybackStates.playing) {
+          setIsLocallyPaused(false);
+          lastSuccessfulPlayRef.current = Date.now();
+          trackFailTimesRef.current = [];
+          if (!isPlayingRef.current) setIsLocallyPlaying(true);
+          else setIsLocallyPlaying(false);
+          setAutoplayBlocked(false);
+          const duration = music.currentPlaybackDuration;
+          if (duration > 0) sendMessage({ type: "UPDATE_DURATION", payload: duration });
+        } else if (state === MusicKit.PlaybackStates.paused) {
+          setIsLocallyPaused(isPlayingRef.current);
+          setIsLocallyPlaying(false);
+        }
+      });
+
+      music.addEventListener('mediaPlaybackError', (event) => {
+        console.error("Apple Music Playback Error:", event);
+        if (isOwnerRef.current) {
+          sendMessage({
+            type: "PLAYBACK_ERROR",
+            payload: {
+              trackId: currentTrackRef.current?.trackId,
+              errorCode: 'APPLE_MUSIC_ERROR'
+            }
+          });
+        }
+      });
+
+      console.log("[Apple Music] Player initialized successfully");
+    } catch (err) {
+      console.error("[Apple Music] Initialization failed:", err);
+    }
+  }, [loadAppleMusicAPI, hasConsent, sendMessage]);
+
+  // Source-aware player abstraction helpers
+  const isAppleMusic = musicSource === 'apple_music';
+
+  const playerPlay = useCallback(() => {
+    if (isAppleMusic) playerRef.current?.play();
+    else playerRef.current?.playVideo?.();
+  }, [isAppleMusic]);
+
+  const playerPause = useCallback(() => {
+    if (isAppleMusic) playerRef.current?.pause();
+    else playerRef.current?.pauseVideo?.();
+  }, [isAppleMusic]);
+
+  const playerLoadTrack = useCallback((track, startTime = 0) => {
+    if (isAppleMusic && track?.trackId) {
+      playerRef.current?.setQueue({ songs: [track.trackId] }).then(() => {
+        if (startTime > 0) playerRef.current.seekToTime(startTime);
+        playerRef.current.play();
+      }).catch(err => console.error("[Apple Music] Load track error:", err));
+    } else if (track?.videoId) {
+      playerRef.current?.loadVideoById?.(track.videoId, startTime);
+    }
+  }, [isAppleMusic]);
+
+  const playerStopTrack = useCallback(() => {
+    if (isAppleMusic) playerRef.current?.stop?.();
+    else playerRef.current?.stopVideo?.();
+  }, [isAppleMusic]);
+
+  const playerSeekTo = useCallback((seconds) => {
+    if (isAppleMusic) playerRef.current?.seekToTime?.(seconds);
+    else playerRef.current?.seekTo?.(seconds, true);
+  }, [isAppleMusic]);
+
+  const playerGetCurrentTime = useCallback(() => {
+    if (isAppleMusic) return playerRef.current?.currentPlaybackTime || 0;
+    return playerRef.current?.getCurrentTime?.() || 0;
+  }, [isAppleMusic]);
+
+  const playerGetDuration = useCallback(() => {
+    if (isAppleMusic) return playerRef.current?.currentPlaybackDuration || 0;
+    return playerRef.current?.getDuration?.() || 0;
+  }, [isAppleMusic]);
+
+  const playerSetVolume = useCallback((vol) => {
+    if (isAppleMusic) {
+      if (playerRef.current) playerRef.current.volume = vol / 100;
+    } else {
+      playerRef.current?.setVolume?.(vol);
+    }
+  }, [isAppleMusic]);
+
+  const playerMute = useCallback(() => {
+    if (isAppleMusic) {
+      if (playerRef.current) playerRef.current.volume = 0;
+    } else {
+      playerRef.current?.mute?.();
+    }
+  }, [isAppleMusic]);
+
+  const playerUnmute = useCallback(() => {
+    if (isAppleMusic) {
+      if (playerRef.current) playerRef.current.volume = volumeRef.current / 100;
+    } else {
+      playerRef.current?.unMute?.();
+    }
+  }, [isAppleMusic]);
+
   const playerContainerRef = useCallback(node => {
     if (!hasConsent) return;
+    if (musicSource === 'apple_music') {
+      if (node !== null) {
+        initializeAppleMusicPlayer();
+      } else {
+        playerInitIdRef.current++;
+        if (playerRef.current) {
+          try { playerRef.current.stop?.(); } catch (e) { /* */ }
+          playerRef.current = null;
+          setIsPlayerReady(false);
+        }
+      }
+      return;
+    }
     if (node !== null) {
       initializePlayer(node);
     } else {
@@ -747,21 +911,27 @@ function RoomBody() {
         setIsPlayerReady(false);
       }
     }
-  }, [initializePlayer, hasConsent]);
+  }, [initializePlayer, initializeAppleMusicPlayer, hasConsent, musicSource]);
 
   // Main playback logic
   useEffect(() => {
     const targetTrack = previewTrack || currentTrack;
     if (isPlayerReady && playerRef.current && targetTrack) {
-      const currentVideoIdInPlayer = playerRef.current.getVideoData?.()?.video_id;
-      if (targetTrack.videoId !== currentVideoIdInPlayer) {
+      if (isAppleMusic) {
+        const currentSourceId = targetTrack.trackId;
         const startTime = previewTrack ? 0 : progressRef.current;
-        playerRef.current.loadVideoById?.(targetTrack.videoId, startTime);
+        playerLoadTrack(targetTrack, startTime);
+      } else {
+        const currentVideoIdInPlayer = playerRef.current.getVideoData?.()?.video_id;
+        if (targetTrack.videoId !== currentVideoIdInPlayer) {
+          const startTime = previewTrack ? 0 : progressRef.current;
+          playerLoadTrack(targetTrack, startTime);
+        }
       }
     } else if (isPlayerReady && playerRef.current && !targetTrack) {
-      playerRef.current.stopVideo?.();
+      playerStopTrack();
     }
-  }, [isPlayerReady, currentTrack, previewTrack, progressRef]);
+  }, [isPlayerReady, currentTrack, previewTrack, progressRef, isAppleMusic, playerLoadTrack, playerStopTrack]);
 
   const tvUnmuteVisible = deviceDetection.isTV() && isMuted && isPlayerReady && !isAnyPlaylistView;
   const hasFullscreenOverlay = showQRModal || headerOverlay || settingsOverlay || tvUnmuteVisible;
@@ -769,31 +939,32 @@ function RoomBody() {
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
       if (hasFullscreenOverlay) {
-        playerRef.current.pauseVideo?.();
+        playerPause();
       } else if (userHasInteractedRef.current && previewTrack) {
-        playerRef.current.playVideo?.();
+        playerPlay();
       } else if (userHasInteractedRef.current && (isPlaying || isLocallyPlaying) && !isLocallyPaused) {
-        playerRef.current.playVideo?.();
+        playerPlay();
       } else {
-        playerRef.current.pauseVideo?.();
+        playerPause();
       }
     }
-  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay]);
+  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay, playerPlay, playerPause]);
 
   useEffect(() => {
     if (!isPlayerReady || !playerRef.current || !isPlaying || previewTrack) return;
     const interval = setInterval(() => {
-      if (playerRef.current?.getPlayerState?.() === YouTubeState.ENDED) return;
-      const localProgress = playerRef.current?.getCurrentTime?.();
+      if (!isAppleMusic && playerRef.current?.getPlayerState?.() === YouTubeState.ENDED) return;
+      const localProgress = playerGetCurrentTime();
       if (localProgress && Math.abs(localProgress - progressRef.current) > 3) {
-        playerRef.current?.seekTo?.(progressRef.current);
+        playerSeekTo(progressRef.current);
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [isPlayerReady, isPlaying, previewTrack, progressRef]);
+  }, [isPlayerReady, isPlaying, previewTrack, progressRef, isAppleMusic, playerGetCurrentTime, playerSeekTo]);
 
-  // Autoplay detection
+  // Autoplay detection (YouTube only — Apple Music handles autoplay internally)
   useEffect(() => {
+    if (isAppleMusic) { setAutoplayBlocked(false); return; }
     if (isPlaying && isPlayerReady && playerRef.current) {
       const check = setTimeout(() => {
         const state = playerRef.current.getPlayerState?.();
@@ -811,7 +982,7 @@ function RoomBody() {
     } else {
       setAutoplayBlocked(false);
     }
-  }, [isPlaying, isPlayerReady, currentTrack]);
+  }, [isPlaying, isPlayerReady, currentTrack, isAppleMusic]);
 
   // Infinite Load Guard (Stall Detection)
   const stallRetriesRef = useRef(0); // Track number of stall retries
@@ -821,7 +992,9 @@ function RoomBody() {
     stallRetriesRef.current = 0;
   }, [currentTrack]);
 
+  // Stall detection (YouTube only — Apple Music doesn't have IP block issues)
   useEffect(() => {
+    if (isAppleMusic) return;
     if (!isPlaying || !isPlayerReady || !playerRef.current) return;
 
     const checkInterval = setInterval(() => {
@@ -854,8 +1027,8 @@ function RoomBody() {
         }
 
         console.warn("[Player] Force-reloading video...");
-        const currentTime = playerRef.current.getCurrentTime?.() || progressRef.current;
-        playerRef.current.loadVideoById?.(currentTrackRef.current?.videoId, currentTime);
+        const currentTime = playerGetCurrentTime();
+        playerLoadTrack(currentTrackRef.current, currentTime);
       } else {
         if (state === YouTubeState.PLAYING) {
           stallRetriesRef.current = 0;
@@ -864,13 +1037,13 @@ function RoomBody() {
     }, 8000);
 
     return () => clearInterval(checkInterval);
-  }, [isPlaying, isPlayerReady, isOwner, progressRef, sendMessage]);
+  }, [isPlaying, isPlayerReady, isOwner, progressRef, sendMessage, isAppleMusic, playerGetCurrentTime, playerLoadTrack]);
 
   // Progress bar update (polls ref to avoid re-renders from progress messages)
   useEffect(() => {
     if (!isPlayerReady) return;
     const update = () => {
-      const duration = playerRef.current?.getDuration?.() || 0;
+      const duration = playerGetDuration();
       if (duration > 0) {
         setProgress((progressRef.current / duration) * 100);
       } else {
@@ -880,7 +1053,7 @@ function RoomBody() {
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, [isPlayerReady, progressRef]);
+  }, [isPlayerReady, progressRef, playerGetDuration]);
 
   // Event Handlers
 
@@ -897,17 +1070,14 @@ function RoomBody() {
       setIsLocallyPaused(false);
       setIsLocallyPlaying(false);
     } else {
-      // Guest: Local Toggle Only
       if (isEffectivelyPlaying) {
-        // User wants to PAUSE
         setIsLocallyPaused(true);
         setIsLocallyPlaying(false);
-        playerRef.current?.pauseVideo?.();
+        playerPause();
       } else {
-        // User wants to PLAY
         setIsLocallyPaused(false);
         setIsLocallyPlaying(true);
-        playerRef.current?.playVideo?.();
+        playerPlay();
       }
     }
   };
@@ -915,37 +1085,23 @@ function RoomBody() {
 
 
   const handleMuteToggle = () => {
-
-    if (isMuted) playerRef.current?.unMute?.();
-
-    else playerRef.current?.mute?.();
-
+    if (isMuted) playerUnmute();
+    else playerMute();
     setIsMuted(!isMuted);
-
   };
 
 
 
   const handleVolumeChange = (e) => {
-
     const newVolume = Number(e.target.value);
-
     setVolume(newVolume);
-
     if (playerRef.current) {
-
-      playerRef.current.setVolume?.(newVolume);
-
+      playerSetVolume(newVolume);
       if (isMuted) {
-
-        playerRef.current.unMute?.();
-
+        playerUnmute();
         setIsMuted(false);
-
       }
-
     }
-
   };
 
 
@@ -1037,12 +1193,12 @@ function RoomBody() {
 
   const handleSeek = (percentage) => {
     if (!playerRef.current) return;
-    const duration = playerRef.current.getDuration();
+    const duration = playerGetDuration();
     if (!duration) return;
     const seconds = (percentage / 100) * duration;
     if (isOwner) {
       sendMessage({ type: "SEEK_TO", payload: seconds });
-      playerRef.current.seekTo(seconds, true);
+      playerSeekTo(seconds);
     }
   };
 
