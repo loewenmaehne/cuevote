@@ -3401,7 +3401,11 @@ export const translations = {
 			errorGeneric: "Wystąpił błąd podczas odtwarzania tego wideo.",
 			errorNotFound: "To wideo jest niedostępne.",
 			errorRestricted: "To wideo jest niedostępne w Twoim kraju.",
-			errorIPBlocked: "YouTube ogranicza odtwarzanie w tej sieci."
+			errorIPBlocked: "YouTube ogranicza odtwarzanie w tej sieci.",
+			ipBlockTitle: "Odtwarzanie niedostępne",
+			ipBlockMessage: "Filmy nie mogą być odtwarzane w Twojej obecnej sieci. Spróbuj przełączyć się na dane mobilne lub inną sieć Wi-Fi, lub użyj Trybu Imprezowego, aby nadal głosować i proponować utwory.",
+			ipBlockPartyMode: "Przełącz na Tryb Imprezowy",
+			ipBlockRetry: "Przeładuj stronę"
 		},
 		cookie: {
 			title: "Prywatność i Odtwarzanie",
@@ -3586,7 +3590,11 @@ export const translations = {
 			errorGeneric: "Ett fel uppstod när videon spelades upp.",
 			errorNotFound: "Den här videon är inte tillgänglig.",
 			errorRestricted: "Den här videon är inte tillgänglig i ditt land.",
-			errorIPBlocked: "YouTube begränsar uppspelning i det här nätverket."
+			errorIPBlocked: "YouTube begränsar uppspelning i det här nätverket.",
+			ipBlockTitle: "Uppspelning otillgänglig",
+			ipBlockMessage: "Videor kan inte spelas upp på ditt nuvarande nätverk. Prova att byta till mobildata eller ett annat Wi-Fi-nätverk, eller använd Festläge för att fortsätta rösta och föreslå låtar.",
+			ipBlockPartyMode: "Byt till Festläge",
+			ipBlockRetry: "Ladda om sidan"
 		},
 		cookie: {
 			title: "Sekretess & Uppspelning",
@@ -3770,7 +3778,11 @@ export const translations = {
 			errorGeneric: "Der opstod en fejl under afspilning af denne video.",
 			errorNotFound: "Denne video er ikke tilgængelig.",
 			errorRestricted: "Denne video er ikke tilgængelig i dit land.",
-			errorIPBlocked: "YouTube begrænser afspilning på dette netværk."
+			errorIPBlocked: "YouTube begrænser afspilning på dette netværk.",
+			ipBlockTitle: "Afspilning utilgængelig",
+			ipBlockMessage: "Videoer kan ikke afspilles på dit nuværende netværk. Prøv at skifte til mobildata eller et andet Wi-Fi-netværk, eller brug Festtilstand til at fortsætte med at stemme og foreslå sange.",
+			ipBlockPartyMode: "Skift til Festtilstand",
+			ipBlockRetry: "Genindlæs side"
 		},
 		cookie: {
 			title: "Privatliv & Afspilning",
@@ -3954,7 +3966,11 @@ export const translations = {
 			errorGeneric: "Det oppstod en feil under avspilling av denne videoen.",
 			errorNotFound: "Denne videoen er ikke tilgjengelig.",
 			errorRestricted: "Denne videoen er ikke tilgjengelig i landet ditt.",
-			errorIPBlocked: "YouTube begrenser avspilling i dette nettverket."
+			errorIPBlocked: "YouTube begrenser avspilling i dette nettverket.",
+			ipBlockTitle: "Avspilling utilgjengelig",
+			ipBlockMessage: "Videoer kan ikke spilles av på ditt nåværende nettverk. Prøv å bytte til mobildata eller et annet Wi-Fi-nettverk, eller bruk Festmodus for å fortsette å stemme og foreslå sanger.",
+			ipBlockPartyMode: "Bytt til Festmodus",
+			ipBlockRetry: "Last inn siden på nytt"
 		},
 		cookie: {
 			title: "Personvern & Avspilling",
@@ -4138,7 +4154,11 @@ export const translations = {
 			errorGeneric: "Tässä videossa tapahtui virhe toistossa.",
 			errorNotFound: "Tämä video ei ole saatavilla.",
 			errorRestricted: "Tämä video ei ole saatavilla maassasi.",
-			errorIPBlocked: "YouTube rajoittaa toistoa tässä verkossa."
+			errorIPBlocked: "YouTube rajoittaa toistoa tässä verkossa.",
+			ipBlockTitle: "Toisto ei saatavilla",
+			ipBlockMessage: "Videoita ei voi toistaa nykyisessä verkossasi. Kokeile vaihtaa mobiilidataan tai toiseen Wi-Fi-verkkoon, tai käytä Juhlatilaa äänestääksesi ja ehdottaaksesi kappaleita.",
+			ipBlockPartyMode: "Vaihda Juhlatilaan",
+			ipBlockRetry: "Lataa sivu uudelleen"
 		},
 		cookie: {
 			title: "Tietosuoja & Toisto",
@@ -4322,7 +4342,11 @@ export const translations = {
 			errorGeneric: "Bu video oynatılırken bir hata oluştu.",
 			errorNotFound: "Bu video kullanılamıyor.",
 			errorRestricted: "Bu video ülkenizde kullanılamıyor.",
-			errorIPBlocked: "YouTube bu ağda oynatmayı kısıtlıyor."
+			errorIPBlocked: "YouTube bu ağda oynatmayı kısıtlıyor.",
+			ipBlockTitle: "Oynatma Kullanılamıyor",
+			ipBlockMessage: "Videolar mevcut ağınızda oynatılamıyor. Mobil veriye veya farklı bir Wi-Fi ağına geçmeyi deneyin ya da oy vermeye ve şarkı önermeye devam etmek için Parti Modunu kullanın.",
+			ipBlockPartyMode: "Parti Moduna Geç",
+			ipBlockRetry: "Sayfayı Yenile"
 		},
 		cookie: {
 			title: "Gizlilik & Oynatma",
@@ -4506,7 +4530,11 @@ export const translations = {
 			errorGeneric: "Παρουσιάστηκε σφάλμα κατά την αναπαραγωγή αυτού του βίντεο.",
 			errorNotFound: "Αυτό το βίντεο δεν είναι διαθέσιμο.",
 			errorRestricted: "Αυτό το βίντεο δεν είναι διαθέσιμο στη χώρα σας.",
-			errorIPBlocked: "Το YouTube περιορίζει την αναπαραγωγή σε αυτό το δίκτυο."
+			errorIPBlocked: "Το YouTube περιορίζει την αναπαραγωγή σε αυτό το δίκτυο.",
+			ipBlockTitle: "Η αναπαραγωγή δεν είναι διαθέσιμη",
+			ipBlockMessage: "Τα βίντεο δεν μπορούν να αναπαραχθούν στο τρέχον δίκτυό σας. Δοκιμάστε να αλλάξετε σε δεδομένα κινητού ή σε διαφορετικό δίκτυο Wi-Fi, ή χρησιμοποιήστε τη Λειτουργία Πάρτι για να συνεχίσετε να ψηφίζετε και να προτείνετε τραγούδια.",
+			ipBlockPartyMode: "Αλλαγή σε Λειτουργία Πάρτι",
+			ipBlockRetry: "Επαναφόρτωση σελίδας"
 		},
 		cookie: {
 			title: "Απόρρητο & Αναπαραγωγή",
@@ -4690,7 +4718,11 @@ export const translations = {
 			errorGeneric: "При воспроизведении этого видео произошла ошибка.",
 			errorNotFound: "Это видео недоступно.",
 			errorRestricted: "Это видео недоступно в вашей стране.",
-			errorIPBlocked: "YouTube ограничивает воспроизведение в этой сети."
+			errorIPBlocked: "YouTube ограничивает воспроизведение в этой сети.",
+			ipBlockTitle: "Воспроизведение недоступно",
+			ipBlockMessage: "Видео не могут быть воспроизведены в вашей текущей сети. Попробуйте переключиться на мобильные данные или другую сеть Wi-Fi, или используйте Режим Вечеринки, чтобы продолжить голосовать и предлагать песни.",
+			ipBlockPartyMode: "Перейти в Режим Вечеринки",
+			ipBlockRetry: "Перезагрузить страницу"
 		},
 		cookie: {
 			title: "Конфиденциальность и воспроизведение",
