@@ -1368,6 +1368,7 @@ function RoomBody() {
           ownerPopups={ownerPopups}
           onDeleteChannel={handleDeleteChannel}
           captionsEnabled={captionsEnabled}
+          musicSource={musicSource}
           isConnected={isConnected}
           onFullscreenOverlay={setSettingsOverlay}
         />
