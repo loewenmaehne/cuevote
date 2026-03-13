@@ -155,17 +155,19 @@ function RoomBody() {
     duplicateCooldown = 10,
     autoApproveKnown = true,
     autoRefill = false,
-    bannedVideos = [], // Added this
-    captionsEnabled = false
+    bannedVideos = [],
+    captionsEnabled = false,
+    musicSource = 'youtube'
   } = serverState || {};
 
-  // Calculate set of ALL videoIds currently in the queue or playing for suggestion "Added" check
-  const queueVideoIds = useMemo(() => {
+  const queueTrackIds = useMemo(() => {
     const ids = new Set();
-    if (currentTrack?.videoId) ids.add(currentTrack.videoId);
+    const cid = currentTrack?.videoId || currentTrack?.trackId;
+    if (cid) ids.add(cid);
     if (queue) {
       queue.forEach(t => {
-        if (t.videoId) ids.add(t.videoId);
+        const id = t.videoId || t.trackId;
+        if (id) ids.add(id);
       });
     }
     return ids;
@@ -1385,7 +1387,7 @@ function RoomBody() {
                 onRecommend={handleFetchSuggestions}
                 suggestions={manualSuggestions}
                 isFetchingSuggestions={isFetchingSuggestions}
-                queueVideoIds={queueVideoIds}
+                queueVideoIds={queueTrackIds}
               />
             </div>
           )}
@@ -1502,7 +1504,7 @@ function RoomBody() {
               activeSuggestionId={activeSuggestionId}
               suggestions={manualSuggestions}
               isFetchingSuggestions={isFetchingSuggestions}
-              queueVideoIds={queueVideoIds}
+              queueVideoIds={queueTrackIds}
               disableFloatingUI={!!previewTrack}
               onLibraryDelete={isOwner ? handleRemoveFromLibrary : undefined}
               activeTab={playlistActiveTab}
@@ -1584,7 +1586,7 @@ function RoomBody() {
             activeSuggestionId={activeSuggestionId}
             suggestions={manualSuggestions}
             isFetchingSuggestions={isFetchingSuggestions}
-            queueVideoIds={queueVideoIds}
+            queueVideoIds={queueTrackIds}
           />
         </div>
       )}
