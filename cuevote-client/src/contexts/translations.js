@@ -140,7 +140,9 @@ export const translations = {
 			connecting: "Connecting to server...",
 			connectionIssue: "Connection Issue",
 			takingTooLong: "Taking longer than usual...",
-			checkConnection: "Please check your internet connection."
+			checkConnection: "Please check your internet connection.",
+			networkThrottle: "YouTube is limiting video playback on this network. Playback paused.",
+			retryPlayback: "Retry"
 		},
 		track: {
 			playing: "Playing",
@@ -355,7 +357,9 @@ export const translations = {
 			connecting: "Verbinden met server...",
 			connectionIssue: "Verbindingsprobleem",
 			takingTooLong: "Duurt langer dan gewoonlijk...",
-			checkConnection: "Controleer je internetverbinding."
+			checkConnection: "Controleer je internetverbinding.",
+			networkThrottle: "YouTube beperkt het afspelen van video op dit netwerk. Afspelen gepauzeerd.",
+			retryPlayback: "Opnieuw"
 		},
 		track: {
 			playing: "Speelt nu",
@@ -562,7 +566,9 @@ export const translations = {
 			connecting: "Verbinde mit Server...",
 			connectionIssue: "Verbindungsproblem",
 			takingTooLong: "Dauert länger als gewöhnlich...",
-			checkConnection: "Bitte überprüfen Sie Ihre Internetverbindung."
+			checkConnection: "Bitte überprüfen Sie Ihre Internetverbindung.",
+			networkThrottle: "YouTube beschränkt die Videowiedergabe in diesem Netzwerk. Wiedergabe pausiert.",
+			retryPlayback: "Erneut versuchen"
 		},
 		track: {
 			playing: "Wiedergabe",
@@ -769,7 +775,9 @@ export const translations = {
 			connecting: "Connexion au serveur...",
 			connectionIssue: "Problème de connexion",
 			takingTooLong: "Cela prend plus de temps que d'habitude...",
-			checkConnection: "Veuillez vérifier votre connexion internet."
+			checkConnection: "Veuillez vérifier votre connexion internet.",
+			networkThrottle: "YouTube limite la lecture vidéo sur ce réseau. Lecture en pause.",
+			retryPlayback: "Réessayer"
 		},
 		track: {
 			playing: "Lecture",
@@ -973,7 +981,9 @@ export const translations = {
 			connecting: "Conectando al servidor...",
 			connectionIssue: "Problema de conexión",
 			takingTooLong: "Tarda más de lo habitual...",
-			checkConnection: "Por favor, comprueba tu conexión a internet."
+			checkConnection: "Por favor, comprueba tu conexión a internet.",
+			networkThrottle: "YouTube está limitando la reproducción en esta red. Reproducción en pausa.",
+			retryPlayback: "Reintentar"
 		},
 		track: {
 			playing: "Reproduciendo",
@@ -1074,6 +1084,12 @@ export const translations = {
 			deleteAccountToConfirm: "per confermare",
 			delete: "Elimina",
 			terms: "Termini & Legale"
+		},
+		player: {
+			errorGeneric: "Si è verificato un errore durante la riproduzione.",
+			errorNotFound: "Questo video non è disponibile.",
+			errorRestricted: "Questo video non è disponibile nel tuo paese.",
+			errorIPBlocked: "YouTube sta limitando la riproduzione su questa rete."
 		},
 		cookie: {
 			title: "Privacy e Riproduzione",
@@ -1205,6 +1221,10 @@ export const translations = {
 			channelSuffix: "Canale",
 			upNext: "In coda",
 			queueEmpty: "Coda vuota",
+			errorNotFound: "Video non trovato",
+			errorRestricted: "Video non disponibile nel tuo paese",
+			skippedRestricted: "'{title}' saltato (Non disponibile)",
+			skippedIPBlocked: "'{title}' saltato — YouTube sta limitando questa rete",
 			backToNow: "Torna a ora",
 			addVideos: "Aggiungi video per iniziare"
 		},
@@ -1258,6 +1278,12 @@ export const translations = {
 			deleteAccountToConfirm: "para confirmar",
 			delete: "Excluir",
 			terms: "Termos & Legal"
+		},
+		player: {
+			errorGeneric: "Ocorreu um erro ao reproduzir este vídeo.",
+			errorNotFound: "Este vídeo não está disponível.",
+			errorRestricted: "Este vídeo não está disponível no seu país.",
+			errorIPBlocked: "O YouTube está limitando a reprodução nesta rede."
 		},
 		cookie: {
 			title: "Privacidade e Reprodução",
@@ -1389,6 +1415,10 @@ export const translations = {
 			nowPlaying: "Tocando agora",
 			upNext: "A seguir",
 			queueEmpty: "Fila vazia",
+			errorNotFound: "Vídeo não encontrado",
+			errorRestricted: "Vídeo indisponível no seu país",
+			skippedRestricted: "'{title}' ignorado (Indisponível)",
+			skippedIPBlocked: "'{title}' ignorado — YouTube limitando esta rede",
 			backToNow: "Voltar para atual",
 			addVideos: "Adicione vídeos para começar"
 		},
@@ -1442,6 +1472,12 @@ export const translations = {
 			deleteAccountToConfirm: "以确认",
 			delete: "删除",
 			terms: "条款与法律"
+		},
+		player: {
+			errorGeneric: "播放此视频时发生错误。",
+			errorNotFound: "此视频不可用。",
+			errorRestricted: "此视频在您所在的国家/地区不可用。",
+			errorIPBlocked: "YouTube 正在限制此网络上的播放。"
 		},
 		cookie: {
 			title: "隐私与播放",
@@ -1569,6 +1605,10 @@ export const translations = {
 			channelSuffix: "频道",
 			upNext: "即将播放",
 			queueEmpty: "队列为空",
+			errorNotFound: "视频不存在",
+			errorRestricted: "视频在您所在地区不可用",
+			skippedRestricted: "已跳过'{title}'（不可用）",
+			skippedIPBlocked: "已跳过'{title}' — YouTube 正在限制此网络",
 			backToNow: "回到当前",
 			addVideos: "添加视频以开始播放"
 		},
@@ -1622,6 +1662,12 @@ export const translations = {
 			deleteAccountToConfirm: "以確認",
 			delete: "刪除",
 			terms: "條款與法律"
+		},
+		player: {
+			errorGeneric: "播放此視頻時發生錯誤。",
+			errorNotFound: "此視頻無法使用。",
+			errorRestricted: "此視頻在您所在的國家/地區無法使用。",
+			errorIPBlocked: "YouTube 正在限制此網路上的播放。"
 		},
 		cookie: {
 			title: "隱私與播放",
@@ -1749,6 +1795,10 @@ export const translations = {
 			channelSuffix: "频道",
 			upNext: "即將播放",
 			queueEmpty: "佇列為空",
+			errorNotFound: "找不到視頻",
+			errorRestricted: "視頻在您所在地區不可用",
+			skippedRestricted: "已跳過'{title}'（不可用）",
+			skippedIPBlocked: "已跳過'{title}' — YouTube 正在限制此網路",
 			backToNow: "回到目前",
 			addVideos: "新增视频以開始播放"
 		},
@@ -1802,6 +1852,12 @@ export const translations = {
 			deleteAccountToConfirm: "確認のため",
 			delete: "削除",
 			terms: "利用規約"
+		},
+		player: {
+			errorGeneric: "この動画の再生中にエラーが発生しました。",
+			errorNotFound: "この動画は再生できません。",
+			errorRestricted: "この動画はお住まいの国では視聴できません。",
+			errorIPBlocked: "YouTubeがこのネットワークで再生を制限しています。"
 		},
 		cookie: {
 			title: "プライバシーと再生",
@@ -1929,6 +1985,10 @@ export const translations = {
 			channelSuffix: "チャンネル",
 			upNext: "次へ",
 			queueEmpty: "キューは空です",
+			errorNotFound: "動画が見つかりません",
+			errorRestricted: "お住まいの国では視聴できません",
+			skippedRestricted: "'{title}'をスキップしました（利用不可）",
+			skippedIPBlocked: "'{title}'をスキップ — YouTubeがこのネットワークを制限中",
 			backToNow: "現在へ戻る",
 			addVideos: "動画を追加して再生を開始"
 		},
@@ -1982,6 +2042,12 @@ export const translations = {
 			deleteAccountToConfirm: "확인",
 			delete: "삭제",
 			terms: "이용약관"
+		},
+		player: {
+			errorGeneric: "이 동영상을 재생하는 중 오류가 발생했습니다.",
+			errorNotFound: "이 동영상은 사용할 수 없습니다.",
+			errorRestricted: "이 동영상은 해당 국가에서 사용할 수 없습니다.",
+			errorIPBlocked: "YouTube가 이 네트워크에서 재생을 제한하고 있습니다."
 		},
 		cookie: {
 			title: "개인정보 및 재생",
@@ -2108,6 +2174,10 @@ export const translations = {
 			channelSuffix: "채널",
 			upNext: "다음 동영상",
 			queueEmpty: "대기열 비었음",
+			errorNotFound: "동영상을 찾을 수 없음",
+			errorRestricted: "해당 국가에서 사용 불가",
+			skippedRestricted: "'{title}' 건너뜀 (사용 불가)",
+			skippedIPBlocked: "'{title}' 건너뜀 — YouTube가 이 네트워크를 제한 중",
 			backToNow: "현재로 이동",
 			addVideos: "동영상를 추가하여 재생 시작"
 		},
@@ -2161,6 +2231,12 @@ export const translations = {
 			deleteAccountToConfirm: "पुष्टि करने के लिए",
 			delete: "हटाएं",
 			terms: "शर्तें और कानूनी"
+		},
+		player: {
+			errorGeneric: "इस वीडियो को चलाते समय एक त्रुटि हुई।",
+			errorNotFound: "यह वीडियो उपलब्ध नहीं है।",
+			errorRestricted: "यह वीडियो आपके देश में उपलब्ध नहीं है।",
+			errorIPBlocked: "YouTube इस नेटवर्क पर प्लेबैक सीमित कर रहा है।"
 		},
 		cookie: {
 			title: "गोपनीयता और प्लेबैक",
@@ -2288,6 +2364,10 @@ export const translations = {
 			channelSuffix: "चैनल",
 			upNext: "अगला",
 			queueEmpty: "कतार खाली",
+			errorNotFound: "वीडियो नहीं मिला",
+			errorRestricted: "आपके देश में उपलब्ध नहीं",
+			skippedRestricted: "'{title}' छोड़ा (अनुपलब्ध)",
+			skippedIPBlocked: "'{title}' छोड़ा — YouTube इस नेटवर्क को सीमित कर रहा है",
 			backToNow: "वापस अभी",
 			addVideos: "प्लेबैक शुरू करने के लिए वीडियो जोड़ें"
 		},
@@ -2341,6 +2421,12 @@ export const translations = {
 			deleteAccountToConfirm: "เพื่อยืนยัน",
 			delete: "ลบ",
 			terms: "เงื่อนไขและกฎหมาย"
+		},
+		player: {
+			errorGeneric: "เกิดข้อผิดพลาดขณะเล่นวิดีโอนี้",
+			errorNotFound: "วิดีโอนี้ไม่พร้อมใช้งาน",
+			errorRestricted: "วิดีโอนี้ไม่พร้อมใช้งานในประเทศของคุณ",
+			errorIPBlocked: "YouTube กำลังจำกัดการเล่นบนเครือข่ายนี้"
 		},
 		cookie: {
 			title: "ความเป็นส่วนตัวและการเล่น",
@@ -2463,6 +2549,10 @@ export const translations = {
 			channelSuffix: "ช่อง",
 			upNext: "ถัดไป",
 			queueEmpty: "คิวว่าง",
+			errorNotFound: "ไม่พบวิดีโอ",
+			errorRestricted: "ไม่พร้อมใช้งานในประเทศของคุณ",
+			skippedRestricted: "ข้ามแล้ว '{title}' (ไม่พร้อมใช้งาน)",
+			skippedIPBlocked: "ข้ามแล้ว '{title}' — YouTube กำลังจำกัดเครือข่ายนี้",
 			backToNow: "กลับไปปัจจุบัน",
 			addVideos: "เพิ่มวิดีโอเพื่อเริ่มเล่น"
 		},
@@ -2516,6 +2606,12 @@ export const translations = {
 			deleteAccountToConfirm: "để xác nhận",
 			delete: "Xóa",
 			terms: "Điều khoản & Pháp lý"
+		},
+		player: {
+			errorGeneric: "Đã xảy ra lỗi khi phát video này.",
+			errorNotFound: "Video này không khả dụng.",
+			errorRestricted: "Video này không khả dụng ở quốc gia của bạn.",
+			errorIPBlocked: "YouTube đang giới hạn phát lại trên mạng này."
 		},
 		cookie: {
 			title: "Quyền riêng tư & Phát lại",
@@ -2638,6 +2734,10 @@ export const translations = {
 			channelSuffix: "Kênh",
 			upNext: "Tiếp theo",
 			queueEmpty: "Hàng đợi trống",
+			errorNotFound: "Không tìm thấy video",
+			errorRestricted: "Không khả dụng ở quốc gia của bạn",
+			skippedRestricted: "Đã bỏ qua '{title}' (Không khả dụng)",
+			skippedIPBlocked: "Đã bỏ qua '{title}' — YouTube giới hạn mạng này",
 			backToNow: "Về hiện tại",
 			addVideos: "Thêm video để bắt đầu phát"
 		},
@@ -2691,6 +2791,12 @@ export const translations = {
 			deleteAccountToConfirm: "untuk konfirmasi",
 			delete: "Hapus",
 			terms: "Syarat & Hukum"
+		},
+		player: {
+			errorGeneric: "Terjadi kesalahan saat memutar video ini.",
+			errorNotFound: "Video ini tidak tersedia.",
+			errorRestricted: "Video ini tidak tersedia di negara Anda.",
+			errorIPBlocked: "YouTube membatasi pemutaran di jaringan ini."
 		},
 		cookie: {
 			title: "Privasi & Pemutaran",
@@ -2813,6 +2919,10 @@ export const translations = {
 			channelSuffix: "Saluran",
 			upNext: "Berikutnya",
 			queueEmpty: "Antrean kovideo",
+			errorNotFound: "Video tidak ditemukan",
+			errorRestricted: "Tidak tersedia di negara Anda",
+			skippedRestricted: "'{title}' dilewati (Tidak tersedia)",
+			skippedIPBlocked: "'{title}' dilewati — YouTube membatasi jaringan ini",
 			backToNow: "Kembali ke Sekarang",
 			addVideos: "Tambahkan video untuk mulai memutar"
 		},
@@ -2866,6 +2976,12 @@ export const translations = {
 			deleteAccountToConfirm: "untuk sahkan",
 			delete: "Padam",
 			terms: "Terma & Undang-undang"
+		},
+		player: {
+			errorGeneric: "Ralat berlaku semasa memainkan video ini.",
+			errorNotFound: "Video ini tidak tersedia.",
+			errorRestricted: "Video ini tidak tersedia di negara anda.",
+			errorIPBlocked: "YouTube mengehadkan main balik di rangkaian ini."
 		},
 		cookie: {
 			title: "Privasi & Main Semula",
@@ -2987,6 +3103,10 @@ export const translations = {
 			nowPlaying: "Sedang Main",
 			upNext: "Seterusnya",
 			queueEmpty: "Barisan kovideo",
+			errorNotFound: "Video tidak dijumpai",
+			errorRestricted: "Tidak tersedia di negara anda",
+			skippedRestricted: "'{title}' dilangkau (Tidak tersedia)",
+			skippedIPBlocked: "'{title}' dilangkau — YouTube mengehadkan rangkaian ini",
 			backToNow: "Kembali ke Sekarang",
 			addVideos: "Tambah video untuk mulakan main balik"
 		},
@@ -3040,6 +3160,12 @@ export const translations = {
 			deleteAccountToConfirm: "upang kumpirmahin",
 			delete: "Tanggalin",
 			terms: "Mga Tuntunin at Legal"
+		},
+		player: {
+			errorGeneric: "May naganap na error habang sine-play ang video na ito.",
+			errorNotFound: "Hindi available ang video na ito.",
+			errorRestricted: "Hindi available ang video na ito sa iyong bansa.",
+			errorIPBlocked: "Nililimitahan ng YouTube ang pag-play sa network na ito."
 		},
 		cookie: {
 			title: "Privacy at Playback",
@@ -3161,6 +3287,10 @@ export const translations = {
 			nowPlaying: "Tumutugtog Ngayon",
 			upNext: "Susunod",
 			queueEmpty: "Walang laman ang pila",
+			errorNotFound: "Hindi nahanap ang video",
+			errorRestricted: "Hindi available sa iyong bansa",
+			skippedRestricted: "'{title}' nilaktawan (Hindi available)",
+			skippedIPBlocked: "'{title}' nilaktawan — Nililimitahan ng YouTube ang network na ito",
 			backToNow: "Bumalik sa Ngayon"
 		}
 	},
@@ -3198,6 +3328,12 @@ export const translations = {
 			deleteAccountToConfirm: "aby potwierdzić",
 			delete: "Usuń",
 			terms: "Warunki i informacje prawne"
+		},
+		player: {
+			errorGeneric: "Wystąpił błąd podczas odtwarzania tego wideo.",
+			errorNotFound: "To wideo jest niedostępne.",
+			errorRestricted: "To wideo jest niedostępne w Twoim kraju.",
+			errorIPBlocked: "YouTube ogranicza odtwarzanie w tej sieci."
 		},
 		cookie: {
 			title: "Prywatność i Odtwarzanie",
@@ -3320,6 +3456,10 @@ export const translations = {
 			channelSuffix: "Kanał",
 			upNext: "Następne",
 			queueEmpty: "Kolejka pusta",
+			errorNotFound: "Nie znaleziono wideo",
+			errorRestricted: "Niedostępne w Twoim kraju",
+			skippedRestricted: "Pominięto '{title}' (Niedostępne)",
+			skippedIPBlocked: "Pominięto '{title}' — YouTube ogranicza tę sieć",
 			backToNow: "Wróć do teraz",
 			addVideos: "Dodaj wideo, aby rozpocząć"
 		},
@@ -3373,6 +3513,12 @@ export const translations = {
 			deleteAccountToConfirm: "för att bekräfta",
 			delete: "Ta bort",
 			terms: "Villkor & Lagligt"
+		},
+		player: {
+			errorGeneric: "Ett fel uppstod när videon spelades upp.",
+			errorNotFound: "Den här videon är inte tillgänglig.",
+			errorRestricted: "Den här videon är inte tillgänglig i ditt land.",
+			errorIPBlocked: "YouTube begränsar uppspelning i det här nätverket."
 		},
 		cookie: {
 			title: "Sekretess & Uppspelning",
@@ -3494,6 +3640,10 @@ export const translations = {
 			nowPlaying: "Spelas nu",
 			upNext: "Nästa",
 			queueEmpty: "Kön är tom",
+			errorNotFound: "Video hittades inte",
+			errorRestricted: "Inte tillgänglig i ditt land",
+			skippedRestricted: "Hoppade över '{title}' (Ej tillgänglig)",
+			skippedIPBlocked: "Hoppade över '{title}' — YouTube begränsar det här nätverket",
 			backToNow: "Tillbaka till nu",
 			addVideos: "Lägg till videor för att börja"
 		},
@@ -3547,6 +3697,12 @@ export const translations = {
 			deleteAccountToConfirm: "for at bekræfte",
 			delete: "Slet",
 			terms: "Vilkår & Juridisk"
+		},
+		player: {
+			errorGeneric: "Der opstod en fejl under afspilning af denne video.",
+			errorNotFound: "Denne video er ikke tilgængelig.",
+			errorRestricted: "Denne video er ikke tilgængelig i dit land.",
+			errorIPBlocked: "YouTube begrænser afspilning på dette netværk."
 		},
 		cookie: {
 			title: "Privatliv & Afspilning",
@@ -3668,6 +3824,10 @@ export const translations = {
 			nowPlaying: "Spiller nu",
 			upNext: "Næste",
 			queueEmpty: "Kø er tom",
+			errorNotFound: "Video ikke fundet",
+			errorRestricted: "Ikke tilgængelig i dit land",
+			skippedRestricted: "'{title}' sprunget over (Ikke tilgængelig)",
+			skippedIPBlocked: "'{title}' sprunget over — YouTube begrænser dette netværk",
 			backToNow: "Tilbage til nu",
 			addVideos: "Tilføj videoer for at starte afspilning"
 		},
@@ -3721,6 +3881,12 @@ export const translations = {
 			deleteAccountToConfirm: "for å bekrefte",
 			delete: "Slett",
 			terms: "Vilkår og juridisk"
+		},
+		player: {
+			errorGeneric: "Det oppstod en feil under avspilling av denne videoen.",
+			errorNotFound: "Denne videoen er ikke tilgjengelig.",
+			errorRestricted: "Denne videoen er ikke tilgjengelig i landet ditt.",
+			errorIPBlocked: "YouTube begrenser avspilling i dette nettverket."
 		},
 		cookie: {
 			title: "Personvern & Avspilling",
@@ -3842,6 +4008,10 @@ export const translations = {
 			nowPlaying: "Spiller nå",
 			upNext: "Neste",
 			queueEmpty: "Køen er tom",
+			errorNotFound: "Video ikke funnet",
+			errorRestricted: "Ikke tilgjengelig i landet ditt",
+			skippedRestricted: "'{title}' hoppet over (Ikke tilgjengelig)",
+			skippedIPBlocked: "'{title}' hoppet over — YouTube begrenser dette nettverket",
 			backToNow: "Tilbake til nå",
 			addVideos: "Legg til videoer for å starte"
 		},
@@ -3895,6 +4065,12 @@ export const translations = {
 			deleteAccountToConfirm: "vahvistaaksesi",
 			delete: "Poista",
 			terms: "Ehdot & Lait"
+		},
+		player: {
+			errorGeneric: "Tässä videossa tapahtui virhe toistossa.",
+			errorNotFound: "Tämä video ei ole saatavilla.",
+			errorRestricted: "Tämä video ei ole saatavilla maassasi.",
+			errorIPBlocked: "YouTube rajoittaa toistoa tässä verkossa."
 		},
 		cookie: {
 			title: "Tietosuoja & Toisto",
@@ -4016,6 +4192,10 @@ export const translations = {
 			nowPlaying: "Nyt soi",
 			upNext: "Seuraava",
 			queueEmpty: "Jono tyhjä",
+			errorNotFound: "Videota ei löydy",
+			errorRestricted: "Ei saatavilla maassasi",
+			skippedRestricted: "'{title}' ohitettu (Ei saatavilla)",
+			skippedIPBlocked: "'{title}' ohitettu — YouTube rajoittaa tätä verkkoa",
 			backToNow: "Takaisin nykyiseen",
 			addVideos: "Lisää videoita aloittaaksesi"
 		},
@@ -4069,6 +4249,12 @@ export const translations = {
 			deleteAccountToConfirm: "onaylamak için",
 			delete: "Sil",
 			terms: "Şartlar & Yasal"
+		},
+		player: {
+			errorGeneric: "Bu video oynatılırken bir hata oluştu.",
+			errorNotFound: "Bu video kullanılamıyor.",
+			errorRestricted: "Bu video ülkenizde kullanılamıyor.",
+			errorIPBlocked: "YouTube bu ağda oynatmayı kısıtlıyor."
 		},
 		cookie: {
 			title: "Gizlilik & Oynatma",
@@ -4190,6 +4376,10 @@ export const translations = {
 			nowPlaying: "Şimdi Çalıyor",
 			upNext: "Sıradaki",
 			queueEmpty: "Kuyruk boş",
+			errorNotFound: "Video bulunamadı",
+			errorRestricted: "Ülkenizde mevcut değil",
+			skippedRestricted: "'{title}' atlandı (Mevcut değil)",
+			skippedIPBlocked: "'{title}' atlandı — YouTube bu ağı kısıtlıyor",
 			backToNow: "Şimdiye Dön",
 			addVideos: "Başlamak için video ekle"
 		},
@@ -4243,6 +4433,12 @@ export const translations = {
 			deleteAccountToConfirm: "για επιβεβαίωση",
 			delete: "Διαγραφή",
 			terms: "Όροι & Νομικά"
+		},
+		player: {
+			errorGeneric: "Παρουσιάστηκε σφάλμα κατά την αναπαραγωγή αυτού του βίντεο.",
+			errorNotFound: "Αυτό το βίντεο δεν είναι διαθέσιμο.",
+			errorRestricted: "Αυτό το βίντεο δεν είναι διαθέσιμο στη χώρα σας.",
+			errorIPBlocked: "Το YouTube περιορίζει την αναπαραγωγή σε αυτό το δίκτυο."
 		},
 		cookie: {
 			title: "Απόρρητο & Αναπαραγωγή",
@@ -4364,6 +4560,10 @@ export const translations = {
 			nowPlaying: "Παίζει Τώρα",
 			upNext: "Επόμενο",
 			queueEmpty: "Η ουρά είναι άδεια",
+			errorNotFound: "Το βίντεο δεν βρέθηκε",
+			errorRestricted: "Μη διαθέσιμο στη χώρα σας",
+			skippedRestricted: "'{title}' παραλείφθηκε (Μη διαθέσιμο)",
+			skippedIPBlocked: "'{title}' παραλείφθηκε — Το YouTube περιορίζει αυτό το δίκτυο",
 			backToNow: "Επιστροφή στο Τώρα",
 			addVideos: "Προσθέστε βίντεο για έναρξη"
 		},
@@ -4417,6 +4617,12 @@ export const translations = {
 			deleteAccountToConfirm: "для подтверждения",
 			delete: "Удалить",
 			terms: "Условия и юр. инфо"
+		},
+		player: {
+			errorGeneric: "При воспроизведении этого видео произошла ошибка.",
+			errorNotFound: "Это видео недоступно.",
+			errorRestricted: "Это видео недоступно в вашей стране.",
+			errorIPBlocked: "YouTube ограничивает воспроизведение в этой сети."
 		},
 		cookie: {
 			title: "Конфиденциальность и воспроизведение",
@@ -4538,6 +4744,10 @@ export const translations = {
 			nowPlaying: "Сейчас играет",
 			upNext: "Далее",
 			queueEmpty: "Очередь пуста",
+			errorNotFound: "Видео не найдено",
+			errorRestricted: "Недоступно в вашей стране",
+			skippedRestricted: "'{title}' пропущено (Недоступно)",
+			skippedIPBlocked: "'{title}' пропущено — YouTube ограничивает эту сеть",
 			backToNow: "Вернуться к текущему",
 			addVideos: "Добавьте видео, чтобы начать"
 		},
@@ -4591,6 +4801,12 @@ export const translations = {
 			deleteAccountToConfirm: "для підтвердження",
 			delete: "Видалити",
 			terms: "Умови та юр. інфо"
+		},
+		player: {
+			errorGeneric: "Під час відтворення цього відео сталася помилка.",
+			errorNotFound: "Це відео недоступне.",
+			errorRestricted: "Це відео недоступне у вашій країні.",
+			errorIPBlocked: "YouTube обмежує відтворення у цій мережі."
 		},
 		cookie: {
 			title: "Конфіденційність та відтворення",
@@ -4713,6 +4929,10 @@ export const translations = {
 			channelSuffix: "Канал",
 			upNext: "Далі",
 			queueEmpty: "Черга порожня",
+			errorNotFound: "Відео не знайдено",
+			errorRestricted: "Недоступно у вашій країні",
+			skippedRestricted: "'{title}' пропущено (Недоступно)",
+			skippedIPBlocked: "'{title}' пропущено — YouTube обмежує цю мережу",
 			backToNow: "Повернутися до поточного",
 			addVideos: "Додайте відео, щоб почати"
 		},
@@ -4766,6 +4986,12 @@ export const translations = {
 			deleteAccountToConfirm: "pro potvrzení",
 			delete: "Smazat",
 			terms: "Podmínky a Právní"
+		},
+		player: {
+			errorGeneric: "Při přehrávání tohoto videa došlo k chybě.",
+			errorNotFound: "Toto video není dostupné.",
+			errorRestricted: "Toto video není dostupné ve vaší zemi.",
+			errorIPBlocked: "YouTube omezuje přehrávání v této síti."
 		},
 		cookie: {
 			title: "Soukromí a přehrávání",
@@ -4887,6 +5113,10 @@ export const translations = {
 			nowPlaying: "Právě Hraje",
 			upNext: "Další",
 			queueEmpty: "Fronta je prázdná",
+			errorNotFound: "Video nenalezeno",
+			errorRestricted: "Nedostupné ve vaší zemi",
+			skippedRestricted: "'{title}' přeskočeno (Nedostupné)",
+			skippedIPBlocked: "'{title}' přeskočeno — YouTube omezuje tuto síť",
 			backToNow: "Zpět na aktuální",
 			addVideos: "Přidejte videa pro zahájení"
 		},
@@ -4940,6 +5170,12 @@ export const translations = {
 			deleteAccountToConfirm: "a megerősítéshez",
 			delete: "Törlés",
 			terms: "Feltételek és Jogi"
+		},
+		player: {
+			errorGeneric: "Hiba történt a videó lejátszása közben.",
+			errorNotFound: "Ez a videó nem érhető el.",
+			errorRestricted: "Ez a videó nem érhető el az Ön országában.",
+			errorIPBlocked: "A YouTube korlátozza a lejátszást ezen a hálózaton."
 		},
 		cookie: {
 			title: "Adatvédelem és Lejátszás",
@@ -5061,6 +5297,10 @@ export const translations = {
 			nowPlaying: "Most Játszott",
 			upNext: "Következő",
 			queueEmpty: "A sor üres",
+			errorNotFound: "A videó nem található",
+			errorRestricted: "Nem elérhető az Ön országában",
+			skippedRestricted: "'{title}' kihagyva (Nem elérhető)",
+			skippedIPBlocked: "'{title}' kihagyva — A YouTube korlátozza ezt a hálózatot",
 			backToNow: "Vissza a jelenbe",
 			addVideos: "Adjon hozzá videókat a kezdéshez"
 		},
@@ -5114,6 +5354,12 @@ export const translations = {
 			deleteAccountToConfirm: "pentru a confirma",
 			delete: "Șterge",
 			terms: "Termeni și Legal"
+		},
+		player: {
+			errorGeneric: "A apărut o eroare la redarea acestui videoclip.",
+			errorNotFound: "Acest videoclip nu este disponibil.",
+			errorRestricted: "Acest videoclip nu este disponibil în țara dvs.",
+			errorIPBlocked: "YouTube restricționează redarea pe această rețea."
 		},
 		cookie: {
 			title: "Confidențialitate și Redare",
@@ -5235,6 +5481,10 @@ export const translations = {
 			nowPlaying: "Cântă Acum",
 			upNext: "Urmează",
 			queueEmpty: "Coadă goală",
+			errorNotFound: "Videoclipul nu a fost găsit",
+			errorRestricted: "Indisponibil în țara dvs.",
+			skippedRestricted: "'{title}' sărit (Indisponibil)",
+			skippedIPBlocked: "'{title}' sărit — YouTube restricționează această rețea",
 			backToNow: "Înapoi la Acum",
 			addVideos: "Adaugă videoclipuri pentru a începe"
 		},
@@ -5288,6 +5538,12 @@ export const translations = {
 			deleteAccountToConfirm: "за потвърждение",
 			delete: "Изтрий",
 			terms: "Условия и Правни"
+		},
+		player: {
+			errorGeneric: "Възникна грешка при възпроизвеждането на това видео.",
+			errorNotFound: "Това видео не е достъпно.",
+			errorRestricted: "Това видео не е достъпно в твоята страна.",
+			errorIPBlocked: "YouTube ограничава възпроизвеждането в тази мрежа."
 		},
 		cookie: {
 			title: "Поверителност и възпроизвеждане",
@@ -5409,6 +5665,10 @@ export const translations = {
 			nowPlaying: "Свири сега",
 			upNext: "Следващо",
 			queueEmpty: "Опашката е празна",
+			errorNotFound: "Видеото не е намерено",
+			errorRestricted: "Недостъпно в твоята страна",
+			skippedRestricted: "'{title}' прескочено (Недостъпно)",
+			skippedIPBlocked: "'{title}' прескочено — YouTube ограничава тази мрежа",
 			backToNow: "Обратно към момента",
 			addVideos: "Добавете видео за начало"
 		},
@@ -5462,6 +5722,12 @@ export const translations = {
 			deleteAccountToConfirm: "za potvrdu",
 			delete: "Izbriši",
 			terms: "Uvjeti i Pravno"
+		},
+		player: {
+			errorGeneric: "Došlo je do pogreške pri reproduciranju ovog videa.",
+			errorNotFound: "Ovaj video nije dostupan.",
+			errorRestricted: "Ovaj video nije dostupan u vašoj zemlji.",
+			errorIPBlocked: "YouTube ograničava reprodukciju na ovoj mreži."
 		},
 		cookie: {
 			title: "Privatnost i reprodukcija",
@@ -5583,6 +5849,10 @@ export const translations = {
 			nowPlaying: "Sada Svira",
 			upNext: "Sljedeće",
 			queueEmpty: "Red je prazan",
+			errorNotFound: "Video nije pronađen",
+			errorRestricted: "Nedostupno u vašoj zemlji",
+			skippedRestricted: "'{title}' preskočeno (Nedostupno)",
+			skippedIPBlocked: "'{title}' preskočeno — YouTube ograničava ovu mrežu",
 			backToNow: "Natrag na Slušanje",
 			addVideos: "Dodaj videe za početak"
 		},
@@ -5636,6 +5906,12 @@ export const translations = {
 			deleteAccountToConfirm: "za potvrdu",
 			delete: "Obriši",
 			terms: "Uslovi i Pravno"
+		},
+		player: {
+			errorGeneric: "Došlo je do greške pri reprodukovanju ovog videa.",
+			errorNotFound: "Ovaj video nije dostupan.",
+			errorRestricted: "Ovaj video nije dostupan u vašoj zemlji.",
+			errorIPBlocked: "YouTube ograničava reprodukciju na ovoj mreži."
 		},
 		cookie: {
 			title: "Privatnost i reprodukcija",
@@ -5757,6 +6033,10 @@ export const translations = {
 			nowPlaying: "Sada Svira",
 			upNext: "Sledeće",
 			queueEmpty: "Red je prazan",
+			errorNotFound: "Video nije pronađen",
+			errorRestricted: "Nedostupno u vašoj zemlji",
+			skippedRestricted: "'{title}' preskočeno (Nedostupno)",
+			skippedIPBlocked: "'{title}' preskočeno — YouTube ograničava ovu mrežu",
 			backToNow: "Nazad na Trenutno",
 			addVideos: "Dodaj video za početak"
 		},
@@ -5810,6 +6090,12 @@ export const translations = {
 			deleteAccountToConfirm: "pre potvrdenie",
 			delete: "Zmazať",
 			terms: "Podmienky a Právne"
+		},
+		player: {
+			errorGeneric: "Pri prehrávaní tohto videa sa vyskytla chyba.",
+			errorNotFound: "Toto video nie je k dispozícii.",
+			errorRestricted: "Toto video nie je k dispozícii vo vašej krajine.",
+			errorIPBlocked: "YouTube obmedzuje prehrávanie v tejto sieti."
 		},
 		cookie: {
 			title: "Súkromie a prehrávanie",
@@ -5931,6 +6217,10 @@ export const translations = {
 			nowPlaying: "Práve Hrá",
 			upNext: "Ďalšie",
 			queueEmpty: "Fronta je prázdna",
+			errorNotFound: "Video sa nenašlo",
+			errorRestricted: "Nedostupné vo vašej krajine",
+			skippedRestricted: "'{title}' preskočené (Nedostupné)",
+			skippedIPBlocked: "'{title}' preskočené — YouTube obmedzuje túto sieť",
 			backToNow: "Späť na Teraz",
 			addVideos: "Pridajte videá pre začiatok"
 		},
@@ -5984,6 +6274,12 @@ export const translations = {
 			deleteAccountToConfirm: "للتأكيد",
 			delete: "حذف",
 			terms: "الشروط والقانونية"
+		},
+		player: {
+			errorGeneric: "حدث خطأ أثناء تشغيل هذا الفيديو.",
+			errorNotFound: "هذا الفيديو غير متاح.",
+			errorRestricted: "هذا الفيديو غير متاح في بلدك.",
+			errorIPBlocked: "يقوم YouTube بتقييد التشغيل على هذه الشبكة."
 		},
 		cookie: {
 			title: "الخصوصية والتشغيل",
@@ -6105,6 +6401,10 @@ export const translations = {
 			nowPlaying: "يعمل الآن",
 			upNext: "التالي",
 			queueEmpty: "قائمة الانتظار فارغة",
+			errorNotFound: "الفيديو غير موجود",
+			errorRestricted: "غير متاح في بلدك",
+			skippedRestricted: "تخطي '{title}' (غير متاح)",
+			skippedIPBlocked: "تخطي '{title}' — YouTube يقيد هذه الشبكة",
 			backToNow: "العودة إلى الآن",
 			addVideos: "أضف مقاطع فيديو للبدء"
 		},
@@ -6158,6 +6458,12 @@ export const translations = {
 			deleteAccountToConfirm: "כדי לאשר",
 			delete: "מחק",
 			terms: "תנאים ומשפטי"
+		},
+		player: {
+			errorGeneric: "אירעה שגיאה בעת הפעלת הסרטון הזה.",
+			errorNotFound: "סרטון זה אינו זמין.",
+			errorRestricted: "סרטון זה אינו זמין במדינתך.",
+			errorIPBlocked: "YouTube מגביל את ההפעלה ברשת זו."
 		},
 		cookie: {
 			title: "פרטיות וניגון",
@@ -6279,6 +6585,10 @@ export const translations = {
 			nowPlaying: "מנגן עכשיו",
 			upNext: "הבא",
 			queueEmpty: "התור ריק",
+			errorNotFound: "הסרטון לא נמצא",
+			errorRestricted: "לא זמין במדינתך",
+			skippedRestricted: "'{title}' דולג (לא זמין)",
+			skippedIPBlocked: "'{title}' דולג — YouTube מגביל רשת זו",
 			backToNow: "חזרה לעכשיו",
 			addVideos: "הוסף סרטונים להתחלה"
 		},
