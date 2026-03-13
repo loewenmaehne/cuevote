@@ -1,7 +1,11 @@
 const crypto = require("crypto");
 const db = require("./db");
+const appleMusic = require("./appleMusic");
 
-// Helper to check ownership
+function getSourceId(track) {
+    return track?.videoId || track?.trackId || null;
+}
+
 function isOwner(room, ws) {
     if (!ws.user) return false;
     // Allow system admin (if we had one) or the specific room owner
@@ -740,6 +744,11 @@ class Room {
         }
         ws.lastSuggestionTime = now;
 
+        // Apple Music rooms use a separate flow
+        if (this.state.musicSource === 'apple_music') {
+            return this.handleSuggestSongAppleMusic(ws, payload, ws.user.id, canBypass, indexToRemove, isUserOwner);
+        }
+
         // const { query } = payload; // Already destructured above
         const userId = ws.user.id; // Trust server-side user object
         let videoId = null;
@@ -1023,6 +1032,181 @@ class Room {
             ws.send(JSON.stringify({ type: "success", message: "Added" }));
         }
 
+    }
+
+    async handleSuggestSongAppleMusic(ws, payload, userId, canBypass, indexToRemove, isUserOwner) {
+        const { query } = payload;
+
+        // Check search cache (am: prefix to distinguish from YouTube)
+        const cacheKey = `am:${query}`;
+        let track = null;
+
+        const cachedTrackId = db.getSearchTermVideo(cacheKey);
+        if (cachedTrackId) {
+            console.log(`[Apple Music Search Cache] Hit for "${query}" -> ${cachedTrackId}`);
+            const cachedVideo = db.getVideo(cachedTrackId);
+            if (cachedVideo) {
+                const nowSeconds = Math.floor(Date.now() / 1000);
+                if (nowSeconds - cachedVideo.fetched_at <= 2419200) {
+                    const rawId = cachedTrackId.replace(/^am:/, '');
+
+                    if (this.state.bannedVideos.some(b => (b.trackId || b.videoId) === rawId)) {
+                        ws.send(JSON.stringify({ type: "error", message: "This track has been banned from this channel." }));
+                        return;
+                    }
+
+                    if (this.state.maxDuration > 0 && !canBypass && cachedVideo.duration > this.state.maxDuration) {
+                        const maxMinutes = Math.floor(this.state.maxDuration / 60);
+                        ws.send(JSON.stringify({ type: "error", message: `Track is too long. Max duration is ${maxMinutes} minutes.` }));
+                        return;
+                    }
+
+                    track = {
+                        id: crypto.randomUUID(),
+                        videoId: null,
+                        trackId: rawId,
+                        source: 'apple_music',
+                        title: cachedVideo.title,
+                        artist: cachedVideo.artist,
+                        thumbnail: cachedVideo.thumbnail,
+                        duration: cachedVideo.duration,
+                        previewUrl: null,
+                        score: 0,
+                        voters: {},
+                        suggestedBy: userId,
+                        suggestedByUsername: ws.user.name,
+                        language: cachedVideo.language
+                    };
+                }
+            }
+        }
+
+        if (!track) {
+            if (!appleMusic.isConfigured()) {
+                ws.send(JSON.stringify({ type: "error", message: "Apple Music is not configured on this server." }));
+                return;
+            }
+
+            try {
+                const results = await appleMusic.searchAppleMusic(query, appleMusic.getStorefront(), 5);
+                if (!results || results.length === 0) {
+                    ws.send(JSON.stringify({ type: "error", message: "No tracks found on Apple Music." }));
+                    return;
+                }
+
+                const firstResult = results[0];
+
+                if (this.state.bannedVideos.some(b => (b.trackId || b.videoId) === firstResult.trackId)) {
+                    ws.send(JSON.stringify({ type: "error", message: "This track has been banned from this channel." }));
+                    return;
+                }
+
+                if (this.state.maxDuration > 0 && !canBypass && firstResult.duration > this.state.maxDuration) {
+                    const maxMinutes = Math.floor(this.state.maxDuration / 60);
+                    ws.send(JSON.stringify({ type: "error", message: `Track is too long. Max duration is ${maxMinutes} minutes.` }));
+                    return;
+                }
+
+                track = {
+                    id: crypto.randomUUID(),
+                    videoId: null,
+                    trackId: firstResult.trackId,
+                    source: 'apple_music',
+                    title: firstResult.title,
+                    artist: firstResult.artist,
+                    thumbnail: firstResult.thumbnail,
+                    duration: firstResult.duration,
+                    previewUrl: firstResult.previewUrl,
+                    score: 0,
+                    voters: {},
+                    suggestedBy: userId,
+                    suggestedByUsername: ws.user.name
+                };
+
+                const dbId = `am:${firstResult.trackId}`;
+                db.upsertVideo({
+                    id: dbId,
+                    title: track.title,
+                    artist: track.artist,
+                    thumbnail: track.thumbnail,
+                    duration: track.duration,
+                    category_id: '10',
+                    language: null,
+                    source: 'apple_music'
+                });
+                db.cacheSearchTerm(cacheKey, dbId);
+            } catch (err) {
+                console.error("[Apple Music] Search failed:", err);
+                ws.send(JSON.stringify({ type: "error", message: "Apple Music search failed." }));
+                return;
+            }
+        }
+
+        // Duplicate title check
+        if (track && this.state.duplicateCooldown > 0 && !canBypass) {
+            const cooldown = this.state.duplicateCooldown;
+            const titleToCheck = track.title.toLowerCase().trim();
+            const queueTitles = this.state.queue.map(t => t.title.toLowerCase().trim());
+            const historyToCheck = this.state.history.slice(-cooldown).map(t => t.title.toLowerCase().trim());
+            const combinedList = [...historyToCheck, ...queueTitles];
+            const recentTracks = combinedList.slice(-cooldown);
+
+            if (recentTracks.some(t => t === titleToCheck)) {
+                ws.send(JSON.stringify({ type: "error", message: `This track was recently played (Limit: ${cooldown}).` }));
+                return;
+            }
+        }
+
+        if (!track) {
+            ws.send(JSON.stringify({ type: "error", message: "Could not find track." }));
+            return;
+        }
+
+        if (indexToRemove !== -1) {
+            if (indexToRemove < this.state.queue.length) {
+                this.state.queue.splice(indexToRemove, 1);
+            }
+        }
+
+        // Manual review check
+        if (this.state.suggestionMode === 'manual' && !canBypass) {
+            const sourceId = getSourceId(track);
+            const isKnown = this.knownVideos.has(sourceId);
+            if (this.state.autoApproveKnown && isKnown) {
+                console.log(`[Auto-Approve] Track ${track.title} (${sourceId}) is known. Bypassing review.`);
+            } else {
+                const newPending = [...(this.state.pendingSuggestions || []), track];
+                this.updateState({ pendingSuggestions: newPending });
+                ws.send(JSON.stringify({ type: "info", message: "Submitted" }));
+                return;
+            }
+        }
+
+        if (this.state.ownerQueueBypass && isUserOwner) {
+            track.isOwnerPriority = true;
+        }
+
+        const newQueue = [...this.state.queue, track];
+        const newState = { queue: newQueue };
+        if (newQueue.length === 1) {
+            newState.currentTrack = newQueue[0];
+            newState.currentTrack.startedAt = Date.now();
+            newState.isPlaying = true;
+            newState.progress = 0;
+        } else {
+            const current = newQueue[0];
+            let upcoming = newQueue.slice(1);
+            upcoming.sort((a, b) => {
+                if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
+                if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
+                const scoreDiff = (b.score || 0) - (a.score || 0);
+                if (scoreDiff !== 0) return scoreDiff;
+                return 0;
+            });
+            newState.queue = [current, ...upcoming];
+        }
+        this.updateState(newState);
+        ws.send(JSON.stringify({ type: "success", message: "Added" }));
     }
 
     handleVote(ws, { trackId, voteType }) {
