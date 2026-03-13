@@ -5,8 +5,21 @@ import { Language } from '../contexts/LanguageContext';
 import { Consent } from '../contexts/ConsentContext';
 import { Suggestions } from "./Suggestions";
 
-const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;
-const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+const buildWatchUrl = (track) => {
+  if (track.source === 'apple_music' && track.trackId) {
+    return `https://music.apple.com/song/${track.trackId}`;
+  }
+  return `https://www.youtube.com/watch?v=${track.videoId}`;
+};
+
+const buildThumbnailUrl = (track) => {
+  if (track.source === 'apple_music') {
+    return track.thumbnail;
+  }
+  return track.thumbnail || `https://i.ytimg.com/vi/${track.videoId}/hqdefault.jpg`;
+};
+
+const getTrackSourceId = (track) => track?.videoId || track?.trackId;
 
 export function Track({
   track,
@@ -60,7 +73,7 @@ export function Track({
         <div className="flex items-center gap-4 flex-1 min-w-0">
           {hasConsent ? (
             <img
-              src={track.thumbnail ?? buildThumbnailUrl(track.videoId)}
+              src={buildThumbnailUrl(track)}
               alt={track.title}
               className="w-16 h-16 rounded-3xl object-cover shadow-md flex-shrink-0"
               loading="lazy"
@@ -162,11 +175,11 @@ export function Track({
           )}
 
           <div className="flex flex-col gap-3">
-            {onAdd && !queueVideoIds?.has(track.videoId) && (
+            {onAdd && !queueVideoIds?.has(getTrackSourceId(track)) && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onAdd(track.videoId);
+                  onAdd(getTrackSourceId(track));
                 }}
                 className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-all shadow-lg shadow-orange-900/20 active:scale-95"
               >
@@ -234,13 +247,13 @@ export function Track({
             )}
           </div>
           <a
-            href={buildWatchUrl(track.videoId)}
+            href={buildWatchUrl(track)}
             target="_blank"
             rel="noreferrer"
             onClick={(event) => event.stopPropagation()}
             className="inline-flex items-center gap-2 text-orange-400 text-sm hover:text-orange-300 transition-colors"
           >
-            {t('track.watch')}
+            {track.source === 'apple_music' ? t('track.listenAppleMusic', 'Listen on Apple Music') : t('track.watch')}
           </a>
         </div>
       )}
