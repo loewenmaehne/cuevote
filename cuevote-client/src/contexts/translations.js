@@ -33,7 +33,14 @@ export const translations = {
 			deleteAccountToConfirm: "to confirm",
 			delete: "Delete",
 			startWithCaptions: "Start with Captions",
+			musicSource: "Music Source",
 			terms: "Terms & Legal"
+		},
+		settings: {
+			musicSource: "Music Source",
+			switchSourceTitle: "Switch Music Source?",
+			switchSourceWarning: "Changing the music source will clear the current queue and stop playback.",
+			switchConfirm: "Switch"
 		},
 		player: {
 			errorGeneric: "An error occurred while playing this video.",
@@ -42,6 +49,7 @@ export const translations = {
 			errorIPBlocked: "YouTube is limiting playback on this network.",
 			ipBlockTitle: "Playback Unavailable",
 			ipBlockMessage: "YouTube is restricting video playback on your current network. Try switching to mobile data or a different Wi-Fi network.",
+			noPreview: "No preview available",
 			ipBlockPartyMode: "Switch to Party Mode",
 			ipBlockRetryPlayback: "Retry Playback",
 			ipBlockRetry: "Reload Page"
@@ -51,7 +59,8 @@ export const translations = {
 			description: "To play music, we need to load the YouTube Player. This connects to Google's servers.",
 			policy: "Read our Privacy Policy",
 			accept: "Accept & Play Music",
-			youtubeConsent: "We need your consent to load the YouTube Player. Please accept cookies below."
+			youtubeConsent: "We need your consent to load the YouTube Player. Please accept cookies below.",
+			appleConsent: "This room uses Apple Music. Accepting enables MusicKit JS and Apple cookies."
 		},
 		header: {
 			back: "Back",
