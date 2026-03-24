@@ -662,7 +662,7 @@ export function Lobby() {
                         <div className="relative w-full md:w-80" ref={filterFlagRef}>
                             <button
                                 type="button"
-                                onClick={() => setFilterFlagOpen(!filterFlagOpen)}
+                                onClick={() => { setFilterFlagOpen(!filterFlagOpen); if (!filterFlagOpen) setFilterFlagSearch(""); }}
                                 className={`absolute inset-y-0 left-0 flex items-center pl-3 pr-2 rounded-l-xl transition-colors z-10 ${filterLanguageFlag !== 'international' ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
                                 title={t('lobby.videoLanguage')}
                             >
@@ -672,38 +672,25 @@ export function Lobby() {
                             <input
                                 id="channel-search"
                                 type="text"
-                                className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-14 p-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-neutral-500 transition-all"
-                                placeholder={t('lobby.searchPlaceholder')}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className={`bg-neutral-900 border text-white text-sm rounded-xl block w-full pl-14 p-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-neutral-500 transition-all ${filterFlagOpen ? 'border-orange-500/50' : 'border-neutral-800'}`}
+                                placeholder={filterFlagOpen ? "Search countries..." : t('lobby.searchPlaceholder')}
+                                value={filterFlagOpen ? filterFlagSearch : searchQuery}
+                                onChange={(e) => filterFlagOpen ? setFilterFlagSearch(e.target.value) : setSearchQuery(e.target.value)}
                             />
                             {filterFlagOpen && (
-                                <div className="absolute left-0 top-full mt-1 w-64 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150 flex flex-col" style={{ maxHeight: '20rem' }}>
-                                    <div className="p-2 border-b border-neutral-800">
-                                        <input
-                                            type="text"
-                                            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-1.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-700"
-                                            placeholder="Search..."
-                                            value={filterFlagSearch}
-                                            onChange={(e) => setFilterFlagSearch(e.target.value)}
-                                            autoFocus
-                                            onClick={(e) => e.stopPropagation()}
-                                        />
-                                    </div>
-                                    <div className="overflow-y-auto py-1">
-                                        {channelLanguages.filter(lang =>
-                                            lang.code === 'international' || lang.label.toLowerCase().includes(filterFlagSearch.toLowerCase())
-                                        ).map(lang => (
-                                            <button
-                                                key={lang.code}
-                                                onClick={() => { setFilterLanguageFlag(lang.code); setFilterFlagOpen(false); setFilterFlagSearch(""); }}
-                                                className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${filterLanguageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
-                                            >
-                                                <span className="text-base">{lang.emoji}</span>
-                                                <span>{lang.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
+                                <div className="absolute left-0 top-full mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150 overflow-y-auto py-1" style={{ maxHeight: '20rem' }}>
+                                    {channelLanguages.filter(lang =>
+                                        lang.code === 'international' || lang.label.toLowerCase().includes(filterFlagSearch.toLowerCase())
+                                    ).map(lang => (
+                                        <button
+                                            key={lang.code}
+                                            onClick={() => { setFilterLanguageFlag(lang.code); setFilterFlagOpen(false); setFilterFlagSearch(""); }}
+                                            className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${filterLanguageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
+                                        >
+                                            <span className="text-base">{lang.emoji}</span>
+                                            <span>{lang.label}</span>
+                                        </button>
+                                    ))}
                                 </div>
                             )}
                         </div>
@@ -969,45 +956,49 @@ export function Lobby() {
                                         <div className="animate-in fade-in slide-in-from-top-2 duration-200">
                                             <label className="block text-sm font-medium text-neutral-400 mb-1">{t('lobby.videoLanguage')}</label>
                                             <div className="relative">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setLanguageFlagOpen(!languageFlagOpen)}
-                                                    className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white text-left flex items-center justify-between hover:border-neutral-700 transition-colors"
-                                                >
-                                                    <span className="flex items-center gap-2">
+                                                {languageFlagOpen ? (
+                                                    <div className="w-full bg-[#050505] border border-orange-500/50 rounded-xl px-4 py-3 flex items-center gap-2">
                                                         <span className="text-lg">{getFlagEmoji(languageFlag)}</span>
-                                                        <span>{channelLanguages.find(l => l.code === languageFlag)?.label || 'International'}</span>
-                                                    </span>
-                                                    <svg className={`w-4 h-4 text-neutral-500 transition-transform ${languageFlagOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                                </button>
+                                                        <input
+                                                            type="text"
+                                                            className="flex-1 bg-transparent text-white text-sm focus:outline-none placeholder-neutral-500"
+                                                            placeholder="Search countries..."
+                                                            value={createFlagSearch}
+                                                            onChange={(e) => setCreateFlagSearch(e.target.value)}
+                                                            autoFocus
+                                                        />
+                                                        <button type="button" onClick={() => { setLanguageFlagOpen(false); setCreateFlagSearch(""); }} className="text-neutral-500 hover:text-white">
+                                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setLanguageFlagOpen(true); setCreateFlagSearch(""); }}
+                                                        className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white text-left flex items-center justify-between hover:border-neutral-700 transition-colors"
+                                                    >
+                                                        <span className="flex items-center gap-2">
+                                                            <span className="text-lg">{getFlagEmoji(languageFlag)}</span>
+                                                            <span>{channelLanguages.find(l => l.code === languageFlag)?.label || 'International'}</span>
+                                                        </span>
+                                                        <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                                    </button>
+                                                )}
                                                 {languageFlagOpen && (
-                                                    <div className="absolute z-50 mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl animate-in fade-in zoom-in-95 duration-150 flex flex-col" style={{ maxHeight: '14rem' }}>
-                                                        <div className="p-2 border-b border-neutral-800">
-                                                            <input
-                                                                type="text"
-                                                                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-1.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-700"
-                                                                placeholder="Search..."
-                                                                value={createFlagSearch}
-                                                                onChange={(e) => setCreateFlagSearch(e.target.value)}
-                                                                autoFocus
-                                                                onClick={(e) => e.stopPropagation()}
-                                                            />
-                                                        </div>
-                                                        <div className="overflow-y-auto py-1">
-                                                            {channelLanguages.filter(lang =>
-                                                                lang.code === 'international' || lang.label.toLowerCase().includes(createFlagSearch.toLowerCase())
-                                                            ).map(lang => (
-                                                                <button
-                                                                    key={lang.code}
-                                                                    type="button"
-                                                                    onClick={() => { setLanguageFlag(lang.code); setLanguageFlagOpen(false); setCreateFlagSearch(""); }}
-                                                                    className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${languageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
-                                                                >
-                                                                    <span className="text-base">{lang.emoji}</span>
-                                                                    <span>{lang.label}</span>
-                                                                </button>
-                                                            ))}
-                                                        </div>
+                                                    <div className="absolute z-50 mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl animate-in fade-in zoom-in-95 duration-150 overflow-y-auto py-1" style={{ maxHeight: '14rem' }}>
+                                                        {channelLanguages.filter(lang =>
+                                                            lang.code === 'international' || lang.label.toLowerCase().includes(createFlagSearch.toLowerCase())
+                                                        ).map(lang => (
+                                                            <button
+                                                                key={lang.code}
+                                                                type="button"
+                                                                onClick={() => { setLanguageFlag(lang.code); setLanguageFlagOpen(false); setCreateFlagSearch(""); }}
+                                                                className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${languageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
+                                                            >
+                                                                <span className="text-base">{lang.emoji}</span>
+                                                                <span>{lang.label}</span>
+                                                            </button>
+                                                        ))}
                                                     </div>
                                                 )}
                                             </div>
