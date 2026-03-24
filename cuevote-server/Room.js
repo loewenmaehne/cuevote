@@ -1307,8 +1307,15 @@ class Room {
                 } catch (e) { console.error("Failed to persist room settings", e); }
             }
 
+            // Persist autoRefill to DB
+            if (updates.autoRefill !== undefined) {
+                try {
+                    db.updateRoomSettings(this.id, { auto_refill: updates.autoRefill });
+                } catch (e) { console.error("Failed to persist auto_refill", e); }
+            }
+
             // Trigger Auto-Refill if enabled and queue is empty
-            if (updates.autoRefill === true && this.state.queue.length === 0 && this.state.history.length >= 5) {
+            if (updates.autoRefill === true && this.state.queue.length === 0 && this.state.history.length >= 1) {
                 this.populateQueueFromHistory();
             }
         }
