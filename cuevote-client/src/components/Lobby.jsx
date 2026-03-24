@@ -73,7 +73,7 @@ export function Lobby() {
     // Creation State
     const [isCreatingRoom, setIsCreatingRoom] = useState(false);
     const [newRoomName, setNewRoomName] = useState("");
-    const [isPrivate, setIsPrivate] = useState(false);
+    const [isPrivate, setIsPrivate] = useState(true);
     const [createPassword, setCreatePassword] = useState("");
     const [languageFlag, setLanguageFlag] = useState('international');
     const [languageFlagOpen, setLanguageFlagOpen] = useState(false);
