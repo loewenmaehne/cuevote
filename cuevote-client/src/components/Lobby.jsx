@@ -233,7 +233,7 @@ export function Lobby() {
             return;
         }
         setIsCreatingRoom(true);
-        setIsPrivate(channelType === 'private');
+        setIsPrivate(true);
         setCreatePassword("");
     };
 
@@ -518,7 +518,7 @@ export function Lobby() {
         });
         setIsCreatingRoom(false);
         setNewRoomName("");
-        setIsPrivate(false);
+        setIsPrivate(true);
         setCreatePassword("");
         setLanguageFlag('international');
         setLanguageFlagOpen(false);
