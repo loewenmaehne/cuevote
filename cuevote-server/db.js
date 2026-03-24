@@ -111,6 +111,13 @@ try {
   // Ignore duplicate column error
 }
 
+// Migration: Add lobby_preview for persistent thumbnails when rooms are unloaded
+try {
+  db.prepare("ALTER TABLE rooms ADD COLUMN lobby_preview TEXT DEFAULT NULL").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
+
 module.exports = {
   getUser: (id) => db.prepare('SELECT * FROM users WHERE id = ?').get(id),
   getUserByEmail: (email) => db.prepare('SELECT * FROM users WHERE email = ?').get(email),
@@ -170,6 +177,10 @@ module.exports = {
   },
   updateRoomActivity: (id) => {
     db.prepare('UPDATE rooms SET last_active_at = unixepoch() WHERE id = ?').run(id);
+  },
+  updateLobbyPreview: (roomId, preview) => {
+    const json = preview ? JSON.stringify(preview) : null;
+    db.prepare('UPDATE rooms SET lobby_preview = ? WHERE id = ?').run(json, roomId);
   },
   updateRoomSettings: (id, settings) => {
     const updates = [];
@@ -378,7 +389,7 @@ module.exports = {
     const row = db.prepare('SELECT state_json, saved_at FROM room_state WHERE room_id = ?').get(roomId);
     if (!row) return null;
     const ageSeconds = Math.floor(Date.now() / 1000) - row.saved_at;
-    if (ageSeconds > 3600) return null;
+    if (ageSeconds > 604800) return null; // 7 days
     try {
       return JSON.parse(row.state_json);
     } catch (e) {
