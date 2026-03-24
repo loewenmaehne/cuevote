@@ -448,24 +448,23 @@ class Room {
             // 3. Check Video Availability
             // Skip API validation when no viewers to save quota — DB 28-day history already filters stale entries.
             // Full API validation runs when viewers are present (e.g. on first join).
-            const validVideoIds = this.hasViewers()
+            const validVideos = this.hasViewers()
                 ? await this.checkVideoAvailability(videoIdsToCheck)
-                : new Set(videoIdsToCheck);
+                : new Map(videoIdsToCheck.map(id => [id, null]));
 
             const finalTracks = [];
             const invalidVideoIds = new Set();
 
             for (const track of candidates) {
-                if (validVideoIds.has(track.videoId)) {
-                    // Update ID to be unique for the new queue entry?
-                    // "Room.js" uses crypto.randomUUID() for new tracks.
-                    // We should clone the track and give it a new instance ID.
+                if (validVideos.has(track.videoId)) {
+                    const fresh = validVideos.get(track.videoId);
                     finalTracks.push({
                         ...track,
+                        ...(fresh || {}),
                         id: crypto.randomUUID(),
                         score: 0,
                         voters: {},
-                        suggestedBy: 'System', // Indicate auto-refill?
+                        suggestedBy: 'System',
                         suggestedByUsername: 'Channel Mix'
                     });
                 } else {
@@ -517,48 +516,58 @@ class Room {
     }
 
     async checkVideoAvailability(videoIds) {
-        if (!this.apiKey || videoIds.length === 0) return new Set(videoIds); // If no API key, assume valid? Or fail? Existing code fails on add. Let's assume valid to not break offline/dev? No, user explicitly asked for check. But if no key, we can't check.
+        if (!this.apiKey || videoIds.length === 0) return new Map(videoIds.map(id => [id, null]));
 
-        // If no API Key, we can't check. 
-        // "Check if the video still exists... if not remove it"
-        // If we can't check, we shouldn't delete. So just return all as valid.
-        if (!this.apiKey) return new Set(videoIds);
-
-        const validIds = new Set();
+        const validVideos = new Map();
 
         // Batch requests in 50s
         const chunkSize = 50;
         for (let i = 0; i < videoIds.length; i += chunkSize) {
             const chunk = videoIds.slice(i, i + chunkSize);
             try {
-                const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${chunk.join(',')}&part=status,contentDetails&key=${this.apiKey}`;
+                const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${chunk.join(',')}&part=status,snippet,contentDetails&key=${this.apiKey}`;
                 const response = await fetch(apiUrl);
                 const data = await response.json();
 
                 if (data.items) {
                     for (const item of data.items) {
-                        // Check privacy/embeddable/validity
-                        // If it's in the response, it generally "exists".
-                        // Check status.uploadStatus, status.privacyStatus, status.embeddable
                         const status = item.status;
                         if (status) {
                             if (status.privacyStatus === 'private') continue;
                             if (status.uploadStatus === 'rejected') continue;
                             if (status.embeddable === false) continue;
 
-                            // Also region restrictions? (contentDetails.regionRestriction) - ignoring for now unless requested
+                            const snippet = item.snippet;
+                            const freshData = snippet ? {
+                                thumbnail: snippet.thumbnails?.high?.url || snippet.thumbnails?.default?.url,
+                                title: snippet.title,
+                                artist: snippet.channelTitle,
+                            } : null;
 
-                            validIds.add(item.id);
+                            validVideos.set(item.id, freshData);
+
+                            if (snippet) {
+                                try {
+                                    db.upsertVideo({
+                                        id: item.id,
+                                        title: snippet.title,
+                                        artist: snippet.channelTitle,
+                                        thumbnail: freshData.thumbnail,
+                                        duration: item.contentDetails ? parseISO8601Duration(item.contentDetails.duration) : null,
+                                        category_id: snippet.categoryId || null,
+                                        language: snippet.defaultAudioLanguage || snippet.defaultLanguage || null,
+                                    });
+                                } catch (e) { /* ignore cache refresh errors */ }
+                            }
                         }
                     }
                 }
             } catch (e) {
                 console.error("[AutoRefill] API Check Failed:", e);
-                // On API network error, we cannot determine validity — preserve all videos in this chunk
-                for (const id of chunk) validIds.add(id);
+                for (const id of chunk) validVideos.set(id, null);
             }
         }
-        return validIds;
+        return validVideos;
     }
 
     async handleMessage(ws, message) {
