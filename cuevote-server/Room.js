@@ -129,13 +129,18 @@ class Room {
     }
 
     getSummary() {
+        const track = this.state.currentTrack;
         return {
             id: this.id,
             name: this.name,
             description: this.metadata.description,
             color: this.metadata.color,
             listeners: this.clients.size,
-            currentTrack: this.state.currentTrack,
+            currentTrack: track ? {
+                thumbnail: track.thumbnail,
+                title: track.title,
+                artist: track.artist,
+            } : null,
             isActive: true,
             language_flag: this.metadata.language_flag
         };
