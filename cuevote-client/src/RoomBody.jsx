@@ -116,8 +116,8 @@ function RoomBody() {
       handleLogout();
       navigate('/');
     }
-    if (lastMessage && lastMessage.type === "ROOM_DELETED") {
-      console.log("Room deleted successfully");
+    if (lastMessage && (lastMessage.type === "ROOM_DELETED" || (lastMessage.type === "error" && lastMessage.code === "ROOM_DELETED"))) {
+      console.log("Room deleted, navigating to lobby");
       navigate('/');
     }
   }, [lastMessage, handleLogout, navigate]);
