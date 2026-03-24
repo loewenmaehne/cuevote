@@ -817,7 +817,10 @@ export function Lobby() {
                                             <div className="flex items-center gap-2">
                                                 <Users size={14} /> <span>{channel.listeners || 0} {t('lobby.live')}</span>
                                             </div>
-                                            {channel.is_protected && <Lock size={14} className="text-orange-500" />}
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-base normal-case" title={channelLanguages.find(l => l.code === channel.language_flag)?.label || 'International'}>{getFlagEmoji(channel.language_flag)}</span>
+                                                {channel.is_protected && <Lock size={14} className="text-orange-500" />}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
