@@ -406,5 +406,32 @@ module.exports = {
     const result = db.prepare('DELETE FROM room_history WHERE played_at < ?').run(threshold);
     console.log(`[DB Cleanup] Removed ${result.changes} old room history entries.`);
     return result.changes;
+  },
+
+  // YouTube API TOS: clear stale metadata but preserve video IDs for Auto-DJ history references
+  cleanupStaleVideoMetadata: () => {
+    const threshold = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60);
+    const result = db.prepare(`
+      UPDATE videos
+      SET title = NULL, artist = NULL, thumbnail = NULL,
+          duration = NULL, category_id = NULL, language = NULL
+      WHERE fetched_at < ? AND title IS NOT NULL
+    `).run(threshold);
+    console.log(`[DB Cleanup] Cleared metadata from ${result.changes} stale video entries.`);
+    return result.changes;
+  },
+
+  cleanupSearchCache: () => {
+    const threshold = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60);
+    const result = db.prepare('DELETE FROM search_cache WHERE created_at < ?').run(threshold);
+    console.log(`[DB Cleanup] Removed ${result.changes} stale search cache entries.`);
+    return result.changes;
+  },
+
+  cleanupRelatedVideosCache: () => {
+    const threshold = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60);
+    const result = db.prepare('DELETE FROM related_videos_cache WHERE fetched_at < ?').run(threshold);
+    console.log(`[DB Cleanup] Removed ${result.changes} stale related videos cache entries.`);
+    return result.changes;
   }
 };
