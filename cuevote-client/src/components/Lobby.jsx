@@ -32,13 +32,22 @@ function useLocalizedCountries(uiLanguage) {
 
 export function Lobby() {
     const navigate = useNavigate();
-    const { sendMessage, lastMessage, isConnected, lastError, lastErrorCode, user, handleLoginSuccess, handleLogout, clearMessage, state } = useWebSocketContext();
+    const { sendMessage, lastMessage, isConnected, lastError, lastErrorCode, user, handleLoginSuccess, handleLogout, clearMessage, state, reconnectAttempt, forceReconnect } = useWebSocketContext();
     const { hasConsent, showBanner } = Consent.useConsent();
     const { t, language, setLanguage } = Language.useLanguage();
     const localizedCountries = useLocalizedCountries(language);
     const [rooms, setRooms] = useState([]);
 
-
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
+    useEffect(() => {
+        const update = () => setIsOnline(navigator.onLine);
+        window.addEventListener('online', update);
+        window.addEventListener('offline', update);
+        return () => {
+            window.removeEventListener('online', update);
+            window.removeEventListener('offline', update);
+        };
+    }, []);
 
     // Native Bridge: Sync QR Button State (LOBBY ONLY)
     useEffect(() => {
@@ -170,10 +179,18 @@ export function Lobby() {
         }
     }, [lastMessage, handleLogout]);
 
+    // Dismiss password modal if room no longer exists
+    useEffect(() => {
+        if (lastErrorCode === "ROOM_NOT_FOUND" && showPasswordModal) {
+            setShowPasswordModal(false);
+            setPasswordRoomId(null);
+            setPasswordInput("");
+        }
+    }, [lastErrorCode, showPasswordModal]);
+
     // Handle Join Success (In-Lobby Password Check)
     useEffect(() => {
         if (state && passwordRoomId && state.roomId === passwordRoomId && showPasswordModal) {
-            // Successfully joined the protected room
             setShowPasswordModal(false);
             navigate(`/room/${passwordRoomId}`, { state: { alreadyJoined: true } });
         }
@@ -664,7 +681,7 @@ export function Lobby() {
                 </div>
             </header>
 
-            {lastError && !showPasswordModal && (
+            {lastError && (
                 <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-bounceIn">
                     <div className="bg-red-900/90 border border-red-500 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 backdrop-blur-md">
                         <AlertCircle size={20} className="text-red-400" />
@@ -745,7 +762,7 @@ export function Lobby() {
 
                 {!isConnected ? (
                     <div className="col-span-full py-12">
-                        <LoadingScreen embedded isOnline={true/* Assumed if Lobby Loaded */} isConnected={false} message={t('lobby.connecting')} />
+                        <LoadingScreen embedded isOnline={isOnline} message={t('lobby.connecting')} reconnectAttempt={reconnectAttempt} onForceReconnect={forceReconnect} />
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
