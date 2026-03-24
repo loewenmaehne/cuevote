@@ -104,6 +104,13 @@ try {
   // Ignore duplicate column error
 }
 
+// Migration: Add language_flag if missing (default 'international')
+try {
+  db.prepare("ALTER TABLE rooms ADD COLUMN language_flag TEXT DEFAULT 'international'").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
+
 module.exports = {
   getUser: (id) => db.prepare('SELECT * FROM users WHERE id = ?').get(id),
   getUserByEmail: (email) => db.prepare('SELECT * FROM users WHERE email = ?').get(email),
@@ -136,11 +143,11 @@ module.exports = {
   // Room Management
   createRoom: (room) => {
     const stmt = db.prepare(`
-        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled)
-        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled)
+        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled, language_flag)
+        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled, @language_flag)
     `);
-    // Ensure default
     if (room.captions_enabled === undefined) room.captions_enabled = 0;
+    if (room.language_flag === undefined) room.language_flag = 'international';
 
     stmt.run(room);
     return db.prepare('SELECT * FROM rooms WHERE id = ?').get(room.id);
@@ -176,6 +183,11 @@ module.exports = {
     if (settings.auto_refill !== undefined) {
       updates.push("auto_refill = ?");
       values.push(settings.auto_refill ? 1 : 0);
+    }
+
+    if (settings.language_flag !== undefined) {
+      updates.push("language_flag = ?");
+      values.push(settings.language_flag);
     }
 
     if (updates.length > 0) {
