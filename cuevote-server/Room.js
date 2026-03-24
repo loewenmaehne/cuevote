@@ -1315,7 +1315,8 @@ class Room {
             }
 
             // Trigger Auto-Refill if enabled and queue is empty
-            if (updates.autoRefill === true && this.state.queue.length === 0 && this.state.history.length >= 1) {
+            if (updates.autoRefill === true && this.state.queue.length === 0
+                && this.state.history.length >= 1 && !this.state.isRefilling) {
                 this.populateQueueFromHistory();
             }
         }
@@ -1443,6 +1444,12 @@ class Room {
                 } else {
                     newState.currentTrack = null;
                     newState.isPlaying = false;
+                    this.updateState(newState);
+
+                    if (this.state.autoRefill && this.state.history.length > 0 && !this.state.isRefilling) {
+                        this.populateQueueFromHistory();
+                    }
+                    return;
                 }
                 this.updateState(newState);
             } else {
