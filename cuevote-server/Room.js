@@ -148,6 +148,12 @@ class Room {
         } catch (e) {
             console.error(`ERROR sending state to client ${ws.id}:`, e);
         }
+
+        // TV station: refill queue with API-validated content when a viewer joins an idle station
+        if (this.state.autoRefill && !this.state.isRefilling
+            && this.state.queue.length === 0 && this.state.history.length > 0) {
+            this.populateQueueFromHistory();
+        }
     }
 
     removeClient(ws) {
