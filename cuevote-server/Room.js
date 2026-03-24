@@ -30,7 +30,8 @@ class Room {
             owner_id: metadata.owner_id,
             is_public: metadata.is_public !== undefined ? metadata.is_public : 1,
             password: metadata.password || null,
-            captions_enabled: metadata.captions_enabled !== undefined ? metadata.captions_enabled : 0
+            captions_enabled: metadata.captions_enabled !== undefined ? metadata.captions_enabled : 0,
+            language_flag: metadata.language_flag || 'international'
         };
         this.clients = new Set();
         this.knownVideos = new Set(); // Stores videoIds of approved videos
@@ -121,7 +122,8 @@ class Room {
             color: this.metadata.color,
             listeners: this.clients.size,
             currentTrack: this.state.currentTrack,
-            isActive: true
+            isActive: true,
+            language_flag: this.metadata.language_flag
         };
     }
 
