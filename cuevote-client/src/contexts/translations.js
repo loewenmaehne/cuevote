@@ -33,7 +33,9 @@ export const translations = {
 			deleteAccountToConfirm: "to confirm",
 			delete: "Delete",
 			startWithCaptions: "Start with Captions",
-			terms: "Terms & Legal"
+			terms: "Terms & Legal",
+			videoLanguage: "Video Language",
+			international: "International"
 		},
 		player: {
 			errorGeneric: "An error occurred while playing this video.",
@@ -256,7 +258,9 @@ export const translations = {
 			deleteAccountToConfirm: "om te bevestigen",
 			delete: "Verwijderen",
 			startWithCaptions: "Start met Ondertiteling",
-			terms: "Voorwaarden & Juridisch"
+			terms: "Voorwaarden & Juridisch",
+			videoLanguage: "Videotaal",
+			international: "Internationaal"
 		},
 		player: {
 			errorGeneric: "Er is een fout opgetreden bij het afspelen.",
@@ -469,7 +473,9 @@ export const translations = {
 			deleteAccountToConfirm: "zum Bestätigen",
 			delete: "Löschen",
 			startWithCaptions: "Mit Untertiteln starten",
-			terms: "Rechtliches"
+			terms: "Rechtliches",
+			videoLanguage: "Videosprache",
+			international: "International"
 		},
 		player: {
 			errorGeneric: "Ein Fehler ist bei der Wiedergabe aufgetreten.",
@@ -682,7 +688,9 @@ export const translations = {
 			deleteAccountToConfirm: "pour confirmer",
 			delete: "Supprimer",
 			startWithCaptions: "Démarrer avec sous-titres",
-			terms: "Conditions & Légal"
+			terms: "Conditions & Légal",
+			videoLanguage: "Langue vidéo",
+			international: "International"
 		},
 		player: {
 			errorGeneric: "Une erreur est survenue lors de la lecture.",
@@ -895,7 +903,9 @@ export const translations = {
 			deleteAccountToConfirm: "para confirmar",
 			delete: "Eliminar",
 			startWithCaptions: "Iniciar con Subtítulos",
-			terms: "Términos y Legal"
+			terms: "Términos y Legal",
+			videoLanguage: "Idioma del vídeo",
+			international: "Internacional"
 		},
 		player: {
 			errorGeneric: "Ocurrió un error al reproducir este video.",
@@ -1104,7 +1114,9 @@ export const translations = {
 			deleteAccountPhrase: "Elimina questo account e tutti i miei canali per sempre",
 			deleteAccountToConfirm: "per confermare",
 			delete: "Elimina",
-			terms: "Termini & Legale"
+			terms: "Termini & Legale",
+			videoLanguage: "Lingua video",
+			international: "Internazionale"
 		},
 		player: {
 			errorGeneric: "Si è verificato un errore durante la riproduzione.",
@@ -1302,7 +1314,9 @@ export const translations = {
 			deleteAccountPhrase: "Excluir esta conta e todos os meus canais para sempre",
 			deleteAccountToConfirm: "para confirmar",
 			delete: "Excluir",
-			terms: "Termos & Legal"
+			terms: "Termos & Legal",
+			videoLanguage: "Idioma do vídeo",
+			international: "Internacional"
 		},
 		player: {
 			errorGeneric: "Ocorreu um erro ao reproduzir este vídeo.",
@@ -1500,7 +1514,9 @@ export const translations = {
 			deleteAccountPhrase: "永久删除此帐户及所有频道",
 			deleteAccountToConfirm: "以确认",
 			delete: "删除",
-			terms: "条款与法律"
+			terms: "条款与法律",
+			videoLanguage: "视频语言",
+			international: "国际"
 		},
 		player: {
 			errorGeneric: "播放此视频时发生错误。",
@@ -1694,7 +1710,9 @@ export const translations = {
 			deleteAccountPhrase: "永久刪除此帳戶及所有頻道",
 			deleteAccountToConfirm: "以確認",
 			delete: "刪除",
-			terms: "條款與法律"
+			terms: "條款與法律",
+			videoLanguage: "影片語言",
+			international: "國際"
 		},
 		player: {
 			errorGeneric: "播放此視頻時發生錯誤。",
@@ -1888,7 +1906,9 @@ export const translations = {
 			deleteAccountPhrase: "このアカウントと全チャンネルを永久に削除",
 			deleteAccountToConfirm: "確認のため",
 			delete: "削除",
-			terms: "利用規約"
+			terms: "利用規約",
+			videoLanguage: "動画の言語",
+			international: "インターナショナル"
 		},
 		player: {
 			errorGeneric: "この動画の再生中にエラーが発生しました。",
@@ -2082,7 +2102,9 @@ export const translations = {
 			deleteAccountPhrase: "이 계정과 모든 채널을 영구 삭제",
 			deleteAccountToConfirm: "확인",
 			delete: "삭제",
-			terms: "이용약관"
+			terms: "이용약관",
+			videoLanguage: "영상 언어",
+			international: "국제"
 		},
 		player: {
 			errorGeneric: "이 동영상을 재생하는 중 오류가 발생했습니다.",
@@ -2275,7 +2297,9 @@ export const translations = {
 			deleteAccountPhrase: "इस खाते और मेरे सभी चैनलों को हमेशा के लिए हटाएं",
 			deleteAccountToConfirm: "पुष्टि करने के लिए",
 			delete: "हटाएं",
-			terms: "शर्तें और कानूनी"
+			terms: "शर्तें और कानूनी",
+			videoLanguage: "वीडियो भाषा",
+			international: "अंतर्राष्ट्रीय"
 		},
 		player: {
 			errorGeneric: "इस वीडियो को चलाते समय एक त्रुटि हुई।",
@@ -2469,7 +2493,9 @@ export const translations = {
 			deleteAccountPhrase: "ลบบัญชีนี้และช่องทั้งหมดของฉันตลอดไป",
 			deleteAccountToConfirm: "เพื่อยืนยัน",
 			delete: "ลบ",
-			terms: "เงื่อนไขและกฎหมาย"
+			terms: "เงื่อนไขและกฎหมาย",
+			videoLanguage: "ภาษาวิดีโอ",
+			international: "สากล"
 		},
 		player: {
 			errorGeneric: "เกิดข้อผิดพลาดขณะเล่นวิดีโอนี้",
@@ -2658,7 +2684,9 @@ export const translations = {
 			deleteAccountPhrase: "Xóa tài khoản này và tất cả kênh vĩnh viễn",
 			deleteAccountToConfirm: "để xác nhận",
 			delete: "Xóa",
-			terms: "Điều khoản & Pháp lý"
+			terms: "Điều khoản & Pháp lý",
+			videoLanguage: "Ngôn ngữ video",
+			international: "Quốc tế"
 		},
 		player: {
 			errorGeneric: "Đã xảy ra lỗi khi phát video này.",
@@ -2847,7 +2875,9 @@ export const translations = {
 			deleteAccountPhrase: "Hapus akun ini dan semua kanal saya selamanya",
 			deleteAccountToConfirm: "untuk konfirmasi",
 			delete: "Hapus",
-			terms: "Syarat & Hukum"
+			terms: "Syarat & Hukum",
+			videoLanguage: "Bahasa Video",
+			international: "Internasional"
 		},
 		player: {
 			errorGeneric: "Terjadi kesalahan saat memutar video ini.",
@@ -3036,7 +3066,9 @@ export const translations = {
 			deleteAccountPhrase: "Padam akaun ini dan semua saluran saya selamanya",
 			deleteAccountToConfirm: "untuk sahkan",
 			delete: "Padam",
-			terms: "Terma & Undang-undang"
+			terms: "Terma & Undang-undang",
+			videoLanguage: "Bahasa Video",
+			international: "Antarabangsa"
 		},
 		player: {
 			errorGeneric: "Ralat berlaku semasa memainkan video ini.",
@@ -3224,7 +3256,9 @@ export const translations = {
 			deleteAccountPhrase: "Tanggalin ang account na ito at lahat ng channel magpakailanman",
 			deleteAccountToConfirm: "upang kumpirmahin",
 			delete: "Tanggalin",
-			terms: "Mga Tuntunin at Legal"
+			terms: "Mga Tuntunin at Legal",
+			videoLanguage: "Wika ng Video",
+			international: "Internasyonal"
 		},
 		player: {
 			errorGeneric: "May naganap na error habang sine-play ang video na ito.",
@@ -3396,7 +3430,9 @@ export const translations = {
 			deleteAccountPhrase: "Usuń to konto i wszystkie moje kanały na zawsze",
 			deleteAccountToConfirm: "aby potwierdzić",
 			delete: "Usuń",
-			terms: "Warunki i informacje prawne"
+			terms: "Warunki i informacje prawne",
+			videoLanguage: "Język wideo",
+			international: "Międzynarodowy"
 		},
 		player: {
 			errorGeneric: "Wystąpił błąd podczas odtwarzania tego wideo.",
@@ -3585,7 +3621,9 @@ export const translations = {
 			deleteAccountPhrase: "Ta bort detta konto och alla mina kanaler för alltid",
 			deleteAccountToConfirm: "för att bekräfta",
 			delete: "Ta bort",
-			terms: "Villkor & Lagligt"
+			terms: "Villkor & Lagligt",
+			videoLanguage: "Videospråk",
+			international: "Internationellt"
 		},
 		player: {
 			errorGeneric: "Ett fel uppstod när videon spelades upp.",
@@ -3773,7 +3811,9 @@ export const translations = {
 			deleteAccountPhrase: "Slet denne konto og alle mine kanaler for altid",
 			deleteAccountToConfirm: "for at bekræfte",
 			delete: "Slet",
-			terms: "Vilkår & Juridisk"
+			terms: "Vilkår & Juridisk",
+			videoLanguage: "Videosprog",
+			international: "Internationalt"
 		},
 		player: {
 			errorGeneric: "Der opstod en fejl under afspilning af denne video.",
@@ -3961,7 +4001,9 @@ export const translations = {
 			deleteAccountPhrase: "Slett denne kontoen og alle mine kanaler for alltid",
 			deleteAccountToConfirm: "for å bekrefte",
 			delete: "Slett",
-			terms: "Vilkår og juridisk"
+			terms: "Vilkår og juridisk",
+			videoLanguage: "Videospråk",
+			international: "Internasjonalt"
 		},
 		player: {
 			errorGeneric: "Det oppstod en feil under avspilling av denne videoen.",
@@ -4149,7 +4191,9 @@ export const translations = {
 			deleteAccountPhrase: "Poista tili ja kaikki kanavani pysyvästi",
 			deleteAccountToConfirm: "vahvistaaksesi",
 			delete: "Poista",
-			terms: "Ehdot & Lait"
+			terms: "Ehdot & Lait",
+			videoLanguage: "Videon kieli",
+			international: "Kansainvälinen"
 		},
 		player: {
 			errorGeneric: "Tässä videossa tapahtui virhe toistossa.",
@@ -4337,7 +4381,9 @@ export const translations = {
 			deleteAccountPhrase: "Bu hesabı ve tüm kanallarımı sonsuza kadar sil",
 			deleteAccountToConfirm: "onaylamak için",
 			delete: "Sil",
-			terms: "Şartlar & Yasal"
+			terms: "Şartlar & Yasal",
+			videoLanguage: "Video Dili",
+			international: "Uluslararası"
 		},
 		player: {
 			errorGeneric: "Bu video oynatılırken bir hata oluştu.",
@@ -4525,7 +4571,9 @@ export const translations = {
 			deleteAccountPhrase: "Διαγραφή αυτού του λογαριασμού και όλων των καναλιών μου για πάντα",
 			deleteAccountToConfirm: "για επιβεβαίωση",
 			delete: "Διαγραφή",
-			terms: "Όροι & Νομικά"
+			terms: "Όροι & Νομικά",
+			videoLanguage: "Γλώσσα βίντεο",
+			international: "Διεθνές"
 		},
 		player: {
 			errorGeneric: "Παρουσιάστηκε σφάλμα κατά την αναπαραγωγή αυτού του βίντεο.",
@@ -4713,7 +4761,9 @@ export const translations = {
 			deleteAccountPhrase: "Удалить этот аккаунт и все мои каналы навсегда",
 			deleteAccountToConfirm: "для подтверждения",
 			delete: "Удалить",
-			terms: "Условия и юр. инфо"
+			terms: "Условия и юр. инфо",
+			videoLanguage: "Язык видео",
+			international: "Международный"
 		},
 		player: {
 			errorGeneric: "При воспроизведении этого видео произошла ошибка.",
@@ -4901,7 +4951,9 @@ export const translations = {
 			deleteAccountPhrase: "Видалити цей акаунт і всі мої канали назавжди",
 			deleteAccountToConfirm: "для підтвердження",
 			delete: "Видалити",
-			terms: "Умови та юр. інфо"
+			terms: "Умови та юр. інфо",
+			videoLanguage: "Мова відео",
+			international: "Міжнародний"
 		},
 		player: {
 			errorGeneric: "Під час відтворення цього відео сталася помилка.",
@@ -5090,7 +5142,9 @@ export const translations = {
 			deleteAccountPhrase: "Smazat tento účet a všechny mé kanály navždy",
 			deleteAccountToConfirm: "pro potvrzení",
 			delete: "Smazat",
-			terms: "Podmínky a Právní"
+			terms: "Podmínky a Právní",
+			videoLanguage: "Jazyk videa",
+			international: "Mezinárodní"
 		},
 		player: {
 			errorGeneric: "Při přehrávání tohoto videa došlo k chybě.",
@@ -5278,7 +5332,9 @@ export const translations = {
 			deleteAccountPhrase: "Törlöm ezt a fiókot és minden csatornámat örökre",
 			deleteAccountToConfirm: "a megerősítéshez",
 			delete: "Törlés",
-			terms: "Feltételek és Jogi"
+			terms: "Feltételek és Jogi",
+			videoLanguage: "Videó nyelve",
+			international: "Nemzetközi"
 		},
 		player: {
 			errorGeneric: "Hiba történt a videó lejátszása közben.",
@@ -5466,7 +5522,9 @@ export const translations = {
 			deleteAccountPhrase: "Șterge acest cont și toate canalele mele pentru totdeauna",
 			deleteAccountToConfirm: "pentru a confirma",
 			delete: "Șterge",
-			terms: "Termeni și Legal"
+			terms: "Termeni și Legal",
+			videoLanguage: "Limba video",
+			international: "Internațional"
 		},
 		player: {
 			errorGeneric: "A apărut o eroare la redarea acestui videoclip.",
@@ -5654,7 +5712,9 @@ export const translations = {
 			deleteAccountPhrase: "Изтрий този акаунт и всичките ми канали завинаги",
 			deleteAccountToConfirm: "за потвърждение",
 			delete: "Изтрий",
-			terms: "Условия и Правни"
+			terms: "Условия и Правни",
+			videoLanguage: "Език на видеото",
+			international: "Международен"
 		},
 		player: {
 			errorGeneric: "Възникна грешка при възпроизвеждането на това видео.",
@@ -5842,7 +5902,9 @@ export const translations = {
 			deleteAccountPhrase: "Izbriši ovaj račun i sve moje kanale zauvijek",
 			deleteAccountToConfirm: "za potvrdu",
 			delete: "Izbriši",
-			terms: "Uvjeti i Pravno"
+			terms: "Uvjeti i Pravno",
+			videoLanguage: "Jezik videa",
+			international: "Međunarodno"
 		},
 		player: {
 			errorGeneric: "Došlo je do pogreške pri reproduciranju ovog videa.",
@@ -6030,7 +6092,9 @@ export const translations = {
 			deleteAccountPhrase: "Obriši ovaj nalog i sve moje kanale zauvek",
 			deleteAccountToConfirm: "za potvrdu",
 			delete: "Obriši",
-			terms: "Uslovi i Pravno"
+			terms: "Uslovi i Pravno",
+			videoLanguage: "Језик видеа",
+			international: "Међународно"
 		},
 		player: {
 			errorGeneric: "Došlo je do greške pri reprodukovanju ovog videa.",
@@ -6218,7 +6282,9 @@ export const translations = {
 			deleteAccountPhrase: "Zmazať tento účet a všetky moje kanály navždy",
 			deleteAccountToConfirm: "pre potvrdenie",
 			delete: "Zmazať",
-			terms: "Podmienky a Právne"
+			terms: "Podmienky a Právne",
+			videoLanguage: "Jazyk videa",
+			international: "Medzinárodný"
 		},
 		player: {
 			errorGeneric: "Pri prehrávaní tohto videa sa vyskytla chyba.",
@@ -6406,7 +6472,9 @@ export const translations = {
 			deleteAccountPhrase: "حذف هذا الحساب وجميع قنواتي للأبد",
 			deleteAccountToConfirm: "للتأكيد",
 			delete: "حذف",
-			terms: "الشروط والقانونية"
+			terms: "الشروط والقانونية",
+			videoLanguage: "لغة الفيديو",
+			international: "دولي"
 		},
 		player: {
 			errorGeneric: "حدث خطأ أثناء تشغيل هذا الفيديو.",
@@ -6594,7 +6662,9 @@ export const translations = {
 			deleteAccountPhrase: "מחק את החשבון הזה ואת כל הערוצים שלי לנצח",
 			deleteAccountToConfirm: "כדי לאשר",
 			delete: "מחק",
-			terms: "תנאים ומשפטי"
+			terms: "תנאים ומשפטי",
+			videoLanguage: "שפת הסרטון",
+			international: "בינלאומי"
 		},
 		player: {
 			errorGeneric: "אירעה שגיאה בעת הפעלת הסרטון הזה.",
