@@ -447,7 +447,7 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "CREATE_ROOM": {
-                    const { name, description, color, isPrivate, password, captionsEnabled } = parsedMessage.payload;
+                    const { name, description, color, isPrivate, password, captionsEnabled, languageFlag } = parsedMessage.payload;
                     if (!ws.user) {
                         ws.send(JSON.stringify({ type: "error", message: "You must be logged in to create a room." }));
                         return;
@@ -474,7 +474,8 @@ wss.on("connection", (ws, req) => {
                                 color: color || "from-gray-700 to-black",
                                 is_public: isPrivate ? 0 : 1,
                                 password: (isPrivate && password) ? password : null,
-                                captions_enabled: captionsEnabled ? 1 : 0
+                                captions_enabled: captionsEnabled ? 1 : 0,
+                                language_flag: languageFlag || 'international'
                             };
 
                             db.createRoom(roomData);
@@ -560,7 +561,6 @@ wss.on("connection", (ws, req) => {
                         }
 
                         if (!activeIds.has(dbr.id)) {
-                            // Minimal summary for idle room
                             roomList.push({
                                 id: dbr.id,
                                 name: dbr.name,
@@ -568,8 +568,9 @@ wss.on("connection", (ws, req) => {
                                 color: dbr.color,
                                 listeners: 0,
                                 currentTrack: null,
-                                is_protected: !!dbr.password, // Hint for frontend
-                                isActive: false
+                                is_protected: !!dbr.password,
+                                isActive: false,
+                                language_flag: dbr.language_flag || 'international'
                             });
                         }
                     });
