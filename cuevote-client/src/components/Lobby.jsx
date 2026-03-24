@@ -11,11 +11,31 @@ import { channelLanguages, getFlagEmoji } from '../constants/channelLanguages';
 
 import { LoadingScreen } from './LoadingScreen';
 
+function useLocalizedCountries(uiLanguage) {
+    return useMemo(() => {
+        const displayNames = new Intl.DisplayNames([uiLanguage, 'en'], { type: 'region' });
+        const enDisplayNames = new Intl.DisplayNames(['en'], { type: 'region' });
+        return channelLanguages.map(lang => {
+            if (lang.code === 'international') {
+                return { ...lang, label: 'International', search: 'international' };
+            }
+            const localized = displayNames.of(lang.code) || lang.code;
+            const english = enDisplayNames.of(lang.code) || lang.code;
+            return {
+                ...lang,
+                label: localized,
+                search: `${localized}\t${english}`.toLowerCase(),
+            };
+        });
+    }, [uiLanguage]);
+}
+
 export function Lobby() {
     const navigate = useNavigate();
     const { sendMessage, lastMessage, isConnected, lastError, lastErrorCode, user, handleLoginSuccess, handleLogout, clearMessage, state } = useWebSocketContext();
     const { hasConsent, showBanner } = Consent.useConsent();
     const { t, language, setLanguage } = Language.useLanguage();
+    const localizedCountries = useLocalizedCountries(language);
     const [rooms, setRooms] = useState([]);
 
 
@@ -679,7 +699,7 @@ export function Lobby() {
                             />
                             {filterFlagOpen && (
                                 <div className="absolute left-0 top-full mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150 overflow-y-auto py-1" style={{ maxHeight: '20rem' }}>
-                                    {channelLanguages.filter(lang =>
+                                    {localizedCountries.filter(lang =>
                                         lang.code === 'international' || lang.search.includes(filterFlagSearch.toLowerCase())
                                     ).map(lang => (
                                         <button
@@ -860,7 +880,7 @@ export function Lobby() {
                                                 <Users size={14} /> <span>{channel.listeners || 0} {t('lobby.live')}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-base normal-case" title={channelLanguages.find(l => l.code === channel.language_flag)?.label || 'International'}>{getFlagEmoji(channel.language_flag)}</span>
+                                                <span className="text-base normal-case" title={localizedCountries.find(l => l.code === channel.language_flag)?.label || 'International'}>{getFlagEmoji(channel.language_flag)}</span>
                                                 {channel.is_protected && <Lock size={14} className="text-orange-500" />}
                                             </div>
                                         </div>
@@ -979,14 +999,14 @@ export function Lobby() {
                                                     >
                                                         <span className="flex items-center gap-2">
                                                             <span className="text-lg">{getFlagEmoji(languageFlag)}</span>
-                                                            <span>{channelLanguages.find(l => l.code === languageFlag)?.label || 'International'}</span>
+                                                            <span>{localizedCountries.find(l => l.code === languageFlag)?.label || 'International'}</span>
                                                         </span>
                                                         <svg className="w-4 h-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                                                     </button>
                                                 )}
                                                 {languageFlagOpen && (
                                                     <div className="absolute z-50 mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl animate-in fade-in zoom-in-95 duration-150 overflow-y-auto py-1" style={{ maxHeight: '14rem' }}>
-                                                        {channelLanguages.filter(lang =>
+                                                        {localizedCountries.filter(lang =>
                                                             lang.code === 'international' || lang.search.includes(createFlagSearch.toLowerCase())
                                                         ).map(lang => (
                                                             <button
