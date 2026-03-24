@@ -1472,7 +1472,8 @@ class Room {
                 };
                 if (newQueue.length > 0) {
                     newState.currentTrack = newQueue[0];
-                    newState.isPlaying = true; // Keep playing next
+                    newState.currentTrack.startedAt = Date.now();
+                    newState.isPlaying = true;
                 } else {
                     newState.currentTrack = null;
                     newState.isPlaying = false;
