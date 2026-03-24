@@ -413,13 +413,13 @@ wss.on("connection", (ws, req) => {
                     let room = rooms.get(roomId) || rooms.get(roomId.toLowerCase()) || rooms.get(roomId.toUpperCase());
 
                     if (!room) {
-                        // Check DB if not not in memory
                         try {
-                            const roomData = db.getRoom(roomId);
+                            const roomData = db.getRoom(roomId) || db.getRoom(roomId.toLowerCase()) || db.getRoom(roomId.toUpperCase());
                             if (roomData) {
-                                console.log(`Waking up idle room: ${roomData.name} (${roomId})`);
-                                room = new Room(roomId, roomData.name, YOUTUBE_API_KEY, roomData);
-                                rooms.set(roomId, room);
+                                const resolvedId = roomData.id;
+                                console.log(`Waking up idle room: ${roomData.name} (${resolvedId})`);
+                                room = new Room(resolvedId, roomData.name, YOUTUBE_API_KEY, roomData);
+                                rooms.set(resolvedId, room);
                             }
                         } catch (e) {
                             console.error("DB Lookup failed", e);
