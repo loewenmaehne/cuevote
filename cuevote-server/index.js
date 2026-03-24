@@ -692,34 +692,22 @@ setInterval(() => {
     }
 }, 5 * 60 * 1000);
 
-// Cleanup Old Room History and expired sessions (Once a day)
+// Cleanup Old Room History, expired sessions, and stale API caches (Once a day)
 setInterval(() => {
-    console.log("Running room history + session cleanup task...");
-    try {
-        db.cleanupRoomHistory();
-    } catch (e) {
-        console.error("Failed to cleanup room history", e);
-    }
-    try {
-        db.cleanupExpiredSessions();
-    } catch (e) {
-        console.error("Failed to cleanup expired sessions", e);
-    }
+    console.log("Running daily cleanup task...");
+    try { db.cleanupRoomHistory(); } catch (e) { console.error("Failed to cleanup room history", e); }
+    try { db.cleanupExpiredSessions(); } catch (e) { console.error("Failed to cleanup expired sessions", e); }
+    try { db.cleanupStaleVideoMetadata(); } catch (e) { console.error("Failed to cleanup stale video metadata", e); }
+    try { db.cleanupSearchCache(); } catch (e) { console.error("Failed to cleanup search cache", e); }
+    try { db.cleanupRelatedVideosCache(); } catch (e) { console.error("Failed to cleanup related videos cache", e); }
 }, 24 * 60 * 60 * 1000);
 
-// Run history cleanup once on startup as well
-try {
-    db.cleanupRoomHistory();
-} catch (e) {
-    console.error("Failed to cleanup room history on startup", e);
-}
-
-// Run session cleanup once on startup as well
-try {
-    db.cleanupExpiredSessions();
-} catch (e) {
-    console.error("Failed to cleanup expired sessions on startup", e);
-}
+// Run all cleanups once on startup as well
+try { db.cleanupRoomHistory(); } catch (e) { console.error("Failed to cleanup room history on startup", e); }
+try { db.cleanupExpiredSessions(); } catch (e) { console.error("Failed to cleanup expired sessions on startup", e); }
+try { db.cleanupStaleVideoMetadata(); } catch (e) { console.error("Failed to cleanup stale video metadata on startup", e); }
+try { db.cleanupSearchCache(); } catch (e) { console.error("Failed to cleanup search cache on startup", e); }
+try { db.cleanupRelatedVideosCache(); } catch (e) { console.error("Failed to cleanup related videos cache on startup", e); }
 
 function gracefulShutdown(signal) {
     console.log(`[Shutdown] ${signal} received. Closing ${wss.clients.size} connections...`);
