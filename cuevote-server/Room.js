@@ -424,7 +424,7 @@ class Room {
                         score: 0,
                         voters: {},
                         suggestedBy: 'System', // Indicate auto-refill?
-                        suggestedByUsername: 'Auto-DJ'
+                        suggestedByUsername: 'Channel Mix'
                     });
                 } else {
                     invalidVideoIds.add(track.videoId);
