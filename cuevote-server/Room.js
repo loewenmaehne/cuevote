@@ -311,9 +311,8 @@ class Room {
             } = this.state;
 
             // 1. Target Size: Half of maxQueueSize (def 50 -> 25), or total history if less
-            // User: "If there is less than 5 videos in total, do not do anything."
-            if (history.length < 5) {
-                console.log(`[AutoRefill] Not enough history (${history.length} < 5). Abort.`);
+            if (history.length < 1) {
+                console.log(`[AutoRefill] No history. Abort.`);
                 this.updateState({ isRefilling: false });
                 return;
             }
@@ -371,6 +370,19 @@ class Room {
 
                 candidates.push(track);
                 videoIdsToCheck.push(track.videoId);
+            }
+
+            // Fallback: when library is very small, relax duplicate/cooldown checks to allow looping
+            if (candidates.length === 0 && uniqueHistory.length > 0) {
+                console.log(`[AutoRefill] No candidates after strict filtering. Relaxing checks for small library (${uniqueHistory.length} unique videos).`);
+                for (const track of shuffledHistory) {
+                    if (candidates.length >= needed) break;
+                    if (maxDuration > 0 && track.duration > maxDuration) continue;
+                    const ipEntry = this.ipBlockedVideos.get(track.videoId);
+                    if (ipEntry && (Date.now() - ipEntry.lastFailedAt) < 1800000) continue;
+                    candidates.push(track);
+                    videoIdsToCheck.push(track.videoId);
+                }
             }
 
             if (candidates.length === 0) {
