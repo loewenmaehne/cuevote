@@ -77,6 +77,7 @@ export function Lobby() {
     const [createPassword, setCreatePassword] = useState("");
     const [languageFlag, setLanguageFlag] = useState('international');
     const [languageFlagOpen, setLanguageFlagOpen] = useState(false);
+    const [createFlagSearch, setCreateFlagSearch] = useState("");
 
     // Joining State (Password)
     const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -98,6 +99,7 @@ export function Lobby() {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterLanguageFlag, setFilterLanguageFlag] = useState('international');
     const [filterFlagOpen, setFilterFlagOpen] = useState(false);
+    const [filterFlagSearch, setFilterFlagSearch] = useState("");
     const filterFlagRef = useRef(null);
 
     // Keyboard Navigation State
@@ -456,6 +458,7 @@ export function Lobby() {
         const handleClick = (e) => {
             if (filterFlagRef.current && !filterFlagRef.current.contains(e.target)) {
                 setFilterFlagOpen(false);
+                setFilterFlagSearch("");
             }
         };
         document.addEventListener('mousedown', handleClick);
@@ -522,6 +525,7 @@ export function Lobby() {
         setCreatePassword("");
         setLanguageFlag('international');
         setLanguageFlagOpen(false);
+        setCreateFlagSearch("");
     };
 
     const submitPasswordJoin = (e) => {
@@ -674,17 +678,32 @@ export function Lobby() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                             {filterFlagOpen && (
-                                <div className="absolute left-0 top-full mt-1 w-56 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl max-h-64 overflow-y-auto py-1 z-50 animate-in fade-in zoom-in-95 duration-150">
-                                    {channelLanguages.map(lang => (
-                                        <button
-                                            key={lang.code}
-                                            onClick={() => { setFilterLanguageFlag(lang.code); setFilterFlagOpen(false); }}
-                                            className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${filterLanguageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
-                                        >
-                                            <span className="text-base">{lang.emoji}</span>
-                                            <span>{lang.label}</span>
-                                        </button>
-                                    ))}
+                                <div className="absolute left-0 top-full mt-1 w-64 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150 flex flex-col" style={{ maxHeight: '20rem' }}>
+                                    <div className="p-2 border-b border-neutral-800">
+                                        <input
+                                            type="text"
+                                            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-1.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-700"
+                                            placeholder="Search..."
+                                            value={filterFlagSearch}
+                                            onChange={(e) => setFilterFlagSearch(e.target.value)}
+                                            autoFocus
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    </div>
+                                    <div className="overflow-y-auto py-1">
+                                        {channelLanguages.filter(lang =>
+                                            lang.code === 'international' || lang.label.toLowerCase().includes(filterFlagSearch.toLowerCase())
+                                        ).map(lang => (
+                                            <button
+                                                key={lang.code}
+                                                onClick={() => { setFilterLanguageFlag(lang.code); setFilterFlagOpen(false); setFilterFlagSearch(""); }}
+                                                className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${filterLanguageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
+                                            >
+                                                <span className="text-base">{lang.emoji}</span>
+                                                <span>{lang.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -962,18 +981,33 @@ export function Lobby() {
                                                     <svg className={`w-4 h-4 text-neutral-500 transition-transform ${languageFlagOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                                                 </button>
                                                 {languageFlagOpen && (
-                                                    <div className="absolute z-50 mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl max-h-48 overflow-y-auto py-1 animate-in fade-in zoom-in-95 duration-150">
-                                                        {channelLanguages.map(lang => (
-                                                            <button
-                                                                key={lang.code}
-                                                                type="button"
-                                                                onClick={() => { setLanguageFlag(lang.code); setLanguageFlagOpen(false); }}
-                                                                className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${languageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
-                                                            >
-                                                                <span className="text-base">{lang.emoji}</span>
-                                                                <span>{lang.label}</span>
-                                                            </button>
-                                                        ))}
+                                                    <div className="absolute z-50 mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl animate-in fade-in zoom-in-95 duration-150 flex flex-col" style={{ maxHeight: '14rem' }}>
+                                                        <div className="p-2 border-b border-neutral-800">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-1.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-700"
+                                                                placeholder="Search..."
+                                                                value={createFlagSearch}
+                                                                onChange={(e) => setCreateFlagSearch(e.target.value)}
+                                                                autoFocus
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            />
+                                                        </div>
+                                                        <div className="overflow-y-auto py-1">
+                                                            {channelLanguages.filter(lang =>
+                                                                lang.code === 'international' || lang.label.toLowerCase().includes(createFlagSearch.toLowerCase())
+                                                            ).map(lang => (
+                                                                <button
+                                                                    key={lang.code}
+                                                                    type="button"
+                                                                    onClick={() => { setLanguageFlag(lang.code); setLanguageFlagOpen(false); setCreateFlagSearch(""); }}
+                                                                    className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${languageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
+                                                                >
+                                                                    <span className="text-base">{lang.emoji}</span>
+                                                                    <span>{lang.label}</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>
