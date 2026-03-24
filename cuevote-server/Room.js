@@ -63,7 +63,7 @@ class Room {
             pendingSuggestions: [],
             duplicateCooldown: 10, // Default 10 songs
             autoApproveKnown: true, // Default true
-            autoRefill: false, // Automated Refill
+            autoRefill: metadata.auto_refill !== undefined ? !!metadata.auto_refill : true,
             captionsEnabled: !!(metadata.captions_enabled), // Initialize from metadata
             bannedVideos: [], // List of banned videos { videoId, title, artist, ... }
         };
@@ -101,6 +101,11 @@ class Room {
             }
         } catch (error) {
             console.error(`[Room ${this.id}] Failed to restore saved state:`, error);
+        }
+
+        // TV station auto-start: populate queue from history on wake-up
+        if (this.state.autoRefill && !this.state.currentTrack && this.state.history.length > 0) {
+            this.populateQueueFromHistory();
         }
     }
 
