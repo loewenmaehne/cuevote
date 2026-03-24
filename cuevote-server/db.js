@@ -433,5 +433,32 @@ module.exports = {
     const result = db.prepare('DELETE FROM related_videos_cache WHERE fetched_at < ?').run(threshold);
     console.log(`[DB Cleanup] Removed ${result.changes} stale related videos cache entries.`);
     return result.changes;
+  },
+
+  cleanupEmptyRooms: () => {
+    const sevenDaysAgo = Math.floor(Date.now() / 1000) - (7 * 24 * 60 * 60);
+    const result = db.prepare(`
+      DELETE FROM rooms
+      WHERE created_at < ?
+        AND id NOT IN (SELECT DISTINCT room_id FROM room_history)
+    `).run(sevenDaysAgo);
+    if (result.changes > 0) {
+      console.log(`[DB Cleanup] Deleted ${result.changes} empty channels older than 7 days.`);
+    }
+    return result.changes;
+  },
+
+  countUserRooms: (userId) => {
+    const row = db.prepare('SELECT COUNT(*) as count FROM rooms WHERE owner_id = ?').get(userId);
+    return row ? row.count : 0;
+  },
+
+  countUserEmptyRooms: (userId) => {
+    const row = db.prepare(`
+      SELECT COUNT(*) as count FROM rooms
+      WHERE owner_id = ?
+        AND id NOT IN (SELECT DISTINCT room_id FROM room_history)
+    `).get(userId);
+    return row ? row.count : 0;
   }
 };

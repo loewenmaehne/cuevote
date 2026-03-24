@@ -458,6 +458,21 @@ wss.on("connection", (ws, req) => {
                         return;
                     }
 
+                    const MAX_CHANNELS_PER_USER = 10;
+                    const MAX_EMPTY_CHANNELS_PER_USER = 2;
+
+                    const totalRooms = db.countUserRooms(ws.user.id);
+                    if (totalRooms >= MAX_CHANNELS_PER_USER) {
+                        ws.send(JSON.stringify({ type: "error", message: `You can have at most ${MAX_CHANNELS_PER_USER} channels.` }));
+                        return;
+                    }
+
+                    const emptyRooms = db.countUserEmptyRooms(ws.user.id);
+                    if (emptyRooms >= MAX_EMPTY_CHANNELS_PER_USER) {
+                        ws.send(JSON.stringify({ type: "error", message: "You already have unused channels. Add music to an existing channel before creating a new one." }));
+                        return;
+                    }
+
                     let attempts = 0;
                     let success = false;
                     while (attempts < 3 && !success) {
@@ -700,6 +715,7 @@ setInterval(() => {
     try { db.cleanupStaleVideoMetadata(); } catch (e) { console.error("Failed to cleanup stale video metadata", e); }
     try { db.cleanupSearchCache(); } catch (e) { console.error("Failed to cleanup search cache", e); }
     try { db.cleanupRelatedVideosCache(); } catch (e) { console.error("Failed to cleanup related videos cache", e); }
+    try { db.cleanupEmptyRooms(); } catch (e) { console.error("Failed to cleanup empty rooms", e); }
 }, 24 * 60 * 60 * 1000);
 
 // Run all cleanups once on startup as well
@@ -708,6 +724,7 @@ try { db.cleanupExpiredSessions(); } catch (e) { console.error("Failed to cleanu
 try { db.cleanupStaleVideoMetadata(); } catch (e) { console.error("Failed to cleanup stale video metadata on startup", e); }
 try { db.cleanupSearchCache(); } catch (e) { console.error("Failed to cleanup search cache on startup", e); }
 try { db.cleanupRelatedVideosCache(); } catch (e) { console.error("Failed to cleanup related videos cache on startup", e); }
+try { db.cleanupEmptyRooms(); } catch (e) { console.error("Failed to cleanup empty rooms on startup", e); }
 
 function gracefulShutdown(signal) {
     console.log(`[Shutdown] ${signal} received. Closing ${wss.clients.size} connections...`);
