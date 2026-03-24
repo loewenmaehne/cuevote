@@ -1147,8 +1147,14 @@ class Room {
         };
         if (!newCurrentTrack) {
             newState.isPlaying = false;
+            this.updateState(newState);
+
+            if (this.state.autoRefill && this.state.history.length > 0 && !this.state.isRefilling) {
+                this.populateQueueFromHistory();
+            }
+        } else {
+            this.updateState(newState);
         }
-        this.updateState(newState);
     }
 
     async handlePlaybackError(ws, { videoId, errorCode }) {
