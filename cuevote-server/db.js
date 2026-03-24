@@ -446,19 +446,5 @@ module.exports = {
       console.log(`[DB Cleanup] Deleted ${result.changes} empty channels older than 7 days.`);
     }
     return result.changes;
-  },
-
-  countUserRooms: (userId) => {
-    const row = db.prepare('SELECT COUNT(*) as count FROM rooms WHERE owner_id = ?').get(userId);
-    return row ? row.count : 0;
-  },
-
-  countUserEmptyRooms: (userId) => {
-    const row = db.prepare(`
-      SELECT COUNT(*) as count FROM rooms
-      WHERE owner_id = ?
-        AND id NOT IN (SELECT DISTINCT room_id FROM room_history)
-    `).get(userId);
-    return row ? row.count : 0;
   }
 };

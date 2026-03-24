@@ -458,21 +458,6 @@ wss.on("connection", (ws, req) => {
                         return;
                     }
 
-                    const MAX_CHANNELS_PER_USER = 10;
-                    const MAX_EMPTY_CHANNELS_PER_USER = 2;
-
-                    const totalRooms = db.countUserRooms(ws.user.id);
-                    if (totalRooms >= MAX_CHANNELS_PER_USER) {
-                        ws.send(JSON.stringify({ type: "error", message: `You can have at most ${MAX_CHANNELS_PER_USER} channels.` }));
-                        return;
-                    }
-
-                    const emptyRooms = db.countUserEmptyRooms(ws.user.id);
-                    if (emptyRooms >= MAX_EMPTY_CHANNELS_PER_USER) {
-                        ws.send(JSON.stringify({ type: "error", message: "You already have unused channels. Add music to an existing channel before creating a new one." }));
-                        return;
-                    }
-
                     let attempts = 0;
                     let success = false;
                     while (attempts < 3 && !success) {
