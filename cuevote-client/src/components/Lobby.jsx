@@ -654,36 +654,18 @@ export function Lobby() {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <h2 className="text-2xl font-semibold leading-tight">{t('lobby.browseChannels')}</h2>
 
-                        {/* Search Bar */}
-                        <div className="relative w-full md:w-72">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search className="h-4 w-4 text-neutral-500" />
-                            </div>
-                            <input
-                                id="channel-search"
-                                type="text"
-                                className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-10 p-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-neutral-500 transition-all"
-                                placeholder={t('lobby.searchPlaceholder')}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Filters - Scrollable on mobile */}
-                    <div className="overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none">
-                        <div className="flex bg-neutral-900 rounded-lg p-1.5 gap-2 border border-neutral-800 w-full sm:w-fit">
+                        {/* Search Bar + Language Filter */}
+                        <div className="flex items-center gap-2 w-full md:w-auto">
                             <div className="relative" ref={filterFlagRef}>
                                 <button
                                     onClick={() => setFilterFlagOpen(!filterFlagOpen)}
-                                    className={`px-3 py-2 sm:py-1.5 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${filterLanguageFlag !== 'international' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'}`}
+                                    className={`flex items-center justify-center w-10 h-10 rounded-xl border transition-all ${filterLanguageFlag !== 'international' ? 'bg-orange-500/10 border-orange-500/50 text-white' : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700'}`}
                                     title={t('lobby.videoLanguage')}
                                 >
-                                    <span className="text-sm">{getFlagEmoji(filterLanguageFlag)}</span>
-                                    <span className="hidden sm:inline">{channelLanguages.find(l => l.code === filterLanguageFlag)?.label || 'International'}</span>
+                                    <span className="text-base">{getFlagEmoji(filterLanguageFlag)}</span>
                                 </button>
                                 {filterFlagOpen && (
-                                    <div className="absolute left-0 top-full mt-2 w-56 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl max-h-64 overflow-y-auto py-1 z-50 animate-in fade-in zoom-in-95 duration-150">
+                                    <div className="absolute left-0 top-full mt-1 w-56 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl max-h-64 overflow-y-auto py-1 z-50 animate-in fade-in zoom-in-95 duration-150">
                                         {channelLanguages.map(lang => (
                                             <button
                                                 key={lang.code}
@@ -697,9 +679,25 @@ export function Lobby() {
                                     </div>
                                 )}
                             </div>
+                            <div className="relative flex-1 md:w-72 md:flex-none">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Search className="h-4 w-4 text-neutral-500" />
+                                </div>
+                                <input
+                                    id="channel-search"
+                                    type="text"
+                                    className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-10 p-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-neutral-500 transition-all"
+                                    placeholder={t('lobby.searchPlaceholder')}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
 
-                            <div className="w-px bg-neutral-800 self-stretch" />
-
+                    {/* Filters - Scrollable on mobile */}
+                    <div className="overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none">
+                        <div className="flex bg-neutral-900 rounded-lg p-1.5 gap-2 border border-neutral-800 w-full sm:w-fit">
                             <button
                                 onClick={() => setChannelType('public')}
                                 className={`flex-1 sm:flex-none px-3 py-2 sm:py-1.5 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap ${channelType === 'public' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'} ${focusedIndex === -2 ? 'ring-2 ring-orange-500 text-white relative z-10' : ''}`}
@@ -861,9 +859,7 @@ export function Lobby() {
                                                 <Users size={14} /> <span>{channel.listeners || 0} {t('lobby.live')}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                {channel.language_flag && channel.language_flag !== 'international' && (
-                                                    <span className="text-base normal-case" title={channelLanguages.find(l => l.code === channel.language_flag)?.label}>{getFlagEmoji(channel.language_flag)}</span>
-                                                )}
+                                                <span className={`text-base normal-case ${(!channel.language_flag || channel.language_flag === 'international') ? 'opacity-40' : ''}`} title={channelLanguages.find(l => l.code === channel.language_flag)?.label || 'International'}>{getFlagEmoji(channel.language_flag)}</span>
                                                 {channel.is_protected && <Lock size={14} className="text-orange-500" />}
                                             </div>
                                         </div>
