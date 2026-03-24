@@ -96,6 +96,9 @@ export function Lobby() {
     const isScrolling = useRef(false);
     // Default to 4 for lg screens
     const [searchQuery, setSearchQuery] = useState("");
+    const [filterLanguageFlag, setFilterLanguageFlag] = useState('international');
+    const [filterFlagOpen, setFilterFlagOpen] = useState(false);
+    const filterFlagRef = useRef(null);
 
     // Keyboard Navigation State
     const INDEX_LANGUAGE = -10;
@@ -168,36 +171,37 @@ export function Lobby() {
         return () => window.removeEventListener('resize', updateColumns);
     }, []);
 
-    // Filter rooms based on search
+    // Filter rooms based on search and language flag
     const filteredRooms = useMemo(() => {
         let result = rooms.filter(room =>
             room.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
 
+        if (filterLanguageFlag !== 'international') {
+            result = result.filter(room => room.language_flag === filterLanguageFlag);
+        }
+
         // Sort: Active First -> Most Listeners -> Alphabetical
         result.sort((a, b) => {
-            // 1. Active vs Inactive
             if (a.isActive && !b.isActive) return -1;
             if (!a.isActive && b.isActive) return 1;
 
-            // 2. Viewer Count (Descending)
             const listenersA = a.listeners || 0;
             const listenersB = b.listeners || 0;
             if (listenersB !== listenersA) {
                 return listenersB - listenersA;
             }
 
-            // 3. Name (Alphabetical)
             return a.name.localeCompare(b.name);
         });
 
         return result;
-    }, [rooms, searchQuery]);
+    }, [rooms, searchQuery, filterLanguageFlag]);
 
     // Reset page to 1 when filter changes
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchQuery, channelType]);
+    }, [searchQuery, channelType, filterLanguageFlag]);
 
     // Calculate Pagination
     // Total virtual items = 1 (Create Button) + filteredRooms.length
@@ -446,6 +450,18 @@ export function Lobby() {
         };
     }, []);
 
+    // Close filter flag dropdown on outside click
+    useEffect(() => {
+        if (!filterFlagOpen) return;
+        const handleClick = (e) => {
+            if (filterFlagRef.current && !filterFlagRef.current.contains(e.target)) {
+                setFilterFlagOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [filterFlagOpen]);
+
     // Auto-scroll to focused item
     useEffect(() => {
         if (focusedIndex >= 0) {
@@ -638,19 +654,44 @@ export function Lobby() {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <h2 className="text-2xl font-semibold leading-tight">{t('lobby.browseChannels')}</h2>
 
-                        {/* Search Bar */}
-                        <div className="relative w-full md:w-72">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search className="h-4 w-4 text-neutral-500" />
+                        {/* Search Bar + Language Filter */}
+                        <div className="flex items-center gap-2 w-full md:w-auto">
+                            <div className="relative flex-1 md:w-72 md:flex-none">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Search className="h-4 w-4 text-neutral-500" />
+                                </div>
+                                <input
+                                    id="channel-search"
+                                    type="text"
+                                    className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-10 p-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-neutral-500 transition-all"
+                                    placeholder={t('lobby.searchPlaceholder')}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
                             </div>
-                            <input
-                                id="channel-search"
-                                type="text"
-                                className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-xl block w-full pl-10 p-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-neutral-500 transition-all"
-                                placeholder={t('lobby.searchPlaceholder')}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
+                            <div className="relative" ref={filterFlagRef}>
+                                <button
+                                    onClick={() => setFilterFlagOpen(!filterFlagOpen)}
+                                    className={`flex items-center justify-center w-10 h-10 rounded-xl border transition-all ${filterLanguageFlag !== 'international' ? 'bg-orange-500/10 border-orange-500/50 text-white' : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700'}`}
+                                    title={t('lobby.videoLanguage')}
+                                >
+                                    <span className="text-base">{getFlagEmoji(filterLanguageFlag)}</span>
+                                </button>
+                                {filterFlagOpen && (
+                                    <div className="absolute right-0 top-full mt-1 w-56 bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl max-h-64 overflow-y-auto py-1 z-50 animate-in fade-in zoom-in-95 duration-150">
+                                        {channelLanguages.map(lang => (
+                                            <button
+                                                key={lang.code}
+                                                onClick={() => { setFilterLanguageFlag(lang.code); setFilterFlagOpen(false); }}
+                                                className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${filterLanguageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
+                                            >
+                                                <span className="text-base">{lang.emoji}</span>
+                                                <span>{lang.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
