@@ -902,7 +902,7 @@ export function Lobby() {
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => setIsPrivate(true)}
+                                                onClick={() => { setIsPrivate(true); setLanguageFlag('international'); setLanguageFlagOpen(false); }}
                                                 className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${isPrivate ? 'bg-orange-500/10 border-orange-500 text-orange-500' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
                                             >
                                                 <Lock size={18} /> {t('lobby.private')}
@@ -910,37 +910,39 @@ export function Lobby() {
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-neutral-400 mb-1">{t('lobby.videoLanguage')}</label>
-                                        <div className="relative">
-                                            <button
-                                                type="button"
-                                                onClick={() => setLanguageFlagOpen(!languageFlagOpen)}
-                                                className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white text-left flex items-center justify-between hover:border-neutral-700 transition-colors"
-                                            >
-                                                <span className="flex items-center gap-2">
-                                                    <span className="text-lg">{getFlagEmoji(languageFlag)}</span>
-                                                    <span>{channelLanguages.find(l => l.code === languageFlag)?.label || 'International'}</span>
-                                                </span>
-                                                <svg className={`w-4 h-4 text-neutral-500 transition-transform ${languageFlagOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                            </button>
-                                            {languageFlagOpen && (
-                                                <div className="absolute z-50 mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl max-h-48 overflow-y-auto py-1 animate-in fade-in zoom-in-95 duration-150">
-                                                    {channelLanguages.map(lang => (
-                                                        <button
-                                                            key={lang.code}
-                                                            type="button"
-                                                            onClick={() => { setLanguageFlag(lang.code); setLanguageFlagOpen(false); }}
-                                                            className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${languageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
-                                                        >
-                                                            <span className="text-base">{lang.emoji}</span>
-                                                            <span>{lang.label}</span>
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            )}
+                                    {!isPrivate && (
+                                        <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                                            <label className="block text-sm font-medium text-neutral-400 mb-1">{t('lobby.videoLanguage')}</label>
+                                            <div className="relative">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setLanguageFlagOpen(!languageFlagOpen)}
+                                                    className="w-full bg-[#050505] border border-neutral-800 rounded-xl px-4 py-3 text-white text-left flex items-center justify-between hover:border-neutral-700 transition-colors"
+                                                >
+                                                    <span className="flex items-center gap-2">
+                                                        <span className="text-lg">{getFlagEmoji(languageFlag)}</span>
+                                                        <span>{channelLanguages.find(l => l.code === languageFlag)?.label || 'International'}</span>
+                                                    </span>
+                                                    <svg className={`w-4 h-4 text-neutral-500 transition-transform ${languageFlagOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                                </button>
+                                                {languageFlagOpen && (
+                                                    <div className="absolute z-50 mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl max-h-48 overflow-y-auto py-1 animate-in fade-in zoom-in-95 duration-150">
+                                                        {channelLanguages.map(lang => (
+                                                            <button
+                                                                key={lang.code}
+                                                                type="button"
+                                                                onClick={() => { setLanguageFlag(lang.code); setLanguageFlagOpen(false); }}
+                                                                className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-neutral-800 transition-colors ${languageFlag === lang.code ? 'text-orange-500 font-bold bg-orange-500/10' : 'text-neutral-300'}`}
+                                                            >
+                                                                <span className="text-base">{lang.emoji}</span>
+                                                                <span>{lang.label}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
 
                                     {isPrivate && (
                                         <div className="animate-in fade-in slide-in-from-top-2 duration-200">
