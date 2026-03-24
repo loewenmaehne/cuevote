@@ -680,7 +680,7 @@ export function Lobby() {
                             {filterFlagOpen && (
                                 <div className="absolute left-0 top-full mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150 overflow-y-auto py-1" style={{ maxHeight: '20rem' }}>
                                     {channelLanguages.filter(lang =>
-                                        lang.code === 'international' || lang.label.toLowerCase().includes(filterFlagSearch.toLowerCase())
+                                        lang.code === 'international' || lang.search.includes(filterFlagSearch.toLowerCase())
                                     ).map(lang => (
                                         <button
                                             key={lang.code}
@@ -987,7 +987,7 @@ export function Lobby() {
                                                 {languageFlagOpen && (
                                                     <div className="absolute z-50 mt-1 w-full bg-[#1a1a1a] border border-neutral-800 rounded-xl shadow-xl animate-in fade-in zoom-in-95 duration-150 overflow-y-auto py-1" style={{ maxHeight: '14rem' }}>
                                                         {channelLanguages.filter(lang =>
-                                                            lang.code === 'international' || lang.label.toLowerCase().includes(createFlagSearch.toLowerCase())
+                                                            lang.code === 'international' || lang.search.includes(createFlagSearch.toLowerCase())
                                                         ).map(lang => (
                                                             <button
                                                                 key={lang.code}
