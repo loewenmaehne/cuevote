@@ -410,7 +410,7 @@ module.exports = {
 
   // YouTube API TOS: clear stale metadata but preserve video IDs for Auto-DJ history references
   cleanupStaleVideoMetadata: () => {
-    const threshold = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60);
+    const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
     const result = db.prepare(`
       UPDATE videos
       SET title = NULL, artist = NULL, thumbnail = NULL,
@@ -422,14 +422,14 @@ module.exports = {
   },
 
   cleanupSearchCache: () => {
-    const threshold = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60);
+    const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
     const result = db.prepare('DELETE FROM search_cache WHERE created_at < ?').run(threshold);
     console.log(`[DB Cleanup] Removed ${result.changes} stale search cache entries.`);
     return result.changes;
   },
 
   cleanupRelatedVideosCache: () => {
-    const threshold = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60);
+    const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
     const result = db.prepare('DELETE FROM related_videos_cache WHERE fetched_at < ?').run(threshold);
     console.log(`[DB Cleanup] Removed ${result.changes} stale related videos cache entries.`);
     return result.changes;
