@@ -205,6 +205,9 @@ class Room {
 
     persistLobbyPreview() {
         const track = this.state.currentTrack;
+        const newKey = track ? `${track.thumbnail}\0${track.title}\0${track.artist}` : '';
+        if (newKey === this._lastLobbyPreviewKey) return;
+        this._lastLobbyPreviewKey = newKey;
         try {
             db.updateLobbyPreview(this.id, track ? {
                 thumbnail: track.thumbnail,
