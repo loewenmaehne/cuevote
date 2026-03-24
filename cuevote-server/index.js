@@ -561,13 +561,21 @@ wss.on("connection", (ws, req) => {
                         }
 
                         if (!activeIds.has(dbr.id)) {
+                            let lobbyPreview = null;
+                            if (dbr.lobby_preview) {
+                                const dormantSeconds = Math.floor(Date.now() / 1000) - (dbr.last_active_at || 0);
+                                const TWENTY_EIGHT_DAYS_S = 28 * 24 * 60 * 60;
+                                if (dormantSeconds <= TWENTY_EIGHT_DAYS_S) {
+                                    try { lobbyPreview = JSON.parse(dbr.lobby_preview); } catch (e) { /* ignore */ }
+                                }
+                            }
                             roomList.push({
                                 id: dbr.id,
                                 name: dbr.name,
                                 description: dbr.description,
                                 color: dbr.color,
                                 listeners: 0,
-                                currentTrack: null,
+                                currentTrack: lobbyPreview,
                                 is_protected: !!dbr.password,
                                 isActive: false,
                                 language_flag: dbr.language_flag || 'international'
