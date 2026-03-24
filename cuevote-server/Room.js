@@ -109,6 +109,10 @@ class Room {
         }
     }
 
+    hasViewers() {
+        return this.clients.size > 0;
+    }
+
     getSummary() {
         return {
             id: this.id,
@@ -392,8 +396,11 @@ class Room {
             }
 
             // 3. Check Video Availability
-            // "Check if the video still exists and is accessable and not private, if not remove it from saved history entirely."
-            const validVideoIds = await this.checkVideoAvailability(videoIdsToCheck);
+            // Skip API validation when no viewers to save quota — DB 28-day history already filters stale entries.
+            // Full API validation runs when viewers are present (e.g. on first join).
+            const validVideoIds = this.hasViewers()
+                ? await this.checkVideoAvailability(videoIdsToCheck)
+                : new Set(videoIdsToCheck);
 
             const finalTracks = [];
             const invalidVideoIds = new Set();
