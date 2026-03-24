@@ -97,6 +97,13 @@ try {
   // Ignore duplicate column error
 }
 
+// Migration: Add auto_refill if missing (default ON for TV station mode)
+try {
+  db.prepare("ALTER TABLE rooms ADD COLUMN auto_refill INTEGER DEFAULT 1").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
+
 module.exports = {
   getUser: (id) => db.prepare('SELECT * FROM users WHERE id = ?').get(id),
   getUserByEmail: (email) => db.prepare('SELECT * FROM users WHERE email = ?').get(email),
@@ -164,6 +171,11 @@ module.exports = {
     if (settings.captions_enabled !== undefined) {
       updates.push("captions_enabled = ?");
       values.push(settings.captions_enabled ? 1 : 0);
+    }
+
+    if (settings.auto_refill !== undefined) {
+      updates.push("auto_refill = ?");
+      values.push(settings.auto_refill ? 1 : 0);
     }
 
     if (updates.length > 0) {
