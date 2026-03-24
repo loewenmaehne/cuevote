@@ -400,6 +400,9 @@ class Room {
             for (const track of shuffledHistory) {
                 if (candidates.length >= needed) break;
 
+                // Skip tracks whose metadata was cleared by the 28-day TOS cleanup
+                if (!track.title || !track.videoId) continue;
+
                 // Duration Check
                 if (maxDuration > 0 && track.duration > maxDuration) continue;
 
@@ -427,6 +430,7 @@ class Room {
                 console.log(`[AutoRefill] No candidates after strict filtering. Relaxing checks for small library (${uniqueHistory.length} unique videos).`);
                 for (const track of shuffledHistory) {
                     if (candidates.length >= needed) break;
+                    if (!track.title || !track.videoId) continue;
                     if (maxDuration > 0 && track.duration > maxDuration) continue;
                     const ipEntry = this.ipBlockedVideos.get(track.videoId);
                     if (ipEntry && (Date.now() - ipEntry.lastFailedAt) < 1800000) continue;
