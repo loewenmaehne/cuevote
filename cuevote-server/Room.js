@@ -98,10 +98,24 @@ class Room {
                 if (saved.progress) this.state.progress = saved.progress;
                 if (saved.isPlaying) this.state.isPlaying = saved.isPlaying;
                 console.log(`[Room ${this.id}] Restored saved state (queue: ${this.state.queue.length}, playing: ${this.state.isPlaying})`);
-                db.deleteRoomState(this.id);
             }
         } catch (error) {
             console.error(`[Room ${this.id}] Failed to restore saved state:`, error);
+        }
+
+        // 28-day freshness: if room was dormant for > 28 days, clear stale preview
+        // and discard restored queue so metadata is re-fetched on first interaction
+        const TWENTY_EIGHT_DAYS_S = 28 * 24 * 60 * 60;
+        if (metadata.last_active_at) {
+            const dormantSeconds = Math.floor(Date.now() / 1000) - metadata.last_active_at;
+            if (dormantSeconds > TWENTY_EIGHT_DAYS_S) {
+                console.log(`[Room ${this.id}] Dormant for ${Math.floor(dormantSeconds / 86400)} days. Clearing stale state.`);
+                this.state.queue = [];
+                this.state.currentTrack = null;
+                this.state.isPlaying = false;
+                this.state.progress = 0;
+                try { db.updateLobbyPreview(this.id, null); } catch (e) { /* ignore */ }
+            }
         }
 
         // TV station auto-start: populate queue from history on wake-up
@@ -177,8 +191,24 @@ class Room {
     }
 
     updateState(newState) {
+        const trackChanged = 'currentTrack' in newState
+            && newState.currentTrack !== this.state.currentTrack;
         this.state = { ...this.state, ...newState };
+        if (trackChanged) this.persistLobbyPreview();
         this.broadcastState();
+    }
+
+    persistLobbyPreview() {
+        const track = this.state.currentTrack;
+        try {
+            db.updateLobbyPreview(this.id, track ? {
+                thumbnail: track.thumbnail,
+                title: track.title,
+                artist: track.artist,
+            } : null);
+        } catch (e) {
+            console.error(`[Room ${this.id}] Failed to persist lobby preview:`, e);
+        }
     }
 
     tick() {
