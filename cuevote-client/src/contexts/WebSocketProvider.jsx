@@ -108,7 +108,19 @@ export function WebSocketProvider({ children }) {
     const MAX_RECONNECT_DELAY = 10000;
     let lastResumeTime = 0;
 
+    let activePingInterval = null;
+    let activeVisibilityHandler = null;
+    let activeOnlineHandler = null;
+
+    const cleanupConnectionListeners = () => {
+      if (activePingInterval) { clearInterval(activePingInterval); activePingInterval = null; }
+      if (activeVisibilityHandler) { document.removeEventListener('visibilitychange', activeVisibilityHandler); activeVisibilityHandler = null; }
+      if (activeOnlineHandler) { window.removeEventListener('online', activeOnlineHandler); activeOnlineHandler = null; }
+    };
+
     const connect = () => {
+      cleanupConnectionListeners();
+
       const wsUrl = new URL(WEBSOCKET_URL);
       wsUrl.searchParams.append("clientId", clientId);
 
@@ -132,6 +144,7 @@ export function WebSocketProvider({ children }) {
 
       const handleClose = () => {
         console.log("WebSocket disconnected");
+        cleanupConnectionListeners();
         setIsConnected(false);
         setReconnectAttempt(prev => prev + 1);
         if (reconnectTimeout) clearTimeout(reconnectTimeout);
@@ -184,8 +197,14 @@ export function WebSocketProvider({ children }) {
           }
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
+          if (errorClearTimer.current) clearTimeout(errorClearTimer.current);
           setLastError("JSON PARSE ERROR: " + error.message);
           setLastErrorTimestamp(Date.now());
+          errorClearTimer.current = setTimeout(() => {
+            setLastError(null);
+            setLastErrorCode(null);
+            errorClearTimer.current = null;
+          }, 5000);
         }
       };
 
@@ -212,6 +231,7 @@ export function WebSocketProvider({ children }) {
           }
         }
       }, 5000);
+      activePingInterval = pingInterval;
 
       const handleResume = () => {
         lastResumeTime = Date.now();
@@ -244,6 +264,7 @@ export function WebSocketProvider({ children }) {
         }
       };
       document.addEventListener('visibilitychange', handleVisibilityChange);
+      activeVisibilityHandler = handleVisibilityChange;
 
       const handleOnline = () => {
         console.log("[WS] Browser came back online. Reconnecting immediately.");
@@ -256,25 +277,19 @@ export function WebSocketProvider({ children }) {
         }
       };
       window.addEventListener('online', handleOnline);
+      activeOnlineHandler = handleOnline;
 
       window.cuevoteReconnect = handleResume;
-
-      const originalClose = socket.close.bind(socket);
-      socket.close = () => {
-        clearInterval(pingInterval);
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        window.removeEventListener('online', handleOnline);
-        originalClose();
-      };
     };
 
     connect();
 
     return () => {
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      cleanupConnectionListeners();
       delete window.cuevoteReconnect;
       if (ws.current) {
-        ws.current.close();
+        try { ws.current.close(); } catch (e) { /* already closed */ }
       }
     };
   }, [clientId]);
