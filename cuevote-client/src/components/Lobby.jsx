@@ -37,6 +37,7 @@ export function Lobby() {
     const { t, language, setLanguage } = Language.useLanguage();
     const localizedCountries = useLocalizedCountries(language);
     const [rooms, setRooms] = useState([]);
+    const [failedThumbnails, setFailedThumbnails] = useState(new Set());
 
     const [isOnline, setIsOnline] = useState(navigator.onLine);
     useEffect(() => {
@@ -831,12 +832,13 @@ export function Lobby() {
                                         }`}
                                 >
                                     <div className="absolute inset-0">
-                                        {channel.currentTrack?.thumbnail && hasConsent ? (
+                                        {channel.currentTrack?.thumbnail && hasConsent && !failedThumbnails.has(channel.currentTrack.thumbnail) ? (
                                             <>
                                                 <img
                                                     src={channel.currentTrack.thumbnail}
                                                     alt={channel.name}
                                                     className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500 scale-105 group-hover:scale-110 transform transition-transform"
+                                                    onError={() => setFailedThumbnails(prev => new Set(prev).add(channel.currentTrack.thumbnail))}
                                                 />
                                                 <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
                                             </>
