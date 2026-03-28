@@ -25,7 +25,7 @@ function detectInitialLanguage(translations) {
 // Single export with inline methods so bundler cannot reorder and cause TDZ.
 export const Language = {
 	LanguageProvider({ children }) {
-		const [language, setLanguage] = useState('en');
+		const [language, setLanguage] = useState(() => localStorage.getItem('cuevote_language') || 'en');
 		const [translations, setTranslations] = useState(null);
 		const initDone = useRef(false);
 		const langReady = useRef(false);
