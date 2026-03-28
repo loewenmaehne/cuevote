@@ -120,7 +120,7 @@ class Room {
             console.error(`[Room ${this.id}] Failed to load history from DB:`, error);
         }
 
-        // Restore saved playback state (crash recovery)
+        // Restore saved playback state (crash recovery / dormant resume)
         try {
             const saved = db.loadRoomState(this.id);
             if (saved) {
@@ -128,30 +128,30 @@ class Room {
                 if (saved.currentTrack) this.state.currentTrack = saved.currentTrack;
                 if (saved.progress) this.state.progress = saved.progress;
                 if (saved.isPlaying) this.state.isPlaying = saved.isPlaying;
-                console.log(`[Room ${this.id}] Restored saved state (queue: ${this.state.queue.length}, playing: ${this.state.isPlaying})`);
+                // Recalculate startedAt from saved progress so tick() doesn't
+                // see a stale timestamp and immediately advance past the track
+                if (this.state.currentTrack && this.state.progress > 0) {
+                    this.state.currentTrack = {
+                        ...this.state.currentTrack,
+                        startedAt: Date.now() - (this.state.progress * 1000)
+                    };
+                }
+                console.log(`[Room ${this.id}] Restored saved state (queue: ${this.state.queue.length}, playing: ${this.state.isPlaying}, progress: ${this.state.progress})`);
             }
         } catch (error) {
             console.error(`[Room ${this.id}] Failed to restore saved state:`, error);
         }
 
-        // 28-day freshness: if room was dormant for > 28 days, clear stale preview
-        // and discard restored queue so metadata is re-fetched on first interaction
+        // Clear stale lobby preview for long-dormant rooms (YouTube metadata
+        // in the preview may be > 28 days old). Playback state is preserved
+        // so the room resumes exactly where it left off.
         const TWENTY_EIGHT_DAYS_S = 28 * 24 * 60 * 60;
         if (metadata.last_active_at) {
             const dormantSeconds = Math.floor(Date.now() / 1000) - metadata.last_active_at;
             if (dormantSeconds > TWENTY_EIGHT_DAYS_S) {
-                console.log(`[Room ${this.id}] Dormant for ${Math.floor(dormantSeconds / 86400)} days. Clearing stale state.`);
-                this.state.queue = [];
-                this.state.currentTrack = null;
-                this.state.isPlaying = false;
-                this.state.progress = 0;
+                console.log(`[Room ${this.id}] Dormant for ${Math.floor(dormantSeconds / 86400)} days. Clearing stale lobby preview.`);
                 try { db.updateLobbyPreview(this.id, null); } catch (e) { /* ignore */ }
             }
-        }
-
-        // TV station auto-start: populate queue from history on wake-up
-        if (this.state.autoRefill && !this.state.currentTrack && this.state.history.length > 0) {
-            this.populateQueueFromHistory();
         }
     }
 
