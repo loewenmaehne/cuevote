@@ -3815,7 +3815,7 @@ export const translations = {
 			privacyLegal: "Integritet & Juridik"
 		}
 	},
-	"dan": {
+	"da": {
 		lobby: {
 			browseChannels: "Gennemse kanaler",
 			public: "Offentlig",
