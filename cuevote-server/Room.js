@@ -88,6 +88,27 @@ class Room {
             }
         }, 30000);
 
+        // Periodic cleanup of in-memory caches (every 10 minutes)
+        this.cacheCleanupInterval = setInterval(() => {
+            const now = Date.now();
+            // Evict expired ipBlockedVideos entries (30 min cooldown)
+            for (const [id, entry] of this.ipBlockedVideos) {
+                if (now - entry.lastFailedAt > 1800000) this.ipBlockedVideos.delete(id);
+            }
+            // Evict expired videoStatusCache entries (5 min TTL)
+            for (const [id, entry] of this.videoStatusCache) {
+                if (now - entry.checkedAt > 300000) this.videoStatusCache.delete(id);
+            }
+            // Cap knownVideos to prevent unbounded growth
+            if (this.knownVideos.size > 5000) {
+                const excess = this.knownVideos.size - 5000;
+                const iter = this.knownVideos.values();
+                for (let i = 0; i < excess; i++) {
+                    this.knownVideos.delete(iter.next().value);
+                }
+            }
+        }, 10 * 60 * 1000);
+
         // Load History from Database (Persistent Library)
         try {
             const savedHistory = db.getRoomHistory(this.id);
@@ -1594,6 +1615,7 @@ class Room {
     destroy() {
         clearInterval(this.interval);
         clearInterval(this.stateSaveInterval);
+        clearInterval(this.cacheCleanupInterval);
         try { db.saveRoomState(this.id, this.state); } catch (e) { /* ignore */ }
     }
 }
