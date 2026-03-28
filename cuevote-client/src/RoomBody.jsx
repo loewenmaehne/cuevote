@@ -419,7 +419,7 @@ function RoomBody() {
     recentSkipTimesRef.current.push(Date.now());
     if (recentSkipTimesRef.current.length >= 2) {
       console.warn("[Player] IP block detected — multiple videos skipped by server");
-      setIpBlockDetected(true);
+      if (!isThrottleDismissActive()) setIpBlockDetected(true);
     }
 
     if (isOwner) {
@@ -440,8 +440,8 @@ function RoomBody() {
     if (!lastMessage || lastMessage.type !== "NETWORK_THROTTLE") return;
     const { until } = lastMessage.payload || {};
     setNetworkThrottle({ until: until || (Date.now() + 15 * 60 * 1000) });
-    setIpBlockDetected(true);
-  }, [lastMessage]);
+    if (!isThrottleDismissActive()) setIpBlockDetected(true);
+  }, [lastMessage, isThrottleDismissActive]);
 
   // No auto-clear for network throttle — IP blocks last hours, not minutes.
   // The banner clears only when the owner presses Retry and playback succeeds
@@ -619,7 +619,7 @@ function RoomBody() {
       trackFailTimesRef.current.push(Date.now());
       if (trackFailTimesRef.current.length >= 2 && Date.now() - lastSuccessfulPlayRef.current > 5000) {
         console.warn("[Player] IP block detected — tracks keep failing without playback");
-        setIpBlockDetected(true);
+        if (!isThrottleDismissActive()) setIpBlockDetected(true);
       }
     }
     if (isPlayerReady && playerRef.current) {
@@ -742,7 +742,7 @@ function RoomBody() {
                   ipBlockedVideosRef.current.add(videoId);
                   if (ipBlockedVideosRef.current.size >= 2) {
                     console.warn("[Player] IP block detected — multiple videos restricted:", [...ipBlockedVideosRef.current]);
-                    setIpBlockDetected(true);
+                    if (!isThrottleDismissActive()) setIpBlockDetected(true);
                   }
                 }
               }
@@ -870,7 +870,7 @@ function RoomBody() {
             setPlaybackError(100);
             ipBlockedVideosRef.current.add(currentTrackRef.current?.videoId);
             if (ipBlockedVideosRef.current.size >= 2) {
-              setIpBlockDetected(true);
+              if (!isThrottleDismissActive()) setIpBlockDetected(true);
             }
           }
           clearInterval(checkInterval);
@@ -1252,7 +1252,7 @@ function RoomBody() {
       className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : (isQueueMinimized && !isCinemaMode ? "h-[100dvh] h-screen overflow-hidden bg-black" : "min-h-screen bg-black pb-32")}`}
       style={isQueueMinimized && !isCinemaMode && !isAnyPlaylistView ? { paddingBottom: `${controlsHeight}px` } : undefined}
     >
-      {ipBlockDetected && (
+      {ipBlockDetected && !throttleDismissed && (
         <div className="fixed inset-0 z-[100] bg-[#050505] text-white flex items-center justify-center p-6 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-[#050505] to-[#050505] pointer-events-none" />
           <div className="relative z-10 w-full flex flex-col items-center justify-center text-center max-w-md animate-in fade-in zoom-in-95 duration-500">
@@ -1279,7 +1279,7 @@ function RoomBody() {
                 {t('player.ipBlockRetry', 'Reload')}
               </button>
               <button
-                onClick={() => setIpBlockDetected(false)}
+                onClick={() => { dismissThrottle(); setIpBlockDetected(false); }}
                 className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#050505]"
               >
                 {t('player.ipBlockDismiss', 'Dismiss')}
