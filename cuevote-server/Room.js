@@ -1467,18 +1467,31 @@ class Room {
             const newQueue = [...queue];
             newQueue.splice(index, 1);
 
-            // If we deleted the current track (index 0), we need to advance
             if (index === 0) {
-                // Logic similar to handleNextTrack but without adding to history? 
-                // Or acts as skip? Let's just update queue and if empty stop.
-                // If we remove head, next becomes head.
+                // Preserve deleted current track in history for Auto-DJ pool
+                let newHistory = [...this.state.history];
+                if (this.state.currentTrack) {
+                    const trackToSave = { ...this.state.currentTrack, playedAt: Date.now() };
+                    newHistory.push(trackToSave);
+                    try {
+                        db.addToRoomHistory(this.id, trackToSave);
+                    } catch (err) {
+                        console.error(`[Room ${this.id}] Failed to save deleted track to DB history:`, err);
+                    }
+                }
+                if (newHistory.length > 200) {
+                    newHistory = newHistory.slice(-200);
+                }
+
                 const newState = {
                     queue: newQueue,
+                    history: newHistory,
                     progress: 0
                 };
                 if (newQueue.length > 0) {
-                    newState.currentTrack = newQueue[0];
-                    newState.currentTrack.startedAt = Date.now();
+                    newState.currentTrack = { ...newQueue[0], startedAt: Date.now() };
+                    newQueue[0] = newState.currentTrack;
+                    newState.queue = newQueue;
                     newState.isPlaying = true;
                 } else {
                     newState.currentTrack = null;
