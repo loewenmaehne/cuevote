@@ -360,6 +360,22 @@ function RoomBody() {
   const [activeSuggestionId, setActiveSuggestionId] = useState(null);
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
   const [networkThrottle, setNetworkThrottle] = useState(null); // { until: timestamp } when YouTube throttles the venue IP
+  const THROTTLE_DISMISS_KEY = 'cuevote_throttle_dismissed_until';
+  const isThrottleDismissActive = useCallback(() => {
+    try {
+      const until = localStorage.getItem(THROTTLE_DISMISS_KEY);
+      return until && Date.now() < parseInt(until, 10);
+    } catch { return false; }
+  }, []);
+  const [throttleDismissed, setThrottleDismissed] = useState(isThrottleDismissActive);
+  const dismissThrottle = useCallback(() => {
+    try { localStorage.setItem(THROTTLE_DISMISS_KEY, String(Date.now() + 30 * 60 * 1000)); } catch {}
+    setThrottleDismissed(true);
+  }, []);
+  const clearThrottleDismiss = useCallback(() => {
+    try { localStorage.removeItem(THROTTLE_DISMISS_KEY); } catch {}
+    setThrottleDismissed(false);
+  }, []);
 
   // Fix: Use Ref to track showSuggeststate to suppress global toasts when bar is open
   const showSuggestRef = useRef(showSuggest);
@@ -1229,6 +1245,8 @@ function RoomBody() {
 
 
 
+  const showThrottleBar = networkThrottle && !ipBlockDetected && !throttleDismissed;
+
   return (
     <div
       className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : (isQueueMinimized && !isCinemaMode ? "h-[100dvh] h-screen overflow-hidden bg-black" : "min-h-screen bg-black pb-32")}`}
@@ -1345,21 +1363,21 @@ function RoomBody() {
             playlistViewMode={playlistViewMode}
             onFullscreenOverlay={setHeaderOverlay}
           />
-          {networkThrottle && !ipBlockDetected && (
+          {showThrottleBar && (
             <div className="bg-yellow-600/95 text-white text-center py-1.5 text-xs font-medium">
               <div className="flex items-center justify-center gap-2 px-2">
                 <AlertTriangle size={12} className="shrink-0" />
                 <span className="truncate">{t('app.networkThrottle', "YouTube has blocked this network's IP. Playback paused. Try switching to a mobile hotspot.")}</span>
                 {isOwner && (
                   <button
-                    onClick={() => { setNetworkThrottle(null); sendMessage({ type: "PLAY_PAUSE", payload: true }); }}
+                    onClick={() => { clearThrottleDismiss(); setNetworkThrottle(null); sendMessage({ type: "PLAY_PAUSE", payload: true }); }}
                     className="shrink-0 px-2 py-0.5 rounded bg-white/20 hover:bg-white/30 transition-colors"
                   >
                     {t('app.retryPlayback', 'Retry')}
                   </button>
                 )}
                 <button
-                  onClick={() => setNetworkThrottle(null)}
+                  onClick={dismissThrottle}
                   className="shrink-0 p-0.5 rounded hover:bg-white/20 transition-colors"
                   aria-label="Dismiss"
                 >
@@ -1465,8 +1483,10 @@ function RoomBody() {
           )
         }
         style={{
-          // In Cinema Mode, lift the bottom if controls are visible to avoid overlay violation
-          bottom: (isCinemaMode && controlsVisible) ? `${controlsHeight}px` : "0px"
+          bottom: (isCinemaMode && controlsVisible) ? `${controlsHeight}px` : "0px",
+          ...(!isCinemaMode && !isAnyPlaylistView && !isQueueMinimized && showThrottleBar
+            ? { maxHeight: 'calc(60vh - 1.75rem)' }
+            : {})
         }}
       >
         <div
