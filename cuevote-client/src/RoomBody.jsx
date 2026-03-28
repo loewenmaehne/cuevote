@@ -1235,7 +1235,10 @@ function RoomBody() {
 
 
   return (
-    <div className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : "min-h-screen bg-black pb-32"}`}>
+    <div
+      className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : (isQueueMinimized && !isCinemaMode ? "h-[100dvh] h-screen overflow-hidden bg-black" : "min-h-screen bg-black pb-32")}`}
+      style={isQueueMinimized && !isCinemaMode && !isAnyPlaylistView ? { paddingBottom: `${controlsHeight}px` } : undefined}
+    >
       {networkThrottle && !ipBlockDetected && (
         <div className="fixed top-0 left-0 right-0 z-[101] bg-yellow-600/95 backdrop-blur-sm text-white text-center py-1.5 text-xs font-medium">
           <div className="flex items-center justify-center gap-2">
@@ -1478,7 +1481,7 @@ function RoomBody() {
           ? "fixed inset-0 z-40 bg-black transition-all duration-500 ease-in-out"
           : (isAnyPlaylistView
             ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
-            : `w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video min-w-[200px] min-h-[200px] ${isQueueMinimized ? "max-h-[85vh]" : "max-h-[60vh]"}`
+            : `w-full relative group transition-all duration-500 ease-in-out min-w-[200px] min-h-[200px] ${isQueueMinimized ? "flex-1 min-h-0" : "flex-shrink-0 aspect-video max-h-[60vh]"}`
           )
         }
         style={{
