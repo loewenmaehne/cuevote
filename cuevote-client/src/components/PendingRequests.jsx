@@ -3,6 +3,8 @@ import React from 'react';
 import { Check, X, Clock, ArrowLeft, Ban, Headphones } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
 
+const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
 // Single export with inline components so bundler cannot reorder and cause TDZ.
 export const PendingRequestsExports = {
 	PendingRequests({ requests, onApprove, onReject, onBan, onPreview, onClose }) {
@@ -27,9 +29,13 @@ export const PendingRequestsExports = {
 				{requests.map((track) => (
 					<div key={track.id} className="p-3 pr-4 border-b border-neutral-800 hover:bg-neutral-800/30 transition-colors flex gap-3 items-start">
 						<img
-							src={track.thumbnail}
+							src={track.thumbnail ?? buildThumbnailUrl(track.videoId)}
 							alt={track.title}
 							className="w-10 h-10 sm:w-12 sm:h-12 rounded object-cover flex-shrink-0"
+							onError={(e) => {
+								const fallback = buildThumbnailUrl(track.videoId);
+								if (e.target.src !== fallback) e.target.src = fallback;
+							}}
 						/>
 
 						<div className="flex-1 min-w-0">
@@ -117,9 +123,13 @@ export const PendingRequestsExports = {
 							<div key={track.id} className="bg-neutral-900 border border-neutral-800 rounded-xl p-3 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 hover:border-neutral-700 transition-colors">
 								<div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
 									<img
-										src={track.thumbnail}
+										src={track.thumbnail ?? buildThumbnailUrl(track.videoId)}
 										alt={track.title}
 										className="w-16 h-12 sm:w-24 sm:h-16 rounded-lg object-cover flex-shrink-0 shadow-sm"
+										onError={(e) => {
+											const fallback = buildThumbnailUrl(track.videoId);
+											if (e.target.src !== fallback) e.target.src = fallback;
+										}}
 									/>
 
 									<div className="flex-1 min-w-0">

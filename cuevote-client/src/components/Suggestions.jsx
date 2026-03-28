@@ -3,6 +3,8 @@ import { Plus, Headphones, Check } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
 import { deviceDetection } from '../utils/deviceDetection';
 
+const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
 export function Suggestions({ suggestions, onAdd, onPreview, queueVideoIds }) {
 	const { t } = Language.useLanguage();
 	const mobile = deviceDetection.isMobile();
@@ -36,10 +38,14 @@ export function Suggestions({ suggestions, onAdd, onPreview, queueVideoIds }) {
 						{/* Thumbnail */}
 						<div className="aspect-video w-full overflow-hidden relative">
 							<img
-								src={video.thumbnail}
+								src={video.thumbnail ?? buildThumbnailUrl(video.videoId)}
 								alt={video.title}
 								className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 								loading="lazy"
+								onError={(e) => {
+									const fallback = buildThumbnailUrl(video.videoId);
+									if (e.target.src !== fallback) e.target.src = fallback;
+								}}
 							/>
 							{/* Overlay Icons */}
 							{!isAdded && (

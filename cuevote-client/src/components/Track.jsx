@@ -64,6 +64,10 @@ export function Track({
               alt={track.title}
               className="w-16 h-16 rounded-3xl object-cover shadow-md flex-shrink-0"
               loading="lazy"
+              onError={(e) => {
+                const fallback = buildThumbnailUrl(track.videoId);
+                if (e.target.src !== fallback) e.target.src = fallback;
+              }}
             />
           ) : (
             <div className="w-16 h-16 rounded-3xl bg-neutral-800 flex items-center justify-center flex-shrink-0 shadow-inner">
