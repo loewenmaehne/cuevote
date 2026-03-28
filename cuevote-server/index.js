@@ -17,6 +17,7 @@ const WebSocket = require("ws");
 const crypto = require("crypto");
 const { OAuth2Client } = require('google-auth-library');
 const bcrypt = require('bcryptjs');
+const { slugify } = require('transliteration');
 const db = require('./db');
 const fs = require('fs');
 const backupScheduler = require('./backup_scheduler');
@@ -478,8 +479,7 @@ wss.on("connection", (ws, req) => {
                     let success = false;
                     while (attempts < 3 && !success) {
                         attempts++;
-                        // Generate ID (4 bytes = 8 hex chars)
-                        const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + crypto.randomBytes(4).toString('hex');
+                        const id = slugify(name, { lowercase: true, separator: '-' }) + '-' + crypto.randomBytes(12).toString('hex');
 
                         try {
                             const roomData = {

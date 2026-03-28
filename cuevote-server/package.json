@@ -21,6 +21,7 @@
     "dotenv": "^17.2.3",
     "google-auth-library": "^10.5.0",
     "jsonwebtoken": "^9.0.3",
+    "transliteration": "^2.6.1",
     "ws": "^8.18.3"
   },
   "devDependencies": {
