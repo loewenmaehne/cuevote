@@ -1507,8 +1507,7 @@ function RoomBody() {
               onVolumeChange={handleVolumeChange}
               votesEnabled={serverState?.votesEnabled ?? true}
               onPreview={allowPrelisten ? handlePreviewTrack : null}
-              onExit={localPlaylistView ? () => setLocalPlaylistView(false) : null}
-              onDelete={isOwner ? handleDeleteSong : null} // Added Delete feature
+              onDelete={isOwner ? handleDeleteSong : null}
               onRecommend={handleFetchSuggestions} // Passed handler
               onAdd={handleLibraryAdd}
               // Suggestions Props

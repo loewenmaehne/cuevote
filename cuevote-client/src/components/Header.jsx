@@ -182,8 +182,10 @@ export function Header({
         : "text-orange-500/70 hover:text-orange-400 hover:bg-orange-500/10 border border-transparent"
     }`;
 
+  const isPlaylistMode = mode === "playlist" || mode === "library";
+
   const renderPills = () => {
-    if (mode === "playlist" || mode === "library") {
+    if (isPlaylistMode) {
       return (
         <>
           <button onClick={onPlaylist} className={pillClass(mode === "playlist")}>
@@ -192,12 +194,6 @@ export function Header({
           <button onClick={onLibrary} className={pillClass(mode === "library")}>
             <Library size={15} /><span>{t('header.library')}</span>
           </button>
-          <div className="flex-1 min-w-2" />
-          {onClosePlaylist && (
-            <button onClick={onClosePlaylist} className={pillClass(false)}>
-              <X size={15} /><span>{t('playlist.close')}</span>
-            </button>
-          )}
         </>
       );
     }
@@ -244,12 +240,16 @@ export function Header({
 
         <button
           onClick={() => {
-            setShowExitConfirm(true);
-            setExitConfirmIndex(0);
-            if (onCloseSettings) onCloseSettings();
+            if (isPlaylistMode && onClosePlaylist) {
+              onClosePlaylist();
+            } else {
+              setShowExitConfirm(true);
+              setExitConfirmIndex(0);
+              if (onCloseSettings) onCloseSettings();
+            }
           }}
           className="p-1.5 text-orange-500/70 hover:text-orange-400 transition-colors rounded-full hover:bg-orange-500/10 flex-shrink-0"
-          title={t('header.leave')}
+          title={isPlaylistMode && onClosePlaylist ? t('playlist.close') : t('header.leave')}
         >
           <ChevronLeft size={20} />
         </button>
@@ -294,6 +294,15 @@ export function Header({
         >
           {renderPills()}
         </div>
+        {isPlaylistMode && onClosePlaylist && (
+          <button
+            onClick={onClosePlaylist}
+            className="flex-shrink-0 p-1.5 text-neutral-400 hover:text-white transition-colors rounded-full hover:bg-neutral-800"
+            title={t('playlist.close')}
+          >
+            <X size={18} />
+          </button>
+        )}
         {isTouchDevice && (
           <div className="flex-shrink-0">
             {suggestButton}
