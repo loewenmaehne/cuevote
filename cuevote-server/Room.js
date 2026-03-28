@@ -19,6 +19,15 @@ function parseISO8601Duration(duration) {
     return hours * 3600 + minutes * 60 + seconds;
 }
 
+// Fisher-Yates shuffle for unbiased randomization
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 class Room {
     constructor(id, name, apiKey, metadata = {}) {
         this.id = id;
@@ -382,15 +391,14 @@ class Room {
             // If unique history is small, we might just re-add same songs?
             // "If there is less than half of the queue size in history, add the total amount of songs"
 
-            // Shuffle the UNIQUE history
-            const shuffledHistory = [...uniqueHistory].sort(() => 0.5 - Math.random());
+            const shuffledHistory = shuffleArray([...uniqueHistory]);
 
             const candidates = [];
 
-            // Pre-calculate recent titles from RAW history for duplicate check
-            // Use RAW history to strictly enforce "recently playing" cooldown
             const historyTitles = (duplicateCooldown > 0)
-                ? history.slice(-duplicateCooldown).map(t => t.title.toLowerCase().trim())
+                ? history.slice(-duplicateCooldown)
+                    .filter(t => t.title)
+                    .map(t => t.title.toLowerCase().trim())
                 : [];
             const videoIdsToCheck = [];
 
@@ -405,6 +413,9 @@ class Room {
 
                 // Duration Check
                 if (maxDuration > 0 && track.duration > maxDuration) continue;
+
+                // Music-only filter
+                if (musicOnly && track.category_id && track.category_id !== '10') continue;
 
                 // IP Cooldown Check — skip videos that recently failed due to IP blocks (30 min cooldown)
                 const ipEntry = this.ipBlockedVideos.get(track.videoId);
@@ -496,8 +507,9 @@ class Room {
                 };
 
                 if (!this.state.isPlaying && newQueue.length > 0) {
-                    newState.currentTrack = newQueue[0];
-                    newState.currentTrack.startedAt = Date.now();
+                    newState.currentTrack = { ...newQueue[0], startedAt: Date.now() };
+                    newQueue[0] = newState.currentTrack;
+                    newState.queue = newQueue;
                     newState.isPlaying = true;
                     newState.progress = 0;
                 }
@@ -1300,33 +1312,6 @@ class Room {
             console.warn(`[PlaybackError] IP block confirmed. Entering network throttle mode (6h). Consecutive: ${this.consecutiveIPErrors}`);
             this.updateState({ isPlaying: false });
             this.broadcast({ type: "NETWORK_THROTTLE", payload: { until: this.networkThrottleUntil } });
-        }
-    }
-
-    handleSkipError() {
-        const newQueue = [...this.state.queue];
-
-        newQueue.shift();
-        const newCurrentTrack = newQueue[0] || null;
-
-        if (newCurrentTrack) {
-            newCurrentTrack.startedAt = Date.now();
-        }
-
-        const newState = {
-            queue: newQueue,
-            currentTrack: newCurrentTrack,
-            progress: 0,
-            isPlaying: !!newCurrentTrack,
-        };
-
-        if (!newCurrentTrack && this.state.autoRefill && this.state.history.length > 0) {
-            this.updateState(newState);
-            if (!this.state.isRefilling) {
-                this.populateQueueFromHistory();
-            }
-        } else {
-            this.updateState(newState);
         }
     }
 
