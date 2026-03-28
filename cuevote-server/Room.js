@@ -532,16 +532,24 @@ class Room {
 
         const validVideos = new Map();
 
-        // Batch requests in 50s
         const chunkSize = 50;
         for (let i = 0; i < videoIds.length; i += chunkSize) {
             const chunk = videoIds.slice(i, i + chunkSize);
             try {
                 const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${chunk.join(',')}&part=status,snippet,contentDetails&key=${this.apiKey}`;
                 const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    const errorBody = await response.text().catch(() => '');
+                    console.error(`[AutoRefill] API returned HTTP ${response.status}: ${errorBody.slice(0, 200)}`);
+                    for (const id of chunk) validVideos.set(id, null);
+                    continue;
+                }
+
                 const data = await response.json();
 
                 if (data.items) {
+                    const returnedIds = new Set(data.items.map(item => item.id));
                     for (const item of data.items) {
                         const status = item.status;
                         if (status) {
@@ -573,6 +581,7 @@ class Room {
                             }
                         }
                     }
+                    // IDs not returned by the API are genuinely deleted/private — leave them out of validVideos
                 }
             } catch (e) {
                 console.error("[AutoRefill] API Check Failed:", e);
