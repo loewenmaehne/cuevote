@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
-import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2 } from "lucide-react";
+import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2, ChevronUp, ChevronDown, ListMusic } from "lucide-react";
 import { deviceDetection } from '../utils/deviceDetection';
 import { Language } from '../contexts/LanguageContext';
 
@@ -21,6 +21,9 @@ export function PlaybackControls({
   onSeek,
   onHeightChange,
   canShowControls = true,
+  isQueueMinimized = true,
+  onQueueToggle,
+  upcomingCount = 0,
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [tempVisible, setTempVisible] = useState(false);
@@ -235,6 +238,24 @@ export function PlaybackControls({
                 disabled={!currentTrack}
               />
             )}
+            {!isCinemaMode && onQueueToggle && (
+              <button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onQueueToggle();
+                }}
+                className="hover:text-white transition-colors ml-2 flex items-center gap-1.5"
+                title={isQueueMinimized ? "Show Queue" : "Hide Queue"}
+              >
+                <ListMusic size={18} />
+                {upcomingCount > 0 && (
+                  <span className="bg-orange-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 leading-none">
+                    {upcomingCount}
+                  </span>
+                )}
+                {isQueueMinimized ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
+            )}
             {(!deviceDetection.isMobile() || deviceDetection.isTablet()) && (
               <button
                 onClick={(event) => {
@@ -270,4 +291,7 @@ PlaybackControls.propTypes = {
   isOwner: PropTypes.bool,
   onSeek: PropTypes.func,
   onHeightChange: PropTypes.func,
+  isQueueMinimized: PropTypes.bool,
+  onQueueToggle: PropTypes.func,
+  upcomingCount: PropTypes.number,
 };

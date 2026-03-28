@@ -171,6 +171,20 @@ function RoomBody() {
     return ids;
   }, [queue, currentTrack]);
 
+  const upcomingCount = useMemo(
+    () => queue.filter(t => t.id !== currentTrack?.id).length,
+    [queue, currentTrack]
+  );
+
+  useEffect(() => {
+    const prev = prevUpcomingCountRef.current;
+    if (upcomingCount === 0) {
+      setIsQueueMinimized(true);
+    } else if (prev === 0 && upcomingCount > 0) {
+      setIsQueueMinimized(false);
+    }
+    prevUpcomingCountRef.current = upcomingCount;
+  }, [upcomingCount]);
 
   const isOwner = user && ownerId && user.id === ownerId;
   // TV always ignores Venue Mode (shows video)
@@ -433,7 +447,8 @@ function RoomBody() {
   const [showPendingPage, setShowPendingPage] = useState(false);
   const [showBannedPage, setShowBannedPage] = useState(false); // Added this
   const [volume, setVolume] = useState(80);
-  // minimized state removed
+  const [isQueueMinimized, setIsQueueMinimized] = useState(true);
+  const prevUpcomingCountRef = useRef(0);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
   const [isLocallyPlaying, setIsLocallyPlaying] = useState(false);
@@ -1463,7 +1478,7 @@ function RoomBody() {
           ? "fixed inset-0 z-40 bg-black transition-all duration-500 ease-in-out"
           : (isAnyPlaylistView
             ? "flex-1 w-full relative group transition-all duration-500 ease-in-out min-h-0"
-            : "w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video max-h-[60vh] min-w-[200px] min-h-[200px]"
+            : `w-full relative group transition-all duration-500 ease-in-out flex-shrink-0 aspect-video min-w-[200px] min-h-[200px] ${isQueueMinimized ? "max-h-[85vh]" : "max-h-[60vh]"}`
           )
         }
         style={{
@@ -1567,7 +1582,7 @@ function RoomBody() {
       </div>
 
       {!isAnyPlaylistView && !isCinemaMode && (
-        <div className="pb-4 min-h-0 flex-1">
+        <div className={`min-h-0 transition-all duration-700 ease-in-out ${isQueueMinimized ? "flex-none" : "pb-4 flex-1"}`}>
           <Queue
             tracks={queue}
             currentTrack={currentTrack}
@@ -1575,7 +1590,7 @@ function RoomBody() {
             votes={userVotes}
             onVote={handleVote}
             onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
-            isMinimized={false}
+            isMinimized={isQueueMinimized}
             onPreview={allowPrelisten ? handlePreviewTrack : null}
             votesEnabled={serverState?.votesEnabled ?? true}
             onDelete={isOwner ? handleDeleteSong : null}
@@ -1643,7 +1658,9 @@ function RoomBody() {
               onMuteToggle={handleMuteToggle}
               volume={volume}
               onVolumeChange={handleVolumeChange}
-              onMinimizeToggle={null}
+              isQueueMinimized={isQueueMinimized}
+              onQueueToggle={() => setIsQueueMinimized(prev => !prev)}
+              upcomingCount={upcomingCount}
               isCinemaMode={isCinemaMode}
               onToggleCinemaMode={() => setIsCinemaMode(!isCinemaMode)}
               onVisibilityChange={handleVisibilityChange}
