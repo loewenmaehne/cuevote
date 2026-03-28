@@ -177,13 +177,9 @@ function RoomBody() {
   );
 
   useEffect(() => {
-    const prev = prevUpcomingCountRef.current;
     if (upcomingCount === 0) {
       setIsQueueMinimized(true);
-    } else if (prev === 0 && upcomingCount > 0) {
-      setIsQueueMinimized(false);
     }
-    prevUpcomingCountRef.current = upcomingCount;
   }, [upcomingCount]);
 
   const isOwner = user && ownerId && user.id === ownerId;
@@ -448,7 +444,6 @@ function RoomBody() {
   const [showBannedPage, setShowBannedPage] = useState(false); // Added this
   const [volume, setVolume] = useState(80);
   const [isQueueMinimized, setIsQueueMinimized] = useState(true);
-  const prevUpcomingCountRef = useRef(0);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
   const [isLocallyPlaying, setIsLocallyPlaying] = useState(false);
