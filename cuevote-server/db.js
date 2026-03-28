@@ -338,15 +338,13 @@ module.exports = {
   },
 
   getRoomHistory: (roomId) => {
-    // Return history from the last 28 days
-    const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
     const rows = db.prepare(`
         SELECT v.*, h.played_at 
         FROM room_history h
         JOIN videos v ON h.video_id = v.id
-        WHERE h.room_id = ? AND h.played_at > ?
+        WHERE h.room_id = ?
         ORDER BY h.played_at ASC
-    `).all(roomId, threshold);
+    `).all(roomId);
 
     // Map DB rows back to the track object format expected by the frontend/Room.js
     return rows.map(row => ({
@@ -402,10 +400,11 @@ module.exports = {
   },
 
   cleanupRoomHistory: () => {
-    const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
-    const result = db.prepare('DELETE FROM room_history WHERE played_at < ?').run(threshold);
-    console.log(`[DB Cleanup] Removed ${result.changes} old room history entries.`);
-    return result.changes;
+    // No-op: room_history stores room-video associations (application data),
+    // not cached YouTube metadata. TOS compliance is handled by
+    // cleanupStaleVideoMetadata which clears the videos table fields.
+    // CASCADE deletion handles cleanup when rooms are deleted.
+    return 0;
   },
 
   // YouTube API TOS: clear stale metadata but preserve video IDs for Auto-DJ history references

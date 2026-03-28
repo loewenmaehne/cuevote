@@ -714,7 +714,6 @@ setInterval(() => {
 // Cleanup Old Room History, expired sessions, and stale API caches (Once a day)
 setInterval(() => {
     console.log("Running daily cleanup task...");
-    try { db.cleanupRoomHistory(); } catch (e) { console.error("Failed to cleanup room history", e); }
     try { db.cleanupExpiredSessions(); } catch (e) { console.error("Failed to cleanup expired sessions", e); }
     try { db.cleanupStaleVideoMetadata(); } catch (e) { console.error("Failed to cleanup stale video metadata", e); }
     try { db.cleanupSearchCache(); } catch (e) { console.error("Failed to cleanup search cache", e); }
@@ -723,7 +722,6 @@ setInterval(() => {
 }, 24 * 60 * 60 * 1000);
 
 // Run all cleanups once on startup as well
-try { db.cleanupRoomHistory(); } catch (e) { console.error("Failed to cleanup room history on startup", e); }
 try { db.cleanupExpiredSessions(); } catch (e) { console.error("Failed to cleanup expired sessions on startup", e); }
 try { db.cleanupStaleVideoMetadata(); } catch (e) { console.error("Failed to cleanup stale video metadata on startup", e); }
 try { db.cleanupSearchCache(); } catch (e) { console.error("Failed to cleanup search cache on startup", e); }
