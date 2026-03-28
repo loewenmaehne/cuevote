@@ -1093,8 +1093,8 @@ class Room {
             const newQueue = [...this.state.queue, track];
             const newState = { queue: newQueue };
             if (newQueue.length === 1) {
-                newState.currentTrack = newQueue[0];
-                newState.currentTrack.startedAt = Date.now(); // Init Timestamp
+                newState.currentTrack = { ...newQueue[0], startedAt: Date.now() };
+                newQueue[0] = newState.currentTrack;
                 newState.isPlaying = true;
                 newState.progress = 0;
             } else {
@@ -1176,16 +1176,13 @@ class Room {
             const upcoming = queue.slice(1);
 
             upcoming.sort((a, b) => {
-                // 1. Owner Priority
                 if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
                 if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
 
-                // 2. Score
-                const scoreDiff = b.score - a.score;
+                const scoreDiff = (b.score || 0) - (a.score || 0);
                 return scoreDiff !== 0 ? scoreDiff : 0;
             });
 
-            // Reassemble
             const newQueue = [current, ...upcoming];
             this.updateState({ queue: newQueue });
         }
@@ -1378,20 +1375,30 @@ class Room {
             const newPending = [...pending];
             newPending.splice(index, 1);
 
-            // Add to queue logic (simplified version of handleSuggestSong end)
             const newQueue = [...this.state.queue, track];
-            this.knownVideos.add(track.videoId); // Remember this video
+            this.knownVideos.add(track.videoId);
             const newState = {
-                queue: newQueue,
                 pendingSuggestions: newPending
             };
 
-            // Check if we need to start playing
             if (newQueue.length === 1 && !this.state.isPlaying) {
-                newState.currentTrack = newQueue[0];
-                newState.currentTrack.startedAt = Date.now(); // Init timestamp for proper progress tracking
+                newState.currentTrack = { ...newQueue[0], startedAt: Date.now() };
+                newQueue[0] = newState.currentTrack;
+                newState.queue = newQueue;
                 newState.isPlaying = true;
                 newState.progress = 0;
+            } else if (newQueue.length > 1) {
+                const current = newQueue[0];
+                const upcoming = newQueue.slice(1);
+                upcoming.sort((a, b) => {
+                    if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
+                    if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
+                    const scoreDiff = (b.score || 0) - (a.score || 0);
+                    return scoreDiff !== 0 ? scoreDiff : 0;
+                });
+                newState.queue = [current, ...upcoming];
+            } else {
+                newState.queue = newQueue;
             }
 
             this.updateState(newState);
