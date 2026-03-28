@@ -64,7 +64,9 @@ export function WebSocketProvider({ children }) {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify(message));
     } else if (QUEUEABLE_TYPES.includes(message.type)) {
-      messageQueue.current.push(message);
+      if (messageQueue.current.length < 50) {
+        messageQueue.current.push(message);
+      }
     }
   }, []);
 
