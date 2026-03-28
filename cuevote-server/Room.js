@@ -330,50 +330,6 @@ class Room {
         }
     }
 
-    async updateSuggestions(videoId) {
-        this.lastSuggestionSourceVideoId = videoId; // Prevent loop
-
-        try {
-            // 1. Check Cache
-            const cached = db.getRelatedVideos(videoId);
-            if (cached) {
-                const age = Math.floor(Date.now() / 1000) - cached.fetched_at;
-                // 30 Days cache validity
-                if (age < 2592000) {
-                    this.broadcast({ type: "SUGGESTION_UPDATE", payload: cached.data });
-                    return;
-                }
-            }
-
-            if (!this.apiKey) return;
-
-            // 2. Fetch from API
-            const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&relatedToVideoId=${videoId}&type=video&videoCategoryId=10&maxResults=6&key=${this.apiKey}`;
-            const response = await fetch(apiUrl, {
-                headers: { 'Referer': process.env.URL || 'https://cuevote.com' }
-            });
-            const data = await response.json();
-
-            if (data.items) {
-                const suggestions = data.items.map(item => ({
-                    videoId: item.id.videoId,
-                    title: item.snippet.title,
-                    artist: item.snippet.channelTitle,
-                    thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url
-                }));
-
-                // Save to Cache
-                db.saveRelatedVideos(videoId, suggestions);
-
-                // Broadcast
-                this.broadcast({ type: "SUGGESTION_UPDATE", payload: suggestions });
-            }
-
-        } catch (e) {
-            console.error("[Suggestions] Error:", e);
-        }
-    }
-
     async populateQueueFromHistory() {
         if (this.state.isRefilling) {
             console.log(`[AutoRefill] Already refilling, skip.`);
