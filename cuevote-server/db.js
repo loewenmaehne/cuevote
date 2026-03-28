@@ -386,8 +386,6 @@ module.exports = {
   loadRoomState: (roomId) => {
     const row = db.prepare('SELECT state_json, saved_at FROM room_state WHERE room_id = ?').get(roomId);
     if (!row) return null;
-    const ageSeconds = Math.floor(Date.now() / 1000) - row.saved_at;
-    if (ageSeconds > 604800) return null; // 7 days
     try {
       return JSON.parse(row.state_json);
     } catch (e) {
