@@ -134,6 +134,7 @@ export const translations = {
 			goToLobby: "Go to Lobby",
 			privateChannel: "Private Channel",
 			lockedMessage: "This channel is password protected. Please enter the password to join.",
+			incorrectPasswordOrNotFound: "Incorrect password or channel not found.",
 			unlock: "Unlock",
 			listenMusic: "Listen to Music",
 			unmuteAndPlay: "Unmute & Play",
@@ -358,6 +359,7 @@ export const translations = {
 			goToLobby: "Ga naar Lobby",
 			privateChannel: "Privé Kanaal",
 			lockedMessage: "Dit kanaal is beveiligd. Voer het wachtwoord in om deel te nemen.",
+			incorrectPasswordOrNotFound: "Onjuist wachtwoord of kanaal niet gevonden.",
 			unlock: "Ontgrendel",
 			listenMusic: "Muziek luisteren",
 			unmuteAndPlay: "Geluid aan & Start",
@@ -574,6 +576,7 @@ export const translations = {
 			goToLobby: "Zur Lobby",
 			privateChannel: "Privater Kanal",
 			lockedMessage: "Dieser Kanal ist passwortgeschützt. Bitte geben Sie das Passwort ein, um beizutreten.",
+			incorrectPasswordOrNotFound: "Falsches Passwort oder Kanal nicht gefunden.",
 			unlock: "Entsperren",
 			listenMusic: "Musik hören",
 			unmuteAndPlay: "Ton an & Start",
@@ -790,6 +793,7 @@ export const translations = {
 			goToLobby: "Aller au Lobby",
 			privateChannel: "Chaîne Privée",
 			lockedMessage: "Cette chaîne est protégée par mot de passe.",
+			incorrectPasswordOrNotFound: "Mot de passe incorrect ou chaîne introuvable.",
 			unlock: "Déverrouiller",
 			listenMusic: "Écouter de la musique",
 			unmuteAndPlay: "Son & Lecture",
@@ -1003,6 +1007,7 @@ export const translations = {
 			goToLobby: "Ir al Lobby",
 			privateChannel: "Canal Privado",
 			lockedMessage: "Este canal está protegido con contraseña.",
+			incorrectPasswordOrNotFound: "Contraseña incorrecta o canal no encontrado.",
 			unlock: "Desbloquear",
 			listenMusic: "Escuchar vídeo",
 			unmuteAndPlay: "Sonido y Reproducir",
@@ -1219,6 +1224,7 @@ export const translations = {
 			goToLobby: "Vai alla Lobby",
 			privateChannel: "Canale Privato",
 			lockedMessage: "Canale protetto da password.",
+			incorrectPasswordOrNotFound: "Password errata o canale non trovato.",
 			unlock: "Sblocca",
 			listenMusic: "Ascolta musica"
 		},
@@ -1420,6 +1426,7 @@ export const translations = {
 			goToLobby: "Ir ao Lobby",
 			privateChannel: "Canal Privado",
 			lockedMessage: "Canal protegido por senha.",
+			incorrectPasswordOrNotFound: "Senha incorreta ou canal não encontrado.",
 			unlock: "Desbloquear",
 			listenMusic: "Ouvir vídeo",
 			unmuteAndPlay: "Ativar Som e Tocar"
@@ -1616,6 +1623,7 @@ export const translations = {
 			goToLobby: "返回大厅",
 			privateChannel: "私密频道",
 			lockedMessage: "此频道受密码保护。",
+			incorrectPasswordOrNotFound: "密码错误或频道不存在。",
 			unlock: "解锁",
 			listenMusic: "听音乐",
 			unmuteAndPlay: "取消静音并播放"
@@ -1813,6 +1821,7 @@ export const translations = {
 			goToLobby: "返回大廳",
 			privateChannel: "私密頻道",
 			lockedMessage: "此頻道受密碼保護。",
+			incorrectPasswordOrNotFound: "密碼錯誤或頻道不存在。",
 			unlock: "解鎖",
 			listenMusic: "聽音樂",
 			unmuteAndPlay: "取消靜音並播放"
@@ -2010,6 +2019,7 @@ export const translations = {
 			goToLobby: "ロビーへ",
 			privateChannel: "プライベートチャンネル",
 			lockedMessage: "このチャンネルはパスワードで保護されています。",
+			incorrectPasswordOrNotFound: "パスワードが正しくないか、チャンネルが見つかりません。",
 			unlock: "ロック解除",
 			listenMusic: "音楽を聴く",
 			unmuteAndPlay: "ミュート解除して再生"
@@ -2207,6 +2217,7 @@ export const translations = {
 			goToLobby: "로비로 이동",
 			privateChannel: "비공개 채널",
 			lockedMessage: "이 채널은 비밀번호로 보호되어 있습니다.",
+			incorrectPasswordOrNotFound: "비밀번호가 틀리거나 채널을 찾을 수 없습니다.",
 			unlock: "잠금 해제",
 			listenMusic: "음악 듣기"
 		},
@@ -2403,6 +2414,7 @@ export const translations = {
 			goToLobby: "लॉबी में जाएं",
 			privateChannel: "निजी चैनल",
 			lockedMessage: "यह चैनल पासवर्ड सुरक्षित है।",
+			incorrectPasswordOrNotFound: "गलत पासवर्ड या चैनल नहीं मिला।",
 			unlock: "अनलॉक करें",
 			listenMusic: "संवीडियो सुनें",
 			unmuteAndPlay: "अनम्यूट और बजाएं"
@@ -2595,6 +2607,7 @@ export const translations = {
 			goToLobby: "ไปที่ล็อบบี้",
 			privateChannel: "ช่องส่วนตัว",
 			lockedMessage: "ช่องนี้มีรหัสผ่านป้องกัน",
+			incorrectPasswordOrNotFound: "รหัสผ่านไม่ถูกต้องหรือไม่พบช่อง",
 			unlock: "ปลดล็อค",
 			listenMusic: "ฟังวิดีโอ",
 			unmuteAndPlay: "เปิดเสียง & เล่น"
@@ -2787,6 +2800,7 @@ export const translations = {
 			goToLobby: "Về Sảnh chờ",
 			privateChannel: "Kênh Riêng tư",
 			lockedMessage: "Kênh này có mật khẩu bảo vệ.",
+			incorrectPasswordOrNotFound: "Sai mật khẩu hoặc không tìm thấy kênh.",
 			unlock: "Mở khóa",
 			listenMusic: "Nghe nhạc",
 			unmuteAndPlay: "Bật tiếng & Phát"
@@ -2979,6 +2993,7 @@ export const translations = {
 			goToLobby: "Ke Lobi",
 			privateChannel: "Kanal Pribadi",
 			lockedMessage: "Kanal ini dilindungi password.",
+			incorrectPasswordOrNotFound: "Password salah atau kanal tidak ditemukan.",
 			unlock: "Buka Kunci",
 			listenMusic: "Dengarkan Musik",
 			unmuteAndPlay: "Bunyikan & Putar"
@@ -3171,6 +3186,7 @@ export const translations = {
 			goToLobby: "Ke Lobi",
 			privateChannel: "Saluran Peribadi",
 			lockedMessage: "Saluran ini dilindungi kata laluan.",
+			incorrectPasswordOrNotFound: "Kata laluan salah atau saluran tidak ditemui.",
 			unlock: "Buka Kunci",
 			listenMusic: "Dengar Muzik",
 			unmuteAndPlay: "Nyahbisu & Main"
@@ -3362,6 +3378,7 @@ export const translations = {
 			goToLobby: "Pumunta sa Lobby",
 			privateChannel: "Pribadong Channel",
 			lockedMessage: "Ang channel na ito ay protektado ng password.",
+			incorrectPasswordOrNotFound: "Maling password o hindi nahanap ang channel.",
 			unlock: "I-unlock",
 			listenMusic: "Makinig ng Musika",
 			unmuteAndPlay: "I-unmute at Mag-play"
@@ -3537,6 +3554,7 @@ export const translations = {
 			goToLobby: "Idź do lobby",
 			privateChannel: "Prywatny kanał",
 			lockedMessage: "Ten kanał jest chroniony hasłem.",
+			incorrectPasswordOrNotFound: "Nieprawidłowe hasło lub kanał nie istnieje.",
 			unlock: "Odblokuj",
 			listenMusic: "Słuchaj muzyki",
 			unmuteAndPlay: "Włącz dźwięk i graj"
@@ -3729,6 +3747,7 @@ export const translations = {
 			goToLobby: "Gå till lobbyn",
 			privateChannel: "Privat kanal",
 			lockedMessage: "Denna kanal är lösenordsskyddad.",
+			incorrectPasswordOrNotFound: "Felaktigt lösenord eller kanalen hittades inte.",
 			unlock: "Lås upp",
 			listenMusic: "Lyssna på musik",
 			unmuteAndPlay: "Ljud på & Spela"
@@ -3920,6 +3939,7 @@ export const translations = {
 			goToLobby: "Gå til lobby",
 			privateChannel: "Privat kanal",
 			lockedMessage: "Denne kanal er beskyttet med adgangskode.",
+			incorrectPasswordOrNotFound: "Forkert adgangskode eller kanalen blev ikke fundet.",
 			unlock: "Lås op",
 			listenMusic: "Lyt til musik",
 			unmuteAndPlay: "Lyd til & Afspil"
@@ -4111,6 +4131,7 @@ export const translations = {
 			goToLobby: "Gå til lobby",
 			privateChannel: "Privat kanal",
 			lockedMessage: "Denne kanalen er passordbeskyttet.",
+			incorrectPasswordOrNotFound: "Feil passord eller kanalen ble ikke funnet.",
 			unlock: "Lås opp",
 			listenMusic: "Hør på musikk",
 			unmuteAndPlay: "Lyd på & Spill"
@@ -4302,6 +4323,7 @@ export const translations = {
 			goToLobby: "Mene aulaan",
 			privateChannel: "Yksityinen kanava",
 			lockedMessage: "Tämä kanava on suojattu salasanalla.",
+			incorrectPasswordOrNotFound: "Väärä salasana tai kanavaa ei löytynyt.",
 			unlock: "Avaa",
 			listenMusic: "Kuuntele musiikkia",
 			unmuteAndPlay: "Poista mykistys & Soita"
@@ -4493,6 +4515,7 @@ export const translations = {
 			goToLobby: "Lobiye Git",
 			privateChannel: "Özel Kanal",
 			lockedMessage: "Bu kanal şifre korumalıdır.",
+			incorrectPasswordOrNotFound: "Yanlış şifre veya kanal bulunamadı.",
 			unlock: "Kilidi Aç",
 			listenMusic: "Müzik Dinle",
 			unmuteAndPlay: "Sesi Aç & Oynat"
@@ -4684,6 +4707,7 @@ export const translations = {
 			goToLobby: "Μετάβαση στο Λόμπι",
 			privateChannel: "Ιδιωτικό Κανάλι",
 			lockedMessage: "Αυτό το κανάλι προστατεύεται με κωδικό.",
+			incorrectPasswordOrNotFound: "Λάθος κωδικός ή το κανάλι δεν βρέθηκε.",
 			unlock: "Ξεκλείδωμα",
 			listenMusic: "Ακούστε μουσική",
 			unmuteAndPlay: "Ήχος & Αναπαραγωγή"
@@ -4875,6 +4899,7 @@ export const translations = {
 			goToLobby: "В лобби",
 			privateChannel: "Частный канал",
 			lockedMessage: "Этот канал защищен паролем.",
+			incorrectPasswordOrNotFound: "Неверный пароль или канал не найден.",
 			unlock: "Разблокировать",
 			listenMusic: "Слушать музыку",
 			unmuteAndPlay: "Включить звук & Играть"
@@ -5066,6 +5091,7 @@ export const translations = {
 			goToLobby: "До лобі",
 			privateChannel: "Приватний канал",
 			lockedMessage: "Цей канал захищено паролем.",
+			incorrectPasswordOrNotFound: "Невірний пароль або канал не знайдено.",
 			unlock: "Розблокувати",
 			listenMusic: "Слухати музику",
 			unmuteAndPlay: "Увімкнути звук & Грати"
@@ -5258,6 +5284,7 @@ export const translations = {
 			goToLobby: "Jít do Lobby",
 			privateChannel: "Soukromý Kanál",
 			lockedMessage: "Tento kanál je chráněn heslem.",
+			incorrectPasswordOrNotFound: "Nesprávné heslo nebo kanál neexistuje.",
 			unlock: "Odemknout",
 			listenMusic: "Poslouchat hudbu",
 			unmuteAndPlay: "Zapnout zvuk & Hrát"
@@ -5449,6 +5476,7 @@ export const translations = {
 			goToLobby: "Vissza a Lobbyba",
 			privateChannel: "Privát Csatorna",
 			lockedMessage: "Ez a csatorna jelszóval védett.",
+			incorrectPasswordOrNotFound: "Hibás jelszó vagy a csatorna nem található.",
 			unlock: "Feloldás",
 			listenMusic: "Zenehallgatás",
 			unmuteAndPlay: "Hang & Lejátszás"
@@ -5640,6 +5668,7 @@ export const translations = {
 			goToLobby: "Mergi la Lobby",
 			privateChannel: "Canal Privat",
 			lockedMessage: "Acest canal este protejat cu parolă.",
+			incorrectPasswordOrNotFound: "Parolă incorectă sau canalul nu a fost găsit.",
 			unlock: "Deblochează",
 			listenMusic: "Ascultă muzică",
 			unmuteAndPlay: "Sunet & Redare"
@@ -5831,6 +5860,7 @@ export const translations = {
 			goToLobby: "Към Лобито",
 			privateChannel: "Частен канал",
 			lockedMessage: "Този канал е защитен с парола.",
+			incorrectPasswordOrNotFound: "Грешна парола или каналът не е намерен.",
 			unlock: "Отключи",
 			listenMusic: "Слушане на музика",
 			unmuteAndPlay: "Включи звук & Пусни"
@@ -6022,6 +6052,7 @@ export const translations = {
 			goToLobby: "Idi u Predvorje",
 			privateChannel: "Privatni Kanal",
 			lockedMessage: "Ovaj kanal je zaštićen lozinkom.",
+			incorrectPasswordOrNotFound: "Netočna lozinka ili kanal nije pronađen.",
 			unlock: "Otključaj",
 			listenMusic: "Slušaj glazbu",
 			unmuteAndPlay: "Zvuk & Sviraj"
@@ -6213,6 +6244,7 @@ export const translations = {
 			goToLobby: "Idi u Lobi",
 			privateChannel: "Privatni Kanal",
 			lockedMessage: "Ovaj kanal je zaštićen lozinkom.",
+			incorrectPasswordOrNotFound: "Pogrešna lozinka ili kanal nije pronađen.",
 			unlock: "Otključaj",
 			listenMusic: "Slušaj muziku",
 			unmuteAndPlay: "Zvuk & Pusti"
@@ -6404,6 +6436,7 @@ export const translations = {
 			goToLobby: "Ísť do Lobby",
 			privateChannel: "Súkromný Kanál",
 			lockedMessage: "Tento kanál je chránený heslom.",
+			incorrectPasswordOrNotFound: "Nesprávne heslo alebo kanál nebol nájdený.",
 			unlock: "Odomknúť",
 			listenMusic: "Počúvať hudbu",
 			unmuteAndPlay: "Zvuk & Hrať"
@@ -6595,6 +6628,7 @@ export const translations = {
 			goToLobby: "الذهاب إلى الردهة",
 			privateChannel: "قناة خاصة",
 			lockedMessage: "هذه القناة محمية بكلمة مرور.",
+			incorrectPasswordOrNotFound: "كلمة المرور غير صحيحة أو القناة غير موجودة.",
 			unlock: "فتح",
 			listenMusic: "الاستماع إلى الموسيقى",
 			unmuteAndPlay: "صوت وتشغيل"
@@ -6786,6 +6820,7 @@ export const translations = {
 			goToLobby: "לך ללובי",
 			privateChannel: "ערוץ פרטי",
 			lockedMessage: "ערוץ זה מוגן בסיסמה.",
+			incorrectPasswordOrNotFound: "סיסמה שגויה או הערוץ לא נמצא.",
 			unlock: "פתח",
 			listenMusic: "האזנה למוזיקה",
 			unmuteAndPlay: "שמע ונגן"
