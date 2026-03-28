@@ -16,7 +16,6 @@ const http = require("http");
 const WebSocket = require("ws");
 const crypto = require("crypto");
 const { OAuth2Client } = require('google-auth-library');
-const jwt = require('jsonwebtoken');
 const db = require('./db');
 const fs = require('fs');
 const backupScheduler = require('./backup_scheduler');
@@ -49,8 +48,8 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
 
 const server = http.createServer((req, res) => {
     if (req.url === '/health' && req.method === 'GET') {
-        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
-        res.end(JSON.stringify({ status: 'ok', clients: clients.size, rooms: rooms.size, uptime: process.uptime() }));
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ status: 'ok' }));
         return;
     }
     res.writeHead(404);
@@ -60,6 +59,7 @@ const server = http.createServer((req, res) => {
 const wss = new WebSocket.Server({
     server,
     perMessageDeflate: false,
+    maxPayload: 64 * 1024, // 64 KB — prevents DoS via oversized messages
     verifyClient: (info, cb) => {
         if (ALLOWED_ORIGINS.length === 0) {
             if (process.env.NODE_ENV === 'production') {
@@ -209,6 +209,9 @@ wss.on("connection", (ws, req) => {
     ws.isAlive = true;
     ws.on('pong', () => { ws.isAlive = true; });
 
+    ws._msgCount = 0;
+    ws._msgWindowStart = Date.now();
+
     clients.add(ws);
 
     // Default Join (Lobby or specific room)
@@ -224,6 +227,18 @@ wss.on("connection", (ws, req) => {
 
     ws.on("message", async (message) => {
         try {
+            // Per-message rate limit: 60 messages per 10 seconds per socket
+            const now = Date.now();
+            if (now - ws._msgWindowStart > 10000) {
+                ws._msgCount = 0;
+                ws._msgWindowStart = now;
+            }
+            ws._msgCount++;
+            if (ws._msgCount > 60) {
+                ws.send(JSON.stringify({ type: "error", message: "Rate limit exceeded. Please slow down." }));
+                return;
+            }
+
             const parsedMessage = JSON.parse(message);
             const msgId = parsedMessage.msgId;
 
@@ -608,7 +623,11 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "DEBUG": {
-                    console.log("[CLIENT DEBUG]", parsedMessage.payload);
+                    if (process.env.NODE_ENV !== 'production') {
+                        console.log("[CLIENT DEBUG]", typeof parsedMessage.payload === 'string'
+                            ? parsedMessage.payload.slice(0, 200)
+                            : '[object]');
+                    }
                     return;
                 }
                 case "PING": {

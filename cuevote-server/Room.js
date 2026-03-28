@@ -639,11 +639,12 @@ class Room {
                 break;
             case "SEEK_TO":
                 if (isOwner(this, ws) && this.state.currentTrack) {
-                    const newProgress = message.payload;
-                    // Update startedAt so tick() calculates correct progress
-                    this.state.currentTrack.startedAt = Date.now() - (newProgress * 1000);
-                    // Broadcast immediately to update clients
-                    this.updateState({ progress: newProgress });
+                    const newProgress = Number(message.payload);
+                    if (!Number.isFinite(newProgress) || newProgress < 0) break;
+                    const duration = this.state.currentTrack.duration || 0;
+                    const clamped = duration > 0 ? Math.min(newProgress, duration) : newProgress;
+                    this.state.currentTrack = { ...this.state.currentTrack, startedAt: Date.now() - (clamped * 1000) };
+                    this.updateState({ progress: clamped });
                 }
                 break;
             case "UPDATE_SETTINGS":
