@@ -16,6 +16,7 @@ const http = require("http");
 const WebSocket = require("ws");
 const crypto = require("crypto");
 const { OAuth2Client } = require('google-auth-library');
+const bcrypt = require('bcryptjs');
 const db = require('./db');
 const fs = require('fs');
 const backupScheduler = require('./backup_scheduler');
@@ -445,7 +446,7 @@ wss.on("connection", (ws, req) => {
                         // Password Check
                         if (room.metadata.password) {
                             const isOwner = ws.user && ws.user.id === room.metadata.owner_id;
-                            if (!isOwner && (!password || password !== room.metadata.password)) {
+                            if (!isOwner && (!password || !bcrypt.compareSync(password, room.metadata.password))) {
                                 ws.send(JSON.stringify({ type: "error", code: "PASSWORD_REQUIRED", message: "Password required" }));
                                 return;
                             }
@@ -488,7 +489,7 @@ wss.on("connection", (ws, req) => {
                                 owner_id: ws.user.id,
                                 color: color || "from-gray-700 to-black",
                                 is_public: isPrivate ? 0 : 1,
-                                password: (isPrivate && password) ? password : null,
+                                password: (isPrivate && password) ? bcrypt.hashSync(password, 10) : null,
                                 captions_enabled: captionsEnabled ? 1 : 0,
                                 language_flag: languageFlag || 'international'
                             };
