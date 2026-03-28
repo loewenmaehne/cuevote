@@ -259,16 +259,17 @@ function RoomBody() {
     }
   }, [isConnected, activeRoomId, sendMessage, location.state, serverRoomId]);
 
+  // Handle Password Required Error
   useEffect(() => {
-    if (lastErrorCode === "ROOM_NOT_FOUND") {
+    if (lastErrorCode === "PASSWORD_REQUIRED") {
       setShowPasswordModal(true);
       if (lastPasswordAttemptRef.current) {
-        setPasswordError(t('app.incorrectPasswordOrNotFound'));
+        setPasswordError("Incorrect password");
       } else {
         setPasswordError("");
       }
     }
-  }, [lastErrorCode, lastErrorTimestamp, t]);
+  }, [lastErrorCode, lastErrorTimestamp]);
 
   const [showQRModal, setShowQRModal] = useState(false);
   const [headerOverlay, setHeaderOverlay] = useState(false);
@@ -1041,12 +1042,16 @@ function RoomBody() {
     playerRef.current?.seekTo?.(progressRef.current);
   }, [progressRef]);
 
-  // Reset state when changing rooms
+  // Watch for Room Not Found Error
+  useEffect(() => {
+    if (lastMessage && lastMessage.type === "error" && lastMessage.code === "ROOM_NOT_FOUND") {
+      setRoomNotFound(true);
+    }
+  }, [lastMessage]);
+
+  // Reset error when changing rooms
   useEffect(() => {
     setRoomNotFound(false);
-    setShowPasswordModal(false);
-    setPasswordError("");
-    lastPasswordAttemptRef.current = null;
   }, [activeRoomId]);
 
   const handleDeleteSong = (trackId) => {

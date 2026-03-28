@@ -448,7 +448,7 @@ wss.on("connection", (ws, req) => {
                         if (room.metadata.password) {
                             const isOwner = ws.user && ws.user.id === room.metadata.owner_id;
                             if (!isOwner && (!password || !bcrypt.compareSync(password, room.metadata.password))) {
-                                ws.send(JSON.stringify({ type: "error", code: "ROOM_NOT_FOUND", message: "Room not found" }));
+                                ws.send(JSON.stringify({ type: "error", code: "PASSWORD_REQUIRED", message: "Password required" }));
                                 return;
                             }
                         }
@@ -479,7 +479,7 @@ wss.on("connection", (ws, req) => {
                     let success = false;
                     while (attempts < 3 && !success) {
                         attempts++;
-                        const id = slugify(name, { lowercase: true, separator: '-' }) + '-' + crypto.randomBytes(12).toString('hex');
+                        const id = slugify(name, { lowercase: true, separator: '-' }) + '-' + crypto.randomBytes(8).toString('hex');
 
                         try {
                             const roomData = {
