@@ -28,15 +28,18 @@ export const Language = {
 		const [language, setLanguage] = useState('en');
 		const [translations, setTranslations] = useState(null);
 		const initDone = useRef(false);
+		const langReady = useRef(false);
 		useEffect(() => {
 			if (initDone.current) return;
 			initDone.current = true;
 			getTranslations().then((t) => {
 				setTranslations(t);
 				setLanguage((prev) => detectInitialLanguage(t) || prev);
+				langReady.current = true;
 			});
 		}, []);
 		useEffect(() => {
+			if (!langReady.current) return;
 			localStorage.setItem('cuevote_language', language);
 		}, [language]);
 		const t = (key, params = {}) => {
