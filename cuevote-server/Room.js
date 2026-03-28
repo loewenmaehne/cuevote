@@ -582,6 +582,7 @@ class Room {
                                 thumbnail: snippet.thumbnails?.high?.url || snippet.thumbnails?.default?.url,
                                 title: snippet.title,
                                 artist: snippet.channelTitle,
+                                duration: item.contentDetails ? parseISO8601Duration(item.contentDetails.duration) : null,
                             } : null;
 
                             validVideos.set(item.id, freshData);
