@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { GoogleAuthButton } from "./GoogleAuthButton";
-import { LogOut, Settings, List, Send, QrCode, Library, Copy, Check, Scale, X, ChevronLeft } from "lucide-react";
+import { LogOut, Settings, List, Send, QrCode, Library, Copy, Check, Scale, ChevronLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
 import { deviceDetection } from '../utils/deviceDetection';
@@ -294,15 +294,6 @@ export function Header({
         >
           {renderPills()}
         </div>
-        {isPlaylistMode && onClosePlaylist && (
-          <button
-            onClick={onClosePlaylist}
-            className="flex-shrink-0 p-1.5 text-neutral-400 hover:text-white transition-colors rounded-full hover:bg-neutral-800"
-            title={t('playlist.close')}
-          >
-            <X size={18} />
-          </button>
-        )}
         {isTouchDevice && (
           <div className="flex-shrink-0">
             {suggestButton}
