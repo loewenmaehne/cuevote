@@ -497,7 +497,8 @@ wss.on("connection", (ws, req) => {
                             db.createRoom(roomData);
                             rooms.set(id, new Room(id, name, YOUTUBE_API_KEY, roomData));
 
-                            ws.send(JSON.stringify({ type: "ROOM_CREATED", payload: roomData }));
+                            const { password: _hash, ...safeRoomData } = roomData;
+                            ws.send(JSON.stringify({ type: "ROOM_CREATED", payload: safeRoomData }));
                             success = true;
                         } catch (err) {
                             if (err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
