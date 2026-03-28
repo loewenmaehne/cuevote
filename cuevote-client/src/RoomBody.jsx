@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { deviceDetection } from './utils/deviceDetection';
-import { Volume2, VolumeX, ArrowLeft, Lock, X, Music, PlayCircle, Maximize2, WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
+import { Volume2, VolumeX, ArrowLeft, Lock, X, Maximize2, WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
 import { Consent } from './contexts/ConsentContext';
 import { Language } from './contexts/LanguageContext';
 import { Header } from "./components/Header";
@@ -1258,51 +1258,29 @@ function RoomBody() {
               <WifiOff size={32} className="text-red-400" />
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
-              {t('player.ipBlockTitle', 'Playback Unavailable')}
+              {t('player.ipBlockTitle', 'Unable to play on this network')}
             </h2>
-            <p className="text-neutral-400 font-medium mb-8 leading-relaxed text-balance">
+            <p className="text-neutral-400 font-medium mb-4 leading-relaxed text-balance">
               {t('player.ipBlockMessage', "YouTube is restricting video playback on your current network. Try switching to mobile data or a different Wi-Fi network.")}
             </p>
-            <div
-              className="flex flex-col gap-3 w-full"
-              onKeyDown={(e) => {
-                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                  e.preventDefault();
-                  const buttons = e.currentTarget.querySelectorAll('button');
-                  const current = [...buttons].indexOf(document.activeElement);
-                  if (e.key === 'ArrowDown') {
-                    buttons[Math.min(current + 1, buttons.length - 1)]?.focus();
-                  } else {
-                    buttons[Math.max(current - 1, 0)]?.focus();
-                  }
-                }
-              }}
-            >
-              {isOwner ? (
-                <button
-                  autoFocus
-                  onClick={() => { setNetworkThrottle(null); setIpBlockDetected(false); sendMessage({ type: "PLAY_PAUSE", payload: true }); }}
-                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#050505]"
-                >
-                  <PlayCircle size={20} />
-                  {t('player.ipBlockRetryPlayback', 'Retry Playback')}
-                </button>
-              ) : (
-                <button
-                  autoFocus
-                  onClick={() => { setLocalPlaylistView(true); setIpBlockDetected(false); }}
-                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#050505]"
-                >
-                  <Music size={20} />
-                  {t('player.ipBlockPartyMode', 'Switch to Party Mode')}
-                </button>
-              )}
+            <div className="flex items-center justify-center gap-2 text-sm text-neutral-500 mb-8 bg-neutral-900/80 border border-neutral-800 rounded-lg px-4 py-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-red-500 shrink-0" />
+              <span>{t('player.ipBlockYouTubeStatus', 'youtube.com — Playback restricted')}</span>
+            </div>
+            <div className="flex gap-3 w-full">
               <button
+                autoFocus
                 onClick={() => window.location.reload()}
-                className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#050505]"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-lg shadow-lg hover:shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#050505]"
               >
                 <RefreshCw size={18} />
-                {t('player.ipBlockRetry', 'Reload Page')}
+                {t('player.ipBlockRetry', 'Reload')}
+              </button>
+              <button
+                onClick={() => setIpBlockDetected(false)}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#050505]"
+              >
+                {t('player.ipBlockDismiss', 'Dismiss')}
               </button>
             </div>
           </div>

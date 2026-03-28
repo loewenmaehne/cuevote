@@ -42,11 +42,11 @@ export const translations = {
 			errorNotFound: "This video is unavailable.",
 			errorRestricted: "This video is not available in your country.",
 			errorIPBlocked: "YouTube is limiting playback on this network.",
-			ipBlockTitle: "Playback Unavailable",
+			ipBlockTitle: "Unable to play on this network",
 			ipBlockMessage: "YouTube is restricting video playback on your current network. Try switching to mobile data or a different Wi-Fi connection.",
-			ipBlockPartyMode: "Switch to Party Mode",
-			ipBlockRetryPlayback: "Retry Playback",
-			ipBlockRetry: "Reload Page"
+			ipBlockYouTubeStatus: "youtube.com — Playback restricted",
+			ipBlockRetry: "Reload",
+			ipBlockDismiss: "Dismiss"
 		},
 		cookie: {
 			title: "Privacy & Playback",
@@ -267,10 +267,11 @@ export const translations = {
 			errorNotFound: "Deze video is niet beschikbaar.",
 			errorRestricted: "Deze video is niet beschikbaar in jouw land.",
 			errorIPBlocked: "YouTube beperkt het afspelen op dit netwerk.",
-			ipBlockTitle: "Afspelen niet beschikbaar",
+			ipBlockTitle: "Kan niet afspelen op dit netwerk",
 			ipBlockMessage: "YouTube beperkt het afspelen van video's op je huidige netwerk. Probeer over te schakelen naar mobiele data of een andere Wi-Fi-verbinding.",
-			ipBlockPartyMode: "Schakel over naar Party Modus",
-			ipBlockRetry: "Pagina herladen"
+			ipBlockYouTubeStatus: "youtube.com — Afspelen beperkt",
+			ipBlockRetry: "Herladen",
+			ipBlockDismiss: "Sluiten"
 		},
 		cookie: {
 			title: "Privacy & Afspelen",
@@ -482,10 +483,11 @@ export const translations = {
 			errorNotFound: "Dieses Video ist nicht verfügbar.",
 			errorRestricted: "Dieses Video ist in deinem Land nicht verfügbar.",
 			errorIPBlocked: "YouTube beschränkt die Wiedergabe in diesem Netzwerk.",
-			ipBlockTitle: "Wiedergabe nicht verfügbar",
+			ipBlockTitle: "Wiedergabe in diesem Netzwerk nicht möglich",
 			ipBlockMessage: "YouTube beschränkt die Videowiedergabe in deinem aktuellen Netzwerk. Versuche, zu mobilen Daten oder einer anderen WLAN-Verbindung zu wechseln.",
-			ipBlockPartyMode: "Zum Partymodus wechseln",
-			ipBlockRetry: "Seite neu laden"
+			ipBlockYouTubeStatus: "youtube.com — Wiedergabe eingeschränkt",
+			ipBlockRetry: "Neu laden",
+			ipBlockDismiss: "Schließen"
 		},
 		cookie: {
 			title: "Datenschutz & Wiedergabe",
@@ -697,10 +699,11 @@ export const translations = {
 			errorNotFound: "Cette vidéo n'est pas disponible.",
 			errorRestricted: "Cette vidéo n'est pas disponible dans votre pays.",
 			errorIPBlocked: "YouTube limite la lecture sur ce réseau.",
-			ipBlockTitle: "Lecture indisponible",
+			ipBlockTitle: "Impossible de lire sur ce réseau",
 			ipBlockMessage: "YouTube restreint la lecture vidéo sur votre réseau actuel. Essayez de passer aux données mobiles ou à une autre connexion Wi-Fi.",
-			ipBlockPartyMode: "Passer en Mode Fête",
-			ipBlockRetry: "Recharger la page"
+			ipBlockYouTubeStatus: "youtube.com — Lecture restreinte",
+			ipBlockRetry: "Recharger",
+			ipBlockDismiss: "Fermer"
 		},
 		cookie: {
 			title: "Confidentialité & Lecture",
@@ -912,10 +915,11 @@ export const translations = {
 			errorNotFound: "Este video no está disponible.",
 			errorRestricted: "Este video no está disponible en tu país.",
 			errorIPBlocked: "YouTube está limitando la reproducción en esta red.",
-			ipBlockTitle: "Reproducción no disponible",
+			ipBlockTitle: "No se puede reproducir en esta red",
 			ipBlockMessage: "YouTube está restringiendo la reproducción de video en tu red actual. Intenta cambiar a datos móviles o a otra conexión Wi-Fi.",
-			ipBlockPartyMode: "Cambiar a Modo Fiesta",
-			ipBlockRetry: "Recargar página"
+			ipBlockYouTubeStatus: "youtube.com — Reproducción restringida",
+			ipBlockRetry: "Recargar",
+			ipBlockDismiss: "Cerrar"
 		},
 
 		cookie: {
@@ -1123,10 +1127,11 @@ export const translations = {
 			errorNotFound: "Questo video non è disponibile.",
 			errorRestricted: "Questo video non è disponibile nel tuo paese.",
 			errorIPBlocked: "YouTube sta limitando la riproduzione su questa rete.",
-			ipBlockTitle: "Riproduzione non disponibile",
+			ipBlockTitle: "Impossibile riprodurre su questa rete",
 			ipBlockMessage: "YouTube sta limitando la riproduzione video sulla tua rete attuale. Prova a passare ai dati mobili o a una diversa connessione Wi-Fi.",
-			ipBlockPartyMode: "Passa alla Modalità Festa",
-			ipBlockRetry: "Ricarica pagina"
+			ipBlockYouTubeStatus: "youtube.com — Riproduzione limitata",
+			ipBlockRetry: "Ricarica",
+			ipBlockDismiss: "Chiudi"
 		},
 		cookie: {
 			title: "Privacy e Riproduzione",
@@ -1323,10 +1328,11 @@ export const translations = {
 			errorNotFound: "Este vídeo não está disponível.",
 			errorRestricted: "Este vídeo não está disponível no seu país.",
 			errorIPBlocked: "O YouTube está limitando a reprodução nesta rede.",
-			ipBlockTitle: "Reprodução indisponível",
+			ipBlockTitle: "Não é possível reproduzir nesta rede",
 			ipBlockMessage: "O YouTube está restringindo a reprodução de vídeo na sua rede atual. Tente mudar para dados móveis ou outra conexão Wi-Fi.",
-			ipBlockPartyMode: "Mudar para Modo Festa",
-			ipBlockRetry: "Recarregar página"
+			ipBlockYouTubeStatus: "youtube.com — Reprodução restrita",
+			ipBlockRetry: "Recarregar",
+			ipBlockDismiss: "Fechar"
 		},
 		cookie: {
 			title: "Privacidade e Reprodução",
@@ -1523,10 +1529,11 @@ export const translations = {
 			errorNotFound: "此视频不可用。",
 			errorRestricted: "此视频在您所在的国家/地区不可用。",
 			errorIPBlocked: "YouTube 正在限制此网络上的播放。",
-			ipBlockTitle: "无法播放",
+			ipBlockTitle: "无法在此网络上播放",
 			ipBlockMessage: "YouTube 正在限制您当前网络上的视频播放。请尝试切换到移动数据或其他 Wi-Fi 连接。",
-			ipBlockPartyMode: "切换到派对模式",
-			ipBlockRetry: "重新加载页面"
+			ipBlockYouTubeStatus: "youtube.com — 播放受限",
+			ipBlockRetry: "重新加载",
+			ipBlockDismiss: "关闭"
 		},
 		cookie: {
 			title: "隐私与播放",
@@ -1719,10 +1726,11 @@ export const translations = {
 			errorNotFound: "此視頻無法使用。",
 			errorRestricted: "此視頻在您所在的國家/地區無法使用。",
 			errorIPBlocked: "YouTube 正在限制此網路上的播放。",
-			ipBlockTitle: "無法播放",
+			ipBlockTitle: "無法在此網路上播放",
 			ipBlockMessage: "YouTube 正在限制您目前網路上的影片播放。請嘗試切換到行動數據或其他 Wi-Fi 連線。",
-			ipBlockPartyMode: "切換到派對模式",
-			ipBlockRetry: "重新載入頁面"
+			ipBlockYouTubeStatus: "youtube.com — 播放受限",
+			ipBlockRetry: "重新載入",
+			ipBlockDismiss: "關閉"
 		},
 		cookie: {
 			title: "隱私與播放",
@@ -1915,10 +1923,11 @@ export const translations = {
 			errorNotFound: "この動画は再生できません。",
 			errorRestricted: "この動画はお住まいの国では視聴できません。",
 			errorIPBlocked: "YouTubeがこのネットワークで再生を制限しています。",
-			ipBlockTitle: "再生できません",
+			ipBlockTitle: "このネットワークでは再生できません",
 			ipBlockMessage: "YouTubeが現在のネットワークでの動画再生を制限しています。モバイルデータや別のWi-Fi接続に切り替えてみてください。",
-			ipBlockPartyMode: "パーティーモードに切替",
-			ipBlockRetry: "ページを再読み込み"
+			ipBlockYouTubeStatus: "youtube.com — 再生が制限されています",
+			ipBlockRetry: "再読み込み",
+			ipBlockDismiss: "閉じる"
 		},
 		cookie: {
 			title: "プライバシーと再生",
@@ -2111,10 +2120,11 @@ export const translations = {
 			errorNotFound: "이 동영상은 사용할 수 없습니다.",
 			errorRestricted: "이 동영상은 해당 국가에서 사용할 수 없습니다.",
 			errorIPBlocked: "YouTube가 이 네트워크에서 재생을 제한하고 있습니다.",
-			ipBlockTitle: "재생 불가",
+			ipBlockTitle: "이 네트워크에서 재생할 수 없습니다",
 			ipBlockMessage: "YouTube가 현재 네트워크에서 동영상 재생을 제한하고 있습니다. 모바일 데이터 또는 다른 Wi-Fi 연결로 전환해 보세요.",
-			ipBlockPartyMode: "파티 모드로 전환",
-			ipBlockRetry: "페이지 새로고침"
+			ipBlockYouTubeStatus: "youtube.com — 재생 제한됨",
+			ipBlockRetry: "새로고침",
+			ipBlockDismiss: "닫기"
 		},
 		cookie: {
 			title: "개인정보 및 재생",
@@ -2306,10 +2316,11 @@ export const translations = {
 			errorNotFound: "यह वीडियो उपलब्ध नहीं है।",
 			errorRestricted: "यह वीडियो आपके देश में उपलब्ध नहीं है।",
 			errorIPBlocked: "YouTube इस नेटवर्क पर प्लेबैक सीमित कर रहा है।",
-			ipBlockTitle: "प्लेबैक अनुपलब्ध",
+			ipBlockTitle: "इस नेटवर्क पर चलाने में असमर्थ",
 			ipBlockMessage: "YouTube आपके वर्तमान नेटवर्क पर वीडियो प्लेबैक को प्रतिबंधित कर रहा है। मोबाइल डेटा या किसी अन्य Wi-Fi कनेक्शन पर स्विच करके देखें।",
-			ipBlockPartyMode: "पार्टी मोड में स्विच करें",
-			ipBlockRetry: "पेज रीलोड करें"
+			ipBlockYouTubeStatus: "youtube.com — प्लेबैक प्रतिबंधित",
+			ipBlockRetry: "रीलोड",
+			ipBlockDismiss: "खारिज करें"
 		},
 		cookie: {
 			title: "गोपनीयता और प्लेबैक",
@@ -2502,10 +2513,11 @@ export const translations = {
 			errorNotFound: "วิดีโอนี้ไม่พร้อมใช้งาน",
 			errorRestricted: "วิดีโอนี้ไม่พร้อมใช้งานในประเทศของคุณ",
 			errorIPBlocked: "YouTube กำลังจำกัดการเล่นบนเครือข่ายนี้",
-			ipBlockTitle: "ไม่สามารถเล่นได้",
+			ipBlockTitle: "ไม่สามารถเล่นบนเครือข่ายนี้ได้",
 			ipBlockMessage: "YouTube กำลังจำกัดการเล่นวิดีโอบนเครือข่ายปัจจุบันของคุณ ลองเปลี่ยนไปใช้ข้อมูลมือถือหรือการเชื่อมต่อ Wi-Fi อื่น",
-			ipBlockPartyMode: "สลับไปโหมดปาร์ตี้",
-			ipBlockRetry: "โหลดหน้าใหม่"
+			ipBlockYouTubeStatus: "youtube.com — การเล่นถูกจำกัด",
+			ipBlockRetry: "โหลดใหม่",
+			ipBlockDismiss: "ปิด"
 		},
 		cookie: {
 			title: "ความเป็นส่วนตัวและการเล่น",
@@ -2693,10 +2705,11 @@ export const translations = {
 			errorNotFound: "Video này không khả dụng.",
 			errorRestricted: "Video này không khả dụng ở quốc gia của bạn.",
 			errorIPBlocked: "YouTube đang giới hạn phát lại trên mạng này.",
-			ipBlockTitle: "Không thể phát",
+			ipBlockTitle: "Không thể phát trên mạng này",
 			ipBlockMessage: "YouTube đang hạn chế phát video trên mạng hiện tại của bạn. Hãy thử chuyển sang dữ liệu di động hoặc kết nối Wi-Fi khác.",
-			ipBlockPartyMode: "Chuyển sang Chế độ Tiệc",
-			ipBlockRetry: "Tải lại trang"
+			ipBlockYouTubeStatus: "youtube.com — Phát lại bị hạn chế",
+			ipBlockRetry: "Tải lại",
+			ipBlockDismiss: "Đóng"
 		},
 		cookie: {
 			title: "Quyền riêng tư & Phát lại",
@@ -2884,10 +2897,11 @@ export const translations = {
 			errorNotFound: "Video ini tidak tersedia.",
 			errorRestricted: "Video ini tidak tersedia di negara Anda.",
 			errorIPBlocked: "YouTube membatasi pemutaran di jaringan ini.",
-			ipBlockTitle: "Pemutaran Tidak Tersedia",
+			ipBlockTitle: "Tidak dapat memutar di jaringan ini",
 			ipBlockMessage: "YouTube membatasi pemutaran video di jaringan Anda saat ini. Coba beralih ke data seluler atau koneksi Wi-Fi yang berbeda.",
-			ipBlockPartyMode: "Beralih ke Mode Pesta",
-			ipBlockRetry: "Muat Ulang Halaman"
+			ipBlockYouTubeStatus: "youtube.com — Pemutaran dibatasi",
+			ipBlockRetry: "Muat ulang",
+			ipBlockDismiss: "Tutup"
 		},
 		cookie: {
 			title: "Privasi & Pemutaran",
@@ -3075,10 +3089,11 @@ export const translations = {
 			errorNotFound: "Video ini tidak tersedia.",
 			errorRestricted: "Video ini tidak tersedia di negara anda.",
 			errorIPBlocked: "YouTube mengehadkan main balik di rangkaian ini.",
-			ipBlockTitle: "Main Balik Tidak Tersedia",
+			ipBlockTitle: "Tidak dapat memainkan di rangkaian ini",
 			ipBlockMessage: "YouTube mengehadkan main balik video di rangkaian semasa anda. Cuba tukar ke data mudah alih atau sambungan Wi-Fi lain.",
-			ipBlockPartyMode: "Tukar ke Mod Parti",
-			ipBlockRetry: "Muat Semula Halaman"
+			ipBlockYouTubeStatus: "youtube.com — Main balik dihadkan",
+			ipBlockRetry: "Muat semula",
+			ipBlockDismiss: "Tutup"
 		},
 		cookie: {
 			title: "Privasi & Main Semula",
@@ -3265,10 +3280,11 @@ export const translations = {
 			errorNotFound: "Hindi available ang video na ito.",
 			errorRestricted: "Hindi available ang video na ito sa iyong bansa.",
 			errorIPBlocked: "Nililimitahan ng YouTube ang pag-play sa network na ito.",
-			ipBlockTitle: "Hindi Available ang Playback",
+			ipBlockTitle: "Hindi makapaglaro sa network na ito",
 			ipBlockMessage: "Nililimitahan ng YouTube ang pag-play ng video sa kasalukuyang network mo. Subukang lumipat sa mobile data o ibang koneksyon ng Wi-Fi.",
-			ipBlockPartyMode: "Lumipat sa Party Mode",
-			ipBlockRetry: "I-reload ang Pahina"
+			ipBlockYouTubeStatus: "youtube.com — Playback restricted",
+			ipBlockRetry: "I-reload",
+			ipBlockDismiss: "I-dismiss"
 		},
 		cookie: {
 			title: "Privacy at Playback",
@@ -3439,10 +3455,11 @@ export const translations = {
 			errorNotFound: "To wideo jest niedostępne.",
 			errorRestricted: "To wideo jest niedostępne w Twoim kraju.",
 			errorIPBlocked: "YouTube ogranicza odtwarzanie w tej sieci.",
-			ipBlockTitle: "Odtwarzanie niedostępne",
+			ipBlockTitle: "Nie można odtwarzać w tej sieci",
 			ipBlockMessage: "YouTube ogranicza odtwarzanie wideo w Twojej obecnej sieci. Spróbuj przełączyć się na dane mobilne lub inne połączenie Wi-Fi.",
-			ipBlockPartyMode: "Przełącz na Tryb Imprezowy",
-			ipBlockRetry: "Przeładuj stronę"
+			ipBlockYouTubeStatus: "youtube.com — Odtwarzanie ograniczone",
+			ipBlockRetry: "Przeładuj",
+			ipBlockDismiss: "Zamknij"
 		},
 		cookie: {
 			title: "Prywatność i Odtwarzanie",
@@ -3630,10 +3647,11 @@ export const translations = {
 			errorNotFound: "Den här videon är inte tillgänglig.",
 			errorRestricted: "Den här videon är inte tillgänglig i ditt land.",
 			errorIPBlocked: "YouTube begränsar uppspelning i det här nätverket.",
-			ipBlockTitle: "Uppspelning otillgänglig",
+			ipBlockTitle: "Kan inte spela upp i detta nätverk",
 			ipBlockMessage: "YouTube begränsar videouppspelning på ditt nuvarande nätverk. Prova att byta till mobildata eller en annan Wi-Fi-anslutning.",
-			ipBlockPartyMode: "Byt till Festläge",
-			ipBlockRetry: "Ladda om sidan"
+			ipBlockYouTubeStatus: "youtube.com — Uppspelning begränsad",
+			ipBlockRetry: "Ladda om",
+			ipBlockDismiss: "Stäng"
 		},
 		cookie: {
 			title: "Sekretess & Uppspelning",
@@ -3820,10 +3838,11 @@ export const translations = {
 			errorNotFound: "Denne video er ikke tilgængelig.",
 			errorRestricted: "Denne video er ikke tilgængelig i dit land.",
 			errorIPBlocked: "YouTube begrænser afspilning på dette netværk.",
-			ipBlockTitle: "Afspilning utilgængelig",
+			ipBlockTitle: "Kan ikke afspille på dette netværk",
 			ipBlockMessage: "YouTube begrænser videoafspilning på dit nuværende netværk. Prøv at skifte til mobildata eller en anden Wi-Fi-forbindelse.",
-			ipBlockPartyMode: "Skift til Festtilstand",
-			ipBlockRetry: "Genindlæs side"
+			ipBlockYouTubeStatus: "youtube.com — Afspilning begrænset",
+			ipBlockRetry: "Genindlæs",
+			ipBlockDismiss: "Luk"
 		},
 		cookie: {
 			title: "Privatliv & Afspilning",
@@ -4010,10 +4029,11 @@ export const translations = {
 			errorNotFound: "Denne videoen er ikke tilgjengelig.",
 			errorRestricted: "Denne videoen er ikke tilgjengelig i landet ditt.",
 			errorIPBlocked: "YouTube begrenser avspilling i dette nettverket.",
-			ipBlockTitle: "Avspilling utilgjengelig",
+			ipBlockTitle: "Kan ikke spille av på dette nettverket",
 			ipBlockMessage: "YouTube begrenser videoavspilling på ditt nåværende nettverk. Prøv å bytte til mobildata eller en annen Wi-Fi-tilkobling.",
-			ipBlockPartyMode: "Bytt til Festmodus",
-			ipBlockRetry: "Last inn siden på nytt"
+			ipBlockYouTubeStatus: "youtube.com — Avspilling begrenset",
+			ipBlockRetry: "Last inn på nytt",
+			ipBlockDismiss: "Lukk"
 		},
 		cookie: {
 			title: "Personvern & Avspilling",
@@ -4200,10 +4220,11 @@ export const translations = {
 			errorNotFound: "Tämä video ei ole saatavilla.",
 			errorRestricted: "Tämä video ei ole saatavilla maassasi.",
 			errorIPBlocked: "YouTube rajoittaa toistoa tässä verkossa.",
-			ipBlockTitle: "Toisto ei saatavilla",
+			ipBlockTitle: "Ei voi toistaa tässä verkossa",
 			ipBlockMessage: "YouTube rajoittaa videon toistoa nykyisessä verkossasi. Kokeile vaihtaa mobiilidataan tai toiseen Wi-Fi-yhteyteen.",
-			ipBlockPartyMode: "Vaihda Juhlatilaan",
-			ipBlockRetry: "Lataa sivu uudelleen"
+			ipBlockYouTubeStatus: "youtube.com — Toisto rajoitettu",
+			ipBlockRetry: "Lataa uudelleen",
+			ipBlockDismiss: "Sulje"
 		},
 		cookie: {
 			title: "Tietosuoja & Toisto",
@@ -4390,10 +4411,11 @@ export const translations = {
 			errorNotFound: "Bu video kullanılamıyor.",
 			errorRestricted: "Bu video ülkenizde kullanılamıyor.",
 			errorIPBlocked: "YouTube bu ağda oynatmayı kısıtlıyor.",
-			ipBlockTitle: "Oynatma Kullanılamıyor",
+			ipBlockTitle: "Bu ağda oynatılamıyor",
 			ipBlockMessage: "YouTube mevcut ağınızda video oynatmayı kısıtlıyor. Mobil veriye veya farklı bir Wi-Fi bağlantısına geçmeyi deneyin.",
-			ipBlockPartyMode: "Parti Moduna Geç",
-			ipBlockRetry: "Sayfayı Yenile"
+			ipBlockYouTubeStatus: "youtube.com — Oynatma kısıtlandı",
+			ipBlockRetry: "Yenile",
+			ipBlockDismiss: "Kapat"
 		},
 		cookie: {
 			title: "Gizlilik & Oynatma",
@@ -4580,10 +4602,11 @@ export const translations = {
 			errorNotFound: "Αυτό το βίντεο δεν είναι διαθέσιμο.",
 			errorRestricted: "Αυτό το βίντεο δεν είναι διαθέσιμο στη χώρα σας.",
 			errorIPBlocked: "Το YouTube περιορίζει την αναπαραγωγή σε αυτό το δίκτυο.",
-			ipBlockTitle: "Η αναπαραγωγή δεν είναι διαθέσιμη",
+			ipBlockTitle: "Δεν είναι δυνατή η αναπαραγωγή σε αυτό το δίκτυο",
 			ipBlockMessage: "Το YouTube περιορίζει την αναπαραγωγή βίντεο στο τρέχον δίκτυό σας. Δοκιμάστε να αλλάξετε σε δεδομένα κινητού ή σε διαφορετική σύνδεση Wi-Fi.",
-			ipBlockPartyMode: "Αλλαγή σε Λειτουργία Πάρτι",
-			ipBlockRetry: "Επαναφόρτωση σελίδας"
+			ipBlockYouTubeStatus: "youtube.com — Η αναπαραγωγή περιορίστηκε",
+			ipBlockRetry: "Επαναφόρτωση",
+			ipBlockDismiss: "Κλείσιμο"
 		},
 		cookie: {
 			title: "Απόρρητο & Αναπαραγωγή",
@@ -4770,10 +4793,11 @@ export const translations = {
 			errorNotFound: "Это видео недоступно.",
 			errorRestricted: "Это видео недоступно в вашей стране.",
 			errorIPBlocked: "YouTube ограничивает воспроизведение в этой сети.",
-			ipBlockTitle: "Воспроизведение недоступно",
+			ipBlockTitle: "Невозможно воспроизвести в этой сети",
 			ipBlockMessage: "YouTube ограничивает воспроизведение видео в вашей текущей сети. Попробуйте переключиться на мобильные данные или другое Wi-Fi-соединение.",
-			ipBlockPartyMode: "Перейти в Режим Вечеринки",
-			ipBlockRetry: "Перезагрузить страницу"
+			ipBlockYouTubeStatus: "youtube.com — Воспроизведение ограничено",
+			ipBlockRetry: "Перезагрузить",
+			ipBlockDismiss: "Закрыть"
 		},
 		cookie: {
 			title: "Конфиденциальность и воспроизведение",
@@ -4960,10 +4984,11 @@ export const translations = {
 			errorNotFound: "Це відео недоступне.",
 			errorRestricted: "Це відео недоступне у вашій країні.",
 			errorIPBlocked: "YouTube обмежує відтворення у цій мережі.",
-			ipBlockTitle: "Відтворення недоступне",
+			ipBlockTitle: "Неможливо відтворити в цій мережі",
 			ipBlockMessage: "YouTube обмежує відтворення відео у вашій поточній мережі. Спробуйте переключитися на мобільні дані або інше Wi-Fi-з'єднання.",
-			ipBlockPartyMode: "Перейти в Режим Вечірки",
-			ipBlockRetry: "Перезавантажити сторінку"
+			ipBlockYouTubeStatus: "youtube.com — Відтворення обмежено",
+			ipBlockRetry: "Перезавантажити",
+			ipBlockDismiss: "Закрити"
 		},
 		cookie: {
 			title: "Конфіденційність та відтворення",
@@ -5151,10 +5176,11 @@ export const translations = {
 			errorNotFound: "Toto video není dostupné.",
 			errorRestricted: "Toto video není dostupné ve vaší zemi.",
 			errorIPBlocked: "YouTube omezuje přehrávání v této síti.",
-			ipBlockTitle: "Přehrávání nedostupné",
+			ipBlockTitle: "Nelze přehrát v této síti",
 			ipBlockMessage: "YouTube omezuje přehrávání videa ve vaší aktuální síti. Zkuste přepnout na mobilní data nebo jiné Wi-Fi připojení.",
-			ipBlockPartyMode: "Přepnout na Párty režim",
-			ipBlockRetry: "Znovu načíst stránku"
+			ipBlockYouTubeStatus: "youtube.com — Přehrávání omezeno",
+			ipBlockRetry: "Znovu načíst",
+			ipBlockDismiss: "Zavřít"
 		},
 		cookie: {
 			title: "Soukromí a přehrávání",
@@ -5341,10 +5367,11 @@ export const translations = {
 			errorNotFound: "Ez a videó nem érhető el.",
 			errorRestricted: "Ez a videó nem érhető el az Ön országában.",
 			errorIPBlocked: "A YouTube korlátozza a lejátszást ezen a hálózaton.",
-			ipBlockTitle: "A lejátszás nem érhető el",
+			ipBlockTitle: "Nem lehet lejátszani ezen a hálózaton",
 			ipBlockMessage: "A YouTube korlátozza a videólejátszást az aktuális hálózaton. Próbáljon átváltani mobiladatra vagy másik Wi-Fi kapcsolatra.",
-			ipBlockPartyMode: "Váltás Buli módra",
-			ipBlockRetry: "Oldal újratöltése"
+			ipBlockYouTubeStatus: "youtube.com — Lejátszás korlátozva",
+			ipBlockRetry: "Újratöltés",
+			ipBlockDismiss: "Bezárás"
 		},
 		cookie: {
 			title: "Adatvédelem és Lejátszás",
@@ -5531,10 +5558,11 @@ export const translations = {
 			errorNotFound: "Acest videoclip nu este disponibil.",
 			errorRestricted: "Acest videoclip nu este disponibil în țara dvs.",
 			errorIPBlocked: "YouTube restricționează redarea pe această rețea.",
-			ipBlockTitle: "Redare indisponibilă",
+			ipBlockTitle: "Nu se poate reda pe această rețea",
 			ipBlockMessage: "YouTube restricționează redarea video pe rețeaua dvs. actuală. Încercați să treceți la date mobile sau la o altă conexiune Wi-Fi.",
-			ipBlockPartyMode: "Treceți la Modul Petrecere",
-			ipBlockRetry: "Reîncărcați pagina"
+			ipBlockYouTubeStatus: "youtube.com — Redare restricționată",
+			ipBlockRetry: "Reîncărcați",
+			ipBlockDismiss: "Închideți"
 		},
 		cookie: {
 			title: "Confidențialitate și Redare",
@@ -5721,10 +5749,11 @@ export const translations = {
 			errorNotFound: "Това видео не е достъпно.",
 			errorRestricted: "Това видео не е достъпно в твоята страна.",
 			errorIPBlocked: "YouTube ограничава възпроизвеждането в тази мрежа.",
-			ipBlockTitle: "Възпроизвеждането не е налично",
+			ipBlockTitle: "Не може да се възпроизведе в тази мрежа",
 			ipBlockMessage: "YouTube ограничава възпроизвеждането на видео в текущата ви мрежа. Опитайте да превключите на мобилни данни или друга Wi-Fi връзка.",
-			ipBlockPartyMode: "Превключи на Парти режим",
-			ipBlockRetry: "Презареди страницата"
+			ipBlockYouTubeStatus: "youtube.com — Възпроизвеждането е ограничено",
+			ipBlockRetry: "Презареди",
+			ipBlockDismiss: "Затвори"
 		},
 		cookie: {
 			title: "Поверителност и възпроизвеждане",
@@ -5911,10 +5940,11 @@ export const translations = {
 			errorNotFound: "Ovaj video nije dostupan.",
 			errorRestricted: "Ovaj video nije dostupan u vašoj zemlji.",
 			errorIPBlocked: "YouTube ograničava reprodukciju na ovoj mreži.",
-			ipBlockTitle: "Reprodukcija nedostupna",
+			ipBlockTitle: "Nije moguće reproducirati na ovoj mreži",
 			ipBlockMessage: "YouTube ograničava reprodukciju videa na vašoj trenutnoj mreži. Pokušajte se prebaciti na mobilne podatke ili drugu Wi-Fi vezu.",
-			ipBlockPartyMode: "Prebaci na Party način",
-			ipBlockRetry: "Ponovno učitaj stranicu"
+			ipBlockYouTubeStatus: "youtube.com — Reprodukcija ograničena",
+			ipBlockRetry: "Ponovno učitaj",
+			ipBlockDismiss: "Zatvori"
 		},
 		cookie: {
 			title: "Privatnost i reprodukcija",
@@ -6101,10 +6131,11 @@ export const translations = {
 			errorNotFound: "Ovaj video nije dostupan.",
 			errorRestricted: "Ovaj video nije dostupan u vašoj zemlji.",
 			errorIPBlocked: "YouTube ograničava reprodukciju na ovoj mreži.",
-			ipBlockTitle: "Reprodukcija nedostupna",
+			ipBlockTitle: "Nije moguće reprodukovati na ovoj mreži",
 			ipBlockMessage: "YouTube ograničava reprodukciju videa na vašoj trenutnoj mreži. Pokušajte da se prebacite na mobilne podatke ili drugu Wi-Fi vezu.",
-			ipBlockPartyMode: "Prebaci na Party režim",
-			ipBlockRetry: "Ponovo učitaj stranicu"
+			ipBlockYouTubeStatus: "youtube.com — Reprodukcija ograničena",
+			ipBlockRetry: "Ponovo učitaj",
+			ipBlockDismiss: "Zatvori"
 		},
 		cookie: {
 			title: "Privatnost i reprodukcija",
@@ -6291,10 +6322,11 @@ export const translations = {
 			errorNotFound: "Toto video nie je k dispozícii.",
 			errorRestricted: "Toto video nie je k dispozícii vo vašej krajine.",
 			errorIPBlocked: "YouTube obmedzuje prehrávanie v tejto sieti.",
-			ipBlockTitle: "Prehrávanie nedostupné",
+			ipBlockTitle: "Nie je možné prehrávať v tejto sieti",
 			ipBlockMessage: "YouTube obmedzuje prehrávanie videa vo vašej aktuálnej sieti. Skúste prepnúť na mobilné dáta alebo iné Wi-Fi pripojenie.",
-			ipBlockPartyMode: "Prepnúť na Párty režim",
-			ipBlockRetry: "Znova načítať stránku"
+			ipBlockYouTubeStatus: "youtube.com — Prehrávanie obmedzené",
+			ipBlockRetry: "Znova načítať",
+			ipBlockDismiss: "Zavrieť"
 		},
 		cookie: {
 			title: "Súkromie a prehrávanie",
@@ -6481,10 +6513,11 @@ export const translations = {
 			errorNotFound: "هذا الفيديو غير متاح.",
 			errorRestricted: "هذا الفيديو غير متاح في بلدك.",
 			errorIPBlocked: "يقوم YouTube بتقييد التشغيل على هذه الشبكة.",
-			ipBlockTitle: "التشغيل غير متاح",
+			ipBlockTitle: "تعذر التشغيل على هذه الشبكة",
 			ipBlockMessage: "يقوم YouTube بتقييد تشغيل الفيديو على شبكتك الحالية. حاول التبديل إلى بيانات الهاتف المحمول أو اتصال Wi-Fi مختلف.",
-			ipBlockPartyMode: "التبديل إلى وضع الحفلة",
-			ipBlockRetry: "إعادة تحميل الصفحة"
+			ipBlockYouTubeStatus: "youtube.com — التشغيل مقيد",
+			ipBlockRetry: "إعادة تحميل",
+			ipBlockDismiss: "إغلاق"
 		},
 		cookie: {
 			title: "الخصوصية والتشغيل",
@@ -6671,10 +6704,11 @@ export const translations = {
 			errorNotFound: "סרטון זה אינו זמין.",
 			errorRestricted: "סרטון זה אינו זמין במדינתך.",
 			errorIPBlocked: "YouTube מגביל את ההפעלה ברשת זו.",
-			ipBlockTitle: "ההפעלה לא זמינה",
+			ipBlockTitle: "לא ניתן להפעיל ברשת זו",
 			ipBlockMessage: "YouTube מגביל את ניגון הווידאו ברשת הנוכחית שלך. נסה לעבור לנתוני סלולר או חיבור Wi-Fi אחר.",
-			ipBlockPartyMode: "עבור למצב מסיבה",
-			ipBlockRetry: "טען מחדש את הדף"
+			ipBlockYouTubeStatus: "youtube.com — ההפעלה מוגבלת",
+			ipBlockRetry: "טען מחדש",
+			ipBlockDismiss: "סגור"
 		},
 		cookie: {
 			title: "פרטיות וניגון",
