@@ -430,29 +430,27 @@ class Room {
             for (const track of shuffledHistory) {
                 if (candidates.length >= needed) break;
 
-                // Skip tracks whose metadata was cleared by the 28-day TOS cleanup
-                if (!track.title || !track.videoId) continue;
+                if (!track.videoId) continue;
 
-                // Duration Check
-                if (maxDuration > 0 && track.duration > maxDuration) continue;
+                // Duration Check (skip if known; null duration passes through for API re-fetch)
+                if (maxDuration > 0 && track.duration && track.duration > maxDuration) continue;
 
-                // Music-only filter
+                // Music-only filter (skip if known; null category passes through for API re-fetch)
                 if (musicOnly && track.category_id && track.category_id !== '10') continue;
 
                 // IP Cooldown Check — skip videos that recently failed due to IP blocks (30 min cooldown)
                 const ipEntry = this.ipBlockedVideos.get(track.videoId);
                 if (ipEntry && (Date.now() - ipEntry.lastFailedAt) < 1800000) continue;
 
-                // Repetition Check (History cooldown)
-                const title = track.title.toLowerCase().trim();
-                // Check if title is in recent history
-                if (historyTitles.includes(title)) continue;
+                // Repetition Check (History cooldown) — skip if title unknown (cleared metadata)
+                const title = track.title ? track.title.toLowerCase().trim() : null;
+                if (title && historyTitles.includes(title)) continue;
 
-                // FIX: Check if video is ALREADY IN QUEUE (prevent immediate duplicate)
+                // Check if video is ALREADY IN QUEUE (prevent immediate duplicate)
                 if (queueVideoIds.has(track.videoId)) continue;
 
                 // Check if we already picked this title in current candidates
-                if (candidates.some(c => c.title.toLowerCase().trim() === title)) continue;
+                if (title && candidates.some(c => c.title && c.title.toLowerCase().trim() === title)) continue;
 
                 candidates.push(track);
                 videoIdsToCheck.push(track.videoId);
@@ -463,8 +461,8 @@ class Room {
                 console.log(`[AutoRefill] No candidates after strict filtering. Relaxing checks for small library (${uniqueHistory.length} unique videos).`);
                 for (const track of shuffledHistory) {
                     if (candidates.length >= needed) break;
-                    if (!track.title || !track.videoId) continue;
-                    if (maxDuration > 0 && track.duration > maxDuration) continue;
+                    if (!track.videoId) continue;
+                    if (maxDuration > 0 && track.duration && track.duration > maxDuration) continue;
                     const ipEntry = this.ipBlockedVideos.get(track.videoId);
                     if (ipEntry && (Date.now() - ipEntry.lastFailedAt) < 1800000) continue;
                     candidates.push(track);
