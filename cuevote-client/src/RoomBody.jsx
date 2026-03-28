@@ -1234,22 +1234,6 @@ function RoomBody() {
       className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : (isQueueMinimized && !isCinemaMode ? "h-[100dvh] h-screen overflow-hidden bg-black" : "min-h-screen bg-black pb-32")}`}
       style={isQueueMinimized && !isCinemaMode && !isAnyPlaylistView ? { paddingBottom: `${controlsHeight}px` } : undefined}
     >
-      {networkThrottle && !ipBlockDetected && (
-        <div className="fixed top-0 left-0 right-0 z-[101] bg-yellow-600/95 backdrop-blur-sm text-white text-center py-1.5 text-xs font-medium">
-          <div className="flex items-center justify-center gap-2">
-            <AlertTriangle size={12} />
-            <span>{t('app.networkThrottle', "YouTube has blocked this network's IP. Playback paused. Try switching to a mobile hotspot.")}</span>
-            {isOwner && (
-              <button
-                onClick={() => { setNetworkThrottle(null); sendMessage({ type: "PLAY_PAUSE", payload: true }); }}
-                className="ml-1 px-2 py-0.5 rounded bg-white/20 hover:bg-white/30 transition-colors"
-              >
-                {t('app.retryPlayback', 'Retry')}
-              </button>
-            )}
-          </div>
-        </div>
-      )}
       {ipBlockDetected && (
         <div className="fixed inset-0 z-[100] bg-[#050505] text-white flex items-center justify-center p-6 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-[#050505] to-[#050505] pointer-events-none" />
@@ -1361,6 +1345,29 @@ function RoomBody() {
             playlistViewMode={playlistViewMode}
             onFullscreenOverlay={setHeaderOverlay}
           />
+          {networkThrottle && !ipBlockDetected && (
+            <div className="bg-yellow-600/95 text-white text-center py-1.5 text-xs font-medium">
+              <div className="flex items-center justify-center gap-2 px-2">
+                <AlertTriangle size={12} className="shrink-0" />
+                <span className="truncate">{t('app.networkThrottle', "YouTube has blocked this network's IP. Playback paused. Try switching to a mobile hotspot.")}</span>
+                {isOwner && (
+                  <button
+                    onClick={() => { setNetworkThrottle(null); sendMessage({ type: "PLAY_PAUSE", payload: true }); }}
+                    className="shrink-0 px-2 py-0.5 rounded bg-white/20 hover:bg-white/30 transition-colors"
+                  >
+                    {t('app.retryPlayback', 'Retry')}
+                  </button>
+                )}
+                <button
+                  onClick={() => setNetworkThrottle(null)}
+                  className="shrink-0 p-0.5 rounded hover:bg-white/20 transition-colors"
+                  aria-label="Dismiss"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+          )}
           {showSuggest && (
             <div className="px-4 pb-3">
               <SuggestSongForm
