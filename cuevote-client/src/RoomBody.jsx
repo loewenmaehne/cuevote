@@ -259,18 +259,16 @@ function RoomBody() {
     }
   }, [isConnected, activeRoomId, sendMessage, location.state, serverRoomId]);
 
-  // Handle Password Required Error
   useEffect(() => {
-    if (lastErrorCode === "PASSWORD_REQUIRED") {
+    if (lastErrorCode === "ROOM_NOT_FOUND") {
       setShowPasswordModal(true);
-      // Only show "Incorrect password" if we actually TRIED a password.
       if (lastPasswordAttemptRef.current) {
-        setPasswordError("Incorrect password");
+        setPasswordError(t('app.incorrectPasswordOrNotFound'));
       } else {
-        setPasswordError(""); // Reset error if we just bumped into the lock without a key
+        setPasswordError("");
       }
     }
-  }, [lastErrorCode, lastErrorTimestamp]);
+  }, [lastErrorCode, lastErrorTimestamp, t]);
 
   const [showQRModal, setShowQRModal] = useState(false);
   const [headerOverlay, setHeaderOverlay] = useState(false);
@@ -1043,16 +1041,12 @@ function RoomBody() {
     playerRef.current?.seekTo?.(progressRef.current);
   }, [progressRef]);
 
-  // Watch for Room Not Found Error
-  useEffect(() => {
-    if (lastMessage && lastMessage.type === "error" && lastMessage.code === "ROOM_NOT_FOUND") {
-      setRoomNotFound(true);
-    }
-  }, [lastMessage]);
-
-  // Reset error when changing rooms
+  // Reset state when changing rooms
   useEffect(() => {
     setRoomNotFound(false);
+    setShowPasswordModal(false);
+    setPasswordError("");
+    lastPasswordAttemptRef.current = null;
   }, [activeRoomId]);
 
   const handleDeleteSong = (trackId) => {

@@ -180,15 +180,6 @@ export function Lobby() {
         }
     }, [lastMessage, handleLogout]);
 
-    // Dismiss password modal if room no longer exists
-    useEffect(() => {
-        if (lastErrorCode === "ROOM_NOT_FOUND" && showPasswordModal) {
-            setShowPasswordModal(false);
-            setPasswordRoomId(null);
-            setPasswordInput("");
-        }
-    }, [lastErrorCode, showPasswordModal]);
-
     // Handle Join Success (In-Lobby Password Check)
     useEffect(() => {
         if (state && passwordRoomId && state.roomId === passwordRoomId && showPasswordModal) {
@@ -533,14 +524,11 @@ export function Lobby() {
         return () => window.removeEventListener('keydown', handleEscape);
     }, [isCreatingRoom, showPasswordModal, showProfileModal, showDeleteConfirm]);
 
-    // Handle Password Required Error
     useEffect(() => {
-        if (lastErrorCode === "PASSWORD_REQUIRED") {
-            if (showPasswordModal) {
-                setPasswordError("Incorrect password");
-            }
+        if (lastErrorCode === "ROOM_NOT_FOUND" && showPasswordModal) {
+            setPasswordError(t('app.incorrectPasswordOrNotFound'));
         }
-    }, [lastErrorCode, showPasswordModal]);
+    }, [lastErrorCode, showPasswordModal, t]);
 
     const submitCreateRoom = (e) => {
         e.preventDefault();
