@@ -768,7 +768,7 @@ class Room {
                 // Send to Client
                 ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: videoId, suggestions } }));
             } else {
-                logger.error("[Suggestions] No items found in response:", data);
+                logger.error("[Suggestions] No items found in response (pageInfo: %j)", data?.pageInfo);
                 ws.send(JSON.stringify({ type: "error", message: "No suggestions found." }));
             }
         } catch (e) {
@@ -1538,7 +1538,7 @@ class Room {
         ws.send(JSON.stringify({ type: "info", message: "Processing deletion..." }));
         try {
             const result = db.deleteRoom(this.id);
-            logger.info(`[Delete Room] DB Result:`, result);
+            logger.info(`[Delete Room] DB rows affected: ${result.changes}`);
 
             if (result.changes > 0) {
                 this.deleted = true;
