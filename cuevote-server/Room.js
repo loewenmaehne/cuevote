@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const db = require("./db");
 const logger = require("./logger");
+const schemas = require("./schemas");
 
 // Helper to check ownership
 function isOwner(room, ws) {
@@ -582,24 +583,32 @@ class Room {
         };
 
         switch (message.type) {
-            case "SUGGEST_SONG":
-                await this.handleSuggestSong(ws, message.payload);
+            case "SUGGEST_SONG": {
+                const r = schemas.SuggestSongPayload.safeParse(message.payload);
+                if (!r.success) { ws.send(JSON.stringify({ type: "error", message: "Invalid suggestion." })); break; }
+                await this.handleSuggestSong(ws, r.data);
                 sendAck();
                 break;
-            case "VOTE":
-                this.handleVote(ws, message.payload);
+            }
+            case "VOTE": {
+                const r = schemas.VotePayload.safeParse(message.payload);
+                if (!r.success) { ws.send(JSON.stringify({ type: "error", message: "Invalid vote." })); break; }
+                this.handleVote(ws, r.data);
                 sendAck();
                 break;
-            case "PLAY_PAUSE":
+            }
+            case "PLAY_PAUSE": {
+                const r = schemas.PlayPausePayload.safeParse(message.payload);
+                if (!r.success) break;
                 if (isOwner(this, ws)) {
-                    if (message.payload === true) {
-                        // Owner explicitly resuming — treat as manual retry after throttle
+                    if (r.data === true) {
                         this.networkThrottleUntil = 0;
                         this.consecutiveIPErrors = 0;
                     }
-                    this.updateState({ isPlaying: message.payload });
+                    this.updateState({ isPlaying: r.data });
                 }
                 break;
+            }
             case "NEXT_TRACK":
                 if (isOwner(this, ws)) {
                     this.handleNextTrack();
@@ -610,62 +619,73 @@ class Room {
                     await this.handlePlaybackError(ws, message.payload);
                 }
                 break;
-            case "UPDATE_DURATION":
+            case "UPDATE_DURATION": {
+                const r = schemas.UpdateDurationPayload.safeParse(message.payload);
+                if (!r.success) break;
                 if (isOwner(this, ws) && this.state.currentTrack) {
-                    // A duration update means the video is actually playing — reset IP error counters
                     this.consecutiveIPErrors = 0;
                     this.networkThrottleUntil = 0;
                     this.updateState({
-                        currentTrack: { ...this.state.currentTrack, duration: message.payload },
+                        currentTrack: { ...this.state.currentTrack, duration: r.data },
                     });
                 }
                 break;
-            case "SEEK_TO":
+            }
+            case "SEEK_TO": {
+                const r = schemas.SeekToPayload.safeParse(message.payload);
+                if (!r.success) break;
                 if (isOwner(this, ws) && this.state.currentTrack) {
-                    const newProgress = Number(message.payload);
-                    if (!Number.isFinite(newProgress) || newProgress < 0) break;
                     const duration = this.state.currentTrack.duration || 0;
-                    const clamped = duration > 0 ? Math.min(newProgress, duration) : newProgress;
+                    const clamped = duration > 0 ? Math.min(r.data, duration) : r.data;
                     this.state.currentTrack = { ...this.state.currentTrack, startedAt: Date.now() - (clamped * 1000) };
                     this.updateState({ progress: clamped });
                 }
                 break;
-            case "UPDATE_SETTINGS":
+            }
+            case "UPDATE_SETTINGS": {
+                const r = schemas.UpdateSettingsPayload.safeParse(message.payload);
+                if (!r.success) break;
                 if (isOwner(this, ws)) {
-                    this.handleUpdateSettings(message.payload);
+                    this.handleUpdateSettings(r.data);
                 }
                 break;
-            case "APPROVE_SUGGESTION":
-                if (isOwner(this, ws)) {
-                    this.handleApproveSuggestion(message.payload);
-                }
+            }
+            case "APPROVE_SUGGESTION": {
+                const r = schemas.TrackIdPayload.safeParse(message.payload);
+                if (!r.success) break;
+                if (isOwner(this, ws)) this.handleApproveSuggestion(r.data);
                 break;
-            case "REJECT_SUGGESTION":
-                if (isOwner(this, ws)) {
-                    this.handleRejectSuggestion(message.payload);
-                }
+            }
+            case "REJECT_SUGGESTION": {
+                const r = schemas.TrackIdPayload.safeParse(message.payload);
+                if (!r.success) break;
+                if (isOwner(this, ws)) this.handleRejectSuggestion(r.data);
                 break;
-
-            case "DELETE_SONG":
-                if (isOwner(this, ws)) {
-                    this.handleDeleteSong(message.payload);
-                }
+            }
+            case "DELETE_SONG": {
+                const r = schemas.TrackIdPayload.safeParse(message.payload);
+                if (!r.success) break;
+                if (isOwner(this, ws)) this.handleDeleteSong(r.data);
                 break;
-            case "BAN_SUGGESTION":
-                if (isOwner(this, ws)) {
-                    this.handleBanSuggestion(message.payload);
-                }
+            }
+            case "BAN_SUGGESTION": {
+                const r = schemas.TrackIdPayload.safeParse(message.payload);
+                if (!r.success) break;
+                if (isOwner(this, ws)) this.handleBanSuggestion(r.data);
                 break;
-            case "UNBAN_SONG":
-                if (isOwner(this, ws)) {
-                    this.handleUnbanSong(message.payload);
-                }
+            }
+            case "UNBAN_SONG": {
+                const r = schemas.VideoIdPayload.safeParse(message.payload);
+                if (!r.success) break;
+                if (isOwner(this, ws)) this.handleUnbanSong(r.data);
                 break;
-            case "REMOVE_FROM_LIBRARY":
-                if (isOwner(this, ws)) {
-                    this.handleRemoveFromLibrary(message.payload);
-                }
+            }
+            case "REMOVE_FROM_LIBRARY": {
+                const r = schemas.VideoIdPayload.safeParse(message.payload);
+                if (!r.success) break;
+                if (isOwner(this, ws)) this.handleRemoveFromLibrary(r.data);
                 break;
+            }
             case "DELETE_ROOM":
                 if (isOwner(this, ws)) {
                     this.handleDeleteRoom(ws);
@@ -685,9 +705,12 @@ class Room {
                 // If I modify index.js to check for DELETE_ACCOUNT *before* routing to room, that fixes it globally.
                 // I will NOT edit Room.js yet. I will edit index.js.
                 break;
-            case "FETCH_SUGGESTIONS":
-                this.handleFetchSuggestions(ws, message.payload);
+            case "FETCH_SUGGESTIONS": {
+                const r = schemas.FetchSuggestionsPayload.safeParse(message.payload);
+                if (!r.success) break;
+                this.handleFetchSuggestions(ws, r.data);
                 break;
+            }
         }
     }
 

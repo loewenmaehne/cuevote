@@ -108,6 +108,7 @@ async function verifyGoogleToken(token) {
 }
 
 const Room = require('./Room');
+const schemas = require('./schemas');
 
 // Room Manager
 const rooms = new Map();
@@ -227,7 +228,13 @@ wss.on("connection", (ws, req) => {
                 return;
             }
 
-            const parsedMessage = JSON.parse(message);
+            const raw = JSON.parse(message);
+            const envelopeResult = schemas.WebSocketMessage.safeParse(raw);
+            if (!envelopeResult.success) {
+                ws.send(JSON.stringify({ type: "error", message: "Invalid message format." }));
+                return;
+            }
+            const parsedMessage = envelopeResult.data;
             const msgId = parsedMessage.msgId;
 
             const sendAck = () => {
@@ -239,7 +246,12 @@ wss.on("connection", (ws, req) => {
             // Handle Global Messages (Auth, Routing)
             switch (parsedMessage.type) {
                 case "LOGIN": {
-                    const { token } = parsedMessage.payload;
+                    const loginResult = schemas.LoginPayload.safeParse(parsedMessage.payload);
+                    if (!loginResult.success) {
+                        ws.send(JSON.stringify({ type: "error", message: "Invalid login payload." }));
+                        return;
+                    }
+                    const { token } = loginResult.data;
                         logger.info("[LOGIN TRACE] Processing login request...");
                         try {
                             const payload = await verifyGoogleToken(token);
@@ -284,7 +296,12 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "RESUME_SESSION": {
-                    const { token } = parsedMessage.payload;
+                    const resumeResult = schemas.ResumeSessionPayload.safeParse(parsedMessage.payload);
+                    if (!resumeResult.success) {
+                        ws.send(JSON.stringify({ type: "SESSION_INVALID" }));
+                        return;
+                    }
+                    const { token } = resumeResult.data;
                     const session = db.getSession(token);
                     if (session) {
                         const user = db.getUser(session.user_id);
@@ -308,8 +325,8 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "LOGOUT": {
-                    const { token } = parsedMessage.payload;
-                    if (token) db.deleteSession(token);
+                    const logoutResult = schemas.LogoutPayload.safeParse(parsedMessage.payload);
+                    if (logoutResult.success) db.deleteSession(logoutResult.data.token);
                     ws.user = null;
                     return;
                 }
@@ -401,7 +418,12 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "JOIN_ROOM": {
-                    const { roomId, password } = parsedMessage.payload;
+                    const joinResult = schemas.JoinRoomPayload.safeParse(parsedMessage.payload);
+                    if (!joinResult.success) {
+                        ws.send(JSON.stringify({ type: "error", message: "Invalid room ID." }));
+                        return;
+                    }
+                    const { roomId, password } = joinResult.data;
                     logger.info(`[SERVER TRACE] Client ${ws.id} requesting to join room: ${roomId}`);
 
                     // Leave ALL rooms to ensure no duplicate subscriptions
@@ -450,16 +472,16 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "CREATE_ROOM": {
-                    const { name, description, color, isPrivate, password, captionsEnabled, languageFlag } = parsedMessage.payload;
                     if (!ws.user) {
                         ws.send(JSON.stringify({ type: "error", message: "You must be logged in to create a room." }));
                         return;
                     }
-
-                    if (name.length > 100) {
-                        ws.send(JSON.stringify({ type: "error", message: "Channel name must be 100 characters or less." }));
+                    const createResult = schemas.CreateRoomPayload.safeParse(parsedMessage.payload);
+                    if (!createResult.success) {
+                        ws.send(JSON.stringify({ type: "error", message: "Invalid room data. Name is required (max 100 chars)." }));
                         return;
                     }
+                    const { name, description, color, isPrivate, password, captionsEnabled, languageFlag } = createResult.data;
 
                     let attempts = 0;
                     let success = false;
@@ -503,9 +525,10 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "LIST_ROOMS": {
-                    const { type } = parsedMessage.payload || {}; // 'public', 'private', or 'my_channels'
-                    const showPrivate = type === 'private';
-                    const showMyChannels = type === 'my_channels';
+                    const listResult = schemas.ListRoomsPayload.safeParse(parsedMessage.payload);
+                    const listPayload = listResult.success ? (listResult.data || {}) : {};
+                    const showPrivate = listPayload.type === 'private';
+                    const showMyChannels = listPayload.type === 'my_channels';
 
                     if (showMyChannels) {
                         logger.info(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${redactForLog(ws.user?.id)}`);
