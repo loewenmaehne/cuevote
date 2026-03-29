@@ -86,8 +86,7 @@ class Room {
         this.stateSaveCounter = 0;
         this.stateSaveInterval = setInterval(() => {
             if (this.state.currentTrack || this.state.queue.length > 0) {
-                try { db.saveRoomState(this.id, this.state); } catch (e) { /* ignore */ }
-                try { db.updateRoomActivity(this.id); } catch (e) { /* ignore */ }
+                try { db.saveRoomStateAndActivity(this.id, this.state); } catch (e) { /* ignore */ }
             }
         }, 30000);
 

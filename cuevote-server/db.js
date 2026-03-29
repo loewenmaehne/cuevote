@@ -166,6 +166,16 @@ module.exports = {
     db.prepare('DELETE FROM sessions WHERE token = ?').run(token);
   },
 
+  // Atomic login: upsert user + create session in one transaction
+  loginUser: (user, sessionToken, expiresAt) => {
+    const transaction = db.transaction(() => {
+      module.exports.upsertUser(user);
+      module.exports.createSession(sessionToken, user.id, expiresAt);
+    });
+    transaction();
+    return db.prepare('SELECT * FROM users WHERE id = ?').get(user.id);
+  },
+
   // Room Management
   createRoom: (room) => {
     const stmt = db.prepare(`
@@ -334,26 +344,29 @@ module.exports = {
   addToRoomHistory: (roomId, track) => {
     if (!track.videoId) return;
 
-    // 1. Ensure the video exists in the videos table first
-    module.exports.upsertVideo({
-      id: track.videoId,
-      title: track.title,
-      artist: track.artist,
-      thumbnail: track.thumbnail,
-      duration: track.duration,
-      category_id: track.category_id || '10', // Default to music if unknown
-      language: track.language || null
+    const transaction = db.transaction(() => {
+      // 1. Ensure the video exists in the videos table first
+      module.exports.upsertVideo({
+        id: track.videoId,
+        title: track.title,
+        artist: track.artist,
+        thumbnail: track.thumbnail,
+        duration: track.duration,
+        category_id: track.category_id || '10',
+        language: track.language || null
+      });
+
+      // 2. Insert or update the history record
+      const playedAt = track.playedAt ? Math.floor(track.playedAt / 1000) : Math.floor(Date.now() / 1000);
+      db.prepare(`
+        INSERT INTO room_history (room_id, video_id, played_at)
+        VALUES (?, ?, ?)
+        ON CONFLICT(room_id, video_id) DO UPDATE SET
+          played_at = excluded.played_at
+      `).run(roomId, track.videoId, playedAt);
     });
 
-    // 2. Insert or update the history record
-    const playedAt = track.playedAt ? Math.floor(track.playedAt / 1000) : Math.floor(Date.now() / 1000);
-    const stmt = db.prepare(`
-      INSERT INTO room_history (room_id, video_id, played_at)
-      VALUES (?, ?, ?)
-      ON CONFLICT(room_id, video_id) DO UPDATE SET
-        played_at = excluded.played_at
-    `);
-    stmt.run(roomId, track.videoId, playedAt);
+    transaction();
   },
 
   getRoomHistory: (roomId) => {
@@ -416,6 +429,15 @@ module.exports = {
     db.prepare('DELETE FROM room_state WHERE room_id = ?').run(roomId);
   },
 
+  // Atomic room checkpoint: save state + update activity in one transaction
+  saveRoomStateAndActivity: (roomId, state) => {
+    const transaction = db.transaction(() => {
+      module.exports.saveRoomState(roomId, state);
+      module.exports.updateRoomActivity(roomId);
+    });
+    transaction();
+  },
+
   cleanupRoomHistory: () => {
     // No-op: room_history stores room-video associations (application data),
     // not cached YouTube metadata. TOS compliance is handled by
@@ -462,5 +484,17 @@ module.exports = {
       logger.info(`[DB Cleanup] Deleted ${result.changes} empty channels older than 7 days.`);
     }
     return result.changes;
+  },
+
+  // Atomic daily cleanup: batch all cleanup operations in one transaction
+  runDailyCleanup: () => {
+    const transaction = db.transaction(() => {
+      module.exports.cleanupExpiredSessions();
+      module.exports.cleanupStaleVideoMetadata();
+      module.exports.cleanupSearchCache();
+      module.exports.cleanupRelatedVideosCache();
+      module.exports.cleanupEmptyRooms();
+    });
+    transaction();
   }
 };

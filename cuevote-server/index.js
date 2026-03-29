@@ -257,32 +257,26 @@ wss.on("connection", (ws, req) => {
                             const payload = await verifyGoogleToken(token);
                             logger.info(`[LOGIN TRACE] Token verified for Google Subject: ${redactForLog(payload.sub)}`);
 
-                        let user = db.getUser(payload.sub);
-                        logger.info(`[LOGIN TRACE] User found in DB? ${!!user}`);
-
-                        if (!user) {
-                            logger.info("[LOGIN TRACE] Creating new user record...");
-                            user = {
-                                id: payload.sub,
-                                email: payload.email,
-                                name: payload.name,
-                                picture: payload.picture
-                            };
-                            try {
-                                db.upsertUser(user);
-                                logger.info("[LOGIN TRACE] Upsert successful.");
-                            } catch (dbErr) {
-                                logger.error("[LOGIN CRITICAL] UpsertUser failed:", dbErr);
-                                throw dbErr;
-                            }
-                        }
-                        ws.user = user;
+                        const userData = {
+                            id: payload.sub,
+                            email: payload.email,
+                            name: payload.name,
+                            picture: payload.picture
+                        };
 
                         // Generate Session Token
-                        logger.info("[LOGIN TRACE] Creating session...");
                         const sessionToken = crypto.randomBytes(32).toString('hex');
                         const expiresAt = Math.floor(Date.now() / 1000) + (24 * 60 * 60); // 24 hours
-                        db.createSession(sessionToken, user.id, expiresAt);
+
+                        // Atomic: upsert user + create session in one transaction
+                        logger.info("[LOGIN TRACE] Creating user and session...");
+                        try {
+                            ws.user = db.loginUser(userData, sessionToken, expiresAt);
+                            logger.info("[LOGIN TRACE] Login transaction successful.");
+                        } catch (dbErr) {
+                            logger.error("[LOGIN CRITICAL] Login transaction failed:", dbErr);
+                            throw dbErr;
+                        }
 
                         logger.info("[LOGIN TRACE] Sending LOGIN_SUCCESS");
                         ws.send(JSON.stringify({
@@ -725,19 +719,11 @@ setInterval(() => {
 // Cleanup Old Room History, expired sessions, and stale API caches (Once a day)
 setInterval(() => {
     logger.info("Running daily cleanup task...");
-    try { db.cleanupExpiredSessions(); } catch (e) { logger.error("Failed to cleanup expired sessions", e); }
-    try { db.cleanupStaleVideoMetadata(); } catch (e) { logger.error("Failed to cleanup stale video metadata", e); }
-    try { db.cleanupSearchCache(); } catch (e) { logger.error("Failed to cleanup search cache", e); }
-    try { db.cleanupRelatedVideosCache(); } catch (e) { logger.error("Failed to cleanup related videos cache", e); }
-    try { db.cleanupEmptyRooms(); } catch (e) { logger.error("Failed to cleanup empty rooms", e); }
+    try { db.runDailyCleanup(); } catch (e) { logger.error("Failed to run daily cleanup", e); }
 }, 24 * 60 * 60 * 1000);
 
 // Run all cleanups once on startup as well
-try { db.cleanupExpiredSessions(); } catch (e) { logger.error("Failed to cleanup expired sessions on startup", e); }
-try { db.cleanupStaleVideoMetadata(); } catch (e) { logger.error("Failed to cleanup stale video metadata on startup", e); }
-try { db.cleanupSearchCache(); } catch (e) { logger.error("Failed to cleanup search cache on startup", e); }
-try { db.cleanupRelatedVideosCache(); } catch (e) { logger.error("Failed to cleanup related videos cache on startup", e); }
-try { db.cleanupEmptyRooms(); } catch (e) { logger.error("Failed to cleanup empty rooms on startup", e); }
+try { db.runDailyCleanup(); } catch (e) { logger.error("Failed to run daily cleanup on startup", e); }
 
 function gracefulShutdown(signal) {
     logger.info(`[Shutdown] ${signal} received. Closing ${wss.clients.size} connections...`);
