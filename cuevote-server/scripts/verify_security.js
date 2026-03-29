@@ -4,7 +4,7 @@ const Database = require('better-sqlite3');
 const crypto = require('crypto');
 const path = require('path');
 
-const dbPath = path.join(__dirname, 'cuevote.db');
+const dbPath = path.join(__dirname, '..', 'cuevote.db');
 const db = new Database(dbPath);
 
 const TEST_USER_ID = 'test-security-user';

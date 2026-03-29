@@ -1,4 +1,4 @@
-const db = require('./db.js');
+const db = require('../db.js');
 const crypto = require('crypto');
 
 console.log("=== STARTING DB DEBUG MARATHON ===");
