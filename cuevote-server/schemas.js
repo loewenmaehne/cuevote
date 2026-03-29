@@ -29,6 +29,8 @@ const CreateRoomPayload = z.object({
 
 const ListRoomsPayload = z.object({
   type: z.enum(['public', 'private', 'my_channels']).optional(),
+  page: z.number().int().min(1).max(1000).optional(),
+  limit: z.number().int().min(1).max(100).optional(),
 }).optional();
 
 const SuggestSongPayload = z.object({

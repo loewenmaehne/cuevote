@@ -523,32 +523,30 @@ wss.on("connection", (ws, req) => {
                     const listPayload = listResult.success ? (listResult.data || {}) : {};
                     const showPrivate = listPayload.type === 'private';
                     const showMyChannels = listPayload.type === 'my_channels';
+                    const pageSize = listPayload.limit || 50;
+                    const page = listPayload.page || 1;
+                    const offset = (page - 1) * pageSize;
 
                     if (showMyChannels) {
                         logger.info(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${redactForLog(ws.user?.id)}`);
                     }
 
                     if (showMyChannels && !ws.user) {
-                        // If requesting my channels but not logged in, return empty or error?
-                        // Frontend should handle UI, but backend should be safe.
-                        ws.send(JSON.stringify({ type: "ROOM_LIST", payload: [] }));
+                        ws.send(JSON.stringify({ type: "ROOM_LIST", payload: [], page: 1, totalPages: 0, total: 0 }));
                         return;
                     }
 
                     const roomList = [];
                     // 1. Get from Memory (Active)
                     for (const room of rooms.values()) {
-                        if (room.deleted) continue; // Skip deleted rooms
+                        if (room.deleted) continue;
                         if (showMyChannels) {
                             if (room.metadata.owner_id === ws.user.id) {
                                 roomList.push(room.getSummary());
-                            } else {
-                                // logger.info(`[DEBUG] Skipping room ${room.id} owned by ${room.metadata.owner_id} (Me: ${ws.user.id})`);
                             }
                         } else {
                             const isPublic = room.metadata.is_public === 1;
                             if ((showPrivate && !isPublic) || (!showPrivate && isPublic)) {
-                                // Link-Only Access: Private rooms without password are hidden from lobby
                                 if (showPrivate && !room.metadata.password) {
                                     continue;
                                 }
@@ -557,10 +555,7 @@ wss.on("connection", (ws, req) => {
                         }
                     }
 
-                    // 2. Get from DB (To ensure we show searchable rooms that are idle)
-                    // The memory list is only active rooms. We want searchable.
-                    // But we don't want duplicates.
-
+                    // 2. Get from DB (idle rooms not in memory)
                     let dbRooms = [];
                     if (showMyChannels) {
                         dbRooms = db.listUserRooms(ws.user.id);
@@ -572,10 +567,6 @@ wss.on("connection", (ws, req) => {
                     const activeIds = new Set(roomList.map(r => r.id));
 
                     dbRooms.forEach(dbr => {
-                        // Link-Only Access: Private rooms without password are hidden from lobby
-                        // UNLESS it is "My Channels" - I should see my own link-only links?
-                        // User request: "My Channels, which are all channels created by me"
-                        // So we should show them even if they are link-only/hidden from public lobby.
                         if (!showMyChannels && showPrivate && !dbr.password) {
                             return;
                         }
@@ -603,19 +594,6 @@ wss.on("connection", (ws, req) => {
                         }
                     });
 
-                    // Add is_protected flag to active rooms too (for UI lock icon)
-                    roomList.forEach(r => {
-                        const roomObj = rooms.get(r.id);
-                        if (roomObj && roomObj.metadata.password) {
-                            r.is_protected = true;
-                        } else if (!roomObj) {
-                            // Already handled in db loop?
-                            // Actually active rooms summary comes from room.getSummary()
-                            // room.getSummary doesn't include is_protected.
-                            // We should add it to getSummary or patch it here.
-                        }
-                    });
-
                     // Patch active rooms with protection status
                     for (const roomItem of roomList) {
                         const activeRoom = rooms.get(roomItem.id);
@@ -624,7 +602,25 @@ wss.on("connection", (ws, req) => {
                         }
                     }
 
-                    ws.send(JSON.stringify({ type: "ROOM_LIST", payload: roomList }));
+                    // Sort: active rooms first (by listener count desc), then idle rooms (by name)
+                    roomList.sort((a, b) => {
+                        if (a.isActive !== false && b.isActive === false) return -1;
+                        if (a.isActive === false && b.isActive !== false) return 1;
+                        return (b.listeners || 0) - (a.listeners || 0);
+                    });
+
+                    // Paginate the merged result
+                    const total = roomList.length;
+                    const totalPages = Math.ceil(total / pageSize);
+                    const paginatedList = roomList.slice(offset, offset + pageSize);
+
+                    ws.send(JSON.stringify({
+                        type: "ROOM_LIST",
+                        payload: paginatedList,
+                        page,
+                        totalPages,
+                        total
+                    }));
                     return;
                 }
                 case "DEBUG": {

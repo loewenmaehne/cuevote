@@ -190,19 +190,31 @@ module.exports = {
   },
   deleteRoom: (id) => db.prepare('DELETE FROM rooms WHERE id = ?').run(id),
   getRoom: (id) => db.prepare('SELECT * FROM rooms WHERE id = ?').get(id),
-  listPublicRooms: () => {
-    // Default 60 days, configurable via env
+  listPublicRooms: (limit = 50, offset = 0) => {
     const activeDays = parseInt(process.env.ACTIVE_CHANNEL_DAYS || '60', 10);
     const threshold = Math.floor(Date.now() / 1000) - (activeDays * 24 * 60 * 60);
-    return db.prepare('SELECT * FROM rooms WHERE is_public = 1 AND last_active_at > ? ORDER BY last_active_at DESC').all(threshold);
+    return db.prepare('SELECT * FROM rooms WHERE is_public = 1 AND last_active_at > ? ORDER BY last_active_at DESC LIMIT ? OFFSET ?').all(threshold, limit, offset);
   },
-  listPrivateRooms: () => {
+  listPrivateRooms: (limit = 50, offset = 0) => {
     const activeDays = parseInt(process.env.ACTIVE_CHANNEL_DAYS || '60', 10);
     const threshold = Math.floor(Date.now() / 1000) - (activeDays * 24 * 60 * 60);
-    return db.prepare('SELECT * FROM rooms WHERE is_public = 0 AND last_active_at > ? ORDER BY last_active_at DESC').all(threshold);
+    return db.prepare('SELECT * FROM rooms WHERE is_public = 0 AND last_active_at > ? ORDER BY last_active_at DESC LIMIT ? OFFSET ?').all(threshold, limit, offset);
   },
-  listUserRooms: (userId) => {
-    return db.prepare('SELECT * FROM rooms WHERE owner_id = ? ORDER BY last_active_at DESC').all(userId);
+  listUserRooms: (userId, limit = 50, offset = 0) => {
+    return db.prepare('SELECT * FROM rooms WHERE owner_id = ? ORDER BY last_active_at DESC LIMIT ? OFFSET ?').all(userId, limit, offset);
+  },
+  countPublicRooms: () => {
+    const activeDays = parseInt(process.env.ACTIVE_CHANNEL_DAYS || '60', 10);
+    const threshold = Math.floor(Date.now() / 1000) - (activeDays * 24 * 60 * 60);
+    return db.prepare('SELECT COUNT(*) as count FROM rooms WHERE is_public = 1 AND last_active_at > ?').get(threshold).count;
+  },
+  countPrivateRooms: () => {
+    const activeDays = parseInt(process.env.ACTIVE_CHANNEL_DAYS || '60', 10);
+    const threshold = Math.floor(Date.now() / 1000) - (activeDays * 24 * 60 * 60);
+    return db.prepare('SELECT COUNT(*) as count FROM rooms WHERE is_public = 0 AND last_active_at > ?').get(threshold).count;
+  },
+  countUserRooms: (userId) => {
+    return db.prepare('SELECT COUNT(*) as count FROM rooms WHERE owner_id = ?').get(userId).count;
   },
   updateRoomActivity: (id) => {
     db.prepare('UPDATE rooms SET last_active_at = unixepoch() WHERE id = ?').run(id);
