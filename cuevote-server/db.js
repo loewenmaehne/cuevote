@@ -1,4 +1,5 @@
 const Database = require('better-sqlite3');
+const logger = require('./logger');
 const db = new Database('cuevote.db'); // Creates the file if missing
 
 // Enable WAL mode for better concurrency
@@ -279,7 +280,7 @@ module.exports = {
         fetched_at: row.fetched_at
       };
     } catch (e) {
-      console.error("Failed to parse related videos cache:", e);
+      logger.error("Failed to parse related videos cache:", e);
       return null;
     }
   },
@@ -289,7 +290,7 @@ module.exports = {
     const userEmail = user ? user.email : null;
 
     // Do not log email or stable user identifiers (PII); GDPR-compliant logging
-    console.log('[DB DELETE] Starting cleanup for user (ID redacted).');
+    logger.info('[DB DELETE] Starting cleanup for user (ID redacted).');
 
     const transaction = db.transaction(() => {
       // Sessions
@@ -307,7 +308,7 @@ module.exports = {
         u2 = db.prepare('DELETE FROM users WHERE email = ? AND id != ?').run(userEmail, userId);
       }
 
-      console.log(`[DB DELETE] Result - Sessions: ${s1.changes}, Rooms: ${r1.changes}, Users(ID): ${u1.changes}, Users(Email cleanup): ${u2.changes}`);
+      logger.info(`[DB DELETE] Result - Sessions: ${s1.changes}, Rooms: ${r1.changes}, Users(ID): ${u1.changes}, Users(Email cleanup): ${u2.changes}`);
     });
 
     try {
@@ -316,7 +317,7 @@ module.exports = {
       db.pragma('wal_checkpoint(TRUNCATE)');
       return true;
     } catch (err) {
-      console.error("[DB] deleteUser Transaction Failed:", err);
+      logger.error("[DB] deleteUser Transaction Failed:", err);
       throw err;
     }
   },
@@ -376,7 +377,7 @@ module.exports = {
   cleanupExpiredSessions: () => {
     const now = Math.floor(Date.now() / 1000);
     const result = db.prepare('DELETE FROM sessions WHERE expires_at <= ?').run(now);
-    console.log(`[DB Cleanup] Removed ${result.changes} expired sessions.`);
+    logger.info(`[DB Cleanup] Removed ${result.changes} expired sessions.`);
     return result.changes;
   },
 
@@ -428,21 +429,21 @@ module.exports = {
           duration = NULL, category_id = NULL, language = NULL
       WHERE fetched_at < ? AND title IS NOT NULL
     `).run(threshold);
-    console.log(`[DB Cleanup] Cleared metadata from ${result.changes} stale video entries.`);
+    logger.info(`[DB Cleanup] Cleared metadata from ${result.changes} stale video entries.`);
     return result.changes;
   },
 
   cleanupSearchCache: () => {
     const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
     const result = db.prepare('DELETE FROM search_cache WHERE created_at < ?').run(threshold);
-    console.log(`[DB Cleanup] Removed ${result.changes} stale search cache entries.`);
+    logger.info(`[DB Cleanup] Removed ${result.changes} stale search cache entries.`);
     return result.changes;
   },
 
   cleanupRelatedVideosCache: () => {
     const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
     const result = db.prepare('DELETE FROM related_videos_cache WHERE fetched_at < ?').run(threshold);
-    console.log(`[DB Cleanup] Removed ${result.changes} stale related videos cache entries.`);
+    logger.info(`[DB Cleanup] Removed ${result.changes} stale related videos cache entries.`);
     return result.changes;
   },
 
@@ -454,7 +455,7 @@ module.exports = {
         AND id NOT IN (SELECT DISTINCT room_id FROM room_history)
     `).run(sevenDaysAgo);
     if (result.changes > 0) {
-      console.log(`[DB Cleanup] Deleted ${result.changes} empty channels older than 7 days.`);
+      logger.info(`[DB Cleanup] Deleted ${result.changes} empty channels older than 7 days.`);
     }
     return result.changes;
   }

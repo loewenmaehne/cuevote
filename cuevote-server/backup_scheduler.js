@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const db = require('./db');
+const logger = require('./logger');
 
 // GDPR: Backups contain personal data (users table: email, name, picture). Old backups
 // are pruned after KEEP_BACKUPS_DAYS so deleted users' data is not retained indefinitely.
@@ -14,24 +15,24 @@ if (!fs.existsSync(BACKUP_DIR)) {
 }
 
 async function runBackup() {
-	console.log('[Backup] Starting database backup...');
+	logger.info('[Backup] Starting database backup...');
 	const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 	const filename = `backup-${timestamp}.db`;
 	const destination = path.join(BACKUP_DIR, filename);
 
 	try {
 		await db.backup(destination);
-		console.log(`[Backup] detailed success: ${destination}`);
+		logger.info(`[Backup] detailed success: ${destination}`);
 
 		// Prune old backups
 		pruneBackups();
 	} catch (error) {
-		console.error('[Backup] Failed:', error);
+		logger.error('[Backup] Failed:', error);
 	}
 }
 
 function pruneBackups() {
-	console.log('[Backup] Pruning old backups...');
+	logger.info('[Backup] Pruning old backups...');
 	try {
 		const files = fs.readdirSync(BACKUP_DIR);
 		const now = Date.now();
@@ -41,17 +42,17 @@ function pruneBackups() {
 			const filePath = path.join(BACKUP_DIR, file);
 			const stats = fs.statSync(filePath);
 			if (now - stats.mtimeMs > maxAge) {
-				console.log(`[Backup] Deleting old backup: ${file}`);
+				logger.info(`[Backup] Deleting old backup: ${file}`);
 				fs.unlinkSync(filePath);
 			}
 		});
 	} catch (error) {
-		console.error('[Backup] Prune failed:', error);
+		logger.error('[Backup] Prune failed:', error);
 	}
 }
 
 function start() {
-	console.log(`[Backup] Scheduler started. Interval: ${BACKUP_INTERVAL / 3600000} hours. Retention: ${KEEP_BACKUPS_DAYS} days.`);
+	logger.info(`[Backup] Scheduler started. Interval: ${BACKUP_INTERVAL / 3600000} hours. Retention: ${KEEP_BACKUPS_DAYS} days.`);
 
 	// Run one immediately on startup (optional, maybe wait?)
 	// Let's run one immediately to be safe, or maybe after a small delay to not block startup

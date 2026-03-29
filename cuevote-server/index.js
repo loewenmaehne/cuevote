@@ -1,7 +1,8 @@
-console.log("Server starting...");
 require('dotenv').config();
+const logger = require('./logger');
+logger.info("Server starting...");
 process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
+    logger.error('Uncaught Exception:', error);
     // In production, crash so the process manager can restart cleanly.
     if (process.env.NODE_ENV === 'production') {
         try {
@@ -18,29 +19,18 @@ const crypto = require("crypto");
 const bcrypt = require('bcryptjs');
 const { slugify } = require('transliteration');
 const db = require('./db');
-const fs = require('fs');
 const backupScheduler = require('./backup_scheduler');
 backupScheduler.start();
 
 // Ensure global fetch is available (Node 18+ or polyfilled).
 if (typeof fetch !== 'function') {
-    console.error('[Startup] global.fetch is not available. Require Node.js 18+ or a fetch polyfill.');
+    logger.error('[Startup] global.fetch is not available. Require Node.js 18+ or a fetch polyfill.');
     process.exit(1);
 }
 
-const logFile = 'debug_server.log';
-// GDPR: avoid persisting user identifiers to log file; use this for any PII in messages
 function redactForLog(value) {
     if (value === undefined || value === null || value === '') return '[REDACTED]';
     return '[REDACTED]';
-}
-function logToFile(msg) {
-    const timestamp = new Date().toISOString();
-    const line = `[${timestamp}] ${msg}\n`;
-    try {
-        fs.appendFileSync(logFile, line);
-    } catch (e) { console.error("Log failed", e); }
-    console.log(msg);
 }
 
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
@@ -64,7 +54,7 @@ const wss = new WebSocket.Server({
     verifyClient: (info, cb) => {
         if (ALLOWED_ORIGINS.length === 0) {
             if (process.env.NODE_ENV === 'production') {
-                console.error('[Security] No ALLOWED_ORIGINS configured in production. Rejecting connection.');
+                logger.error('[Security] No ALLOWED_ORIGINS configured in production. Rejecting connection.');
                 return cb(false, 503, 'Origin configuration required');
             }
             return cb(true);
@@ -75,12 +65,12 @@ const wss = new WebSocket.Server({
             return cb(true);
         }
 
-        console.log(`[Security] Blocked connection from unauthorized origin: ${origin}`);
+        logger.info(`[Security] Blocked connection from unauthorized origin: ${origin}`);
         return cb(false, 403, 'Forbidden');
     }
 });
 wss.on('error', (err) => {
-    console.error('[WSS] WebSocket server error:', err);
+    logger.error('[WSS] WebSocket server error:', err);
 });
 
 server.listen(process.env.PORT || 8080, '0.0.0.0');
@@ -112,7 +102,7 @@ async function verifyGoogleToken(token) {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error("Token verification failed:", error);
+        logger.error("Token verification failed:", error);
         throw error;
     }
 }
@@ -134,14 +124,14 @@ function loadRooms() {
             name: 'System',
             picture: ''
         });
-    } catch (e) { console.error("System user init failed", e); }
+    } catch (e) { logger.error("System user init failed", e); }
 
     if (process.env.LOAD_ACTIVE_CHANNELS !== 'false') {
         const publicRooms = db.listPublicRooms();
         publicRooms.forEach(roomData => {
             if (!rooms.has(roomData.id)) {
                 rooms.set(roomData.id, new Room(roomData.id, roomData.name, YOUTUBE_API_KEY, roomData));
-                console.log(`Loaded room: ${roomData.name} (${roomData.id})`);
+                logger.info(`Loaded room: ${roomData.name} (${roomData.id})`);
             }
         });
     }
@@ -152,7 +142,7 @@ loadRooms();
 
 const clients = new Set();
 
-console.log("WebSocket server started on port", process.env.PORT || 8080);
+logger.info("WebSocket server started on port", process.env.PORT || 8080);
 
 const connectionAttempts = new Map();
 
@@ -184,13 +174,13 @@ wss.on("connection", (ws, req) => {
         connectionAttempts.set(ip, limitData);
 
         if (limitData.count > 30) {
-            console.warn(`[RATE LIMIT] Blocking connection from ${ip}`);
+            logger.warn(`[RATE LIMIT] Blocking connection from ${ip}`);
             ws.close(1008, 'Rate Limit Exceeded');
             return;
         }
     }
 
-    console.log("Client connected");
+    logger.info("Client connected");
 
     // Parse Client ID
     const urlParams = new URLSearchParams(req.url.split('?')[1]);
@@ -200,7 +190,7 @@ wss.on("connection", (ws, req) => {
         ws.id = clientId;
         for (const existing of clients) {
             if (existing.id === clientId && existing !== ws) {
-                console.log(`[Reconnect] Evicting stale socket for clientId: ${clientId}`);
+                logger.info(`[Reconnect] Evicting stale socket for clientId: ${clientId}`);
                 if (existing.roomId) {
                     ws.lastRoomId = existing.roomId;
                     if (rooms.has(existing.roomId)) {
@@ -262,16 +252,16 @@ wss.on("connection", (ws, req) => {
             switch (parsedMessage.type) {
                 case "LOGIN": {
                     const { token } = parsedMessage.payload;
-                        console.log("[LOGIN TRACE] Processing login request...");
+                        logger.info("[LOGIN TRACE] Processing login request...");
                         try {
                             const payload = await verifyGoogleToken(token);
-                            console.log(`[LOGIN TRACE] Token verified for Google Subject: ${redactForLog(payload.sub)}`);
+                            logger.info(`[LOGIN TRACE] Token verified for Google Subject: ${redactForLog(payload.sub)}`);
 
                         let user = db.getUser(payload.sub);
-                        console.log(`[LOGIN TRACE] User found in DB? ${!!user}`);
+                        logger.info(`[LOGIN TRACE] User found in DB? ${!!user}`);
 
                         if (!user) {
-                            console.log("[LOGIN TRACE] Creating new user record...");
+                            logger.info("[LOGIN TRACE] Creating new user record...");
                             user = {
                                 id: payload.sub,
                                 email: payload.email,
@@ -280,27 +270,27 @@ wss.on("connection", (ws, req) => {
                             };
                             try {
                                 db.upsertUser(user);
-                                console.log("[LOGIN TRACE] Upsert successful.");
+                                logger.info("[LOGIN TRACE] Upsert successful.");
                             } catch (dbErr) {
-                                console.error("[LOGIN CRITICAL] UpsertUser failed:", dbErr);
+                                logger.error("[LOGIN CRITICAL] UpsertUser failed:", dbErr);
                                 throw dbErr;
                             }
                         }
                         ws.user = user;
 
                         // Generate Session Token
-                        console.log("[LOGIN TRACE] Creating session...");
+                        logger.info("[LOGIN TRACE] Creating session...");
                         const sessionToken = crypto.randomBytes(32).toString('hex');
                         const expiresAt = Math.floor(Date.now() / 1000) + (24 * 60 * 60); // 24 hours
                         db.createSession(sessionToken, user.id, expiresAt);
 
-                        console.log("[LOGIN TRACE] Sending LOGIN_SUCCESS");
+                        logger.info("[LOGIN TRACE] Sending LOGIN_SUCCESS");
                         ws.send(JSON.stringify({
                             type: "LOGIN_SUCCESS",
                             payload: { user: ws.user, sessionToken }
                         }));
                     } catch (e) {
-                        console.error("[LOGIN FAILURE] Error Details:", e);
+                        logger.error("[LOGIN FAILURE] Error Details:", e);
                         ws.send(JSON.stringify({ type: "error", message: "Login failed: " + e.message }));
                     }
                     return;
@@ -320,7 +310,7 @@ wss.on("connection", (ws, req) => {
                             }));
                         } else {
                             // Session exists but user is gone (deleted?)
-                            console.warn(`[Resume Session] Session found but user ${redactForLog(session.user_id)} is missing. Invalidating.`);
+                            logger.warn(`[Resume Session] Session found but user ${redactForLog(session.user_id)} is missing. Invalidating.`);
                             db.deleteSession(token);
                             ws.send(JSON.stringify({ type: "SESSION_INVALID" }));
                         }
@@ -340,25 +330,25 @@ wss.on("connection", (ws, req) => {
                 // ... existing code ...
 
                 case "DELETE_ACCOUNT": {
-                    logToFile("[SERVER TRACE] DELETE_ACCOUNT received");
+                    logger.info("[SERVER TRACE] DELETE_ACCOUNT received");
                     if (!ws.user) {
-                        logToFile(`[GDPR] DELETE_ACCOUNT failed: No user attached to socket. WS ID: ${ws.id}`);
+                        logger.info(`[GDPR] DELETE_ACCOUNT failed: No user attached to socket. WS ID: ${ws.id}`);
                         ws.send(JSON.stringify({ type: "error", message: "Not logged in." }));
                         return;
                     }
                     const userId = ws.user.id;
-                    logToFile(`[GDPR] Deleting account for user: ${redactForLog(userId)}`);
+                    logger.info(`[GDPR] Deleting account for user: ${redactForLog(userId)}`);
 
                     // 1. Delete from DB (Synchronous Transaction)
                     try {
-                        logToFile(`[GDPR TRACE] Starting DB Deletion for ${redactForLog(userId)}...`);
+                        logger.info(`[GDPR TRACE] Starting DB Deletion for ${redactForLog(userId)}...`);
 
                         // Debug: Count before
                         const beforeRooms = db.listUserRooms(userId);
-                        logToFile(`[GDPR PRE-CHECK] User owns ${beforeRooms.length} rooms in DB.`);
+                        logger.info(`[GDPR PRE-CHECK] User owns ${beforeRooms.length} rooms in DB.`);
 
                         const success = db.deleteUser(userId);
-                        logToFile(`[GDPR TRACE] DB Deletion execution success: ${success}`);
+                        logger.info(`[GDPR TRACE] DB Deletion execution success: ${success}`);
 
                         // Debug: Count after
                         // If delete worked, this should be empty list (wait, listUserRooms uses user ID)
@@ -367,24 +357,24 @@ wss.on("connection", (ws, req) => {
                         // Let's check listUserRooms implementation.
                         // "SELECT * FROM rooms WHERE owner_id = ?"
                         const afterRooms = db.listUserRooms(userId);
-                        logToFile(`[GDPR POST-CHECK] User owns ${afterRooms.length} rooms in DB. (Should be 0)`);
+                        logger.info(`[GDPR POST-CHECK] User owns ${afterRooms.length} rooms in DB. (Should be 0)`);
 
                     } catch (e) {
-                        logToFile(`[GDPR ERROR] Failed to delete user from DB: ${e.message}`);
-                        console.error("Failed to delete user from DB", e);
+                        logger.info(`[GDPR ERROR] Failed to delete user from DB: ${e.message}`);
+                        logger.error("Failed to delete user from DB", e);
                         ws.send(JSON.stringify({ type: "error", message: "Failed to delete account data." }));
                         return;
                     }
 
                     // 2. Destroy Memory
                     const roomsToDestroy = [];
-                    logToFile(`[GDPR DEBUG] Checking ${rooms.size} active memory rooms for ownership...`);
+                    logger.info(`[GDPR DEBUG] Checking ${rooms.size} active memory rooms for ownership...`);
                     const targetId = String(userId).trim();
 
                     for (const [id, room] of rooms.entries()) {
                         const owner = String(room.metadata.owner_id || '').trim();
                         if (owner === targetId) {
-                            logToFile(`[GDPR DEBUG] Marking memory room ${id} for destruction.`);
+                            logger.info(`[GDPR DEBUG] Marking memory room ${id} for destruction.`);
                             roomsToDestroy.push(id);
                         }
                     }
@@ -392,13 +382,13 @@ wss.on("connection", (ws, req) => {
                     roomsToDestroy.forEach(id => {
                         const room = rooms.get(id);
                         if (room) {
-                            logToFile(`[GDPR] Destroying room ${id} from memory.`);
+                            logger.info(`[GDPR] Destroying room ${id} from memory.`);
                             try {
                                 room.broadcast({ type: "error", code: "ROOM_DELETED", message: "Room has been deleted by owner." });
                                 room.destroy();
                                 rooms.delete(id);
                             } catch (err) {
-                                logToFile(`[GDPR ERROR] Failed to destroy room ${id}: ${err.message}`);
+                                logger.info(`[GDPR ERROR] Failed to destroy room ${id}: ${err.message}`);
                             }
                         }
                     });
@@ -408,28 +398,28 @@ wss.on("connection", (ws, req) => {
                         try {
                             room.scrubDeletedUser(userId);
                         } catch (err) {
-                            logToFile(`[GDPR ERROR] Failed to scrub user from room ${id}: ${err.message}`);
+                            logger.info(`[GDPR ERROR] Failed to scrub user from room ${id}: ${err.message}`);
                         }
                     }
 
                     // 3. Success
-                    logToFile("[GDPR TRACE] Sending DELETE_ACCOUNT_SUCCESS");
+                    logger.info("[GDPR TRACE] Sending DELETE_ACCOUNT_SUCCESS");
                     ws.send(JSON.stringify({ type: "DELETE_ACCOUNT_SUCCESS" }));
                     ws.user = null;
                     return;
                 }
                 case "STATE_ACK": {
-                    console.log(`[SERVER TRACE] Client ${ws.id} ACKNOWLEDGED state for room: ${parsedMessage.payload.roomId}`);
+                    logger.info(`[SERVER TRACE] Client ${ws.id} ACKNOWLEDGED state for room: ${parsedMessage.payload.roomId}`);
                     return;
                 }
                 case "JOIN_ROOM": {
                     const { roomId, password } = parsedMessage.payload;
-                    console.log(`[SERVER TRACE] Client ${ws.id} requesting to join room: ${roomId}`);
+                    logger.info(`[SERVER TRACE] Client ${ws.id} requesting to join room: ${roomId}`);
 
                     // Leave ALL rooms to ensure no duplicate subscriptions
                     for (const [id, room] of rooms.entries()) {
                         if (room.clients.has(ws)) {
-                            console.log(`[SERVER TRACE] Client ${ws.id} leaving room (forced cleanup): ${id}`);
+                            logger.info(`[SERVER TRACE] Client ${ws.id} leaving room (forced cleanup): ${id}`);
                             room.removeClient(ws);
                         }
                     }
@@ -442,12 +432,12 @@ wss.on("connection", (ws, req) => {
                             const roomData = db.getRoom(roomId) || db.getRoom(roomId.toLowerCase()) || db.getRoom(roomId.toUpperCase());
                             if (roomData) {
                                 const resolvedId = roomData.id;
-                                console.log(`Waking up idle room: ${roomData.name} (${resolvedId})`);
+                                logger.info(`Waking up idle room: ${roomData.name} (${resolvedId})`);
                                 room = new Room(resolvedId, roomData.name, YOUTUBE_API_KEY, roomData);
                                 rooms.set(resolvedId, room);
                             }
                         } catch (e) {
-                            console.error("DB Lookup failed", e);
+                            logger.error("DB Lookup failed", e);
                         }
                     }
 
@@ -461,7 +451,7 @@ wss.on("connection", (ws, req) => {
                             }
                         }
 
-                        console.log(`Client ${ws.id} joining room: ${room.id}`);
+                        logger.info(`Client ${ws.id} joining room: ${room.id}`);
                         ws.roomId = room.id;
                         room.addClient(ws);
                         db.updateRoomActivity(room.id);
@@ -510,10 +500,10 @@ wss.on("connection", (ws, req) => {
                             success = true;
                         } catch (err) {
                             if (err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
-                                console.warn(`[Create Room] ID Collision for ${id}. Retrying... (${attempts}/3)`);
+                                logger.warn(`[Create Room] ID Collision for ${id}. Retrying... (${attempts}/3)`);
                                 continue;
                             }
-                            console.error("Create Room Error:", err);
+                            logger.error("Create Room Error:", err);
                             ws.send(JSON.stringify({ type: "error", message: "Failed to create room." }));
                             return; // Exit on non-collision error
                         }
@@ -530,7 +520,7 @@ wss.on("connection", (ws, req) => {
                     const showMyChannels = type === 'my_channels';
 
                     if (showMyChannels) {
-                        console.log(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${redactForLog(ws.user?.id)}`);
+                        logger.info(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${redactForLog(ws.user?.id)}`);
                     }
 
                     if (showMyChannels && !ws.user) {
@@ -548,7 +538,7 @@ wss.on("connection", (ws, req) => {
                             if (room.metadata.owner_id === ws.user.id) {
                                 roomList.push(room.getSummary());
                             } else {
-                                // console.log(`[DEBUG] Skipping room ${room.id} owned by ${room.metadata.owner_id} (Me: ${ws.user.id})`);
+                                // logger.info(`[DEBUG] Skipping room ${room.id} owned by ${room.metadata.owner_id} (Me: ${ws.user.id})`);
                             }
                         } else {
                             const isPublic = room.metadata.is_public === 1;
@@ -569,7 +559,7 @@ wss.on("connection", (ws, req) => {
                     let dbRooms = [];
                     if (showMyChannels) {
                         dbRooms = db.listUserRooms(ws.user.id);
-                        console.log(`[DEBUG_MARATHON] DB returned ${dbRooms.length} rooms for user ${redactForLog(ws.user?.id)}. IDs: ${dbRooms.map(r => r.id).join(', ')}`);
+                        logger.info(`[DEBUG_MARATHON] DB returned ${dbRooms.length} rooms for user ${redactForLog(ws.user?.id)}. IDs: ${dbRooms.map(r => r.id).join(', ')}`);
                     } else {
                         dbRooms = showPrivate ? db.listPrivateRooms() : db.listPublicRooms();
                     }
@@ -634,7 +624,7 @@ wss.on("connection", (ws, req) => {
                 }
                 case "DEBUG": {
                     if (process.env.NODE_ENV !== 'production') {
-                        console.log("[CLIENT DEBUG]", typeof parsedMessage.payload === 'string'
+                        logger.info("[CLIENT DEBUG]", typeof parsedMessage.payload === 'string'
                             ? parsedMessage.payload.slice(0, 200)
                             : '[object]');
                     }
@@ -650,17 +640,17 @@ wss.on("connection", (ws, req) => {
             if (ws.roomId && rooms.has(ws.roomId)) {
                 await rooms.get(ws.roomId).handleMessage(ws, parsedMessage);
             } else {
-                console.warn(`[SERVER] Unrouted message type="${parsedMessage.type}" from client ${ws.id} (roomId=${ws.roomId})`);
+                logger.warn(`[SERVER] Unrouted message type="${parsedMessage.type}" from client ${ws.id} (roomId=${ws.roomId})`);
                 ws.send(JSON.stringify({ type: "error", message: "Not connected to a channel. Please rejoin." }));
             }
 
         } catch (error) {
-            console.error("Failed to handle message:", error);
+            logger.error("Failed to handle message:", error);
         }
     });
 
     ws.on("error", (err) => {
-        console.error(`[WS Error] Client ${ws.id}:`, err.message);
+        logger.error(`[WS Error] Client ${ws.id}:`, err.message);
         clients.delete(ws);
         if (ws.roomId && rooms.has(ws.roomId)) {
             rooms.get(ws.roomId).removeClient(ws);
@@ -668,7 +658,7 @@ wss.on("connection", (ws, req) => {
     });
 
     ws.on("close", () => {
-        console.log("Client disconnected");
+        logger.info("Client disconnected");
         clients.delete(ws);
         if (ws.roomId && rooms.has(ws.roomId)) {
             rooms.get(ws.roomId).removeClient(ws);
@@ -682,7 +672,7 @@ const WS_HEARTBEAT_INTERVAL = 30000;
 setInterval(() => {
     wss.clients.forEach((ws) => {
         if (ws.isAlive === false) {
-            console.log(`[Heartbeat] Terminating dead connection: ${ws.id}`);
+            logger.info(`[Heartbeat] Terminating dead connection: ${ws.id}`);
             clients.delete(ws);
             if (ws.roomId && rooms.has(ws.roomId)) {
                 rooms.get(ws.roomId).removeClient(ws);
@@ -706,15 +696,15 @@ setInterval(() => {
             cleaned++;
         }
     }
-    if (cleaned > 0) console.log(`[Sweep] Cleaned ${cleaned} stale client entries.`);
+    if (cleaned > 0) logger.info(`[Sweep] Cleaned ${cleaned} stale client entries.`);
 }, 60000);
 
 // Cleanup Idle Rooms (Every 5 minutes)
 setInterval(() => {
-    console.log("Running cleanup task...");
+    logger.info("Running cleanup task...");
     for (const [id, room] of rooms.entries()) {
         if (room.clients.size === 0) {
-            console.log(`Unloading idle room: ${room.name} (${id})`);
+            logger.info(`Unloading idle room: ${room.name} (${id})`);
             room.destroy(); // Stop the timer
             rooms.delete(id);
         }
@@ -723,23 +713,23 @@ setInterval(() => {
 
 // Cleanup Old Room History, expired sessions, and stale API caches (Once a day)
 setInterval(() => {
-    console.log("Running daily cleanup task...");
-    try { db.cleanupExpiredSessions(); } catch (e) { console.error("Failed to cleanup expired sessions", e); }
-    try { db.cleanupStaleVideoMetadata(); } catch (e) { console.error("Failed to cleanup stale video metadata", e); }
-    try { db.cleanupSearchCache(); } catch (e) { console.error("Failed to cleanup search cache", e); }
-    try { db.cleanupRelatedVideosCache(); } catch (e) { console.error("Failed to cleanup related videos cache", e); }
-    try { db.cleanupEmptyRooms(); } catch (e) { console.error("Failed to cleanup empty rooms", e); }
+    logger.info("Running daily cleanup task...");
+    try { db.cleanupExpiredSessions(); } catch (e) { logger.error("Failed to cleanup expired sessions", e); }
+    try { db.cleanupStaleVideoMetadata(); } catch (e) { logger.error("Failed to cleanup stale video metadata", e); }
+    try { db.cleanupSearchCache(); } catch (e) { logger.error("Failed to cleanup search cache", e); }
+    try { db.cleanupRelatedVideosCache(); } catch (e) { logger.error("Failed to cleanup related videos cache", e); }
+    try { db.cleanupEmptyRooms(); } catch (e) { logger.error("Failed to cleanup empty rooms", e); }
 }, 24 * 60 * 60 * 1000);
 
 // Run all cleanups once on startup as well
-try { db.cleanupExpiredSessions(); } catch (e) { console.error("Failed to cleanup expired sessions on startup", e); }
-try { db.cleanupStaleVideoMetadata(); } catch (e) { console.error("Failed to cleanup stale video metadata on startup", e); }
-try { db.cleanupSearchCache(); } catch (e) { console.error("Failed to cleanup search cache on startup", e); }
-try { db.cleanupRelatedVideosCache(); } catch (e) { console.error("Failed to cleanup related videos cache on startup", e); }
-try { db.cleanupEmptyRooms(); } catch (e) { console.error("Failed to cleanup empty rooms on startup", e); }
+try { db.cleanupExpiredSessions(); } catch (e) { logger.error("Failed to cleanup expired sessions on startup", e); }
+try { db.cleanupStaleVideoMetadata(); } catch (e) { logger.error("Failed to cleanup stale video metadata on startup", e); }
+try { db.cleanupSearchCache(); } catch (e) { logger.error("Failed to cleanup search cache on startup", e); }
+try { db.cleanupRelatedVideosCache(); } catch (e) { logger.error("Failed to cleanup related videos cache on startup", e); }
+try { db.cleanupEmptyRooms(); } catch (e) { logger.error("Failed to cleanup empty rooms on startup", e); }
 
 function gracefulShutdown(signal) {
-    console.log(`[Shutdown] ${signal} received. Closing ${wss.clients.size} connections...`);
+    logger.info(`[Shutdown] ${signal} received. Closing ${wss.clients.size} connections...`);
     const shutdownMsg = JSON.stringify({ type: "error", code: "SERVER_RESTARTING", message: "Server is restarting. Reconnecting..." });
     wss.clients.forEach((ws) => {
         try {
@@ -753,7 +743,7 @@ function gracefulShutdown(signal) {
     rooms.clear();
     wss.close(() => {
         server.close(() => {
-            console.log('[Shutdown] Server closed.');
+            logger.info('[Shutdown] Server closed.');
             process.exit(0);
         });
     });

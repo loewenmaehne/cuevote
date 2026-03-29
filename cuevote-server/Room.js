@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const db = require("./db");
+const logger = require("./logger");
 
 // Helper to check ownership
 function isOwner(room, ws) {
@@ -117,7 +118,7 @@ class Room {
                 this.state.history = savedHistory.slice(-200);
             }
         } catch (error) {
-            console.error(`[Room ${this.id}] Failed to load history from DB:`, error);
+            logger.error(`[Room ${this.id}] Failed to load history from DB:`, error);
         }
 
         // Restore saved playback state (crash recovery / dormant resume)
@@ -136,10 +137,10 @@ class Room {
                         startedAt: Date.now() - (this.state.progress * 1000)
                     };
                 }
-                console.log(`[Room ${this.id}] Restored saved state (queue: ${this.state.queue.length}, playing: ${this.state.isPlaying}, progress: ${this.state.progress})`);
+                logger.info(`[Room ${this.id}] Restored saved state (queue: ${this.state.queue.length}, playing: ${this.state.isPlaying}, progress: ${this.state.progress})`);
             }
         } catch (error) {
-            console.error(`[Room ${this.id}] Failed to restore saved state:`, error);
+            logger.error(`[Room ${this.id}] Failed to restore saved state:`, error);
         }
 
         // Clear stale lobby preview for long-dormant rooms (YouTube metadata
@@ -149,7 +150,7 @@ class Room {
         if (metadata.last_active_at) {
             const dormantSeconds = Math.floor(Date.now() / 1000) - metadata.last_active_at;
             if (dormantSeconds > TWENTY_EIGHT_DAYS_S) {
-                console.log(`[Room ${this.id}] Dormant for ${Math.floor(dormantSeconds / 86400)} days. Clearing stale lobby preview.`);
+                logger.info(`[Room ${this.id}] Dormant for ${Math.floor(dormantSeconds / 86400)} days. Clearing stale lobby preview.`);
                 try { db.updateLobbyPreview(this.id, null); } catch (e) { /* ignore */ }
             }
         }
@@ -183,12 +184,12 @@ class Room {
             ws.close();
             return;
         }
-        console.log(`[SERVER TRACE] Room ${this.id}: Adding client. Total clients: ${this.clients.size + 1}`);
+        logger.info(`[SERVER TRACE] Room ${this.id}: Adding client. Total clients: ${this.clients.size + 1}`);
         this.clients.add(ws);
 
         // Safety: if a room has no owner_id, do not silently assign ownership
         if (!this.metadata.owner_id && ws.user) {
-            console.warn(`[Room ${this.id}] Missing owner_id in metadata; treating as ownerless for this session.`);
+            logger.warn(`[Room ${this.id}] Missing owner_id in metadata; treating as ownerless for this session.`);
             this.state.ownerId = null;
         }
 
@@ -198,7 +199,7 @@ class Room {
                 ws.send(payload);
             }
         } catch (e) {
-            console.error(`ERROR sending state to client ${ws.id}:`, e);
+            logger.error(`ERROR sending state to client ${ws.id}:`, e);
         }
 
         // TV station: refill queue with API-validated content when a viewer joins an idle station
@@ -246,7 +247,7 @@ class Room {
                 artist: track.artist,
             } : null);
         } catch (e) {
-            console.error(`[Room ${this.id}] Failed to persist lobby preview:`, e);
+            logger.error(`[Room ${this.id}] Failed to persist lobby preview:`, e);
         }
     }
 
@@ -278,7 +279,7 @@ class Room {
                     try {
                         db.addToRoomHistory(this.id, trackToSave);
                     } catch (err) {
-                        console.error(`[Room ${this.id}] Failed to save track to DB history:`, err);
+                        logger.error(`[Room ${this.id}] Failed to save track to DB history:`, err);
                     }
                 }
 
@@ -332,10 +333,10 @@ class Room {
 
     async populateQueueFromHistory() {
         if (this.state.isRefilling) {
-            console.log(`[AutoRefill] Already refilling, skip.`);
+            logger.info(`[AutoRefill] Already refilling, skip.`);
             return;
         }
-        console.log(`[AutoRefill] Triggered for Room ${this.id}`);
+        logger.info(`[AutoRefill] Triggered for Room ${this.id}`);
         this.updateState({ isRefilling: true });
 
         try {
@@ -349,7 +350,7 @@ class Room {
 
             // 1. Target Size: Half of maxQueueSize (def 50 -> 25), or total history if less
             if (history.length < 1) {
-                console.log(`[AutoRefill] No history. Abort.`);
+                logger.info(`[AutoRefill] No history. Abort.`);
                 this.updateState({ isRefilling: false });
                 return;
             }
@@ -414,7 +415,7 @@ class Room {
 
             // Fallback: when library is very small, relax duplicate/cooldown checks to allow looping
             if (candidates.length === 0 && uniqueHistory.length > 0) {
-                console.log(`[AutoRefill] No candidates after strict filtering. Relaxing checks for small library (${uniqueHistory.length} unique videos).`);
+                logger.info(`[AutoRefill] No candidates after strict filtering. Relaxing checks for small library (${uniqueHistory.length} unique videos).`);
                 for (const track of shuffledHistory) {
                     if (candidates.length >= needed) break;
                     if (!track.videoId) continue;
@@ -427,7 +428,7 @@ class Room {
             }
 
             if (candidates.length === 0) {
-                console.log("[AutoRefill] No valid candidates found after filtering.");
+                logger.info("[AutoRefill] No valid candidates found after filtering.");
                 this.updateState({ isRefilling: false });
                 return;
             }
@@ -463,7 +464,7 @@ class Room {
             if (invalidVideoIds.size > 0) {
                 const cleanedHistory = this.state.history.filter(t => !invalidVideoIds.has(t.videoId));
                 this.updateState({ history: cleanedHistory });
-                console.log(`[AutoRefill] Removed ${invalidVideoIds.size} invalid videos from history.`);
+                logger.info(`[AutoRefill] Removed ${invalidVideoIds.size} invalid videos from history.`);
             }
 
             if (finalTracks.length > 0) {
@@ -491,14 +492,14 @@ class Room {
                 }
 
                 this.updateState(newState);
-                console.log(`[AutoRefill] Added ${finalTracks.length} videos to queue.`);
+                logger.info(`[AutoRefill] Added ${finalTracks.length} videos to queue.`);
 
             } else {
                 this.updateState({ isRefilling: false });
             }
 
         } catch (err) {
-            console.error("[AutoRefill] Error:", err);
+            logger.error("[AutoRefill] Error:", err);
             this.updateState({ isRefilling: false });
         }
     }
@@ -517,7 +518,7 @@ class Room {
 
                 if (!response.ok) {
                     const errorBody = await response.text().catch(() => '');
-                    console.error(`[AutoRefill] API returned HTTP ${response.status}: ${errorBody.slice(0, 200)}`);
+                    logger.error(`[AutoRefill] API returned HTTP ${response.status}: ${errorBody.slice(0, 200)}`);
                     for (const id of chunk) validVideos.set(id, null);
                     continue;
                 }
@@ -561,7 +562,7 @@ class Room {
                     // IDs not returned by the API are genuinely deleted/private — leave them out of validVideos
                 }
             } catch (e) {
-                console.error("[AutoRefill] API Check Failed:", e);
+                logger.error("[AutoRefill] API Check Failed:", e);
                 for (const id of chunk) validVideos.set(id, null);
             }
         }
@@ -715,13 +716,13 @@ class Room {
             }
 
             const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&maxResults=6&key=${this.apiKey}`;
-            console.log("[Suggestions] Fetching Search for query:", encodeURIComponent(query));
+            logger.info("[Suggestions] Fetching Search for query:", encodeURIComponent(query));
 
             const response = await fetch(apiUrl, {
                 headers: { 'Referer': process.env.URL || 'https://cuevote.com' }
             });
             const data = await response.json();
-            console.log("[Suggestions] YouTube Response: items:", data.items?.length ?? 0);
+            logger.info("[Suggestions] YouTube Response: items:", data.items?.length ?? 0);
 
             if (data.items) {
                 const suggestions = data.items
@@ -739,11 +740,11 @@ class Room {
                 // Send to Client
                 ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: videoId, suggestions } }));
             } else {
-                console.error("[Suggestions] No items found in response:", data);
+                logger.error("[Suggestions] No items found in response:", data);
                 ws.send(JSON.stringify({ type: "error", message: "No suggestions found." }));
             }
         } catch (e) {
-            console.error("Manual Fetch Error:", e);
+            logger.error("Manual Fetch Error:", e);
             ws.send(JSON.stringify({ type: "error", message: "Failed to fetch suggestions." }));
         }
     }
@@ -832,7 +833,7 @@ class Room {
             // Check Search Cache
             const cachedSearchId = db.getSearchTermVideo(query);
             if (cachedSearchId) {
-                console.log(`[Search Cache] Hit for "${query}" -> ${cachedSearchId}`);
+                logger.info(`[Search Cache] Hit for "${query}" -> ${cachedSearchId}`);
                 videoId = cachedSearchId;
             } else if (this.apiKey) {
                 // Search via API
@@ -862,7 +863,7 @@ class Room {
                         }
                     }
                 } catch (err) {
-                    console.error("Search failed:", err);
+                    logger.error("Search failed:", err);
                 }
             }
         }
@@ -887,13 +888,13 @@ class Room {
             const nowSeconds = Math.floor(Date.now() / 1000);
             // 28 Days = 2419200 seconds
             if (nowSeconds - cachedVideo.fetched_at > 2419200) {
-                console.log(`[Video Cache] Stale for ${videoId}. Refetching.`);
+                logger.info(`[Video Cache] Stale for ${videoId}. Refetching.`);
                 cachedVideo = null;
             }
         }
 
         if (cachedVideo) {
-            console.log(`[Video Cache] Hit for ${videoId} (Fresh)`);
+            logger.info(`[Video Cache] Hit for ${videoId} (Fresh)`);
 
             // Validate Cached Data against Room Rules
             // Max Duration
@@ -1000,10 +1001,10 @@ class Room {
                         language: track.language
                     });
                 } else {
-                    console.log(`[DEBUG API] Video Details Response Missing Items. Status: ${response.status}. Error: ${data.error?.message || 'no items'}.`);
+                    logger.info(`[DEBUG API] Video Details Response Missing Items. Status: ${response.status}. Error: ${data.error?.message || 'no items'}.`);
                 }
             } catch (apiError) {
-                console.error("YouTube API Check failed:", apiError);
+                logger.error("YouTube API Check failed:", apiError);
             }
         }
 
@@ -1052,7 +1053,7 @@ class Room {
                 const isKnown = this.knownVideos.has(track.videoId);
                 if (this.state.autoApproveKnown && isKnown) {
                     // Auto-approve: Skip adding to pending, proceed to queue
-                    console.log(`[Auto-Approve] Video ${track.title} (${track.videoId}) is known. Bypassing review.`);
+                    logger.info(`[Auto-Approve] Video ${track.title} (${track.videoId}) is known. Bypassing review.`);
                     // Fallthrough to add to queue and send success at the end
                 } else {
                     const newPending = [...(this.state.pendingSuggestions || []), track];
@@ -1177,7 +1178,7 @@ class Room {
             try {
                 db.addToRoomHistory(this.id, trackToSave);
             } catch (err) {
-                console.error(`[Room ${this.id}] Failed to save track to DB history:`, err);
+                logger.error(`[Room ${this.id}] Failed to save track to DB history:`, err);
             }
         }
 
@@ -1224,7 +1225,7 @@ class Room {
 
         // If the network is already in throttle mode, skip the API call entirely and pause.
         if (now < this.networkThrottleUntil) {
-            console.log(`[PlaybackError] Network throttle active. Pausing playback instead of skipping.`);
+            logger.info(`[PlaybackError] Network throttle active. Pausing playback instead of skipping.`);
             this.updateState({ isPlaying: false });
             this.broadcast({ type: "NETWORK_THROTTLE", payload: { until: this.networkThrottleUntil } });
             return;
@@ -1235,7 +1236,7 @@ class Room {
         if (cached && (now - cached.checkedAt) < CACHE_TTL_MS) {
             reason = cached.reason;
             isGenuinelyUnavailable = (reason !== 'ip_blocked' && reason !== 'check_failed' && reason !== 'no_api_key');
-            console.log(`[PlaybackError] Using cached status for ${videoId}: ${reason}`);
+            logger.info(`[PlaybackError] Using cached status for ${videoId}: ${reason}`);
         } else if (this.apiKey) {
             try {
                 const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=status,contentDetails&key=${this.apiKey}`;
@@ -1243,7 +1244,7 @@ class Room {
                 const data = await response.json();
 
                 if (!response.ok || data.error) {
-                    console.error("[PlaybackError] YouTube API returned error:", data.error?.message || `HTTP ${response.status}`);
+                    logger.error("[PlaybackError] YouTube API returned error:", data.error?.message || `HTTP ${response.status}`);
                     isGenuinelyUnavailable = false;
                     reason = 'check_failed';
                 } else if (data.items && data.items.length > 0) {
@@ -1266,7 +1267,7 @@ class Room {
                     reason = 'unavailable';
                 }
             } catch (e) {
-                console.error("[PlaybackError] API check failed:", e);
+                logger.error("[PlaybackError] API check failed:", e);
                 isGenuinelyUnavailable = false;
                 reason = 'check_failed';
             }
@@ -1279,11 +1280,11 @@ class Room {
         this.broadcast({ type: "VIDEO_STATUS", payload: { videoId, status: reason } });
 
         if (isGenuinelyUnavailable) {
-            console.log(`[PlaybackError] Video ${videoId} genuinely unavailable (${reason}). Skipping with history.`);
+            logger.info(`[PlaybackError] Video ${videoId} genuinely unavailable (${reason}). Skipping with history.`);
             this.consecutiveIPErrors = 0;
             this.handleNextTrack();
         } else {
-            console.log(`[PlaybackError] Video ${videoId} likely IP-blocked (${reason}). Consecutive: ${this.consecutiveIPErrors + 1}`);
+            logger.info(`[PlaybackError] Video ${videoId} likely IP-blocked (${reason}). Consecutive: ${this.consecutiveIPErrors + 1}`);
             this.ipBlockedVideos.set(videoId, {
                 failCount: (this.ipBlockedVideos.get(videoId)?.failCount || 0) + 1,
                 lastFailedAt: now
@@ -1293,7 +1294,7 @@ class Room {
             // Any confirmed IP block: stop immediately and warn. IP blocks are all-or-nothing —
             // every subsequent video on the same network will also fail.
             this.networkThrottleUntil = now + THROTTLE_WINDOW_MS;
-            console.warn(`[PlaybackError] IP block confirmed. Entering network throttle mode (6h). Consecutive: ${this.consecutiveIPErrors}`);
+            logger.warn(`[PlaybackError] IP block confirmed. Entering network throttle mode (6h). Consecutive: ${this.consecutiveIPErrors}`);
             this.updateState({ isPlaying: false });
             this.broadcast({ type: "NETWORK_THROTTLE", payload: { until: this.networkThrottleUntil } });
         }
@@ -1326,14 +1327,14 @@ class Room {
                 this.metadata.captions_enabled = updates.captionsEnabled ? 1 : 0; // Update memory metadata
                 try {
                     db.updateRoomSettings(this.id, { captions_enabled: updates.captionsEnabled });
-                } catch (e) { console.error("Failed to persist room settings", e); }
+                } catch (e) { logger.error("Failed to persist room settings", e); }
             }
 
             // Persist autoRefill to DB
             if (updates.autoRefill !== undefined) {
                 try {
                     db.updateRoomSettings(this.id, { auto_refill: updates.autoRefill });
-                } catch (e) { console.error("Failed to persist auto_refill", e); }
+                } catch (e) { logger.error("Failed to persist auto_refill", e); }
             }
 
             // Trigger Auto-Refill if enabled and queue is empty
@@ -1441,14 +1442,14 @@ class Room {
         }
 
         if (newHistory.length !== initialCount) {
-            console.log(`[Room ${this.id}] Removed video ${videoId} from history.`);
+            logger.info(`[Room ${this.id}] Removed video ${videoId} from history.`);
             this.updateState({ history: newHistory });
 
             // Delete from persistent database as well
             try {
                 db.removeFromRoomHistory(this.id, videoId);
             } catch (err) {
-                console.error(`[Room ${this.id}] Failed to remove track from DB history:`, err);
+                logger.error(`[Room ${this.id}] Failed to remove track from DB history:`, err);
             }
         }
     }
@@ -1470,7 +1471,7 @@ class Room {
                     try {
                         db.addToRoomHistory(this.id, trackToSave);
                     } catch (err) {
-                        console.error(`[Room ${this.id}] Failed to save deleted track to DB history:`, err);
+                        logger.error(`[Room ${this.id}] Failed to save deleted track to DB history:`, err);
                     }
                 }
                 if (newHistory.length > 200) {
@@ -1505,11 +1506,11 @@ class Room {
     }
 
     handleDeleteRoom(ws) {
-        console.log(`[Room ${this.id}] DELETING ROOM initiated by owner.`);
+        logger.info(`[Room ${this.id}] DELETING ROOM initiated by owner.`);
         ws.send(JSON.stringify({ type: "info", message: "Processing deletion..." }));
         try {
             const result = db.deleteRoom(this.id);
-            console.log(`[Delete Room] DB Result:`, result);
+            logger.info(`[Delete Room] DB Result:`, result);
 
             if (result.changes > 0) {
                 this.deleted = true;
@@ -1527,7 +1528,7 @@ class Room {
                 ws.send(JSON.stringify({ type: "error", message: "Database deletion returned 0 changes. Room ID mismatch?" }));
             }
         } catch (err) {
-            console.error("Delete room failed", err);
+            logger.error("Delete room failed", err);
             ws.send(JSON.stringify({ type: "error", message: `Failed to delete room: ${err.message}` }));
         }
     }
