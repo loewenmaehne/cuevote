@@ -1,5 +1,7 @@
-const { describe, it, before, beforeEach } = require('node:test');
+const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert/strict');
+const path = require('path');
+const fs = require('fs');
 
 let Room;
 let db;
@@ -19,8 +21,12 @@ function mockWs(user = null) {
 describe('Room', () => {
   before(() => {
     process.env.NODE_ENV = 'test';
-    const path = require('path');
-    process.chdir(path.join(__dirname));
+    const testDir = __dirname;
+    const dbFile = path.join(testDir, 'cuevote.db');
+    for (const suffix of ['', '-wal', '-shm']) {
+      try { fs.unlinkSync(dbFile + suffix); } catch {}
+    }
+    process.chdir(testDir);
     delete require.cache[require.resolve('../db')];
     delete require.cache[require.resolve('../Room')];
     delete require.cache[require.resolve('../logger')];
@@ -40,6 +46,13 @@ describe('Room', () => {
       name: 'Guest User',
       picture: '',
     });
+  });
+
+  after(() => {
+    const dbFile = path.join(__dirname, 'cuevote.db');
+    for (const suffix of ['', '-wal', '-shm']) {
+      try { fs.unlinkSync(dbFile + suffix); } catch {}
+    }
   });
 
   describe('Construction', () => {
