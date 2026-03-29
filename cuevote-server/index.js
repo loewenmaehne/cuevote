@@ -93,6 +93,17 @@ const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 async function verifyGoogleToken(token) {
     try {
+        const tokenInfoRes = await fetch(
+            `https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(token)}`
+        );
+        if (!tokenInfoRes.ok) {
+            throw new Error('Invalid or expired access token');
+        }
+        const tokenInfo = await tokenInfoRes.json();
+        if (tokenInfo.aud !== GOOGLE_CLIENT_ID) {
+            throw new Error('Token was not issued for this application');
+        }
+
         const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
             headers: { Authorization: `Bearer ${token}` }
         });
@@ -102,7 +113,7 @@ async function verifyGoogleToken(token) {
         }
 
         const data = await response.json();
-        return data; // Returns object with sub, name, email, picture
+        return data;
     } catch (error) {
         console.error("Token verification failed:", error);
         throw error;
