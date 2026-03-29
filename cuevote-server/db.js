@@ -121,6 +121,17 @@ try {
   // Ignore duplicate column error
 }
 
+// Indexes for common query patterns (IF NOT EXISTS makes these idempotent)
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
+  CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
+  CREATE INDEX IF NOT EXISTS idx_rooms_owner_last_active ON rooms(owner_id, last_active_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_rooms_public_last_active ON rooms(is_public, last_active_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_videos_fetched_at ON videos(fetched_at);
+  CREATE INDEX IF NOT EXISTS idx_search_cache_created_at ON search_cache(created_at);
+  CREATE INDEX IF NOT EXISTS idx_related_videos_fetched_at ON related_videos_cache(fetched_at);
+`);
+
 module.exports = {
   getUser: (id) => db.prepare('SELECT * FROM users WHERE id = ?').get(id),
   getUserByEmail: (email) => db.prepare('SELECT * FROM users WHERE email = ?').get(email),
