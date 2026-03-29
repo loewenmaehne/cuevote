@@ -133,6 +133,10 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_related_videos_fetched_at ON related_videos_cache(fetched_at);
 `);
 
+// Run versioned migrations (new migrations go in migrations/ directory)
+const { runMigrations } = require('./migrator');
+runMigrations(db);
+
 module.exports = {
   getUser: (id) => db.prepare('SELECT * FROM users WHERE id = ?').get(id),
   getUserByEmail: (email) => db.prepare('SELECT * FROM users WHERE email = ?').get(email),
