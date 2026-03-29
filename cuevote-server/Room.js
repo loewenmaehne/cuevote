@@ -715,13 +715,13 @@ class Room {
             }
 
             const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoCategoryId=10&maxResults=6&key=${this.apiKey}`;
-            console.log("[Suggestions] Fetching Search:", apiUrl);
+            console.log("[Suggestions] Fetching Search for query:", encodeURIComponent(query));
 
             const response = await fetch(apiUrl, {
                 headers: { 'Referer': process.env.URL || 'https://cuevote.com' }
             });
             const data = await response.json();
-            console.log("[Suggestions] YouTube Response:", JSON.stringify(data, null, 2));
+            console.log("[Suggestions] YouTube Response: items:", data.items?.length ?? 0);
 
             if (data.items) {
                 const suggestions = data.items
@@ -1000,7 +1000,7 @@ class Room {
                         language: track.language
                     });
                 } else {
-                    console.log(`[DEBUG API] Video Details Response Missing Items. Status: ${response.status}. Body:`, JSON.stringify(data));
+                    console.log(`[DEBUG API] Video Details Response Missing Items. Status: ${response.status}. Error: ${data.error?.message || 'no items'}.`);
                 }
             } catch (apiError) {
                 console.error("YouTube API Check failed:", apiError);
