@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
     "start": "node index.js",
     "dev": "node --watch index.js"
   },
@@ -25,6 +26,10 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "eslint": "^10.0.2"
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.5.0",
+    "@types/ws": "^8.18.1",
+    "eslint": "^10.0.2",
+    "typescript": "^6.0.2"
   }
 }
