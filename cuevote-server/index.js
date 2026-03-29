@@ -15,7 +15,6 @@ process.on('uncaughtException', (error) => {
 const http = require("http");
 const WebSocket = require("ws");
 const crypto = require("crypto");
-const { OAuth2Client } = require('google-auth-library');
 const bcrypt = require('bcryptjs');
 const { slugify } = require('transliteration');
 const db = require('./db');
@@ -88,8 +87,6 @@ server.listen(process.env.PORT || 8080, '0.0.0.0');
 
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-
-const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 async function verifyGoogleToken(token) {
     try {
