@@ -232,7 +232,12 @@ class Room {
             && newState.currentTrack !== this.state.currentTrack;
         this.state = { ...this.state, ...newState };
         if (trackChanged) this.persistLobbyPreview();
-        this.broadcastState();
+        this.broadcastDelta(newState);
+    }
+
+    broadcastDelta(delta) {
+        const message = JSON.stringify({ type: "state_delta", payload: delta });
+        this.broadcast(message);
     }
 
     persistLobbyPreview() {

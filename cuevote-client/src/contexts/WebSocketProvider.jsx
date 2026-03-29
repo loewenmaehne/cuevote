@@ -180,6 +180,11 @@ export function WebSocketProvider({ children }) {
           if (message.type === "state") {
             setState(message.payload);
             progressRef.current = message.payload.progress || 0;
+          } else if (message.type === "state_delta") {
+            setState(prev => prev ? { ...prev, ...message.payload } : message.payload);
+            if ('progress' in message.payload) {
+              progressRef.current = message.payload.progress || 0;
+            }
           } else if (message.type === "progress") {
             progressRef.current = message.payload;
           } else {
