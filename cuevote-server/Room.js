@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const db = require("./db");
+const dbAsync = require("./db-async");
 const logger = require("./logger");
 const schemas = require("./schemas");
 
@@ -86,8 +87,7 @@ class Room {
         this.stateSaveCounter = 0;
         this.stateSaveInterval = setInterval(() => {
             if (this.state.currentTrack || this.state.queue.length > 0) {
-                try { db.saveRoomState(this.id, this.state); } catch (e) { /* ignore */ }
-                try { db.updateRoomActivity(this.id); } catch (e) { /* ignore */ }
+                dbAsync.saveRoomStateAndActivity(this.id, this.state);
             }
         }, 30000);
 
@@ -281,12 +281,8 @@ class Room {
                     const trackToSave = { ...this.state.currentTrack, playedAt: Date.now() };
                     newHistory.push(trackToSave);
 
-                    // Persist history addition to Database
-                    try {
-                        db.addToRoomHistory(this.id, trackToSave);
-                    } catch (err) {
-                        logger.error(`[Room ${this.id}] Failed to save track to DB history:`, err);
-                    }
+                    // Persist history addition to Database (non-blocking worker thread)
+                    dbAsync.addToRoomHistory(this.id, trackToSave);
                 }
 
                 // Cap memory history
@@ -1203,11 +1199,7 @@ class Room {
             const trackToSave = { ...this.state.currentTrack, playedAt: Date.now() };
             newHistory.push(trackToSave);
 
-            try {
-                db.addToRoomHistory(this.id, trackToSave);
-            } catch (err) {
-                logger.error(`[Room ${this.id}] Failed to save track to DB history:`, err);
-            }
+            dbAsync.addToRoomHistory(this.id, trackToSave);
         }
 
         // Cap memory history
@@ -1496,11 +1488,7 @@ class Room {
                 if (this.state.currentTrack) {
                     const trackToSave = { ...this.state.currentTrack, playedAt: Date.now() };
                     newHistory.push(trackToSave);
-                    try {
-                        db.addToRoomHistory(this.id, trackToSave);
-                    } catch (err) {
-                        logger.error(`[Room ${this.id}] Failed to save deleted track to DB history:`, err);
-                    }
+                    dbAsync.addToRoomHistory(this.id, trackToSave);
                 }
                 if (newHistory.length > 200) {
                     newHistory = newHistory.slice(-200);
