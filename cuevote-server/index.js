@@ -114,9 +114,8 @@ const rooms = new Map();
 
 // Default rooms removed
 
-// Initialize Rooms from DB
+// Initialize system user (rooms are loaded on-demand via JOIN_ROOM)
 function loadRooms() {
-    // Ensure System User
     try {
         db.upsertUser({
             id: 'system',
@@ -125,17 +124,6 @@ function loadRooms() {
             picture: ''
         });
     } catch (e) { logger.error("System user init failed", e); }
-
-    if (process.env.LOAD_ACTIVE_CHANNELS !== 'false') {
-        const publicRooms = db.listPublicRooms();
-        publicRooms.forEach(roomData => {
-            if (!rooms.has(roomData.id)) {
-                rooms.set(roomData.id, new Room(roomData.id, roomData.name, YOUTUBE_API_KEY, roomData));
-                logger.info(`Loaded room: ${roomData.name} (${roomData.id})`);
-            }
-        });
-    }
-
 }
 
 loadRooms();
