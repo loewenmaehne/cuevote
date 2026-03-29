@@ -19,6 +19,7 @@ const crypto = require("crypto");
 const bcrypt = require('bcryptjs');
 const { slugify } = require('transliteration');
 const db = require('./db');
+const dbAsync = require('./db-async');
 const backupScheduler = require('./backup_scheduler');
 backupScheduler.start();
 
@@ -715,11 +716,11 @@ setInterval(() => {
 // Cleanup Old Room History, expired sessions, and stale API caches (Once a day)
 setInterval(() => {
     logger.info("Running daily cleanup task...");
-    try { db.runDailyCleanup(); } catch (e) { logger.error("Failed to run daily cleanup", e); }
+    dbAsync.runDailyCleanup();
 }, 24 * 60 * 60 * 1000);
 
 // Run all cleanups once on startup as well
-try { db.runDailyCleanup(); } catch (e) { logger.error("Failed to run daily cleanup on startup", e); }
+dbAsync.runDailyCleanup();
 
 function gracefulShutdown(signal) {
     logger.info(`[Shutdown] ${signal} received. Closing ${wss.clients.size} connections...`);
@@ -734,6 +735,7 @@ function gracefulShutdown(signal) {
         room.destroy();
     }
     rooms.clear();
+    dbAsync.shutdown();
     wss.close(() => {
         server.close(() => {
             logger.info('[Shutdown] Server closed.');
