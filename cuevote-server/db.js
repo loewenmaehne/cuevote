@@ -4,6 +4,9 @@ const db = new Database('cuevote.db'); // Creates the file if missing
 // Enable WAL mode for better concurrency
 db.pragma('journal_mode = WAL');
 
+// Wait up to 5s for write locks instead of failing immediately with SQLITE_BUSY
+db.pragma('busy_timeout = 5000');
+
 // Enforce Foreign Key constraints for cascading deletions
 db.pragma('foreign_keys = ON');
 
