@@ -86,20 +86,13 @@ CueVote is ready to use at **[CueVote.com](https://cuevote.com)**. For developer
 
 ---
 
-## License
+## License & Credits
 
-Copyright (c) 2026 Julian Zienert.
+Copyright (c) 2026 **Julian Zienert** — jzienert@student.codam.nl
 
 The source code of this project is licensed under the **[PolyForm Noncommercial License 1.0.0](LICENSE)**.
 
 You are free to read, modify, and self-host for personal use. Commercial use of this code is prohibited.
 For direct use, visit [cuevote.com](https://cuevote.com).
-
----
-
-## 📜 Credits
-
-Created by **Julian Zienert** jzienert@student.codam.nl
-Concept & Documentation © 2025
 
 **Where community meets rhythm — every vote changes the beat.**
