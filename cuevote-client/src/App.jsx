@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Julian Zienert. Licensed under the PolyForm Noncommercial License 1.0.0.
 import React, { lazy, Suspense } from "react";
 import { Music, PlayCircle } from "lucide-react";
 import { Consent } from './contexts/ConsentContext';

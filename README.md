@@ -88,7 +88,17 @@ CueVote is ready to use at **[CueVote.com](https://cuevote.com)**. For developer
 
 ## 📜 Credits
 
-Created by **Julian Zienert** jzienert@student.codam.nl  
+Created by **Julian Zienert** jzienert@student.codam.nl
 Concept & Documentation © 2025
 
 **Where community meets rhythm — every vote changes the beat.**
+
+---
+
+## License
+
+This project is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+
+**Private and noncommercial use is free.** You may run, modify, and share CueVote for personal projects, research, education, and other noncommercial purposes.
+
+**Commercial use is not permitted** under this license. This includes, but is not limited to, deploying CueVote in bars, clubs, restaurants, event venues, or offering it as a paid or ad-supported service. If you would like to use CueVote commercially, please acquire a commercial license at **[cuevote.com](https://cuevote.com)**.
