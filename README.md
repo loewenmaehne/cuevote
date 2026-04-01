@@ -90,8 +90,9 @@ CueVote is ready to use at **[CueVote.com](https://cuevote.com)**. For developer
 
 Copyright (c) 2026 Julian Zienert.
 
-The source code of this project is licensed under the **[PolyForm Noncommercial License 1.0.0](LICENSE)**. You are free to read, modify, and self-host for personal use. Commercial use of this code is prohibited.
+The source code of this project is licensed under the **[PolyForm Noncommercial License 1.0.0](LICENSE)**.
 
+You are free to read, modify, and self-host for personal use. Commercial use of this code is prohibited.
 For direct use, visit [cuevote.com](https://cuevote.com).
 
 ---
