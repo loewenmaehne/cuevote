@@ -28,11 +28,11 @@ const enContent = {
 			sections: [
 				{
 					title: "1. Service & Usage",
-					content: "CueVote is a social interface for consuming content via third-party APIs (primarily YouTube). We do not host, store, or distribute media files. Use of the service is personal, non-commercial, and subject to available API quotas."
+					content: `CueVote is a social interface for consuming content via third-party APIs (primarily YouTube). We do not host, store, or distribute media files.<br /><br /><strong>Note on Source Code:</strong> The underlying source code of CueVote is licensed under the <a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" rel="noopener noreferrer">PolyForm Noncommercial License</a>. You may not commercialize the software code itself.<br /><br /><strong>Platform Usage:</strong> You are welcome to use our official hosted platform at <a href="https://cuevote.com" target="_blank" rel="noopener noreferrer">cuevote.com</a>. If you choose to use cuevote.com in a public or organizational setting, you do so entirely at your own risk regarding third-party terms and local copyright laws.`
 				},
 				{
 					title: "2. Integration with YouTube",
-					content: `Our service relies on YouTube API Services. By using CueVote, you explicitly agree to be bound by the <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Terms of Service</a>. We have no control over YouTube content and assume no liability for its availability or nature.`
+					content: `Our service relies on YouTube API Services. By using CueVote, you explicitly agree to be bound by the <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Terms of Service</a>.<br /><br />We have no control over YouTube content and do not grant any licenses for public performance. It is your sole responsibility to ensure that your specific use case complies with YouTube's terms. CueVote assumes no liability for third-party copyright claims or API restrictions resulting from your use of the platform.`
 				},
 				{
 					title: "3. User Responsibilities",
@@ -135,11 +135,11 @@ const nlContent = {
 			sections: [
 				{
 					title: "1. Dienst & Gebruik",
-					content: "CueVote is een sociale interface voor het consumeren van inhoud via API's van derden (voornamelijk YouTube). Wij hosten, bewaren of distribueren geen mediabestanden. Gebruik van de dienst is persoonlijk, niet-commercieel en onderworpen aan beschikbare API-quota."
+					content: `CueVote is een sociale interface voor het consumeren van inhoud via API's van derden (voornamelijk YouTube). Wij hosten, bewaren of distribueren geen mediabestanden.<br /><br /><strong>Opmerking over broncode:</strong> De onderliggende broncode van CueVote is gelicentieerd onder de <a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" rel="noopener noreferrer">PolyForm Noncommercial License</a>. Het is niet toegestaan de softwarecode zelf te commercialiseren.<br /><br /><strong>Platformgebruik:</strong> U bent welkom om ons officiële gehoste platform op <a href="https://cuevote.com" target="_blank" rel="noopener noreferrer">cuevote.com</a> te gebruiken. Als u ervoor kiest om cuevote.com in een openbare of organisatorische setting te gebruiken, doet u dit geheel op eigen risico met betrekking tot voorwaarden van derden en lokale auteursrechtwetten.`
 				},
 				{
 					title: "2. Integratie met YouTube",
-					content: `Onze dienst vertrouwt op YouTube API Services. Door CueVote te gebruiken, gaat u er uitdrukkelijk mee akkoord gebonden te zijn aan de <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Servicevoorwaarden</a>. Wij hebben geen controle over YouTube-inhoud en aanvaarden geen aansprakelijkheid voor de beschikbaarheid of aard ervan.`
+					content: `Onze dienst vertrouwt op YouTube API Services. Door CueVote te gebruiken, gaat u er uitdrukkelijk mee akkoord gebonden te zijn aan de <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Servicevoorwaarden</a>.<br /><br />Wij hebben geen controle over YouTube-inhoud en verlenen geen licenties voor openbare uitvoering. Het is uitsluitend uw verantwoordelijkheid om ervoor te zorgen dat uw specifieke gebruik voldoet aan de voorwaarden van YouTube. CueVote aanvaardt geen aansprakelijkheid voor auteursrechtclaims van derden of API-beperkingen die voortvloeien uit uw gebruik van het platform.`
 				},
 				{
 					title: "3. Verantwoordelijkheden van de Gebruiker",

@@ -86,19 +86,25 @@ CueVote is ready to use at **[CueVote.com](https://cuevote.com)**. For developer
 
 ---
 
+## License
+
+Copyright (c) 2026 Julian Zienert.
+
+The source code of this project is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). See the [LICENSE](LICENSE) file for details.
+
+**What this means in simple terms:**
+
+* ✅ **DO:** You are completely free to read the code, learn from it, modify it, and self-host CueVote for your personal use, private parties, or hobby projects.
+* ❌ **DON'T:** You may not use this source code to build a commercial product, sell it, run ads on it, or offer it as a paid service.
+
+**Just want to use the app?**
+If you are not a developer and just want to listen to music with your friends (or your community), you don't need to worry about code licenses. Just head over to our official hosted version at **[cuevote.com](https://cuevote.com)** and start a room! Everyone is welcome.
+
+---
+
 ## 📜 Credits
 
 Created by **Julian Zienert** jzienert@student.codam.nl
 Concept & Documentation © 2025
 
 **Where community meets rhythm — every vote changes the beat.**
-
----
-
-## License
-
-This project is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE).
-
-**Private and noncommercial use is free.** You may run, modify, and share CueVote for personal projects, research, education, and other noncommercial purposes.
-
-**Commercial use is not permitted** under this license. This includes, but is not limited to, deploying CueVote in bars, clubs, restaurants, event venues, or offering it as a paid or ad-supported service. If you would like to use CueVote commercially, please acquire a commercial license at **[cuevote.com](https://cuevote.com)**.
