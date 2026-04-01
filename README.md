@@ -86,9 +86,9 @@ CueVote is ready to use at **[CueVote.com](https://cuevote.com)**. For developer
 
 ---
 
-## License & Credits
+## 📜 License & Credits
 
-Copyright (c) 2026 **Julian Zienert** — jzienert@student.codam.nl
+Copyright © 2026 **Julian Zienert** — jzienert@student.codam.nl
 
 The source code of this project is licensed under the **[PolyForm Noncommercial License 1.0.0](LICENSE)**.
 
