@@ -95,4 +95,6 @@ The source code of this project is licensed under the **[PolyForm Noncommercial 
 You are free to read, modify, and self-host for personal use. Commercial use of this code is prohibited.
 For direct use, visit [cuevote.com](https://cuevote.com).
 
-**Where community meets rhythm — every vote changes the beat.**
+---
+
+*Where community meets rhythm — every vote changes the beat.*
