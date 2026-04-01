@@ -97,4 +97,4 @@ For direct use, visit [cuevote.com](https://cuevote.com).
 
 ---
 
-*Where community meets rhythm — every vote changes the beat.*
+*CueVote — Where community meets rhythm — every vote changes the beat.*
