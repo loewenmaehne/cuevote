@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Julian Zienert. Licensed under the PolyForm Noncommercial License 1.0.0.
 require('dotenv').config();
 const logger = require('./logger');
 logger.info("Server starting...");
