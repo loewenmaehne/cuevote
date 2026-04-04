@@ -19,6 +19,7 @@ const crypto = require("crypto");
 const bcrypt = require('bcryptjs');
 const { slugify } = require('transliteration');
 const db = require('./db');
+const spotify = require('./spotify');
 const backupScheduler = require('./backup_scheduler');
 backupScheduler.start();
 
@@ -37,12 +38,113 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
     : [];
 
-const server = http.createServer((req, res) => {
-    if (req.url === '/health' && req.method === 'GET') {
+const CORS_HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+const server = http.createServer(async (req, res) => {
+    const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+    const pathname = parsedUrl.pathname;
+
+    // CORS preflight for /api/* routes
+    if (req.method === 'OPTIONS' && pathname.startsWith('/api/')) {
+        res.writeHead(204, CORS_HEADERS);
+        res.end();
+        return;
+    }
+
+    if (pathname === '/health' && req.method === 'GET') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ status: 'ok' }));
         return;
     }
+
+    // --- Spotify OAuth Routes ---
+
+    if (pathname === '/api/spotify/auth' && req.method === 'GET') {
+        const userId = parsedUrl.searchParams.get('userId');
+        if (!userId) {
+            res.writeHead(400, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+            res.end(JSON.stringify({ error: 'userId required' }));
+            return;
+        }
+        const authUrl = spotify.getAuthUrl(userId);
+        if (!authUrl) {
+            res.writeHead(503, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+            res.end(JSON.stringify({ error: 'Spotify not configured' }));
+            return;
+        }
+        res.writeHead(302, { 'Location': authUrl });
+        res.end();
+        return;
+    }
+
+    if (pathname === '/api/spotify/callback' && req.method === 'GET') {
+        const code = parsedUrl.searchParams.get('code');
+        const state = parsedUrl.searchParams.get('state'); // userId
+        const error = parsedUrl.searchParams.get('error');
+
+        if (error) {
+            logger.info(`[Spotify] OAuth denied: ${error}`);
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(`<html><body><script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: '${error}' }, '*');
+                window.close();
+            </script><p>Authentication denied. You can close this window.</p></body></html>`);
+            return;
+        }
+
+        if (!code || !state) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Missing code or state' }));
+            return;
+        }
+
+        try {
+            const tokenData = await spotify.exchangeCode(code);
+            spotify.storeTokens(state, tokenData);
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(`<html><body><script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_SUCCESS' }, '*');
+                window.close();
+            </script><p>Connected to Spotify! You can close this window.</p></body></html>`);
+        } catch (err) {
+            logger.error('[Spotify] OAuth callback error:', err.message);
+            res.writeHead(500, { 'Content-Type': 'text/html' });
+            res.end(`<html><body><script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'token_exchange_failed' }, '*');
+                window.close();
+            </script><p>Authentication failed. You can close this window.</p></body></html>`);
+        }
+        return;
+    }
+
+    if (pathname === '/api/spotify/token' && req.method === 'GET') {
+        const userId = parsedUrl.searchParams.get('userId');
+        if (!userId) {
+            res.writeHead(400, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+            res.end(JSON.stringify({ error: 'userId required' }));
+            return;
+        }
+        try {
+            const token = await spotify.getAccessToken(userId);
+            if (!token) {
+                res.writeHead(401, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                res.end(JSON.stringify({ error: 'Not authenticated' }));
+                return;
+            }
+            res.writeHead(200, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+            res.end(JSON.stringify({ token }));
+        } catch (err) {
+            logger.error('[Spotify] Token fetch error:', err.message);
+            res.writeHead(500, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+            res.end(JSON.stringify({ error: 'Token fetch failed' }));
+        }
+        return;
+    }
+
     res.writeHead(404);
     res.end();
 });
