@@ -583,7 +583,7 @@ wss.on("connection", (ws, req) => {
                         ws.send(JSON.stringify({ type: "error", message: "Invalid room data. Name is required (max 100 chars)." }));
                         return;
                     }
-                    const { name, description, color, isPrivate, password, captionsEnabled, languageFlag } = createResult.data;
+                    const { name, description, color, isPrivate, password, captionsEnabled, languageFlag, musicSource } = createResult.data;
 
                     let attempts = 0;
                     let success = false;
@@ -601,7 +601,8 @@ wss.on("connection", (ws, req) => {
                                 is_public: isPrivate ? 0 : 1,
                                 password: (isPrivate && password) ? bcrypt.hashSync(password, 10) : null,
                                 captions_enabled: captionsEnabled ? 1 : 0,
-                                language_flag: languageFlag || 'international'
+                                language_flag: languageFlag || 'international',
+                                music_source: (musicSource === 'spotify') ? 'spotify' : 'youtube'
                             };
 
                             db.createRoom(roomData);
@@ -706,7 +707,8 @@ wss.on("connection", (ws, req) => {
                                 currentTrack: lobbyPreview,
                                 is_protected: !!dbr.password,
                                 isActive: false,
-                                language_flag: dbr.language_flag || 'international'
+                                language_flag: dbr.language_flag || 'international',
+                                music_source: dbr.music_source || 'youtube'
                             });
                         }
                     });

@@ -25,6 +25,7 @@ const CreateRoomPayload = z.object({
   password: z.string().max(200).optional(),
   captionsEnabled: z.boolean().optional(),
   languageFlag: z.string().max(50).optional(),
+  musicSource: z.enum(['youtube', 'spotify']).optional(),
 });
 
 const ListRoomsPayload = z.object({
@@ -59,6 +60,7 @@ const UpdateSettingsPayload = z.object({
   autoApproveKnown: z.boolean().optional(),
   autoRefill: z.boolean().optional(),
   captionsEnabled: z.boolean().optional(),
+  musicSource: z.enum(['youtube', 'spotify']).optional(),
 }).refine(obj => Object.keys(obj).length > 0, {
   message: 'At least one setting must be provided',
 });
@@ -68,13 +70,19 @@ const TrackIdPayload = z.object({
 });
 
 const VideoIdPayload = z.object({
-  videoId: z.string().min(1).max(50),
+  videoId: z.string().min(1).max(50).optional(),
+  trackId: z.string().min(1).max(100).optional(),
+}).refine(obj => obj.videoId || obj.trackId, {
+  message: 'Either videoId or trackId must be provided',
 });
 
 const FetchSuggestionsPayload = z.object({
-  videoId: z.string().min(1).max(50),
+  videoId: z.string().min(1).max(50).optional(),
+  trackId: z.string().min(1).max(100).optional(),
   title: z.string().max(500).optional(),
   artist: z.string().max(500).optional(),
+}).refine(obj => obj.videoId || obj.trackId, {
+  message: 'Either videoId or trackId must be provided',
 });
 
 const UpdateDurationPayload = z.number().finite().positive().max(86400);
