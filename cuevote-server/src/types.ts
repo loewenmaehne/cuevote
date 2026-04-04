@@ -17,6 +17,8 @@ export interface Session {
   role?: string;
 }
 
+export type MusicSource = 'youtube' | 'spotify';
+
 export interface RoomData {
   id: string;
   name: string;
@@ -31,6 +33,7 @@ export interface RoomData {
   auto_refill?: number;
   language_flag?: string;
   lobby_preview?: string | null;
+  music_source?: MusicSource;
 }
 
 export interface Video {
@@ -41,16 +44,20 @@ export interface Video {
   duration: number | null;
   category_id: string | null;
   language: string | null;
+  source?: MusicSource;
   fetched_at?: number;
 }
 
 export interface Track {
   id: string;
-  videoId: string;
+  videoId?: string;
+  trackId?: string;
+  source?: MusicSource;
   title: string;
   artist: string;
   thumbnail: string;
   duration: number;
+  previewUrl?: string | null;
   score: number;
   voters: Record<string, 'up' | 'down'>;
   suggestedBy: string | null;
@@ -72,6 +79,7 @@ export interface RoomState {
   activeChannel: string;
   ownerId: string | null;
   suggestionsEnabled: boolean;
+  musicSource?: MusicSource;
   musicOnly: boolean;
   maxDuration: number;
   allowPrelisten: boolean;
@@ -93,7 +101,9 @@ export interface RoomState {
 }
 
 export interface BannedVideo {
-  videoId: string;
+  videoId?: string;
+  trackId?: string;
+  source?: MusicSource;
   title: string;
   artist: string;
   thumbnail: string;
@@ -114,10 +124,13 @@ export interface RoomSettings {
   captions_enabled?: boolean;
   auto_refill?: boolean;
   language_flag?: string;
+  music_source?: MusicSource;
 }
 
 export interface HistoryTrack extends Video {
-  videoId: string;
+  videoId?: string;
+  trackId?: string;
+  previewUrl?: string | null;
   playedAt: number;
   played_at?: number;
 }
