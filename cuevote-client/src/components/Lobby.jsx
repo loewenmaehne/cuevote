@@ -105,6 +105,7 @@ export function Lobby() {
     const [newRoomName, setNewRoomName] = useState("");
     const [isPrivate, setIsPrivate] = useState(true);
     const [createPassword, setCreatePassword] = useState("");
+    const [newRoomMusicSource, setNewRoomMusicSource] = useState("youtube");
     const [languageFlag, setLanguageFlag] = useState('international');
     const [languageFlagOpen, setLanguageFlagOpen] = useState(false);
     const [createFlagSearch, setCreateFlagSearch] = useState("");
@@ -554,13 +555,15 @@ export function Lobby() {
                 color: "from-gray-700 to-black",
                 isPrivate,
                 password: isPrivate ? createPassword : null,
-                languageFlag
+                languageFlag,
+                musicSource: newRoomMusicSource
             }
         });
         setIsCreatingRoom(false);
         setNewRoomName("");
         setIsPrivate(true);
         setCreatePassword("");
+        setNewRoomMusicSource("youtube");
         setLanguageFlag('international');
         setLanguageFlagOpen(false);
         setCreateFlagSearch("");
@@ -968,6 +971,26 @@ export function Lobby() {
                                             <span className={`text-xs ${newRoomName.length >= 100 ? 'text-red-500 font-bold' : 'text-neutral-500'}`}>
                                                 {newRoomName.length}/100
                                             </span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-neutral-400 mb-1">{t('lobby.musicSource', 'Music Source')}</label>
+                                        <div className="flex gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewRoomMusicSource("youtube")}
+                                                className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${newRoomMusicSource === 'youtube' ? 'bg-orange-500/10 border-orange-500 text-orange-500' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
+                                            >
+                                                YouTube
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewRoomMusicSource("spotify")}
+                                                className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${newRoomMusicSource === 'spotify' ? 'bg-[#1DB954]/10 border-[#1DB954] text-[#1DB954]' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
+                                            >
+                                                Spotify
+                                            </button>
                                         </div>
                                     </div>
 

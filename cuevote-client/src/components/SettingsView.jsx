@@ -27,7 +27,9 @@ export function SettingsView({
 	captionsEnabled,
 	isConnected = true,
 	onFullscreenOverlay,
+	musicSource = 'youtube',
 }) {
+	const isSpotify = musicSource === 'spotify';
 	const { t } = Language.useLanguage();
 	const [deleteChannelText, setDeleteChannelText] = React.useState("");
 	const [showDeleteChannelConfirm, setShowDeleteChannelConfirm] = React.useState(false);
@@ -136,6 +138,7 @@ export function SettingsView({
 					<div className="space-y-4">
 						<h4 className="text-xs font-semibold text-neutral-500 uppercase">{t('header.queuePlayback')}</h4>
 
+						{!isSpotify && (
 						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
 							<label className="text-sm font-medium text-white">{t('header.musicOnly')}</label>
 							<button
@@ -150,6 +153,7 @@ export function SettingsView({
 								/>
 							</button>
 						</div>
+						)}
 
 						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
 							<label className="text-sm font-medium text-white">{t('header.maxLength')}</label>
@@ -292,6 +296,7 @@ export function SettingsView({
 							</button>
 						</div>
 
+						{!isSpotify && (
 						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
 							<div className="flex items-center gap-2">
 								<label className="text-sm font-medium text-white">{t('lobby.startWithCaptions')}</label>
@@ -315,6 +320,7 @@ export function SettingsView({
 								/>
 							</button>
 						</div>
+						)}
 
 						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
 							<label className="text-sm font-medium text-white">{t('header.allowVoting')}</label>
