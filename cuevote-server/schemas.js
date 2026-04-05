@@ -85,6 +85,14 @@ const FetchSuggestionsPayload = z.object({
   message: 'Either videoId or trackId must be provided',
 });
 
+const PlaybackErrorPayload = z.object({
+  videoId: z.string().min(1).max(50).optional(),
+  trackId: z.string().min(1).max(100).optional(),
+  errorCode: z.union([z.number(), z.string()]).optional(),
+}).refine(obj => obj.videoId || obj.trackId, {
+  message: 'Either videoId or trackId must be provided',
+});
+
 const UpdateDurationPayload = z.number().finite().positive().max(86400);
 
 const PlayPausePayload = z.boolean();
@@ -107,6 +115,7 @@ module.exports = {
   SeekToPayload,
   UpdateSettingsPayload,
   TrackIdPayload,
+  PlaybackErrorPayload,
   VideoIdPayload,
   FetchSuggestionsPayload,
   UpdateDurationPayload,

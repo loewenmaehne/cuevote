@@ -55,6 +55,58 @@ export function SettingsView({
 					</div>
 				</div>
 
+				{/* Music Source Selector */}
+				<div className={`mb-6 transition-opacity duration-300 ${!isConnected ? "opacity-50 pointer-events-none grayscale" : ""}`}>
+					<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
+						<label className="text-sm font-medium text-white">{t('settings.musicSource', 'Music Source')}</label>
+						<select
+							value={musicSource}
+							onChange={(e) => {
+								const newSource = e.target.value;
+								if (newSource !== musicSource) {
+									setPendingSource(newSource);
+									setShowSourceWarning(true);
+								}
+							}}
+							onClick={(e) => e.stopPropagation()}
+							className="bg-neutral-900 text-white text-sm rounded-lg px-3 py-1.5 border border-neutral-700 focus:outline-none focus:border-orange-500 transition-colors"
+						>
+							<option value="youtube">YouTube</option>
+							<option value="spotify">Spotify</option>
+						</select>
+					</div>
+				</div>
+
+				{/* Source Switch Warning Modal */}
+				{showSourceWarning && (
+					<div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+						<div className="bg-neutral-900 border border-neutral-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl">
+							<h3 className="text-xl font-bold text-white mb-2 text-center">{t('settings.switchSourceTitle', 'Switch Music Source?')}</h3>
+							<p className="text-neutral-400 mb-6 text-center text-sm">
+								{t('settings.switchSourceWarning', 'Changing the music source will clear the current queue and stop playback.')}
+							</p>
+							<div className="flex gap-3">
+								<button
+									onClick={() => { setShowSourceWarning(false); setPendingSource(null); }}
+									className="flex-1 px-4 py-3 rounded-xl border border-neutral-700 text-neutral-300 font-medium hover:bg-neutral-800 transition-all"
+								>
+									{t('lobby.cancel', 'Cancel')}
+								</button>
+								<button
+									onClick={() => {
+										onUpdateSettings({ musicSource: pendingSource });
+										setShowSourceWarning(false);
+										setPendingSource(null);
+									}}
+									className="flex-1 px-4 py-3 rounded-xl bg-orange-600 text-white font-bold hover:bg-orange-500 transition-all shadow-lg"
+								>
+									{t('settings.switchConfirm', 'Switch')}
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
+
 				<div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 transition-opacity duration-300 ${!isConnected ? "opacity-50 pointer-events-none grayscale" : ""}`}>
 					{/* Column 1: Requests & Suggestions */}
 					<div className="space-y-4">
