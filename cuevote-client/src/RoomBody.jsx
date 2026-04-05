@@ -658,7 +658,7 @@ function RoomBody() {
         if (!isThrottleDismissActive()) setIpBlockDetected(true);
       }
     }
-    if (isPlayerReady && playerRef.current) {
+    if (!isSpotify && isPlayerReady && playerRef.current) {
       try {
         if (captionsEnabled && currentTrack?.language) {
           console.log("[Player] Setting Caption Language:", currentTrack.language);
@@ -672,7 +672,7 @@ function RoomBody() {
         console.error("Failed to set/clear caption language", e);
       }
     }
-  }, [currentTrack, isPlayerReady, captionsEnabled]);
+  }, [currentTrack, isPlayerReady, captionsEnabled, isSpotify]);
 
 
   // YouTube API Loading
