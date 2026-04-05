@@ -33,6 +33,8 @@ export function SettingsView({
 	const { t } = Language.useLanguage();
 	const [deleteChannelText, setDeleteChannelText] = React.useState("");
 	const [showDeleteChannelConfirm, setShowDeleteChannelConfirm] = React.useState(false);
+	const [pendingSource, setPendingSource] = React.useState(null);
+	const [showSourceWarning, setShowSourceWarning] = React.useState(false);
 
 	useEffect(() => {
 		onFullscreenOverlay?.(showDeleteChannelConfirm);
