@@ -213,8 +213,15 @@ start_tunnel() {
 
     local redirect_uri="${tunnel_url}/api/spotify/callback"
 
-    # Update .env
+    # Update server .env with tunnel redirect URI
     sed -i '' "s|^SPOTIFY_REDIRECT_URI=.*|SPOTIFY_REDIRECT_URI=${redirect_uri}|" "$SERVER_DIR/.env"
+
+    # Update client .env so frontend API calls go through the tunnel
+    if grep -q '^VITE_WS_URL=' "$CLIENT_DIR/.env" 2>/dev/null; then
+        sed -i '' "s|^VITE_WS_URL=.*|VITE_WS_URL=${tunnel_url}/ws|" "$CLIENT_DIR/.env"
+    else
+        echo "VITE_WS_URL=${tunnel_url}/ws" >> "$CLIENT_DIR/.env"
+    fi
 
     # Restart backend so spotify.js picks up the new URI
     echo "  -> Restarting backend with tunnel redirect URI..."
@@ -255,6 +262,9 @@ stop_tunnel() {
     fi
 
     rm -f "$TUNNEL_PID_FILE" "$TUNNEL_LOG_FILE" "$TUNNEL_ORIG_URI_FILE"
+
+    # Remove tunnel VITE_WS_URL from client .env
+    sed -i '' '/^VITE_WS_URL=/d' "$CLIENT_DIR/.env" 2>/dev/null || true
 
     # Restart backend if running
     if lsof -ti :8080 > /dev/null 2>&1; then
@@ -485,6 +495,14 @@ print_urls() {
         echo "    Frontend:  ${proto}://localhost:5173"
     fi
     echo "    Backend:   ${proto}://localhost:8080"
+    # If tunnel is active, show it as the primary URL for Spotify testing
+    if [ -f "$TUNNEL_PID_FILE" ] && kill -0 "$(cat "$TUNNEL_PID_FILE")" 2>/dev/null; then
+        local turl
+        turl=$(grep -o 'https://[a-zA-Z0-9-]*\.trycloudflare\.com' "$TUNNEL_LOG_FILE" 2>/dev/null | head -1)
+        if [ -n "$turl" ]; then
+            echo "    Tunnel:    $turl  (use this for Spotify!)"
+        fi
+    fi
     echo "    PM2 logs:  pm2 logs $PM2_PROCESS_NAME"
 }
 
