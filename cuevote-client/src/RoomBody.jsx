@@ -782,6 +782,12 @@ function RoomBody() {
     return new Promise((resolve, reject) => {
       if (!hasConsent) return reject("No Consent");
       if (window.Spotify) return resolve(window.Spotify);
+      // Prevent duplicate script tags if SDK is already loading
+      const existing = document.querySelector('script[src="https://sdk.scdn.co/spotify-player.js"]');
+      if (existing) {
+        window.onSpotifyWebPlaybackSDKReady = () => resolve(window.Spotify);
+        return;
+      }
       const script = document.createElement("script");
       script.src = "https://sdk.scdn.co/spotify-player.js";
       script.onerror = reject;
