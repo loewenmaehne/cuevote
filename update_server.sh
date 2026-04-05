@@ -216,7 +216,7 @@ start_tunnel() {
     # Update server .env with tunnel redirect URI
     sed -i '' "s|^SPOTIFY_REDIRECT_URI=.*|SPOTIFY_REDIRECT_URI=${redirect_uri}|" "$SERVER_DIR/.env"
 
-    # Update client .env so frontend API calls go through the tunnel
+    # Update client .env so frontend routes API/WebSocket calls through the tunnel
     if grep -q '^VITE_WS_URL=' "$CLIENT_DIR/.env" 2>/dev/null; then
         sed -i '' "s|^VITE_WS_URL=.*|VITE_WS_URL=${tunnel_url}/ws|" "$CLIENT_DIR/.env"
     else

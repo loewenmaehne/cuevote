@@ -37,6 +37,19 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     https: httpsConfig,
+    // Proxy API and WebSocket requests to the backend server
+    proxy: {
+      '/api': {
+        target: httpsConfig ? 'https://localhost:8080' : 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/ws': {
+        target: httpsConfig ? 'wss://localhost:8080' : 'ws://localhost:8080',
+        ws: true,
+        secure: false,
+      },
+    },
     // For local development only; avoid exposing this dev server to the public internet.
     headers: process.env.NODE_ENV === 'development'
       ? {
