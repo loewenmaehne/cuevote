@@ -765,7 +765,7 @@ class Room {
                     return;
                 }
                 try {
-                    const results = await spotify.getRecommendations(trackId, artist, ownerToken, 6);
+                    const results = await spotify.getRecommendations(trackId, ownerToken, 6);
                     if (results && results.length > 0) {
                         const suggestions = results
                             .filter(r => r.trackId !== trackId)

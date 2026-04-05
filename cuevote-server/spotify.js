@@ -163,7 +163,7 @@ async function getTrackDetails(trackId, accessToken) {
     };
 }
 
-async function getRecommendations(trackId, artist, accessToken, limit = 6) {
+async function getRecommendations(trackId, accessToken, limit = 6) {
     const params = new URLSearchParams({
         seed_tracks: trackId,
         limit: String(limit),
