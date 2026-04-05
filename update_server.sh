@@ -20,41 +20,11 @@ detect_worktree() {
         toplevel="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
         WORKTREE_NAME="$(basename "$toplevel")"
         IS_WORKTREE=true
+        echo "  ┌─ Worktree mode ─────────────────────────────"
+        echo "  │ Worktree:  $WORKTREE_NAME"
+        echo "  └─────────────────────────────────────────────"
     else
         IS_WORKTREE=false
-    fi
-}
-
-stop_existing_on_port() {
-    local port=$1
-    local pid
-    pid=$(lsof -iTCP:"$port" -sTCP:LISTEN -t 2>/dev/null) || true
-    if [ -n "$pid" ]; then
-        echo "  -> Stopping existing process on port $port (PID $pid)..."
-        # Try to find and stop via PM2 first
-        local pm2_name
-        pm2_name=$(pm2 jlist 2>/dev/null | node -e "
-            let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{
-                try{JSON.parse(d).forEach(p=>{if(p.pid==$pid)console.log(p.name)})}catch(e){}
-            })" 2>/dev/null) || true
-        if [ -n "$pm2_name" ]; then
-            echo "  -> Stopping PM2 process '$pm2_name'..."
-            pm2 delete "$pm2_name" 2>/dev/null || true
-        else
-            kill "$pid" 2>/dev/null || true
-        fi
-    fi
-}
-
-setup_worktree_config() {
-    if [ "$IS_WORKTREE" = true ]; then
-        PM2_PROCESS_NAME="cuevote-${WORKTREE_NAME}"
-        echo "  ┌─ Worktree mode ─────────────────────────────"
-        echo "  │ Worktree:    $WORKTREE_NAME"
-        echo "  │ PM2 name:    $PM2_PROCESS_NAME"
-        echo "  └─────────────────────────────────────────────"
-        stop_existing_on_port 8080
-        stop_existing_on_port 5173
     fi
 }
 
@@ -69,8 +39,6 @@ do_update() {
         echo "Error: pm2 is not installed or not in PATH."
         exit 1
     fi
-
-    setup_worktree_config
 
     # 1. Sync to latest remote main
     if [ "$IS_WORKTREE" = true ]; then
@@ -135,8 +103,6 @@ do_start() {
         exit 1
     fi
 
-    setup_worktree_config
-
     if [ -f "$CLIENT_DIR/package.json" ] && [ ! -d "$CLIENT_DIR/node_modules" ]; then
         echo "Installing client dependencies..."
         cd "$CLIENT_DIR" && npm install --silent && cd ..
@@ -169,8 +135,6 @@ do_stop() {
         echo "Error: pm2 is not installed or not in PATH."
         exit 1
     fi
-
-    setup_worktree_config
 
     if pm2 describe "$PM2_PROCESS_NAME" > /dev/null 2>&1; then
         pm2 stop "$PM2_PROCESS_NAME"
