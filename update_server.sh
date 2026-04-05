@@ -133,6 +133,148 @@ start_vite_dev() {
     echo "  -> Vite dev server running."
 }
 
+# ---- Cloudflare Tunnel (Spotify OAuth) ----
+
+TUNNEL_PID_FILE=".cloudflared.pid"
+TUNNEL_LOG_FILE=".cloudflared.log"
+TUNNEL_ORIG_URI_FILE=".tunnel_original_redirect_uri"
+
+ensure_cloudflared() {
+    if command -v cloudflared &> /dev/null; then
+        return 0
+    fi
+    echo "  -> cloudflared not found. Installing via Homebrew..."
+    if command -v brew &> /dev/null; then
+        brew install cloudflared
+    else
+        echo "  ERROR: cloudflared not found and Homebrew not available."
+        echo "  Install manually: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/"
+        return 1
+    fi
+}
+
+start_tunnel() {
+    if [ "$IS_LOCAL" != true ]; then
+        echo "  ERROR: Tunnels are only for local development (macOS)."
+        return 1
+    fi
+
+    # Already running?
+    if [ -f "$TUNNEL_PID_FILE" ]; then
+        local pid
+        pid=$(cat "$TUNNEL_PID_FILE")
+        if kill -0 "$pid" 2>/dev/null; then
+            local existing_url
+            existing_url=$(grep -o 'https://[a-zA-Z0-9-]*\.trycloudflare\.com' "$TUNNEL_LOG_FILE" 2>/dev/null | head -1)
+            echo "  Tunnel already running (PID $pid): ${existing_url:-unknown}"
+            return 0
+        fi
+        # Stale PID file
+        rm -f "$TUNNEL_PID_FILE" "$TUNNEL_LOG_FILE"
+    fi
+
+    # Backend must be running
+    if ! lsof -ti :8080 > /dev/null 2>&1; then
+        echo "  ERROR: Backend not running on port 8080."
+        echo "  Run 'bash update_server.sh start' first."
+        return 1
+    fi
+
+    ensure_cloudflared || return 1
+
+    # Save original redirect URI
+    grep '^SPOTIFY_REDIRECT_URI=' "$SERVER_DIR/.env" | cut -d= -f2- > "$TUNNEL_ORIG_URI_FILE" 2>/dev/null || true
+
+    # Detect if backend runs HTTPS or HTTP
+    local backend_proto="http"
+    if [ -f "$CERT_DIR/localhost.pem" ] && [ -f "$CERT_DIR/localhost-key.pem" ]; then
+        backend_proto="https"
+    fi
+
+    echo "  -> Starting Cloudflare tunnel (-> ${backend_proto}://localhost:8080)..."
+    cloudflared tunnel --url "${backend_proto}://localhost:8080" --no-tls-verify > /dev/null 2> "$TUNNEL_LOG_FILE" &
+    echo $! > "$TUNNEL_PID_FILE"
+
+    # Poll for tunnel URL
+    local attempts=0 tunnel_url=""
+    while [ -z "$tunnel_url" ] && [ "$attempts" -lt 30 ]; do
+        sleep 1
+        tunnel_url=$(grep -o 'https://[a-zA-Z0-9-]*\.trycloudflare\.com' "$TUNNEL_LOG_FILE" 2>/dev/null | head -1)
+        attempts=$((attempts + 1))
+    done
+
+    if [ -z "$tunnel_url" ]; then
+        echo "  ERROR: Could not capture tunnel URL within 30s."
+        echo "  Check $TUNNEL_LOG_FILE for details."
+        kill "$(cat "$TUNNEL_PID_FILE")" 2>/dev/null || true
+        rm -f "$TUNNEL_PID_FILE"
+        return 1
+    fi
+
+    local redirect_uri="${tunnel_url}/api/spotify/callback"
+
+    # Update .env
+    sed -i '' "s|^SPOTIFY_REDIRECT_URI=.*|SPOTIFY_REDIRECT_URI=${redirect_uri}|" "$SERVER_DIR/.env"
+
+    # Restart backend so spotify.js picks up the new URI
+    echo "  -> Restarting backend with tunnel redirect URI..."
+    restart_backend
+
+    echo ""
+    echo "  ┌─ Cloudflare Tunnel ─────────────────────────────"
+    echo "  │ Tunnel:       $tunnel_url"
+    echo "  │ Redirect URI: $redirect_uri"
+    echo "  │"
+    echo "  │ ACTION REQUIRED:"
+    echo "  │ 1. Open https://developer.spotify.com/dashboard"
+    echo "  │ 2. Select your app → Settings → Redirect URIs"
+    echo "  │ 3. Add: $redirect_uri"
+    echo "  │ 4. Click Save"
+    echo "  └──────────────────────────────────────────────────"
+}
+
+stop_tunnel() {
+    if [ ! -f "$TUNNEL_PID_FILE" ]; then
+        echo "  No tunnel running."
+        return 0
+    fi
+
+    local pid
+    pid=$(cat "$TUNNEL_PID_FILE")
+    kill "$pid" 2>/dev/null || true
+    echo "  -> Tunnel stopped (PID $pid)."
+
+    # Restore original redirect URI
+    if [ -f "$TUNNEL_ORIG_URI_FILE" ]; then
+        local original_uri
+        original_uri=$(cat "$TUNNEL_ORIG_URI_FILE")
+        if [ -n "$original_uri" ]; then
+            sed -i '' "s|^SPOTIFY_REDIRECT_URI=.*|SPOTIFY_REDIRECT_URI=${original_uri}|" "$SERVER_DIR/.env"
+            echo "  -> Restored original SPOTIFY_REDIRECT_URI."
+        fi
+    fi
+
+    rm -f "$TUNNEL_PID_FILE" "$TUNNEL_LOG_FILE" "$TUNNEL_ORIG_URI_FILE"
+
+    # Restart backend if running
+    if lsof -ti :8080 > /dev/null 2>&1; then
+        echo "  -> Restarting backend with original redirect URI..."
+        restart_backend
+    fi
+}
+
+tunnel_status() {
+    if [ -f "$TUNNEL_PID_FILE" ] && kill -0 "$(cat "$TUNNEL_PID_FILE")" 2>/dev/null; then
+        local turl
+        turl=$(grep -o 'https://[a-zA-Z0-9-]*\.trycloudflare\.com' "$TUNNEL_LOG_FILE" 2>/dev/null | head -1)
+        echo "  Tunnel: running (${turl:-unknown URL})"
+        echo "  Redirect URI: $(grep '^SPOTIFY_REDIRECT_URI=' "$SERVER_DIR/.env" | cut -d= -f2-)"
+    else
+        echo "  Tunnel: not running"
+        rm -f "$TUNNEL_PID_FILE" 2>/dev/null || true
+    fi
+}
+
 # ---- Subcommands ----
 
 do_update() {
@@ -247,6 +389,11 @@ do_stop() {
         echo "Vite dev server stopped."
     fi
 
+    # Stop Cloudflare tunnel (if running)
+    if [ -f "$TUNNEL_PID_FILE" ]; then
+        stop_tunnel
+    fi
+
     # Stop anything on backend port
     kill_port 8080
 
@@ -286,6 +433,11 @@ do_status() {
     else
         echo "HTTPS: disabled (no certs — run 'bash update_server.sh start' to auto-generate)"
     fi
+
+    echo ""
+
+    # Tunnel status
+    tunnel_status
 }
 
 print_urls() {
@@ -308,8 +460,11 @@ show_usage() {
     echo "Commands:"
     echo "  (no command)   Update code, build client, restart all services"
     echo "  start          Start all services (without pulling updates)"
-    echo "  stop           Stop all services (backend + Vite dev server)"
-    echo "  status         Show service status, ports, and HTTPS info"
+    echo "  stop           Stop all services (backend + Vite + tunnel)"
+    echo "  status         Show service status, ports, HTTPS, and tunnel info"
+    echo "  tunnel         Start Cloudflare tunnel for Spotify OAuth (macOS only)"
+    echo "  tunnel stop    Stop the tunnel and restore original redirect URI"
+    echo "  tunnel status  Show tunnel URL and status"
     echo "  help           Show this help message"
 }
 
@@ -320,6 +475,17 @@ case "${1:-update}" in
     start)    do_start    ;;
     stop)     do_stop     ;;
     status)   do_status   ;;
+    tunnel)
+        case "${2:-start}" in
+            start)   start_tunnel  ;;
+            stop)    stop_tunnel   ;;
+            status)  tunnel_status ;;
+            *)
+                echo "Usage: bash update_server.sh tunnel [start|stop|status]"
+                exit 1
+                ;;
+        esac
+        ;;
     help|-h|--help)  show_usage ;;
     *)
         echo "Unknown command: $1"
