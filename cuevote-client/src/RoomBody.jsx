@@ -863,8 +863,13 @@ function RoomBody() {
           setIsLocallyPlaying(false);
         }
 
-        // Detect track end
-        if (paused && position === 0 && track_window?.previous_tracks?.length > 0) {
+        // Detect track end: paused at position 0 with previous tracks means the track finished,
+        // OR paused at a position very close to the duration (within 1s tolerance)
+        const isAtEnd = paused && (
+          (position === 0 && track_window?.previous_tracks?.length > 0) ||
+          (duration > 0 && position >= duration - 1000)
+        );
+        if (isAtEnd) {
           if (isOwnerRef.current) {
             sendMessage({ type: "NEXT_TRACK" });
           }
