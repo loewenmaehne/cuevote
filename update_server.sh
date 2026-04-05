@@ -304,6 +304,13 @@ auto_start_tunnel_if_needed() {
     if [ -f "$TUNNEL_PID_FILE" ] && kill -0 "$(cat "$TUNNEL_PID_FILE")" 2>/dev/null; then
         echo ""
         echo "  -> Cloudflare tunnel already running."
+        # Ensure VITE_WS_URL is set (may have been lost if .env was edited)
+        local turl
+        turl=$(grep -o 'https://[a-zA-Z0-9-]*\.trycloudflare\.com' "$TUNNEL_LOG_FILE" 2>/dev/null | head -1)
+        if [ -n "$turl" ] && ! grep -q '^VITE_WS_URL=' "$CLIENT_DIR/.env" 2>/dev/null; then
+            echo "VITE_WS_URL=${turl}/ws" >> "$CLIENT_DIR/.env"
+            echo "  -> Re-added VITE_WS_URL to client .env"
+        fi
         tunnel_status
         return 0
     fi
@@ -368,12 +375,12 @@ do_update() {
     echo "[4/4] Restarting services..."
     restart_backend
 
+    # Auto-start tunnel BEFORE Vite so VITE_WS_URL is set when Vite reads .env
+    auto_start_tunnel_if_needed
+
     if [ "$IS_LOCAL" = true ]; then
         start_vite_dev
     fi
-
-    # Auto-start tunnel in worktree mode when Spotify is configured
-    auto_start_tunnel_if_needed
 
     echo ""
     echo "==== Update Completed Successfully ===="
@@ -399,12 +406,12 @@ do_start() {
 
     restart_backend
 
+    # Auto-start tunnel BEFORE Vite so VITE_WS_URL is set when Vite reads .env
+    auto_start_tunnel_if_needed
+
     if [ "$IS_LOCAL" = true ]; then
         start_vite_dev
     fi
-
-    # Auto-start tunnel in worktree mode when Spotify is configured
-    auto_start_tunnel_if_needed
 
     echo ""
     echo "==== Server Started ===="
