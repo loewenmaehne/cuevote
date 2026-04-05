@@ -890,6 +890,7 @@ function RoomBody() {
 
       player.addListener('account_error', ({ message }) => {
         console.error('[Spotify] Account error (Premium required?):', message);
+        setToast({ message: "Spotify Premium is required for playback.", type: "error" });
       });
 
       await player.connect();
@@ -919,6 +920,7 @@ function RoomBody() {
         spotifyAuthListenerRef.current = null;
       } else if (event.data?.type === 'SPOTIFY_AUTH_ERROR') {
         console.error('[Spotify] Auth error:', event.data.error);
+        setToast({ message: "Spotify authentication failed. Please try again.", type: "error" });
         window.removeEventListener('message', handleMessage);
         spotifyAuthListenerRef.current = null;
       }
