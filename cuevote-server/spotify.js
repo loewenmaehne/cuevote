@@ -150,45 +150,8 @@ function hasTokens(userId) {
     return tokenStore.has(userId);
 }
 
-async function searchSpotify(query, accessToken, limit = 5) {
-    const params = new URLSearchParams({
-        q: query,
-        type: 'track',
-        limit: String(limit),
-    });
-    const res = await fetch(`https://api.spotify.com/v1/search?${params.toString()}`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` },
-    });
-    if (!res.ok) {
-        const text = await res.text();
-        logger.error('[Spotify] Search failed:', text);
-        throw new Error(`Search failed: ${res.status}`);
-    }
-    const data = await res.json();
-    const tracks = data.tracks?.items;
-    if (!tracks || tracks.length === 0) return [];
-
-    return tracks.map(t => ({
-        trackId: t.id,
-        title: t.name,
-        artist: t.artists.map(a => a.name).join(', '),
-        thumbnail: t.album?.images?.[0]?.url || null,
-        duration: Math.round(t.duration_ms / 1000),
-        previewUrl: t.preview_url || null,
-        source: 'spotify',
-    }));
-}
-
-async function getTrackDetails(trackId, accessToken) {
-    const res = await fetch(`https://api.spotify.com/v1/tracks/${encodeURIComponent(trackId)}`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` },
-    });
-    if (!res.ok) {
-        const text = await res.text();
-        logger.error('[Spotify] Track details failed:', text);
-        throw new Error(`Track details failed: ${res.status}`);
-    }
-    const t = await res.json();
+// Map Spotify API track object to our internal format
+function mapTrack(t) {
     return {
         trackId: t.id,
         title: t.name,
@@ -200,32 +163,60 @@ async function getTrackDetails(trackId, accessToken) {
     };
 }
 
+// Spotify API fetch with 429 rate-limit handling (single retry after Retry-After delay)
+async function spotifyFetch(url, accessToken, label) {
+    const res = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${accessToken}` },
+    });
+    if (res.status === 429) {
+        const retryAfter = parseInt(res.headers.get('Retry-After') || '2', 10);
+        logger.warn(`[Spotify] Rate limited on ${label}, retrying after ${retryAfter}s`);
+        await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+        const retry = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${accessToken}` },
+        });
+        if (!retry.ok) {
+            const text = await retry.text();
+            logger.error(`[Spotify] ${label} failed after retry:`, text);
+            throw new Error(`${label} failed: ${retry.status}`);
+        }
+        return retry.json();
+    }
+    if (!res.ok) {
+        const text = await res.text();
+        logger.error(`[Spotify] ${label} failed:`, text);
+        throw new Error(`${label} failed: ${res.status}`);
+    }
+    return res.json();
+}
+
+async function searchSpotify(query, accessToken, limit = 5) {
+    const params = new URLSearchParams({
+        q: query,
+        type: 'track',
+        limit: String(limit),
+    });
+    const data = await spotifyFetch(`https://api.spotify.com/v1/search?${params.toString()}`, accessToken, 'Search');
+    const tracks = data.tracks?.items;
+    if (!tracks || tracks.length === 0) return [];
+    return tracks.map(mapTrack);
+}
+
+async function getTrackDetails(trackId, accessToken) {
+    const t = await spotifyFetch(`https://api.spotify.com/v1/tracks/${encodeURIComponent(trackId)}`, accessToken, 'Track details');
+    return mapTrack(t);
+}
+
 async function getRecommendations(trackId, accessToken, limit = 6) {
     const params = new URLSearchParams({
         seed_tracks: trackId,
         limit: String(limit),
     });
-    const res = await fetch(`https://api.spotify.com/v1/recommendations?${params.toString()}`, {
-        headers: { 'Authorization': `Bearer ${accessToken}` },
-    });
-    if (!res.ok) {
-        const text = await res.text();
-        logger.error('[Spotify] Recommendations failed:', text);
-        throw new Error(`Recommendations failed: ${res.status}`);
-    }
-    const data = await res.json();
+    const data = await spotifyFetch(`https://api.spotify.com/v1/recommendations?${params.toString()}`, accessToken, 'Recommendations');
     const tracks = data.tracks;
     if (!tracks || tracks.length === 0) return [];
 
-    return tracks.map(t => ({
-        trackId: t.id,
-        title: t.name,
-        artist: t.artists.map(a => a.name).join(', '),
-        thumbnail: t.album?.images?.[0]?.url || null,
-        duration: Math.round(t.duration_ms / 1000),
-        previewUrl: t.preview_url || null,
-        source: 'spotify',
-    }));
+    return tracks.map(mapTrack);
 }
 
 module.exports = {
