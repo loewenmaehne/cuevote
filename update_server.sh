@@ -275,6 +275,34 @@ tunnel_status() {
     fi
 }
 
+auto_start_tunnel_if_needed() {
+    # In worktree mode on macOS, localhost URLs won't work for Spotify OAuth
+    # because Spotify rejects non-HTTPS localhost in redirect URIs from other machines.
+    # Auto-start the Cloudflare tunnel if Spotify credentials are configured.
+    if [ "$IS_WORKTREE" != true ] || [ "$IS_LOCAL" != true ]; then
+        return 0
+    fi
+
+    # Check if Spotify is configured in .env
+    local client_id
+    client_id="$(grep '^SPOTIFY_CLIENT_ID=' "$SERVER_DIR/.env" 2>/dev/null | cut -d= -f2-)"
+    if [ -z "$client_id" ]; then
+        return 0
+    fi
+
+    # Check if tunnel is already running
+    if [ -f "$TUNNEL_PID_FILE" ] && kill -0 "$(cat "$TUNNEL_PID_FILE")" 2>/dev/null; then
+        echo ""
+        echo "  -> Cloudflare tunnel already running."
+        tunnel_status
+        return 0
+    fi
+
+    echo ""
+    echo "  -> Worktree + Spotify detected — auto-starting Cloudflare tunnel..."
+    start_tunnel
+}
+
 # ---- Subcommands ----
 
 do_update() {
@@ -334,6 +362,9 @@ do_update() {
         start_vite_dev
     fi
 
+    # Auto-start tunnel in worktree mode when Spotify is configured
+    auto_start_tunnel_if_needed
+
     echo ""
     echo "==== Update Completed Successfully ===="
     print_urls
@@ -361,6 +392,9 @@ do_start() {
     if [ "$IS_LOCAL" = true ]; then
         start_vite_dev
     fi
+
+    # Auto-start tunnel in worktree mode when Spotify is configured
+    auto_start_tunnel_if_needed
 
     echo ""
     echo "==== Server Started ===="
