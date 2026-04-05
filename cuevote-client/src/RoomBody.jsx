@@ -974,15 +974,29 @@ function RoomBody() {
     const token = await fetchSpotifyToken();
     if (!token) return;
     try {
-      await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
+      const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ uris: [`spotify:track:${trackId}`], position_ms: positionMs }),
       });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        console.error(`[Spotify] Play track HTTP ${res.status}:`, text);
+        if (res.status === 401 || res.status === 403) {
+          setSpotifyNeedsAuth(true);
+          if (isOwnerRef.current) {
+            sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_AUTH_ERROR' } });
+          }
+        } else if (res.status === 404) {
+          // Device not found — player may have disconnected
+          setSpotifyDeviceId(null);
+          setIsPlayerReady(false);
+        }
+      }
     } catch (e) {
       console.error("[Spotify] Play track failed:", e);
     }
-  }, [spotifyDeviceId, fetchSpotifyToken]);
+  }, [spotifyDeviceId, fetchSpotifyToken, sendMessage]);
 
   // Main playback logic
   useEffect(() => {
