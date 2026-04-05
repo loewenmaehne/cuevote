@@ -7,6 +7,7 @@ set -e
 SERVER_DIR="cuevote-server"
 CLIENT_DIR="cuevote-client"
 PM2_PROCESS_NAME="cuevote-server"
+BASE_PORT=8080
 
 # ---- Worktree detection ----
 
@@ -25,12 +26,24 @@ detect_worktree() {
     fi
 }
 
+find_free_port() {
+    local port=$1
+    while lsof -iTCP:"$port" -sTCP:LISTEN -t > /dev/null 2>&1; do
+        port=$((port + 1))
+    done
+    echo "$port"
+}
+
 setup_worktree_config() {
     if [ "$IS_WORKTREE" = true ]; then
         PM2_PROCESS_NAME="cuevote-${WORKTREE_NAME}"
+        local port
+        port=$(find_free_port "$BASE_PORT")
+        export PORT="$port"
         echo "  ┌─ Worktree mode ─────────────────────────────"
         echo "  │ Worktree:    $WORKTREE_NAME"
         echo "  │ PM2 name:    $PM2_PROCESS_NAME"
+        echo "  │ Port:        $port"
         echo "  └─────────────────────────────────────────────"
     fi
 }
