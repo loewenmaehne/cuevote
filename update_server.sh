@@ -25,6 +25,27 @@ detect_worktree() {
     fi
 }
 
+stop_existing_on_port() {
+    local port=$1
+    local pid
+    pid=$(lsof -iTCP:"$port" -sTCP:LISTEN -t 2>/dev/null) || true
+    if [ -n "$pid" ]; then
+        echo "  -> Stopping existing process on port $port (PID $pid)..."
+        # Try to find and stop via PM2 first
+        local pm2_name
+        pm2_name=$(pm2 jlist 2>/dev/null | node -e "
+            let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{
+                try{JSON.parse(d).forEach(p=>{if(p.pid==$pid)console.log(p.name)})}catch(e){}
+            })" 2>/dev/null) || true
+        if [ -n "$pm2_name" ]; then
+            echo "  -> Stopping PM2 process '$pm2_name'..."
+            pm2 delete "$pm2_name" 2>/dev/null || true
+        else
+            kill "$pid" 2>/dev/null || true
+        fi
+    fi
+}
+
 setup_worktree_config() {
     if [ "$IS_WORKTREE" = true ]; then
         PM2_PROCESS_NAME="cuevote-${WORKTREE_NAME}"
@@ -32,6 +53,7 @@ setup_worktree_config() {
         echo "  │ Worktree:    $WORKTREE_NAME"
         echo "  │ PM2 name:    $PM2_PROCESS_NAME"
         echo "  └─────────────────────────────────────────────"
+        stop_existing_on_port 8080
     fi
 }
 
