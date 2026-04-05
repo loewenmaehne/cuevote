@@ -1018,10 +1018,17 @@ function RoomBody() {
       if (!res.ok) {
         const text = await res.text().catch(() => '');
         console.error(`[Spotify] Play track HTTP ${res.status}:`, text);
-        if (res.status === 401 || res.status === 403) {
+        if (res.status === 401) {
+          // Token expired or invalid — need re-auth
           setSpotifyNeedsAuth(true);
           if (isOwnerRef.current) {
             sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_AUTH_ERROR' } });
+          }
+        } else if (res.status === 403) {
+          // Track unavailable (regional restriction, Premium required, etc.) — skip it
+          console.warn(`[Spotify] Track ${trackId} unavailable (403), skipping`);
+          if (isOwnerRef.current) {
+            sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_TRACK_UNAVAILABLE' } });
           }
         } else if (res.status === 404) {
           // Device not found — player may have disconnected
