@@ -986,6 +986,9 @@ function RoomBody() {
     };
   }, [isSpotify]);
 
+  // Track the currently playing Spotify track to avoid redundant API calls
+  const spotifyCurrentTrackIdRef = useRef(null);
+
   // Spotify track loading helper
   const spotifyPlayTrack = useCallback(async (trackId, positionMs = 0) => {
     if (!spotifyDeviceId) return;
@@ -1022,7 +1025,9 @@ function RoomBody() {
     if (isPlayerReady && playerRef.current && targetTrack) {
       if (isSpotify) {
         const targetId = targetTrack.trackId;
-        if (targetId) {
+        // Only call Spotify API when the track actually changes (avoid redundant plays on state updates)
+        if (targetId && targetId !== spotifyCurrentTrackIdRef.current) {
+          spotifyCurrentTrackIdRef.current = targetId;
           const startMs = previewTrack ? 0 : (progressRef.current * 1000);
           spotifyPlayTrack(targetId, startMs);
         }
@@ -1034,6 +1039,7 @@ function RoomBody() {
         }
       }
     } else if (isPlayerReady && playerRef.current && !targetTrack) {
+      spotifyCurrentTrackIdRef.current = null;
       if (isSpotify) {
         playerRef.current.pause?.();
       } else {
