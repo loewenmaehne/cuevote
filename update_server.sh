@@ -286,10 +286,11 @@ tunnel_status() {
 }
 
 auto_start_tunnel_if_needed() {
-    # In worktree mode on macOS, localhost URLs won't work for Spotify OAuth
-    # because Spotify rejects non-HTTPS localhost in redirect URIs from other machines.
-    # Auto-start the Cloudflare tunnel if Spotify credentials are configured.
-    if [ "$IS_WORKTREE" != true ] || [ "$IS_LOCAL" != true ]; then
+    # On a non-main branch, auto-start the Cloudflare tunnel for Spotify OAuth testing.
+    # Covers both regular branch checkouts and worktrees (which are always on a branch).
+    local current_branch
+    current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+    if [ "$current_branch" = "main" ] || [ "$IS_LOCAL" != true ]; then
         return 0
     fi
 
