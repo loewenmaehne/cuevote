@@ -459,6 +459,12 @@ function RoomBody() {
     setSpotifyNeedsAuth(true);
   }, [lastMessage]);
 
+  // Handle Spotify room owner disconnect
+  useEffect(() => {
+    if (!lastMessage || lastMessage.type !== "SPOTIFY_OWNER_LEFT") return;
+    setToast({ message: "Room owner disconnected — playback paused.", type: "error" });
+  }, [lastMessage]);
+
   // No auto-clear for network throttle — IP blocks last hours, not minutes.
   // The banner clears only when the owner presses Retry and playback succeeds
   // (server resets state on PLAY_PAUSE:true and UPDATE_DURATION).

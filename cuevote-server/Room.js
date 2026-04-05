@@ -221,6 +221,16 @@ class Room {
 
     removeClient(ws) {
         this.clients.delete(ws);
+
+        // If the owner disconnected from a Spotify room, pause playback
+        // since the Spotify player only runs in the owner's browser
+        if (this.state.musicSource === 'spotify' && ws.user && ws.user.id === this.metadata.owner_id) {
+            if (this.state.isPlaying) {
+                logger.info(`[Room ${this.id}] Spotify room owner disconnected — pausing playback`);
+                this.updateState({ isPlaying: false });
+                this.broadcast({ type: "SPOTIFY_OWNER_LEFT", payload: {} });
+            }
+        }
     }
 
     broadcastState() {
