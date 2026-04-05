@@ -1271,7 +1271,7 @@ class Room {
                         artist: cachedVideo.artist,
                         thumbnail: cachedVideo.thumbnail,
                         duration: cachedVideo.duration,
-                        previewUrl: null,
+                        previewUrl: cachedVideo.preview_url || null,
                         score: 0,
                         voters: {},
                         suggestedBy: userId,
@@ -1342,6 +1342,7 @@ class Room {
                     category_id: null,
                     language: null,
                     source: 'spotify',
+                    preview_url: selectedResult.previewUrl || null,
                 });
                 db.cacheSearchTerm(cacheKey, dbId);
             } catch (err) {

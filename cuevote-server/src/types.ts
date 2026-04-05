@@ -45,6 +45,7 @@ export interface Video {
   category_id: string | null;
   language: string | null;
   source?: MusicSource;
+  preview_url?: string | null;
   fetched_at?: number;
 }
 

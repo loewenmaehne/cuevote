@@ -93,6 +93,7 @@ const migrations = [
   "ALTER TABLE rooms ADD COLUMN lobby_preview TEXT DEFAULT NULL",
   "ALTER TABLE rooms ADD COLUMN music_source TEXT DEFAULT 'youtube'",
   "ALTER TABLE videos ADD COLUMN source TEXT DEFAULT 'youtube'",
+  "ALTER TABLE videos ADD COLUMN preview_url TEXT DEFAULT NULL",
 ];
 for (const sql of migrations) {
   try { db.prepare(sql).run(); } catch { /* column already exists */ }
@@ -214,12 +215,14 @@ export function updateRoomSettings(id: string, settings: RoomSettings): void {
 
 export function upsertVideo(video: Partial<Video>): void {
   if (!video.source) video.source = 'youtube';
+  if (video.preview_url === undefined) video.preview_url = null;
   db.prepare(`
-    INSERT INTO videos (id, title, artist, thumbnail, duration, category_id, language, source, fetched_at)
-    VALUES (@id, @title, @artist, @thumbnail, @duration, @category_id, @language, @source, unixepoch())
+    INSERT INTO videos (id, title, artist, thumbnail, duration, category_id, language, source, preview_url, fetched_at)
+    VALUES (@id, @title, @artist, @thumbnail, @duration, @category_id, @language, @source, @preview_url, unixepoch())
     ON CONFLICT(id) DO UPDATE SET
       title = @title, artist = @artist, thumbnail = @thumbnail,
-      duration = @duration, category_id = @category_id, language = @language, source = @source, fetched_at = unixepoch()
+      duration = @duration, category_id = @category_id, language = @language, source = @source,
+      preview_url = @preview_url, fetched_at = unixepoch()
   `).run(video);
 }
 
@@ -308,6 +311,7 @@ export function addToRoomHistory(roomId: string, track: Partial<HistoryTrack>): 
     category_id: track.category_id || (isSpotify ? null : '10'),
     language: track.language || null,
     source: track.source || 'youtube',
+    preview_url: track.previewUrl ?? null,
   });
   const playedAt = track.playedAt ? Math.floor(track.playedAt / 1000) : Math.floor(Date.now() / 1000);
   db.prepare(`
@@ -328,6 +332,7 @@ export function getRoomHistory(roomId: string): HistoryTrack[] {
       ...row,
       videoId: isSpotify ? undefined : rawId,
       trackId: isSpotify ? rawId : undefined,
+      previewUrl: row.preview_url || null,
       source: row.source || 'youtube',
       playedAt: row.played_at * 1000,
     };
