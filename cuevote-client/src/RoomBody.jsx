@@ -968,6 +968,13 @@ function RoomBody() {
     }
   }, [initializePlayer, initializeSpotifyPlayer, hasConsent, isSpotify]);
 
+  // Retry Spotify init when owner status becomes known (fixes race where DOM mounts before server state)
+  useEffect(() => {
+    if (isSpotify && isOwner && hasConsent && !isPlayerReady && !spotifyNeedsAuth) {
+      initializeSpotifyPlayer();
+    }
+  }, [isOwner, isSpotify, hasConsent, isPlayerReady, spotifyNeedsAuth, initializeSpotifyPlayer]);
+
   // Clean up old player when music source switches
   useEffect(() => {
     return () => {
