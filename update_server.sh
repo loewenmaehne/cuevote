@@ -290,7 +290,7 @@ auto_start_tunnel_if_needed() {
     # Covers both regular branch checkouts and worktrees (which are always on a branch).
     local current_branch
     current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
-    if [ "$current_branch" = "main" ] || [ "$IS_LOCAL" != true ]; then
+    if [ "$current_branch" = "main" ]; then
         return 0
     fi
 
