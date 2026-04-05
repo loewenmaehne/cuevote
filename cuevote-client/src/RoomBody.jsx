@@ -968,6 +968,24 @@ function RoomBody() {
     }
   }, [initializePlayer, initializeSpotifyPlayer, hasConsent, isSpotify]);
 
+  // Clean up old player when music source switches
+  useEffect(() => {
+    return () => {
+      if (playerRef.current) {
+        playerInitIdRef.current++;
+        if (typeof playerRef.current.disconnect === 'function') {
+          try { playerRef.current.disconnect(); } catch (e) { /* Spotify cleanup */ }
+        }
+        if (typeof playerRef.current.destroy === 'function') {
+          try { playerRef.current.destroy(); } catch (e) { /* YouTube cleanup */ }
+        }
+        playerRef.current = null;
+        setIsPlayerReady(false);
+        setSpotifyDeviceId(null);
+      }
+    };
+  }, [isSpotify]);
+
   // Spotify track loading helper
   const spotifyPlayTrack = useCallback(async (trackId, positionMs = 0) => {
     if (!spotifyDeviceId) return;
