@@ -99,9 +99,10 @@ const requestHandler = async (req, res) => {
 
         if (error) {
             logger.info(`[Spotify] OAuth denied: ${error}`);
+            const safeError = JSON.stringify(String(error));
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(`<html><body><script>
-                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: '${error}' }, '*');
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: ${safeError} }, '*');
                 window.close();
             </script><p>Authentication denied. You can close this window.</p></body></html>`);
             return;
@@ -134,9 +135,21 @@ const requestHandler = async (req, res) => {
 
     if (pathname === '/api/spotify/token' && req.method === 'GET') {
         const userId = parsedUrl.searchParams.get('userId');
+        const sessionToken = parsedUrl.searchParams.get('session');
         if (!userId) {
             res.writeHead(400, { 'Content-Type': 'application/json', ...CORS_HEADERS });
             res.end(JSON.stringify({ error: 'userId required' }));
+            return;
+        }
+        if (!sessionToken) {
+            res.writeHead(401, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+            res.end(JSON.stringify({ error: 'session required' }));
+            return;
+        }
+        const session = db.getSession(sessionToken);
+        if (!session || session.user_id !== userId) {
+            res.writeHead(403, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+            res.end(JSON.stringify({ error: 'Unauthorized' }));
             return;
         }
         try {

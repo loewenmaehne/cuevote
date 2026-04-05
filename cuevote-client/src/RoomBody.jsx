@@ -792,9 +792,11 @@ function RoomBody() {
 
   const fetchSpotifyToken = useCallback(async () => {
     if (!user?.id) return null;
+    const sessionToken = localStorage.getItem("cuevote_session_token");
+    if (!sessionToken) return null;
     const serverUrl = import.meta.env.VITE_WS_URL?.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws', '') || window.location.origin;
     try {
-      const res = await fetch(`${serverUrl}/api/spotify/token?userId=${user.id}`);
+      const res = await fetch(`${serverUrl}/api/spotify/token?userId=${user.id}&session=${encodeURIComponent(sessionToken)}`);
       if (!res.ok) return null;
       const data = await res.json();
       spotifyTokenRef.current = data.token;
@@ -1180,9 +1182,12 @@ function RoomBody() {
     sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
   }, [user, sendMessage, t]);
 
-  const handleLibraryAdd = useCallback((videoId) => {
-    return handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
-  }, [handleSongSuggested]);
+  const handleLibraryAdd = useCallback((sourceId) => {
+    if (isSpotify) {
+      return handleSongSuggested(sourceId);
+    }
+    return handleSongSuggested(`https://www.youtube.com/watch?v=${sourceId}`);
+  }, [handleSongSuggested, isSpotify]);
 
   const handleRemoveFromLibrary = useCallback((sourceId) => {
     console.log("[App] Removing from Library:", sourceId);

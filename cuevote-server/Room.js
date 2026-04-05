@@ -632,11 +632,14 @@ class Room {
                     this.handleNextTrack();
                 }
                 break;
-            case "PLAYBACK_ERROR":
+            case "PLAYBACK_ERROR": {
+                const r = schemas.PlaybackErrorPayload.safeParse(message.payload);
+                if (!r.success) break;
                 if (isOwner(this, ws)) {
-                    await this.handlePlaybackError(ws, message.payload);
+                    await this.handlePlaybackError(ws, r.data);
                 }
                 break;
+            }
             case "UPDATE_DURATION": {
                 const r = schemas.UpdateDurationPayload.safeParse(message.payload);
                 if (!r.success) break;
