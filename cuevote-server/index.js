@@ -96,13 +96,14 @@ const requestHandler = async (req, res) => {
         const code = parsedUrl.searchParams.get('code');
         const stateToken = parsedUrl.searchParams.get('state');
         const error = parsedUrl.searchParams.get('error');
+        const postMessageOrigin = JSON.stringify(ALLOWED_ORIGINS[0] || process.env.URL || '*');
 
         if (error) {
             logger.info(`[Spotify] OAuth denied: ${error}`);
             const safeError = JSON.stringify(String(error));
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(`<html><body><script>
-                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: ${safeError} }, '*');
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: ${safeError} }, ${postMessageOrigin});
                 window.close();
             </script><p>Authentication denied. You can close this window.</p></body></html>`);
             return;
@@ -119,7 +120,7 @@ const requestHandler = async (req, res) => {
         if (!userId) {
             res.writeHead(400, { 'Content-Type': 'text/html' });
             res.end(`<html><body><script>
-                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'invalid_state' }, '*');
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'invalid_state' }, ${postMessageOrigin});
                 window.close();
             </script><p>Invalid or expired state. Please try again.</p></body></html>`);
             return;
@@ -130,14 +131,14 @@ const requestHandler = async (req, res) => {
             spotify.storeTokens(userId, tokenData);
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(`<html><body><script>
-                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_SUCCESS' }, '*');
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_SUCCESS' }, ${postMessageOrigin});
                 window.close();
             </script><p>Connected to Spotify! You can close this window.</p></body></html>`);
         } catch (err) {
             logger.error('[Spotify] OAuth callback error:', err.message);
             res.writeHead(500, { 'Content-Type': 'text/html' });
             res.end(`<html><body><script>
-                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'token_exchange_failed' }, '*');
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'token_exchange_failed' }, ${postMessageOrigin});
                 window.close();
             </script><p>Authentication failed. You can close this window.</p></body></html>`);
         }

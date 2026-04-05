@@ -923,6 +923,8 @@ function RoomBody() {
     const authWindow = window.open(`${serverUrl}/api/spotify/auth?userId=${user.id}`, 'spotify-auth', 'width=450,height=700');
 
     const handleMessage = (event) => {
+      // Validate origin to prevent spoofed postMessage attacks
+      if (event.origin !== new URL(serverUrl).origin) return;
       if (event.data?.type === 'SPOTIFY_AUTH_SUCCESS') {
         setSpotifyNeedsAuth(false);
         initializeSpotifyPlayer();
