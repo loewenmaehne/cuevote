@@ -1889,6 +1889,12 @@ function RoomBody() {
                         ) : (
                           <Player
                             playerContainerRef={playerContainerRef}
+                            musicSource={musicSource}
+                            currentTrack={currentTrack}
+                            spotifyNeedsAuth={spotifyNeedsAuth}
+                            onSpotifyAuth={openSpotifyAuth}
+                            isOwner={isOwner}
+                            isPlayerReady={isPlayerReady}
                           />
                         )}
                       </PlayerErrorBoundary>
