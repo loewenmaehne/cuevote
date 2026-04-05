@@ -808,7 +808,11 @@ function RoomBody() {
     if (!sessionToken) return null;
     const serverUrl = import.meta.env.VITE_WS_URL?.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws', '') || window.location.origin;
     try {
-      const res = await fetch(`${serverUrl}/api/spotify/token?userId=${user.id}&session=${encodeURIComponent(sessionToken)}`);
+      const res = await fetch(`${serverUrl}/api/spotify/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, session: sessionToken }),
+      });
       if (!res.ok) return null;
       const data = await res.json();
       spotifyTokenRef.current = data.token;

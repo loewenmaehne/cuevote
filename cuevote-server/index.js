@@ -144,39 +144,42 @@ const requestHandler = async (req, res) => {
         return;
     }
 
-    if (pathname === '/api/spotify/token' && req.method === 'GET') {
-        const userId = parsedUrl.searchParams.get('userId');
-        const sessionToken = parsedUrl.searchParams.get('session');
-        if (!userId) {
-            res.writeHead(400, { 'Content-Type': 'application/json', ...CORS_HEADERS });
-            res.end(JSON.stringify({ error: 'userId required' }));
-            return;
-        }
-        if (!sessionToken) {
-            res.writeHead(401, { 'Content-Type': 'application/json', ...CORS_HEADERS });
-            res.end(JSON.stringify({ error: 'session required' }));
-            return;
-        }
-        const session = db.getSession(sessionToken);
-        if (!session || session.user_id !== userId) {
-            res.writeHead(403, { 'Content-Type': 'application/json', ...CORS_HEADERS });
-            res.end(JSON.stringify({ error: 'Unauthorized' }));
-            return;
-        }
-        try {
-            const token = await spotify.getAccessToken(userId);
-            if (!token) {
-                res.writeHead(401, { 'Content-Type': 'application/json', ...CORS_HEADERS });
-                res.end(JSON.stringify({ error: 'Not authenticated' }));
-                return;
+    if (pathname === '/api/spotify/token' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk; });
+        req.on('end', async () => {
+            try {
+                const { userId, session: sessionToken } = JSON.parse(body);
+                if (!userId) {
+                    res.writeHead(400, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                    res.end(JSON.stringify({ error: 'userId required' }));
+                    return;
+                }
+                if (!sessionToken) {
+                    res.writeHead(401, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                    res.end(JSON.stringify({ error: 'session required' }));
+                    return;
+                }
+                const session = db.getSession(sessionToken);
+                if (!session || session.user_id !== userId) {
+                    res.writeHead(403, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                    res.end(JSON.stringify({ error: 'Unauthorized' }));
+                    return;
+                }
+                const token = await spotify.getAccessToken(userId);
+                if (!token) {
+                    res.writeHead(401, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                    res.end(JSON.stringify({ error: 'Not authenticated' }));
+                    return;
+                }
+                res.writeHead(200, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                res.end(JSON.stringify({ token }));
+            } catch (err) {
+                logger.error('[Spotify] Token fetch error:', err.message);
+                res.writeHead(500, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                res.end(JSON.stringify({ error: 'Token fetch failed' }));
             }
-            res.writeHead(200, { 'Content-Type': 'application/json', ...CORS_HEADERS });
-            res.end(JSON.stringify({ token }));
-        } catch (err) {
-            logger.error('[Spotify] Token fetch error:', err.message);
-            res.writeHead(500, { 'Content-Type': 'application/json', ...CORS_HEADERS });
-            res.end(JSON.stringify({ error: 'Token fetch failed' }));
-        }
+        });
         return;
     }
 
