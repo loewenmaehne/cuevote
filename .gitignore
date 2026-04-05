@@ -19,6 +19,9 @@ dist-ssr
 # Local config
 *.local
 
+# Local HTTPS certificates (generated via mkcert)
+certs/
+
 # Claude Code
 .claude/
 

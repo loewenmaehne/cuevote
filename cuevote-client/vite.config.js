@@ -1,5 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import fs from 'fs'
+import path from 'path'
+
+// Use HTTPS locally when mkcert certificates are available.
+// In production, Vite is not used (nginx serves the built dist/).
+const certPath = path.resolve(__dirname, '..', 'certs', 'localhost.pem');
+const keyPath = path.resolve(__dirname, '..', 'certs', 'localhost-key.pem');
+const httpsConfig = fs.existsSync(certPath) && fs.existsSync(keyPath)
+  ? { cert: fs.readFileSync(certPath), key: fs.readFileSync(keyPath) }
+  : false;
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -26,10 +36,11 @@ export default defineConfig({
     host: '0.0.0.0', // Force IPv4 binding
     port: 5173,
     strictPort: true,
+    https: httpsConfig,
     // For local development only; avoid exposing this dev server to the public internet.
     headers: process.env.NODE_ENV === 'development'
       ? {
-          'Access-Control-Allow-Origin': 'http://localhost:5173',
+          'Access-Control-Allow-Origin': httpsConfig ? 'https://localhost:5173' : 'http://localhost:5173',
         }
       : {},
     // Explicitly handle .apk MIME type

@@ -14,6 +14,9 @@ process.on('uncaughtException', (error) => {
 });
 
 const http = require("http");
+const https = require("https");
+const fs = require("fs");
+const path = require("path");
 const WebSocket = require("ws");
 const crypto = require("crypto");
 const bcrypt = require('bcryptjs');
@@ -44,8 +47,16 @@ const CORS_HEADERS = {
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-const server = http.createServer(async (req, res) => {
-    const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+// Use HTTPS locally when mkcert certificates are available.
+// In production, nginx terminates TLS — Node.js stays plain HTTP.
+const CERT_DIR = path.resolve(__dirname, '..', 'certs');
+const certPath = path.join(CERT_DIR, 'localhost.pem');
+const keyPath = path.join(CERT_DIR, 'localhost-key.pem');
+const useHttps = fs.existsSync(certPath) && fs.existsSync(keyPath);
+
+const requestHandler = async (req, res) => {
+    const proto = useHttps ? 'https' : 'http';
+    const parsedUrl = new URL(req.url, `${proto}://${req.headers.host}`);
     const pathname = parsedUrl.pathname;
 
     // CORS preflight for /api/* routes
@@ -147,7 +158,17 @@ const server = http.createServer(async (req, res) => {
 
     res.writeHead(404);
     res.end();
-});
+};
+
+const server = useHttps
+    ? https.createServer({ cert: fs.readFileSync(certPath), key: fs.readFileSync(keyPath) }, requestHandler)
+    : http.createServer(requestHandler);
+
+if (useHttps) {
+    logger.info('[HTTPS] Local TLS enabled using mkcert certificates from certs/');
+} else {
+    logger.info('[HTTP] Running plain HTTP (production behind nginx, or certs/ not found)');
+}
 
 const wss = new WebSocket.Server({
     server,
