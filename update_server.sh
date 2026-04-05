@@ -9,30 +9,42 @@ CLIENT_DIR="cuevote-client"
 PM2_PROCESS_NAME="cuevote-server"
 CERT_DIR="certs"
 
-# ---- Worktree detection ----
+# ---- Environment detection ----
 
-detect_worktree() {
+IS_WORKTREE=false
+IS_LOCAL=false
+
+detect_environment() {
+    # Worktree detection
     local git_dir
-    git_dir="$(git rev-parse --git-dir 2>/dev/null)" || return 1
-
+    git_dir="$(git rev-parse --git-dir 2>/dev/null)" || true
     if echo "$git_dir" | grep -q "/worktrees/"; then
-        local toplevel
-        toplevel="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
-        WORKTREE_NAME="$(basename "$toplevel")"
         IS_WORKTREE=true
-        echo "  ┌─ Worktree mode ─────────────────────────────"
-        echo "  │ Worktree:  $WORKTREE_NAME"
-        echo "  └─────────────────────────────────────────────"
-    else
-        IS_WORKTREE=false
+        WORKTREE_NAME="$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")"
     fi
+
+    # Local (macOS) vs production (Linux) detection
+    if [ "$(uname -s)" = "Darwin" ]; then
+        IS_LOCAL=true
+    fi
+
+    echo "  ┌─ Environment ────────────────────────────────"
+    echo "  │ OS:        $(uname -s) ($([ "$IS_LOCAL" = true ] && echo "local dev" || echo "production"))"
+    echo "  │ Worktree:  $([ "$IS_WORKTREE" = true ] && echo "$WORKTREE_NAME" || echo "no (main checkout)")"
+    echo "  │ Branch:    $(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")"
+    echo "  └──────────────────────────────────────────────"
 }
 
-detect_worktree
+detect_environment
 
 # ---- Local HTTPS (mkcert) ----
 
 ensure_local_certs() {
+    # Only needed on local dev machines; production uses nginx for TLS
+    if [ "$IS_LOCAL" != true ]; then
+        return 0
+    fi
+
     local cert_file="$CERT_DIR/localhost.pem"
     local key_file="$CERT_DIR/localhost-key.pem"
 
@@ -48,9 +60,9 @@ ensure_local_certs() {
             echo "  -> Installing mkcert via Homebrew..."
             brew install mkcert
         else
-            echo "  ⚠ mkcert not found and Homebrew not available."
-            echo "  ⚠ Server will run without HTTPS (HTTP only)."
-            echo "  ⚠ Install mkcert manually: https://github.com/nickolasburr/mkcert"
+            echo "  WARNING: mkcert not found and Homebrew not available."
+            echo "  WARNING: Server will run without HTTPS (HTTP only)."
+            echo "  WARNING: Spotify integration requires HTTPS!"
             return 1
         fi
     fi
@@ -61,22 +73,78 @@ ensure_local_certs() {
     echo "  -> Certificates created in $CERT_DIR/"
 }
 
-# ---- Subcommands ----
+# ---- Process helpers ----
 
-do_update() {
-    echo "==== CueVote Server — Update & Restart ===="
+kill_port() {
+    local port="$1"
+    local pids
+    pids="$(lsof -ti :"$port" 2>/dev/null || true)"
+    if [ -n "$pids" ]; then
+        echo "  -> Killing process(es) on port $port (PIDs: $pids)..."
+        echo "$pids" | xargs kill -9 2>/dev/null || true
+        sleep 1
+    fi
+}
 
+ensure_pm2() {
     if ! command -v pm2 &> /dev/null; then
         echo "Error: pm2 is not installed or not in PATH."
         exit 1
     fi
+}
+
+restart_backend() {
+    ensure_pm2
+    cd "$SERVER_DIR"
+
+    if pm2 describe "$PM2_PROCESS_NAME" > /dev/null 2>&1; then
+        echo "  -> Stopping old backend process..."
+        pm2 delete "$PM2_PROCESS_NAME" 2>/dev/null || true
+    fi
+    # Also kill anything lingering on port 8080
+    kill_port 8080
+
+    echo "  -> Starting backend (PM2)..."
+    pm2 start index.js --name "$PM2_PROCESS_NAME" --update-env
+    pm2 save
+
+    cd ..
+}
+
+start_vite_dev() {
+    # Kill any existing Vite dev server on port 5173
+    kill_port 5173
+
+    echo "  -> Starting Vite dev server (port 5173, background)..."
+    cd "$CLIENT_DIR"
+    nohup npm run dev > /dev/null 2>&1 &
+    cd ..
+
+    # Wait for Vite to be ready
+    local attempts=0
+    while ! lsof -ti :5173 > /dev/null 2>&1; do
+        sleep 0.5
+        attempts=$((attempts + 1))
+        if [ "$attempts" -ge 20 ]; then
+            echo "  WARNING: Vite dev server did not start within 10s."
+            return 1
+        fi
+    done
+    echo "  -> Vite dev server running."
+}
+
+# ---- Subcommands ----
+
+do_update() {
+    echo "==== CueVote Server — Update & Restart ===="
+    ensure_pm2
 
     # 0. Ensure local HTTPS certs
     ensure_local_certs || true
 
     # 1. Sync to latest remote code
     if [ "$IS_WORKTREE" = true ]; then
-        echo "[1/4] Skipping git pull (worktree mode — code is managed by the worktree)"
+        echo "[1/4] Skipping git pull (worktree mode)"
     else
         echo "[1/4] Updating code from git..."
         if ! git fetch origin; then
@@ -99,53 +167,44 @@ do_update() {
     # 2. Update Client (Frontend)
     echo "[2/4] Updating Client (Frontend)..."
     cd "$CLIENT_DIR"
-
     echo "  -> Installing client dependencies..."
     npm install --silent
-
     echo "  -> Building client..."
     if ! npm run build; then
         echo "Error: Client build failed."
         exit 1
     fi
     echo "  -> Client build successful."
-
     cd ..
 
     # 3. Update Server (Backend)
     echo "[3/4] Updating Server (Backend)..."
     cd "$SERVER_DIR"
-
     echo "  -> Installing server dependencies..."
     npm install --silent
-
-    # 4. Restart Server Process (full restart to pick up cert/env changes)
-    echo "[4/4] Restarting Server Process..."
-    if pm2 describe "$PM2_PROCESS_NAME" > /dev/null 2>&1; then
-        echo "  -> Stopping old process..."
-        pm2 delete "$PM2_PROCESS_NAME"
-    fi
-    echo "  -> Starting fresh instance..."
-    pm2 start index.js --name "$PM2_PROCESS_NAME" --update-env
-    pm2 save
-
     cd ..
 
+    # 4. Restart
+    echo "[4/4] Restarting services..."
+    restart_backend
+
+    if [ "$IS_LOCAL" = true ]; then
+        start_vite_dev
+    fi
+
+    echo ""
     echo "==== Update Completed Successfully ===="
-    echo "Run 'pm2 logs $PM2_PROCESS_NAME' to see output."
+    print_urls
 }
 
 do_start() {
     echo "==== CueVote Server — Start ===="
-
-    if ! command -v pm2 &> /dev/null; then
-        echo "Error: pm2 is not installed or not in PATH."
-        exit 1
-    fi
+    ensure_pm2
 
     # Ensure local HTTPS certs
     ensure_local_certs || true
 
+    # Install deps if missing
     if [ -f "$CLIENT_DIR/package.json" ] && [ ! -d "$CLIENT_DIR/node_modules" ]; then
         echo "Installing client dependencies..."
         cd "$CLIENT_DIR" && npm install --silent && cd ..
@@ -155,55 +214,102 @@ do_start() {
         cd "$SERVER_DIR" && npm install --silent && cd ..
     fi
 
-    cd "$SERVER_DIR"
+    restart_backend
 
-    if pm2 describe "$PM2_PROCESS_NAME" > /dev/null 2>&1; then
-        echo "Process already exists, restarting clean..."
-        pm2 delete "$PM2_PROCESS_NAME"
+    if [ "$IS_LOCAL" = true ]; then
+        start_vite_dev
     fi
-    echo "Starting instance..."
-    pm2 start index.js --name "$PM2_PROCESS_NAME" --update-env
-    pm2 save
 
-    cd ..
-
+    echo ""
     echo "==== Server Started ===="
-    echo "Run 'pm2 logs $PM2_PROCESS_NAME' to see output."
+    print_urls
 }
 
 do_stop() {
     echo "==== CueVote Server — Stop ===="
 
-    if ! command -v pm2 &> /dev/null; then
-        echo "Error: pm2 is not installed or not in PATH."
-        exit 1
+    # Stop PM2 backend
+    if command -v pm2 &> /dev/null; then
+        if pm2 describe "$PM2_PROCESS_NAME" > /dev/null 2>&1; then
+            pm2 stop "$PM2_PROCESS_NAME"
+            pm2 delete "$PM2_PROCESS_NAME"
+            echo "Backend stopped (PM2)."
+        else
+            echo "Backend not running in PM2."
+        fi
     fi
 
-    if pm2 describe "$PM2_PROCESS_NAME" > /dev/null 2>&1; then
-        pm2 stop "$PM2_PROCESS_NAME"
-        pm2 delete "$PM2_PROCESS_NAME"
-        echo "Server stopped and removed from PM2."
-    else
-        echo "Process '$PM2_PROCESS_NAME' not found in PM2 — nothing to stop."
+    # Stop Vite dev server
+    local vite_pids
+    vite_pids="$(lsof -ti :5173 2>/dev/null || true)"
+    if [ -n "$vite_pids" ]; then
+        echo "$vite_pids" | xargs kill -9 2>/dev/null || true
+        echo "Vite dev server stopped."
     fi
+
+    # Stop anything on backend port
+    kill_port 8080
+
+    echo "==== All services stopped ===="
 }
 
 do_status() {
-    if ! command -v pm2 &> /dev/null; then
-        echo "Error: pm2 is not installed or not in PATH."
-        exit 1
+    echo "==== CueVote Server — Status ===="
+    echo ""
+
+    # PM2
+    if command -v pm2 &> /dev/null; then
+        pm2 status
+    else
+        echo "pm2 not found."
     fi
-    pm2 status
+
+    echo ""
+
+    # Port check
+    echo "Port listeners:"
+    for port in 8080 5173; do
+        local pid
+        pid="$(lsof -ti :$port 2>/dev/null || true)"
+        if [ -n "$pid" ]; then
+            echo "  :$port  -> PID $pid (running)"
+        else
+            echo "  :$port  -> not listening"
+        fi
+    done
+
+    echo ""
+
+    # HTTPS status
+    if [ -f "$CERT_DIR/localhost.pem" ] && [ -f "$CERT_DIR/localhost-key.pem" ]; then
+        echo "HTTPS: enabled (certs found in $CERT_DIR/)"
+    else
+        echo "HTTPS: disabled (no certs — run 'bash update_server.sh start' to auto-generate)"
+    fi
+}
+
+print_urls() {
+    local proto="http"
+    if [ -f "$CERT_DIR/localhost.pem" ] && [ -f "$CERT_DIR/localhost-key.pem" ]; then
+        proto="https"
+    fi
+    echo ""
+    echo "  URLs:"
+    if [ "$IS_LOCAL" = true ]; then
+        echo "    Frontend:  ${proto}://localhost:5173"
+    fi
+    echo "    Backend:   ${proto}://localhost:8080"
+    echo "    PM2 logs:  pm2 logs $PM2_PROCESS_NAME"
 }
 
 show_usage() {
     echo "Usage: bash update_server.sh [command]"
     echo ""
     echo "Commands:"
-    echo "  (no command)   Update code from GitHub, build client, restart server"
-    echo "  start          Start the server (without pulling updates)"
-    echo "  stop           Stop the server"
-    echo "  status         Show PM2 process status"
+    echo "  (no command)   Update code, build client, restart all services"
+    echo "  start          Start all services (without pulling updates)"
+    echo "  stop           Stop all services (backend + Vite dev server)"
+    echo "  status         Show service status, ports, and HTTPS info"
     echo "  help           Show this help message"
 }
 
