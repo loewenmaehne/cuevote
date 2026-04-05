@@ -260,6 +260,17 @@ const schemas = require('./schemas');
 // Room Manager
 const rooms = new Map();
 
+// Notify Spotify rooms when a token refresh fails so clients can re-auth
+spotify.setOnTokenInvalidated((userId) => {
+    for (const room of rooms.values()) {
+        if (room.metadata.owner_id === userId && room.state.musicSource === 'spotify') {
+            logger.info(`[Spotify] Token invalidated for owner of room ${room.id} — broadcasting SPOTIFY_REAUTH`);
+            room.broadcast({ type: "SPOTIFY_REAUTH", payload: {} });
+            room.updateState({ isPlaying: false });
+        }
+    }
+});
+
 // Default rooms removed
 
 // Initialize system user (rooms are loaded on-demand via JOIN_ROOM)

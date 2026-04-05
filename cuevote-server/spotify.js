@@ -99,6 +99,12 @@ function storeTokens(userId, tokenData) {
     logger.info(`[Spotify] Tokens stored for user ${userId.substring(0, 8)}...`);
 }
 
+// Callback for token invalidation events (set by Room to trigger SPOTIFY_REAUTH)
+let onTokenInvalidated = null;
+function setOnTokenInvalidated(callback) {
+    onTokenInvalidated = callback;
+}
+
 // Prevent concurrent refresh requests for the same user
 const refreshInFlight = new Map();
 
@@ -129,6 +135,7 @@ async function getAccessToken(userId) {
         } catch (err) {
             logger.error('[Spotify] Failed to refresh token:', err.message);
             tokenStore.delete(userId);
+            if (onTokenInvalidated) onTokenInvalidated(userId);
             return null;
         } finally {
             refreshInFlight.delete(userId);
@@ -229,6 +236,7 @@ module.exports = {
     storeTokens,
     getAccessToken,
     hasTokens,
+    setOnTokenInvalidated,
     searchSpotify,
     getTrackDetails,
     getRecommendations,
