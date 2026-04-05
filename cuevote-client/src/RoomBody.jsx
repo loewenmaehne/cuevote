@@ -651,7 +651,7 @@ function RoomBody() {
     setPlaybackError(null);
 
     // Track-cycling detection: if 2+ tracks load without any successful playback, something systemic is wrong
-    if (currentTrack) {
+    if (currentTrack && !isSpotify) {
       trackFailTimesRef.current.push(Date.now());
       if (trackFailTimesRef.current.length >= 2 && Date.now() - lastSuccessfulPlayRef.current > 5000) {
         console.warn("[Player] IP block detected — tracks keep failing without playback");
@@ -877,6 +877,8 @@ function RoomBody() {
         const { paused, position, duration, track_window } = state;
         if (!paused) {
           setIsLocallyPaused(false);
+          lastSuccessfulPlayRef.current = Date.now();
+          trackFailTimesRef.current = [];
           if (!isPlayingRef.current) setIsLocallyPlaying(true);
           else setIsLocallyPlaying(false);
           if (duration > 0) {
@@ -1574,7 +1576,7 @@ function RoomBody() {
       className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : (isQueueMinimized && !isCinemaMode ? "h-[100dvh] h-screen overflow-hidden bg-black" : "min-h-screen bg-black pb-32")}`}
       style={isQueueMinimized && !isCinemaMode && !isAnyPlaylistView ? { paddingBottom: `${controlsHeight}px` } : undefined}
     >
-      {ipBlockDetected && !throttleDismissed && (
+      {ipBlockDetected && !throttleDismissed && !isSpotify && (
         <div className="fixed inset-0 z-[100] bg-[#050505] text-white flex items-center justify-center p-6 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-[#050505] to-[#050505] pointer-events-none" />
           <div className="relative z-10 w-full flex flex-col items-center justify-center text-center max-w-md animate-in fade-in zoom-in-95 duration-500">
