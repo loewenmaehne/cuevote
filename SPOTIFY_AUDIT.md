@@ -314,3 +314,169 @@ Zeile 914: `event.data?.type === 'SPOTIFY_AUTH_SUCCESS'` wird geprueft, aber `ev
 Zeile 803/911: `import.meta.env.VITE_WS_URL?.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws', '')` — fragile String-Manipulation. Funktioniert fuer Standardfaelle, aber z.B. `/ws` in anderen URL-Teilen wuerde falsch ersetzt.
 
 **Fix**: `new URL()` fuer sauberes URL-Parsing verwenden.
+
+---
+
+## 8. Datenbank & Caching (`db.ts`)
+
+### 8.1 `upsertVideo()` mit Spotify-Track — OK
+Zeile 217-225: `source` und `preview_url` korrekt gespeichert. Default 'youtube' wenn nicht angegeben.
+
+### 8.2 Video-ID Prefix — OK
+Spotify-IDs als `sp:{trackId}` gespeichert (z.B. `sp:3n3Ppam7vgaVa1iaRUc9Lp`). Kein Conflict mit YouTube-IDs.
+
+### 8.3 `addToRoomHistory()` Spotify-Track — OK
+Zeile 302-303: `isSpotify` Check, `dbId = sp:{trackId}`. Preview-URL gespeichert.
+
+### 8.4 `getRoomHistory()` — OK
+Zeile 329-338: `sp:` Prefix korrekt entfernt. Mapped auf `trackId` (Spotify) oder `videoId` (YouTube). `playedAt` von Sekunden auf Millisekunden umgerechnet.
+
+### 8.5 Search-Cache mit `sp:` Prefix — OK
+Cache-Key `sp:{query}` (gesetzt in Room.js Zeile 1244). Kein Overlap mit YouTube-Queries die kein Prefix haben.
+
+### 8.6 Related-Videos Cache — OK
+Zeilen 249-261: `saveRelatedVideos` und `getRelatedVideos` verwenden `source_video_id` mit `sp:` Prefix fuer Spotify.
+
+### 8.7 `updateRoomSettings()` mit music_source — OK
+Zeilen 205-207: Dynamischer SQL-Update mit music_source.
+
+### 8.8 Migration fuer neue Spalten — OK
+Zeilen 94-96: `ALTER TABLE rooms ADD COLUMN music_source`, `ALTER TABLE videos ADD COLUMN source`, `ALTER TABLE videos ADD COLUMN preview_url`. Idempotent durch Schema-Version-Tracking.
+
+### 8.9 room_history PRIMARY KEY — BUG (Mittel)
+Zeile 72: `PRIMARY KEY (room_id, video_id)`. Wenn der gleiche Spotify-Track zweimal in einem Room gespielt wird, wird der History-Eintrag ueberschrieben (`ON CONFLICT DO UPDATE SET played_at`). Das bedeutet: nur der **letzte** Play-Zeitpunkt wird gespeichert, nicht alle Plays. Betrifft auch YouTube, aber bei Spotify mit kuerzeren Tracks wahrscheinlicher.
+
+Dies ist by-design fuer den aktuellen Use-Case (History = "welche Tracks wurden gespielt"), aber fuer zukuenftige Analyse ("wie oft wurde ein Track gespielt") limitierend.
+
+---
+
+## 9. UI Components
+
+### 9.1 Player.jsx: Spotify Connect Button — OK
+Zeile 8: Wird angezeigt bei `spotifyNeedsAuth` ODER `isOwner && !isPlayerReady && !currentTrack`. Deckt beide Faelle ab.
+
+### 9.2 Player.jsx: Track-Anzeige — OK
+Zeilen 30-50: Thumbnail als Hintergrund-Blur + Vordergrund. Titel und Artist truncated.
+
+### 9.3 Lobby.jsx: Music Source Auswahl — OK
+Zeile 108: State `newRoomMusicSource` mit Default 'youtube'. Toggle-Buttons mit korrekten Farben (Orange/Gruen).
+
+### 9.4 Lobby.jsx: CREATE_ROOM mit Spotify — OK
+Zeile 559: `musicSource: newRoomMusicSource` im Payload.
+
+### 9.5 SettingsView.jsx: Source-Wechsel Warning — BUG (Kritisch)
+**`pendingSource` und `showSourceWarning` sind nie als State deklariert!** Die Variablen `setPendingSource()` und `setShowSourceWarning()` werden auf Zeilen 67-68, 90, 98-99 aufgerufen, aber es existieren keine zugehoerigen `useState()`-Deklarationen.
+
+**Ergebnis**: Beim Versuch die Music Source in den Settings zu wechseln, stuerzt die App mit `ReferenceError: setPendingSource is not defined` ab.
+
+**Fix**: Zwei State-Deklarationen hinzufuegen:
+```js
+const [pendingSource, setPendingSource] = useState(null);
+const [showSourceWarning, setShowSourceWarning] = useState(false);
+```
+
+### 9.6 SettingsView.jsx: Music Only ausgeblendet — Manuell pruefen
+Laut Plan-Exploration wird Music Only fuer Spotify ausgeblendet. Muss im tatsaechlichen Render-Code verifiziert werden.
+
+### 9.7 SettingsView.jsx: Captions ausgeblendet — Manuell pruefen
+Gleiche Situation wie 9.6.
+
+### 9.8 Track.jsx: Spotify Link — OK
+Zeile 9-10: `https://open.spotify.com/track/${track.trackId}`. Korrekt.
+
+### 9.9 Track.jsx: Link-Text — Manuell pruefen
+"Listen on Spotify" vs "Watch on YouTube" — muss im Render-Code verifiziert werden.
+
+### 9.10 PrelistenOverlay.jsx: Audio Preview — OK
+Zeilen 73-74: `<audio>` Element mit `previewUrl`, autoPlay und controls.
+
+### 9.11 PrelistenOverlay.jsx: Kein Preview — OK
+Zeile 76: "No preview available" Meldung.
+
+### 9.12 BannedVideos.jsx: trackId als Key — OK
+Zeile 34: `key={track.videoId || track.trackId}`. Funktioniert fuer beide Sources.
+Zeile 51: `onUnban(track.videoId || track.trackId)`. Korrekt.
+
+---
+
+## 10. Schema-Validierung (`schemas.js`)
+
+### 10.1 CreateRoomPayload: musicSource — OK
+Zeile 28: `z.enum(['youtube', 'spotify']).optional()`.
+
+### 10.2 CreateRoomPayload: ungueltig — OK
+Zod lehnt alles ab was nicht 'youtube' oder 'spotify' ist.
+
+### 10.3 SuggestSongPayload — OK
+Zeile 36: `query: z.string().min(1).max(500)`. Keine Source-spezifische Validierung noetig.
+
+### 10.4 FetchSuggestionsPayload: trackId — OK
+Zeilen 80-86: `trackId` optional, `.refine()` prueft dass mindestens `videoId` oder `trackId` vorhanden.
+
+### 10.5 PlaybackErrorPayload: trackId — OK
+Zeilen 89-94: Gleiche Logik wie FetchSuggestionsPayload.
+
+### 10.6 UpdateSettingsPayload: musicSource — OK
+Zeile 63: `z.enum(['youtube', 'spotify']).optional()`.
+
+### 10.7 VotePayload: trackId Naming — Verbesserung (Niedrig)
+Zeile 40: `trackId: z.string()`. Dieser `trackId` ist die **interne UUID** des Tracks (nicht die Spotify-Track-ID). Der Name ist verwirrend weil `trackId` an anderer Stelle die Spotify-ID bedeutet.
+
+---
+
+## 11. Edge Cases & Integration
+
+### 11.1 Auto-Refill in Spotify-Room — OK
+IP-Block-Check und Music-Only Filter uebersprungen. Queue korrekt aus History aufgefuellt.
+
+### 11.2 Stall Detection deaktiviert — OK
+Fuer Spotify kein Stall-Polling. Das Spotify SDK uebernimmt die Erkennung.
+
+### 11.3 Network Throttle ignoriert — OK
+YouTube-spezifisch. Spotify-Rooms betrifft es nicht.
+
+### 11.4 Video Status ignoriert — OK
+YouTube-spezifisch.
+
+### 11.5 Mehrere User im selben Room — OK
+Nur Owner braucht Spotify-Auth. Andere User hoeren ueber den Spotify Player des Owners.
+**Hinweis**: Non-Owner User sehen den Player, koennen aber nichts hoeren weil Spotify nur auf dem Geraet des Owners spielt. Das ist ein fundamentales UX-Problem — in einem Spotify-Room hoert nur der Owner tatsaechlich die Musik ueber den Browser.
+
+### 11.6 Owner verlaesst Room — BUG (Hoch)
+Wenn der Owner den Browser schliesst oder die Seite verlaesst:
+- Der Spotify Player disconnected
+- Die In-Memory Tokens bleiben auf dem Server (bis Ablauf/Neustart)
+- Aber **kein anderer User kann Playback steuern** weil nur der Owner den Spotify Player hat
+- Der Server spielt weiter die Queue ab (`handleNextTrack`), aber `spotifyPlayTrack` schlaegt fehl weil kein Player connected ist
+- **Kein automatisches Pausieren oder Benachrichtigung**
+
+**Fix**: Detect Owner-Disconnect und pausiere den Room oder benachrichtige die verbleibenden User.
+
+### 11.7 Spotify Premium erforderlich — BUG (Hoch)
+Wie in 7.7 dokumentiert: Kein User-Feedback. Der `account_error` Listener loggt nur in die Console. Free-User sehen nur einen nicht-funktionierenden Player ohne Erklaerung.
+
+### 11.8 Track regional nicht verfuegbar — BUG (Mittel)
+Kein Handling. Wenn ein Track in der Region des Owners nicht verfuegbar ist:
+- `spotifyPlayTrack()` schlaegt fehl mit HTTP 403
+- Der Error-Handler setzt `spotifyNeedsAuth(true)` — was **falsch** ist, da es kein Auth-Problem ist
+- Der User sieht "Connect Spotify" obwohl er bereits verbunden ist
+
+**Fix**: 403-Response pruefen ob es ein Auth-Problem oder Availability-Problem ist (Spotify gibt unterschiedliche Error-Bodies zurueck). Bei Availability: Track ueberspringen statt Re-Auth fordern.
+
+### 11.9 Spotify Rate Limiting — BUG (Mittel)
+Spotify API hat Rate Limits (typisch: 429 Too Many Requests). Kein Handling in `spotify.js`:
+- `searchSpotify()`, `getRecommendations()`, `getTrackDetails()` werfen alle bei `!res.ok`
+- Kein Retry-After Header auswerten
+- Kein Backoff
+- Bei hoher Last (viele Rooms, viele Suggestions) koennten Requests fehlschlagen
+
+**Fix**: 429-Responses speziell behandeln, `Retry-After` Header respektieren.
+
+### 11.10 Gleichzeitige Spotify-Rooms desselben Owners — BUG (Mittel)
+Ein Owner kann mehrere Rooms mit Spotify erstellen. Alle nutzen denselben Token. Aber:
+- Spotify erlaubt nur **einen aktiven Player** pro Account
+- Der zweite Room wuerde den Player des ersten Rooms uebernehmen
+- Kein Check/Warnung bei Room-Erstellung
+
+### 11.11 Token-Scope Insufficiency bei Non-Owner-Nutzung — OK (by design)
+Non-Owner brauchen keinen Spotify-Token. Alle API-Calls nutzen den Owner-Token. Korrekt implementiert.
