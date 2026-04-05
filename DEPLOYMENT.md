@@ -59,6 +59,10 @@ ALLOWED_ORIGINS=https://cuevote.com
 # Optional Configuration
 LOAD_ACTIVE_CHANNELS=true
 ACTIVE_CHANNEL_DAYS=60
+# Spotify Integration (optional)
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+SPOTIFY_REDIRECT_URI=https://cuevote.com/api/spotify/callback
 ```
 
 ### Start Backend
@@ -140,6 +144,15 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
     }
 
+    # Proxy API routes (Spotify OAuth callbacks, tokens, etc.)
+    location /api/ {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
     # Proxy WebSocket connections
     location /ws {
         proxy_pass http://localhost:8080;
@@ -155,6 +168,8 @@ server {
     }
 }
 ```
+
+**Important:** After adding Spotify support, you must update the existing nginx config on the server to include the `/api/` proxy block shown above, then reload nginx: `sudo nginx -t && sudo systemctl reload nginx`
 
 Enable the site and restart Nginx:
 ```bash
@@ -211,3 +226,37 @@ For maximum security, disable password login entirely and use SSH keys.
 1. Generate a key on your local machine: `ssh-keygen -t ed25519`
 2. Copy it to server: `ssh-copy-id user@your-server-ip`
 3. Once verified working, disable `PasswordAuthentication` in `/etc/ssh/sshd_config`.
+
+## 9. Local Development Setup
+
+### HTTPS for Local Development
+
+Spotify OAuth requires HTTPS redirect URIs (no http:// exception). Both the Node.js server and Vite dev server automatically detect local certificates and enable HTTPS when they exist.
+
+**One-time setup (macOS):**
+```bash
+# Install mkcert (generates locally-trusted certificates)
+brew install mkcert
+
+# Install the root CA into your system trust store (requires password)
+mkcert -install
+
+# Generate certificates for localhost (from project root)
+mkdir -p certs
+mkcert -key-file certs/localhost-key.pem -cert-file certs/localhost.pem localhost 127.0.0.1
+```
+
+After this, running `npm run dev` in both `cuevote-server` and `cuevote-client` will automatically serve over HTTPS:
+- **Frontend**: `https://localhost:5173`
+- **Backend**: `https://localhost:8080`
+
+The `certs/` directory is gitignored. In production, there is no `certs/` directory — the server runs plain HTTP behind nginx which terminates TLS via Let's Encrypt.
+
+### Local Spotify Configuration
+
+In `cuevote-server/.env`:
+```ini
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+SPOTIFY_REDIRECT_URI=https://localhost:8080/api/spotify/callback
+```
