@@ -896,8 +896,13 @@ function RoomBody() {
   }, [loadSpotifySDK, fetchSpotifyToken, hasConsent, sendMessage]);
 
   // Spotify auth popup handler
+  const spotifyAuthListenerRef = useRef(null);
   const openSpotifyAuth = useCallback(() => {
     if (!user?.id) return;
+    // Clean up any previous auth listener
+    if (spotifyAuthListenerRef.current) {
+      window.removeEventListener('message', spotifyAuthListenerRef.current);
+    }
     const serverUrl = import.meta.env.VITE_WS_URL?.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws', '') || window.location.origin;
     const authWindow = window.open(`${serverUrl}/api/spotify/auth?userId=${user.id}`, 'spotify-auth', 'width=450,height=700');
 
@@ -906,13 +911,26 @@ function RoomBody() {
         setSpotifyNeedsAuth(false);
         initializeSpotifyPlayer();
         window.removeEventListener('message', handleMessage);
+        spotifyAuthListenerRef.current = null;
       } else if (event.data?.type === 'SPOTIFY_AUTH_ERROR') {
         console.error('[Spotify] Auth error:', event.data.error);
         window.removeEventListener('message', handleMessage);
+        spotifyAuthListenerRef.current = null;
       }
     };
+    spotifyAuthListenerRef.current = handleMessage;
     window.addEventListener('message', handleMessage);
   }, [user?.id, initializeSpotifyPlayer]);
+
+  // Cleanup auth listener on unmount
+  useEffect(() => {
+    return () => {
+      if (spotifyAuthListenerRef.current) {
+        window.removeEventListener('message', spotifyAuthListenerRef.current);
+        spotifyAuthListenerRef.current = null;
+      }
+    };
+  }, []);
 
   const playerContainerRef = useCallback(node => {
     if (!hasConsent) return;
