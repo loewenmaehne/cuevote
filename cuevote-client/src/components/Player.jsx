@@ -2,9 +2,10 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Music } from "lucide-react";
 
-export const Player = React.memo(function Player({ playerContainerRef, musicSource, currentTrack, spotifyNeedsAuth, onSpotifyAuth }) {
+export const Player = React.memo(function Player({ playerContainerRef, musicSource, currentTrack, spotifyNeedsAuth, onSpotifyAuth, isOwner, isPlayerReady }) {
   if (musicSource === 'spotify') {
-    if (spotifyNeedsAuth) {
+    // Show connect button if auth needed, OR if owner and player not ready yet (covers init race condition)
+    if (spotifyNeedsAuth || (isOwner && !isPlayerReady && !currentTrack)) {
       return (
         <div ref={playerContainerRef} className="h-full w-full flex items-center justify-center bg-gradient-to-br from-neutral-900 to-black">
           <div className="flex flex-col items-center gap-4 p-6 text-center">
@@ -60,4 +61,6 @@ Player.propTypes = {
   currentTrack: PropTypes.object,
   spotifyNeedsAuth: PropTypes.bool,
   onSpotifyAuth: PropTypes.func,
+  isOwner: PropTypes.bool,
+  isPlayerReady: PropTypes.bool,
 };

@@ -1747,6 +1747,8 @@ function RoomBody() {
                     currentTrack={currentTrack}
                     spotifyNeedsAuth={spotifyNeedsAuth}
                     onSpotifyAuth={openSpotifyAuth}
+                    isOwner={isOwner}
+                    isPlayerReady={isPlayerReady}
                   />
                 )
               ) : (CookieBlockedPlaceholderComponent ? <CookieBlockedPlaceholderComponent /> : <div className="w-full h-full flex items-center justify-center bg-black text-neutral-500">Loading…</div>)}
