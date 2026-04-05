@@ -54,6 +54,7 @@ setup_worktree_config() {
         echo "  │ PM2 name:    $PM2_PROCESS_NAME"
         echo "  └─────────────────────────────────────────────"
         stop_existing_on_port 8080
+        stop_existing_on_port 5173
     fi
 }
 
