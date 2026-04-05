@@ -228,3 +228,89 @@ Zeile 1528: Prueft ob `errorSourceId` zum `currentTrack` passt. Verhindert veral
 
 ### 6.4 Auto-Refill fuer Spotify — OK
 Zeile 379: `isSpotifyRoom` Check. IP-Block und Music-Only Filter korrekt uebersprungen (Zeilen 413-419).
+
+### 6.5 Client: `spotifyPlayTrack()` — OK
+PUT zu Spotify API mit korrekter device_id und Track-URI. Gute Fehlerbehandlung:
+- 401/403: Setzt `spotifyNeedsAuth`, sendet `PLAYBACK_ERROR`
+- 404: Setzt Device zurueck (Player disconnected)
+- Netzwerk-Fehler: Console-Log, kein Crash
+
+### 6.6 Client: Player disconnect bei Source-Wechsel — OK
+Zeilen 978-994: useEffect Cleanup bei `isSpotify`-Aenderung. Beide Player-Typen (disconnect/destroy) abgedeckt.
+
+### 6.7 Client: Player disconnect bei Unmount — OK
+Zeilen 940-955: playerContainerRef Callback mit Cleanup.
+
+### 6.8 Client: Pause/Resume — OK
+Zeilen 1204/1210: `playerRef.current?.pause?.()` / `resume?.()`. Korrekt fuer Guests (lokal) und Owner (Server-Message).
+
+### 6.9 Client: Volume — OK
+Zeilen 1220/1236: `volumeRef.current / 100` — korrekte Umrechnung auf 0-1 Range fuer Spotify.
+
+### 6.10 Client: Seek — OK
+Zeile 1354: `playerRef.current.seek?.(seconds * 1000)` — korrekte Umrechnung in Millisekunden.
+
+### 6.11 Client: Mute-Toggle bei Volume-Aenderung — BUG (Niedrig)
+Zeile 1240-1243: Bei Volume-Aenderung im Muted-Zustand wird fuer YouTube `unMute()` aufgerufen, fuer Spotify nicht. Die Volume-Aenderung via `setVolume()` hebt den Mute zwar implizit auf, aber der UI-State (`isMuted`) wird korrekt zurueckgesetzt (Zeile 1242).
+
+---
+
+## 7. Spotify Player Initialisierung (`RoomBody.jsx`)
+
+### 7.1 `loadSpotifySDK()` — OK
+Duplikat-Check fuer Script-Tags (Zeile 786). Drei Pfade korrekt: SDK geladen, SDK laedt, SDK nicht geladen.
+
+### 7.2 `initializeSpotifyPlayer()` — OK (mit Vorbehalt)
+- Nur Owner initialisiert (Zeile 817)
+- Race-Condition-Schutz via `playerInitIdRef` (Zeile 818/821)
+- **Vorbehalt**: `getOAuthToken`-Callback (Zeile 833-835) ruft `fetchSpotifyToken()` auf. Wenn der Server `null` zurueckgibt, wird `cb(null)` aufgerufen. Das Spotify SDK koennte damit nicht korrekt umgehen.
+
+### 7.3 Player ready Event — OK
+Device-ID und isPlayerReady korrekt gesetzt.
+
+### 7.4 Player not_ready Event — OK
+isPlayerReady auf false gesetzt.
+
+### 7.5 `player_state_changed` — OK (mit Edge-Case)
+Track-End-Erkennung (Zeilen 868-876):
+- Bedingung 1: `position === 0 && previous_tracks.length > 0` — Track fertig
+- Bedingung 2: `position >= duration - 1000` — Innerhalb 1s vom Ende
+- Beide nur bei `paused === true` — verhindert False-Positives bei Seek
+
+**Edge Case**: User pausiert manuell bei Position 0 mit Previous-Tracks → `isAtEnd` wird true. In der Praxis unwahrscheinlich.
+
+Nur Owner sendet `NEXT_TRACK` (Zeile 873-875) — korrekt.
+
+### 7.6 `authentication_error` — OK
+Zeilen 883-888: Setzt needsAuth, sendet PLAYBACK_ERROR an Server.
+
+### 7.7 `account_error` — BUG (Hoch)
+Zeilen 891-893: **Nur Console-Log, kein User-Feedback!** Wenn der User kein Spotify Premium hat, sieht er nichts — der Player funktioniert einfach nicht, ohne Erklaerung.
+
+**Fix**: Fehlermeldung an den User anzeigen, z.B. via Toast: "Spotify Premium is required for playback."
+
+### 7.8 Retry bei spaeter Owner-Status — OK
+Zeilen 971-976: useEffect beobachtet `isOwner`-Aenderungen. Startet Init erneut wenn Owner-Info spaet kommt.
+
+### 7.9 Auth Popup: Erfolg — OK
+Zeilen 915-919: Listener entfernt, Player initialisiert.
+
+### 7.10 Auth Popup: Fehler — BUG (Mittel)
+Zeilen 920-923: Nur Console-Log. **Kein User-Feedback** bei fehlgeschlagener Authentifizierung.
+
+**Fix**: Toast oder UI-Hinweis anzeigen: "Spotify authentication failed. Please try again."
+
+### 7.11 Auth Listener Cleanup — OK
+Zeilen 930-938: useEffect Cleanup entfernt Listener bei Unmount.
+
+### 7.12 postMessage ohne Origin-Validierung — BUG (Mittel)
+Zeile 914: `event.data?.type === 'SPOTIFY_AUTH_SUCCESS'` wird geprueft, aber `event.origin` wird **nicht validiert**. Jede Seite koennte eine gefaelschte `SPOTIFY_AUTH_SUCCESS`-Nachricht senden.
+
+**Impact**: Begrenzt — ein Angreifer koennte `setSpotifyNeedsAuth(false)` und `initializeSpotifyPlayer()` ausloesen, aber ohne gueltige Tokens wuerde die Initialisierung fehlschlagen.
+
+**Fix**: `event.origin` gegen den Server-Origin pruefen.
+
+### 7.13 URL-Konstruktion fuer Server-Calls — Verbesserung (Niedrig)
+Zeile 803/911: `import.meta.env.VITE_WS_URL?.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws', '')` — fragile String-Manipulation. Funktioniert fuer Standardfaelle, aber z.B. `/ws` in anderen URL-Teilen wuerde falsch ersetzt.
+
+**Fix**: `new URL()` fuer sauberes URL-Parsing verwenden.
