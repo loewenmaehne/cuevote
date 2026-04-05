@@ -112,3 +112,119 @@ Auf Zeilen 105, 122, 129 wird `postMessage` mit `'*'` als targetOrigin verwendet
 
 ### 2.13 CREATE_ROOM musicSource — OK
 Zeile 639: `music_source: (musicSource === 'spotify') ? 'spotify' : 'youtube'` — sauberer Fallback auf 'youtube' bei ungueltigem Wert.
+
+---
+
+## 3. Room-Erstellung & Settings (`Room.js`, `index.js`)
+
+### 3.1 CREATE_ROOM mit `musicSource: 'spotify'` — OK
+Strikte Pruefung auf Zeile 639. DB korrekt gespeichert.
+
+### 3.2 CREATE_ROOM ohne musicSource — OK
+Default 'youtube' durch Fallback in Zeile 639.
+
+### 3.3 UPDATE_SETTINGS: youtube -> spotify — OK
+Zeilen 1671-1686: Queue, currentTrack, progress, pendingSuggestions alle geleert. DB aktualisiert.
+
+### 3.4 UPDATE_SETTINGS: spotify -> youtube — OK
+Gleicher Code-Pfad.
+
+### 3.5 UPDATE_SETTINGS: gleiche Source — OK
+Zeile 1672: `if (musicSource !== this.state.musicSource)` — kein Reset bei unveraenderter Source.
+
+### 3.6 Doppeltes State-Update bei kombiniertem Settings-Wechsel — BUG (Niedrig)
+Wenn musicSource UND andere Settings gleichzeitig geaendert werden, gibt es zwei separate `updateState()`-Aufrufe (Zeile 1646 und 1673). Das loest zwei Broadcasts an alle Clients aus. Koennte kurzes UI-Flackern verursachen.
+
+**Fix**: musicSource-Logik in den `updates`-Block integrieren.
+
+---
+
+## 4. Song-Suche & Suggestion (`Room.js` -> `handleSuggestSongSpotify`)
+
+### 4.1 Suche mit gueltigem Query — OK
+Vollstaendiger Flow: Cache-Check -> API-Call -> Track erstellen -> Queue/Pending.
+
+### 4.2 Cache-Hit (< 28 Tage) — OK
+Zeile 1250: `2419200` Sekunden = 28 Tage. Kein API-Call bei Cache-Hit.
+
+### 4.3 Abgelaufener Cache — OK
+Faellt durch zu API-Call.
+
+### 4.4 Ohne Owner-Token — OK
+Zeile 1292-1295: Klare Fehlermeldung.
+
+### 4.5 Rate Limiting (5s Cooldown) — OK
+Zeile 1235: `now - ws.lastSuggestionTime < 5000`.
+
+### 4.6 Owner Bypass — OK
+`canBypass` Parameter wird korrekt weitergereicht.
+
+### 4.7 Gebannter Track — OK
+Beide Pfade gedeckt: Cache (Zeile 1255) und API (Zeile 1308).
+
+### 4.8 Max Duration — OK
+Beide Pfade gedeckt: Cache (Zeile 1260) und API (Zeile 1309).
+
+### 4.9 Queue voll + Smart Queue — OK
+Zeilen 1207-1231: Worst-Track-Entfernung korrekt implementiert.
+
+### 4.10 Manual Approval — OK
+Zeilen 1375-1386: Track in pendingSuggestions, Return ohne Queue-Add.
+
+### 4.11 Auto Approval — OK
+Faellt durch zu Queue-Add.
+
+### 4.12 Duplikat-Check — OK (by design)
+Zeilen 1356-1367: Title-basiert (lowercase). Gleiche Logik wie YouTube. Fuer Spotify-Tracks mit exakten API-Titeln akzeptabel.
+
+### 4.13 Leere Suchergebnisse — OK
+Zeile 1300-1303: Klare Fehlermeldung.
+
+### 4.14 `getSourceId()` Prioritaet — BUG (Niedrig)
+Zeile 8-10: `return track?.videoId || track?.trackId || null`. Bei einem Spotify-Track mit versehentlichem `videoId`-Feld wuerde `videoId` Vorrang haben. Fragile Annahme.
+
+**Fix**: Explizit nach `track.source` unterscheiden: `track.source === 'spotify' ? track.trackId : track.videoId`.
+
+### 4.15 Ban-Check im Cache-Pfad — BUG (Niedrig)
+Zeile 1255: `getSourceId(b) === rawId`. Verwendet `getSourceId`, was `videoId || trackId` zurueckgibt. Wenn gebannte Tracks inkonsistente Felder haben, koennten sie nicht erkannt werden. Haengt mit 4.14 zusammen.
+
+### 4.16 Nur erster Suchtreffer wird gecacht — Verbesserung (Niedrig)
+Nur der erste passende Track wird per `cacheSearchTerm()` gecacht. Wenn dieser Track spaeter gebannt wird, liefert der Cache immer noch den gebannten Track. Der Cache-Pfad prueft zwar auf Bann (Zeile 1255), aber faellt dann durch zum API-Call statt zum naechsten Cache-Ergebnis.
+
+---
+
+## 5. Recommendations (`Room.js` -> `handleFetchSuggestions`)
+
+### 5.1 Recommendations mit gueltigem trackId — OK
+Zeile 768: API-Call mit Owner-Token.
+
+### 5.2 Cache-Hit — OK
+Zeile 750: 30 Tage TTL (2592000 Sekunden).
+
+### 5.3 Seed-Track Filterung — OK
+Zeile 771: `filter(r => r.trackId !== trackId)`.
+
+### 5.4 Ohne Owner-Token — OK
+Zeile 763-765: Fehlermeldung.
+
+### 5.5 Spotify nicht konfiguriert — OK
+Zeile 758-760: Fehlermeldung.
+
+### 5.6 Cache-TTL Inkonsistenz — Verbesserung (Niedrig)
+Search-Cache: 28 Tage (2419200s, Zeile 1250). Recommendations-Cache: 30 Tage (2592000s, Zeile 750). Sollte vereinheitlicht werden.
+
+---
+
+## 6. Playback & Fehlerbehandlung (Server-Seite)
+
+### 6.1 PLAYBACK_ERROR mit SPOTIFY_AUTH_ERROR — OK
+Zeile 1533-1535: Broadcast `SPOTIFY_REAUTH`, Playback pausiert.
+
+### 6.2 PLAYBACK_ERROR anderer Fehler — OK
+Zeile 1537: `handleNextTrack()` aufgerufen.
+
+### 6.3 Fehler-Validierung vor Handling — OK
+Zeile 1528: Prueft ob `errorSourceId` zum `currentTrack` passt. Verhindert veraltete Error-Meldungen.
+
+### 6.4 Auto-Refill fuer Spotify — OK
+Zeile 379: `isSpotifyRoom` Check. IP-Block und Music-Only Filter korrekt uebersprungen (Zeilen 413-419).
