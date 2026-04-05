@@ -207,16 +207,39 @@ async function getTrackDetails(trackId, accessToken) {
     return mapTrack(t);
 }
 
-async function getRecommendations(trackId, accessToken, limit = 6) {
-    const params = new URLSearchParams({
-        seed_tracks: trackId,
-        limit: String(limit),
-    });
-    const data = await spotifyFetch(`https://api.spotify.com/v1/recommendations?${params.toString()}`, accessToken, 'Recommendations');
-    const tracks = data.tracks;
-    if (!tracks || tracks.length === 0) return [];
+async function getRecommendations(trackId, accessToken, limit = 6, artist = null) {
+    // Try the recommendations API first (deprecated for new/restricted apps since Nov 2024)
+    try {
+        const params = new URLSearchParams({
+            seed_tracks: trackId,
+            limit: String(limit),
+        });
+        const data = await spotifyFetch(`https://api.spotify.com/v1/recommendations?${params.toString()}`, accessToken, 'Recommendations');
+        const tracks = data.tracks;
+        if (tracks && tracks.length > 0) {
+            return tracks.map(mapTrack);
+        }
+    } catch (err) {
+        logger.warn('[Spotify] Recommendations API failed, falling back to artist search:', err.message);
+    }
 
-    return tracks.map(mapTrack);
+    // Fallback: search by artist name (similar to YouTube suggestion strategy)
+    try {
+        let artistQuery = artist;
+        if (!artistQuery) {
+            const trackDetails = await getTrackDetails(trackId, accessToken);
+            artistQuery = trackDetails?.artist;
+        }
+        if (artistQuery) {
+            // Use first artist if multiple are comma-separated
+            const primaryArtist = artistQuery.split(',')[0].trim();
+            return await searchSpotify(primaryArtist, accessToken, limit);
+        }
+    } catch (err) {
+        logger.error('[Spotify] Artist search fallback also failed:', err.message);
+    }
+
+    return [];
 }
 
 module.exports = {
