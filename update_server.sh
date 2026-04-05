@@ -17,8 +17,8 @@ if ! command -v pm2 &> /dev/null; then
     exit 1
 fi
 
-# 1. Sync to latest remote main (force server to match GitHub)
-echo "[1/4] Updating code from git (reset to origin/main)..."
+# 1. Sync to latest remote code
+echo "[1/4] Updating code from git..."
 
 # Fetch latest commits from origin
 if ! git fetch origin; then
@@ -26,9 +26,19 @@ if ! git fetch origin; then
     exit 1
 fi
 
-# Reset local main to exactly match origin/main
-if ! git reset --hard origin/main; then
-    echo "Error: git reset --hard origin/main failed."
+# Detect current branch (works in worktrees too)
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+REMOTE_REF="origin/${CURRENT_BRANCH}"
+
+# Verify the remote ref exists
+if ! git rev-parse --verify "$REMOTE_REF" &> /dev/null; then
+    echo "Error: Remote ref $REMOTE_REF not found."
+    exit 1
+fi
+
+echo "  -> Resetting to $REMOTE_REF..."
+if ! git reset --hard "$REMOTE_REF"; then
+    echo "Error: git reset --hard $REMOTE_REF failed."
     exit 1
 fi
 
