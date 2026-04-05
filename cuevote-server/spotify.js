@@ -84,6 +84,9 @@ function storeTokens(userId, tokenData) {
     logger.info(`[Spotify] Tokens stored for user ${userId.substring(0, 8)}...`);
 }
 
+// Prevent concurrent refresh requests for the same user
+const refreshInFlight = new Map();
+
 async function getAccessToken(userId) {
     const stored = tokenStore.get(userId);
     if (!stored) return null;
@@ -98,15 +101,27 @@ async function getAccessToken(userId) {
         return null;
     }
 
-    try {
-        const tokenData = await refreshAccessToken(stored.refreshToken);
-        storeTokens(userId, tokenData);
-        return tokenData.access_token;
-    } catch (err) {
-        logger.error('[Spotify] Failed to refresh token:', err.message);
-        tokenStore.delete(userId);
-        return null;
+    // Deduplicate concurrent refresh calls for the same user
+    if (refreshInFlight.has(userId)) {
+        return refreshInFlight.get(userId);
     }
+
+    const refreshPromise = (async () => {
+        try {
+            const tokenData = await refreshAccessToken(stored.refreshToken);
+            storeTokens(userId, tokenData);
+            return tokenData.access_token;
+        } catch (err) {
+            logger.error('[Spotify] Failed to refresh token:', err.message);
+            tokenStore.delete(userId);
+            return null;
+        } finally {
+            refreshInFlight.delete(userId);
+        }
+    })();
+
+    refreshInFlight.set(userId, refreshPromise);
+    return refreshPromise;
 }
 
 function hasTokens(userId) {
