@@ -480,3 +480,58 @@ Ein Owner kann mehrere Rooms mit Spotify erstellen. Alle nutzen denselben Token.
 
 ### 11.11 Token-Scope Insufficiency bei Non-Owner-Nutzung — OK (by design)
 Non-Owner brauchen keinen Spotify-Token. Alle API-Calls nutzen den Owner-Token. Korrekt implementiert.
+
+---
+---
+
+## ZUSAMMENFASSUNG: Priorisierte Findings
+
+### Kritisch (App-Crash / Feature kaputt)
+
+| # | Finding | Datei | Beschreibung |
+|---|---------|-------|--------------|
+| 9.5 | **SettingsView fehlende useState** | SettingsView.jsx | `pendingSource` und `showSourceWarning` nie deklariert. Music-Source-Wechsel in Settings crasht die App mit ReferenceError. |
+
+### Hoch (User-sichtbares Problem)
+
+| # | Finding | Datei | Beschreibung |
+|---|---------|-------|--------------|
+| 7.7 | **Kein Spotify Premium Feedback** | RoomBody.jsx:891 | `account_error` nur in Console. Free-User sehen keine Erklaerung warum nichts funktioniert. |
+| 7.10 | **Auth-Popup Fehler unsichtbar** | RoomBody.jsx:920 | Auth-Fehler nur in Console geloggt. Kein Toast/UI-Hinweis. |
+| 11.6 | **Owner verlaesst Room** | Room.js / RoomBody.jsx | Kein Pausieren/Benachrichtigen bei Owner-Disconnect. Server spielt Queue weiter, aber kein Player connected. |
+| 11.8 | **Regionale Nicht-Verfuegbarkeit** | RoomBody.jsx:1013 | 403 bei regional gesperrtem Track zeigt faelschlich "Connect Spotify" statt Track zu ueberspringen. |
+
+### Mittel (Sicherheit / Robustheit)
+
+| # | Finding | Datei | Beschreibung |
+|---|---------|-------|--------------|
+| 1.2 | **OAuth CSRF** | spotify.js:29 | `state`-Parameter = userId statt zufaelligem Wert. Angreifer koennte fremde Accounts verknuepfen. |
+| 1.10 | **Stille Token-Ablauf** | spotify.js:114 | Kein SPOTIFY_REAUTH-Event wenn Refresh fehlschlaegt. Client merkt nichts. |
+| 2.11 | **Session-Token als GET-Param** | index.js:805 | Session-Token in URL sichtbar in Logs/History/Referrer. |
+| 2.12 | **postMessage targetOrigin `*`** | index.js:105,122,129 | Auth-Nachrichten an jeden Origin. |
+| 7.12 | **postMessage ohne Origin-Check** | RoomBody.jsx:914 | Client prueft `event.origin` nicht bei Auth-Callback. |
+| 11.8 | **Kein Spotify Rate-Limit Handling** | spotify.js | 429-Responses nicht speziell behandelt. Kein Retry-After/Backoff. |
+| 11.9 | **Kein Rate-Limit Handling** | spotify.js | 429-Responses werden wie regulaere Fehler behandelt. |
+| 11.10 | **Mehrere Rooms pro Owner** | Room.js | Kein Check ob Owner bereits einen Spotify-Room hat. Nur 1 aktiver Player pro Account moeglich. |
+| 8.9 | **History ueberschreibt Plays** | db.ts:72 | PRIMARY KEY (room_id, video_id) + ON CONFLICT UPDATE = nur letzter Play gespeichert. |
+
+### Niedrig (Code-Qualitaet / Verbesserungen)
+
+| # | Finding | Datei | Beschreibung |
+|---|---------|-------|--------------|
+| 1.11 | In-Memory Token Store | spotify.js | Tokens gehen bei Neustart verloren. Prototyp-Limitation. |
+| 1.12 | `hasTokens()` False-Positives | spotify.js:127 | Prueft nur Existenz, nicht Gueltigkeit. |
+| 1.16 | Duplikat Track-Mapping | spotify.js | Identisches Mapping in 3 Funktionen. |
+| 3.6 | Doppeltes State-Update | Room.js:1646/1673 | Zwei Broadcasts bei kombiniertem Settings+Source-Wechsel. |
+| 4.14 | `getSourceId()` Prioritaet | Room.js:8 | `videoId \|\| trackId` — fragil wenn beide Felder gesetzt. |
+| 5.6 | Cache-TTL Inkonsistenz | Room.js | Search: 28 Tage, Recommendations: 30 Tage. |
+| 7.13 | Fragile URL-Konstruktion | RoomBody.jsx:803 | String-Replace statt URL-Parser. |
+| 10.7 | VotePayload trackId Naming | schemas.js:40 | `trackId` meint interne UUID, nicht Spotify-ID. Verwirrend. |
+
+### Architektur-Hinweise (kein Bug, aber wichtig)
+
+| # | Thema | Beschreibung |
+|---|-------|--------------|
+| 11.5 | **Nur Owner hoert Musik** | Non-Owner im Spotify-Room koennen die Musik nicht hoeren. Der Spotify Player laeuft nur im Browser des Owners. Fundamentale UX-Einschraenkung des Web Playback SDK. |
+| 1.13 | **preview_url Deprecation** | Spotify gibt fuer viele Tracks `null` als preview_url zurueck. Die Prelisten-Funktion wird zunehmend weniger nuetzlich. |
+| 1.15 | **Recommendations Endpoint** | Spotify hat Einschraenkungen am `/v1/recommendations`-Endpoint vorgenommen. Testen ob er noch funktioniert. |
