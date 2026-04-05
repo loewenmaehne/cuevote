@@ -58,3 +58,57 @@ Funktioniert, aber nutzt nur `seed_tracks`. Keine `seed_artists` oder `seed_genr
 
 ### 1.16 Duplikat-Mapping in 3 Funktionen — Verbesserung (Niedrig)
 `searchSpotify()`, `getTrackDetails()`, `getRecommendations()` haben identisches Track-Mapping (Zeilen 149-157, 170-178, 198-206). Sollte eine Helper-Funktion sein.
+
+---
+
+## 2. HTTP Routes (`cuevote-server/index.js`)
+
+### 2.1 `GET /api/spotify/auth` ohne userId — OK
+Gibt 400 mit "userId required" zurueck.
+
+### 2.2 `GET /api/spotify/auth` nicht konfiguriert — OK
+Gibt 503 mit "Spotify not configured" zurueck.
+
+### 2.3 `GET /api/spotify/auth` Erfolg — OK
+302 Redirect zur Spotify OAuth URL.
+
+### 2.4 `GET /api/spotify/callback` mit error-Param — OK (mit Vorbehalt)
+Error-String wird via `JSON.stringify(String(error))` sanitisiert — guter XSS-Schutz.
+
+**Problem**: `postMessage(..., '*')` auf Zeile 105 sendet die Nachricht an **jeden Origin**. Sollte auf den App-Origin beschraenkt werden (z.B. `window.location.origin` oder eine hardcodierte URL).
+
+Gleiches Problem auf Zeilen 122 und 129.
+
+### 2.5 `GET /api/spotify/callback` ohne code/state — OK
+Gibt 400 zurueck.
+
+### 2.6 `GET /api/spotify/callback` Erfolg — OK
+Token-Exchange und Speicherung korrekt.
+
+### 2.7 `GET /api/spotify/token` ohne Session — OK
+Gibt 401 "session required" zurueck.
+
+### 2.8 `GET /api/spotify/token` falsche Session — OK
+Gibt 403 "Unauthorized" zurueck. **Gut**: Verifiziert `session.user_id === userId` (Zeile 150).
+
+### 2.9 `GET /api/spotify/token` nicht authentifiziert — OK
+Gibt 401 "Not authenticated" zurueck.
+
+### 2.10 `GET /api/spotify/token` Erfolg — OK
+Gibt `{ token }` zurueck mit 200.
+
+### 2.11 Session-Token als GET-Parameter — BUG (Mittel)
+`/api/spotify/token?userId=X&session=Y` uebergibt den Session-Token als Query-Parameter. Dieser landet in:
+- Server-Access-Logs
+- Browser-History
+- Referrer-Headers
+
+**Fix**: POST-Request verwenden oder Session-Token im `Authorization`-Header senden.
+
+### 2.12 `postMessage` targetOrigin `'*'` — BUG (Mittel)
+Auf Zeilen 105, 122, 129 wird `postMessage` mit `'*'` als targetOrigin verwendet. Jede Seite die das Popup geoeffnet hat kann die Auth-Nachricht empfangen.
+
+**Fix**: `window.opener?.postMessage(..., '${APP_ORIGIN}')` mit dem Origin der Anwendung.
+
+### 2.13 CREATE_ROOM musicSource — OK
+Zeile 639: `music_source: (musicSource === 'spotify') ? 'spotify' : 'youtube'` — sauberer Fallback auf 'youtube' bei ungueltigem Wert.
