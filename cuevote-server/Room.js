@@ -6,7 +6,9 @@ const spotify = require("./spotify");
 
 // Helper to get the provider-specific ID from a track
 function getSourceId(track) {
-    return track?.videoId || track?.trackId || null;
+    if (!track) return null;
+    if (track.source === 'spotify') return track.trackId || null;
+    return track.videoId || track.trackId || null;
 }
 
 // Helper to check ownership
@@ -757,7 +759,7 @@ class Room {
             const cached = db.getRelatedVideos(cacheKey);
             if (cached) {
                 const age = Math.floor(Date.now() / 1000) - cached.fetched_at;
-                if (age < 2592000) {
+                if (age < 2419200) { // 28 days, consistent with search cache TTL
                     ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: cached.data } }));
                     return;
                 }

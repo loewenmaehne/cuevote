@@ -22,6 +22,20 @@ import { LoadingScreen } from "./components/LoadingScreen";
 
 
 
+// Derive HTTP server URL from WebSocket URL or fall back to current origin
+function getServerUrl() {
+  const wsUrl = import.meta.env.VITE_WS_URL;
+  if (!wsUrl) return window.location.origin;
+  try {
+    const url = new URL(wsUrl);
+    url.protocol = url.protocol === 'wss:' ? 'https:' : 'http:';
+    url.pathname = '';
+    return url.origin;
+  } catch {
+    return window.location.origin;
+  }
+}
+
 const YouTubeState = {
   UNSTARTED: -1,
   ENDED: 0,
@@ -806,7 +820,7 @@ function RoomBody() {
     if (!user?.id) return null;
     const sessionToken = localStorage.getItem("cuevote_session_token");
     if (!sessionToken) return null;
-    const serverUrl = import.meta.env.VITE_WS_URL?.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws', '') || window.location.origin;
+    const serverUrl = getServerUrl();
     try {
       const res = await fetch(`${serverUrl}/api/spotify/token`, {
         method: 'POST',
@@ -919,7 +933,7 @@ function RoomBody() {
     if (spotifyAuthListenerRef.current) {
       window.removeEventListener('message', spotifyAuthListenerRef.current);
     }
-    const serverUrl = import.meta.env.VITE_WS_URL?.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws', '') || window.location.origin;
+    const serverUrl = getServerUrl();
     const authWindow = window.open(`${serverUrl}/api/spotify/auth?userId=${user.id}`, 'spotify-auth', 'width=450,height=700');
 
     const handleMessage = (event) => {
