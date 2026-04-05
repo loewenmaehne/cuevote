@@ -94,7 +94,7 @@ const requestHandler = async (req, res) => {
 
     if (pathname === '/api/spotify/callback' && req.method === 'GET') {
         const code = parsedUrl.searchParams.get('code');
-        const state = parsedUrl.searchParams.get('state'); // userId
+        const stateToken = parsedUrl.searchParams.get('state');
         const error = parsedUrl.searchParams.get('error');
 
         if (error) {
@@ -108,15 +108,26 @@ const requestHandler = async (req, res) => {
             return;
         }
 
-        if (!code || !state) {
+        if (!code || !stateToken) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Missing code or state' }));
             return;
         }
 
+        // Validate CSRF state token and resolve to userId
+        const userId = spotify.validateState(stateToken);
+        if (!userId) {
+            res.writeHead(400, { 'Content-Type': 'text/html' });
+            res.end(`<html><body><script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'invalid_state' }, '*');
+                window.close();
+            </script><p>Invalid or expired state. Please try again.</p></body></html>`);
+            return;
+        }
+
         try {
             const tokenData = await spotify.exchangeCode(code);
-            spotify.storeTokens(state, tokenData);
+            spotify.storeTokens(userId, tokenData);
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(`<html><body><script>
                 window.opener?.postMessage({ type: 'SPOTIFY_AUTH_SUCCESS' }, '*');

@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const logger = require('./logger');
 
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
@@ -6,6 +7,9 @@ const SPOTIFY_REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
 
 // In-memory token storage: userId -> { accessToken, refreshToken, expiresAt }
 const tokenStore = new Map();
+
+// CSRF state store: stateToken -> { userId, createdAt } (expires after 10 minutes)
+const oauthStateStore = new Map();
 
 const SCOPES = [
     'streaming',
@@ -21,15 +25,26 @@ function isConfigured() {
 
 function getAuthUrl(userId) {
     if (!isConfigured()) return null;
+    const stateToken = crypto.randomBytes(32).toString('hex');
+    oauthStateStore.set(stateToken, { userId, createdAt: Date.now() });
     const params = new URLSearchParams({
         response_type: 'code',
         client_id: SPOTIFY_CLIENT_ID,
         scope: SCOPES,
         redirect_uri: SPOTIFY_REDIRECT_URI,
-        state: userId,
+        state: stateToken,
         show_dialog: 'false',
     });
     return `https://accounts.spotify.com/authorize?${params.toString()}`;
+}
+
+function validateState(stateToken) {
+    const entry = oauthStateStore.get(stateToken);
+    if (!entry) return null;
+    oauthStateStore.delete(stateToken);
+    // Expire after 10 minutes
+    if (Date.now() - entry.createdAt > 600000) return null;
+    return entry.userId;
 }
 
 async function exchangeCode(code) {
@@ -209,6 +224,7 @@ async function getRecommendations(trackId, accessToken, limit = 6) {
 module.exports = {
     isConfigured,
     getAuthUrl,
+    validateState,
     exchangeCode,
     storeTokens,
     getAccessToken,
