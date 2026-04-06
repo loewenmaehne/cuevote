@@ -309,19 +309,31 @@ auto_start_tunnel_if_needed() {
         return 0
     fi
 
-    # Check if tunnel is already running
+    # Check if tunnel is already running AND its URL still resolves
     if [ -f "$TUNNEL_PID_FILE" ] && kill -0 "$(cat "$TUNNEL_PID_FILE")" 2>/dev/null; then
-        echo ""
-        echo "  -> Cloudflare tunnel already running."
-        # Ensure VITE_WS_URL is set (may have been lost if .env was edited)
         local turl
         turl=$(grep -o 'https://[a-zA-Z0-9-]*\.trycloudflare\.com' "$TUNNEL_LOG_FILE" 2>/dev/null | head -1)
-        if [ -n "$turl" ] && ! grep -q '^VITE_WS_URL=' "$CLIENT_DIR/.env" 2>/dev/null; then
-            echo "VITE_WS_URL=${turl}/ws" >> "$CLIENT_DIR/.env"
-            echo "  -> Re-added VITE_WS_URL to client .env"
+        local thost
+        thost=$(echo "$turl" | sed 's|https://||')
+
+        # Verify the tunnel URL still resolves (trycloudflare subdomains are ephemeral)
+        if [ -n "$thost" ] && ! host "$thost" > /dev/null 2>&1; then
+            echo ""
+            echo "  -> Cloudflare tunnel process alive but URL expired ($thost). Restarting tunnel..."
+            kill "$(cat "$TUNNEL_PID_FILE")" 2>/dev/null || true
+            rm -f "$TUNNEL_PID_FILE" "$TUNNEL_LOG_FILE" "$TUNNEL_ORIG_URI_FILE"
+            sed -i '' '/^VITE_WS_URL=/d' "$CLIENT_DIR/.env" 2>/dev/null || true
+        else
+            echo ""
+            echo "  -> Cloudflare tunnel already running."
+            # Ensure VITE_WS_URL is set (may have been lost if .env was edited)
+            if [ -n "$turl" ] && ! grep -q '^VITE_WS_URL=' "$CLIENT_DIR/.env" 2>/dev/null; then
+                echo "VITE_WS_URL=${turl}/ws" >> "$CLIENT_DIR/.env"
+                echo "  -> Re-added VITE_WS_URL to client .env"
+            fi
+            tunnel_status
+            return 0
         fi
-        tunnel_status
-        return 0
     fi
 
     echo ""
