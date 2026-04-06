@@ -2,16 +2,18 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { WebSocketContext } from './WebSocketContext';
 
 const getWebSocketUrl = () => {
-  const envUrl = import.meta.env.VITE_WS_URL;
-  if (envUrl) return envUrl;
-
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const hostname = window.location.hostname;
 
-  // Development / Localhost: Default to port 8080
+  // Localhost: always connect directly to local backend (ignores VITE_WS_URL which
+  // may point to an expired Cloudflare tunnel).  Vite proxy also forwards /ws here.
   if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '10.0.2.2') {
     return `${protocol}//${hostname}:8080`;
   }
+
+  // Non-localhost (tunnel or production): use env override if set
+  const envUrl = import.meta.env.VITE_WS_URL;
+  if (envUrl) return envUrl;
 
   // Production (cuevote.com): Use same host, standard ports (handled by Nginx/Proxy)
   return `${protocol}//${hostname}/ws`;
