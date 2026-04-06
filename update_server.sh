@@ -218,13 +218,10 @@ start_tunnel() {
 
     local redirect_uri="${tunnel_url}/api/spotify/callback"
 
-    # Update server .env with tunnel redirect URI and ALLOWED_ORIGINS
+    # Update server .env with tunnel redirect URI
     sed -i '' "s|^SPOTIFY_REDIRECT_URI=.*|SPOTIFY_REDIRECT_URI=${redirect_uri}|" "$SERVER_DIR/.env"
-    if grep -q '^ALLOWED_ORIGINS=' "$SERVER_DIR/.env" 2>/dev/null; then
-        sed -i '' "s|^ALLOWED_ORIGINS=.*|ALLOWED_ORIGINS=${tunnel_url}|" "$SERVER_DIR/.env"
-    else
-        echo "ALLOWED_ORIGINS=${tunnel_url}" >> "$SERVER_DIR/.env"
-    fi
+    # Remove ALLOWED_ORIGINS so both localhost and tunnel connections are accepted in dev
+    sed -i '' '/^ALLOWED_ORIGINS=/d' "$SERVER_DIR/.env" 2>/dev/null || true
 
     # Update client .env so frontend routes API/WebSocket calls through the tunnel
     if grep -q '^VITE_WS_URL=' "$CLIENT_DIR/.env" 2>/dev/null; then
