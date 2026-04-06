@@ -28,7 +28,8 @@ function getServerUrl() {
   if (!wsUrl) return window.location.origin;
   try {
     const url = new URL(wsUrl);
-    url.protocol = url.protocol === 'wss:' ? 'https:' : 'http:';
+    if (url.protocol === 'wss:') url.protocol = 'https:';
+    else if (url.protocol === 'ws:') url.protocol = 'http:';
     url.pathname = '';
     return url.origin;
   } catch {

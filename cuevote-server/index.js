@@ -129,27 +129,11 @@ const requestHandler = async (req, res) => {
         try {
             const tokenData = await spotify.exchangeCode(code);
             spotify.storeTokens(userId, tokenData);
-            logger.info(`[Spotify] OAuth success for user ${userId.substring(0, 8)}..., sending callback HTML`);
             res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(`<html><body>
-            <p id="s">Connected to Spotify!</p>
-            <pre id="d" style="font-size:12px;color:#666"></pre>
-            <script>
-                var d = document.getElementById('d');
-                var hasOpener = !!window.opener;
-                d.textContent = 'opener: ' + hasOpener + '\\norigin: ' + location.origin + '\\ntarget: ' + ${postMessageOrigin};
-                if (hasOpener) {
-                    try {
-                        window.opener.postMessage({ type: 'SPOTIFY_AUTH_SUCCESS' }, ${postMessageOrigin});
-                        d.textContent += '\\npostMessage: sent';
-                    } catch(e) {
-                        d.textContent += '\\npostMessage error: ' + e.message;
-                    }
-                } else {
-                    d.textContent += '\\npostMessage: SKIPPED (no opener)';
-                }
-                setTimeout(function() { window.close(); }, 4000);
-            </script></body></html>`);
+            res.end(`<html><body><script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_SUCCESS' }, ${postMessageOrigin});
+                setTimeout(function() { window.close(); }, 500);
+            </script><p>Connected to Spotify! You can close this window.</p></body></html>`);
         } catch (err) {
             logger.error('[Spotify] OAuth callback error:', err.message);
             res.writeHead(500, { 'Content-Type': 'text/html' });
