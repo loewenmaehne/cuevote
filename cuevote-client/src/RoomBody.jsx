@@ -1006,13 +1006,21 @@ function RoomBody() {
           spotifyAuthPollRef.current = null;
           (async () => {
             if (authCompleted) return;
-            const token = await fetchSpotifyToken();
-            if (authCompleted) return;
-            if (token) {
-              setSpotifyNeedsAuth(false);
-              initializeSpotifyPlayer();
-              cleanup();
-            } else {
+            console.log('[Spotify] Popup closed, checking server for tokens...');
+            try {
+              const token = await fetchSpotifyToken();
+              console.log('[Spotify] Token fallback result:', token ? 'got token' : 'no token');
+              if (authCompleted) return;
+              if (token) {
+                setSpotifyNeedsAuth(false);
+                initializeSpotifyPlayer();
+                cleanup();
+              } else {
+                cleanup();
+                setToast({ message: "Spotify connection was cancelled or failed. Please try again.", type: "error" });
+              }
+            } catch (e) {
+              console.error('[Spotify] Token fallback error:', e);
               cleanup();
               setToast({ message: "Spotify connection was cancelled or failed. Please try again.", type: "error" });
             }
