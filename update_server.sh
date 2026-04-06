@@ -173,11 +173,17 @@ start_tunnel() {
         rm -f "$TUNNEL_PID_FILE" "$TUNNEL_LOG_FILE"
     fi
 
-    # Backend must be running
-    if ! lsof -ti :8080 > /dev/null 2>&1; then
-        echo "  ERROR: Backend not running on port 8080."
-        echo "  Run 'bash update_server.sh start' first."
-        return 1
+    # Wait for backend to be ready (PM2 may have just started it)
+    local port_attempts=0
+    while ! lsof -ti :8080 > /dev/null 2>&1; do
+        sleep 0.5
+        port_attempts=$((port_attempts + 1))
+        if [ "$port_attempts" -ge 20 ]; then
+            echo "  ERROR: Backend not running on port 8080 after 10s."
+            echo "  Run 'bash update_server.sh start' first."
+            return 1
+        fi
+    done
     fi
 
     ensure_cloudflared || return 1
@@ -317,7 +323,7 @@ auto_start_tunnel_if_needed() {
     fi
 
     echo ""
-    echo "  -> Worktree + Spotify detected — auto-starting Cloudflare tunnel..."
+    echo "  -> Branch '$current_branch' + Spotify detected — auto-starting Cloudflare tunnel..."
     start_tunnel
 }
 
