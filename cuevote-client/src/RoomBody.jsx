@@ -891,10 +891,14 @@ function RoomBody() {
 
       player.addListener('ready', ({ device_id }) => {
         console.log('[Spotify] Ready with Device ID:', device_id);
+        // Delay setting isPlayerReady: the device needs ~1s to register on Spotify's
+        // API servers after the SDK fires 'ready'. Playing too early causes 404.
         setSpotifyDeviceId(device_id);
-        setIsPlayerReady(true);
-        // Spotify handles autoplay via activateElement(), not muting — start unmuted
-        setIsMuted(false);
+        setTimeout(() => {
+          setIsPlayerReady(true);
+          // Spotify handles autoplay via activateElement(), not muting — start unmuted
+          setIsMuted(false);
+        }, 1500);
       });
 
       player.addListener('not_ready', ({ device_id }) => {
@@ -1201,16 +1205,21 @@ function RoomBody() {
       return;
     }
     try {
-      // Step 1: Transfer playback to our SDK device to ensure it's the active device.
-      // Without this, Spotify may route audio to a phone/desktop app instead.
-      console.log(`[Spotify] Transferring playback to device ${spotifyDeviceId}`);
-      const transferRes = await fetch('https://api.spotify.com/v1/me/player', {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ device_ids: [spotifyDeviceId], play: false }),
-      });
-      if (!transferRes.ok && transferRes.status !== 404) {
-        console.warn(`[Spotify] Device transfer HTTP ${transferRes.status} (non-fatal, continuing)`);
+      // Step 1: Transfer playback to our SDK device (best-effort, non-blocking).
+      // 404 is normal when no prior active device exists.
+      try {
+        console.log(`[Spotify] Transferring playback to device ${spotifyDeviceId}`);
+        const transferRes = await fetch('https://api.spotify.com/v1/me/player', {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_ids: [spotifyDeviceId], play: false }),
+        });
+        if (transferRes.ok) {
+          // Give Spotify a moment to activate the device after transfer
+          await new Promise(r => setTimeout(r, 300));
+        }
+      } catch (e) {
+        console.warn('[Spotify] Device transfer failed (non-fatal):', e.message);
       }
 
       // Step 2: Start playback on our device
@@ -1268,8 +1277,30 @@ function RoomBody() {
             sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_TRACK_UNAVAILABLE' } });
           }
         } else if (res.status === 404) {
-          setSpotifyDeviceId(null);
-          setIsPlayerReady(false);
+          // Device not yet registered on Spotify's servers — retry after a delay
+          // instead of destroying the player (which causes an infinite reconnect loop).
+          console.warn(`[Spotify] Device not found (404), retrying in 2s...`);
+          setTimeout(async () => {
+            if (!playerRef.current || !spotifyDeviceId) return;
+            try {
+              console.log(`[Spotify] Retry: PUT /me/player/play — track=${cleanId}, device=${spotifyDeviceId}`);
+              const retryRes = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uris: [`spotify:track:${cleanId}`], position_ms: positionMs }),
+              });
+              if (retryRes.ok) {
+                console.log('[Spotify] Retry succeeded — audio should start');
+              } else {
+                console.error(`[Spotify] Retry also failed: HTTP ${retryRes.status}`);
+                // Only now give up and reset the device
+                setSpotifyDeviceId(null);
+                setIsPlayerReady(false);
+              }
+            } catch (e) {
+              console.error('[Spotify] Retry failed:', e);
+            }
+          }, 2000);
         }
       }
     } catch (e) {
