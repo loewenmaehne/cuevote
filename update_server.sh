@@ -184,7 +184,6 @@ start_tunnel() {
             return 1
         fi
     done
-    fi
 
     ensure_cloudflared || return 1
 
