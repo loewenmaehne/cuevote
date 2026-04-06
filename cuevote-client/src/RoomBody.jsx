@@ -1000,15 +1000,23 @@ function RoomBody() {
       if (authCompleted) return;
       try {
         if (authWindow.closed) {
-          // Stop polling but give any in-flight postMessage time to arrive
+          // Stop polling — check server-side tokens as fallback (postMessage
+          // often fails because window.opener is null after cross-origin redirect)
           clearInterval(spotifyAuthPollRef.current);
           spotifyAuthPollRef.current = null;
-          setTimeout(() => {
-            if (!authCompleted) {
+          (async () => {
+            if (authCompleted) return;
+            const token = await fetchSpotifyToken();
+            if (authCompleted) return;
+            if (token) {
+              setSpotifyNeedsAuth(false);
+              initializeSpotifyPlayer();
+              cleanup();
+            } else {
               cleanup();
               setToast({ message: "Spotify connection was cancelled or failed. Please try again.", type: "error" });
             }
-          }, 600);
+          })();
         }
       } catch {
         // Cross-origin access error — popup navigated away, keep polling
@@ -1023,7 +1031,7 @@ function RoomBody() {
         setToast({ message: "Spotify connection timed out. Please try again.", type: "error" });
       }
     }, 120000);
-  }, [user?.id, initializeSpotifyPlayer]);
+  }, [user?.id, fetchSpotifyToken, initializeSpotifyPlayer]);
 
   // Cleanup auth listener and poll on unmount
   useEffect(() => {
