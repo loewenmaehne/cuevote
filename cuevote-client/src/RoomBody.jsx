@@ -796,6 +796,7 @@ function RoomBody() {
   // Spotify Player Initialization
   const [spotifyDeviceId, setSpotifyDeviceId] = useState(null);
   const [spotifyNeedsAuth, setSpotifyNeedsAuth] = useState(false);
+  const [spotifyAccountError, setSpotifyAccountError] = useState(false);
   const spotifyTokenRef = useRef(null);
 
   const loadSpotifySDK = useCallback(() => {
@@ -851,6 +852,7 @@ function RoomBody() {
         return;
       }
       setSpotifyNeedsAuth(false);
+      setSpotifyAccountError(false);
 
       const player = new SpotifySDK.Player({
         name: 'CueVote',
@@ -916,6 +918,7 @@ function RoomBody() {
 
       player.addListener('account_error', ({ message }) => {
         console.error('[Spotify] Account error (Premium required?):', message);
+        setSpotifyAccountError(true);
         setToast({ message: "Spotify Premium is required for playback.", type: "error" });
       });
 
@@ -929,14 +932,37 @@ function RoomBody() {
 
   // Spotify auth popup handler
   const spotifyAuthListenerRef = useRef(null);
+  const spotifyAuthPollRef = useRef(null);
   const openSpotifyAuth = useCallback(() => {
     if (!user?.id) return;
-    // Clean up any previous auth listener
+    // Clean up any previous auth listener and poll
     if (spotifyAuthListenerRef.current) {
       window.removeEventListener('message', spotifyAuthListenerRef.current);
     }
+    if (spotifyAuthPollRef.current) {
+      clearInterval(spotifyAuthPollRef.current);
+      spotifyAuthPollRef.current = null;
+    }
     const serverUrl = getServerUrl();
     const authWindow = window.open(`${serverUrl}/api/spotify/auth?userId=${user.id}`, 'spotify-auth', 'width=450,height=700');
+
+    // Popup blocker detection
+    if (!authWindow || authWindow.closed) {
+      setToast({ message: "Popup blocked. Please allow popups for this site and try again.", type: "error" });
+      return;
+    }
+
+    let authCompleted = false;
+
+    const cleanup = () => {
+      authCompleted = true;
+      window.removeEventListener('message', handleMessage);
+      spotifyAuthListenerRef.current = null;
+      if (spotifyAuthPollRef.current) {
+        clearInterval(spotifyAuthPollRef.current);
+        spotifyAuthPollRef.current = null;
+      }
+    };
 
     const handleMessage = (event) => {
       // Validate origin to prevent spoofed postMessage attacks
@@ -944,25 +970,49 @@ function RoomBody() {
       if (event.data?.type === 'SPOTIFY_AUTH_SUCCESS') {
         setSpotifyNeedsAuth(false);
         initializeSpotifyPlayer();
-        window.removeEventListener('message', handleMessage);
-        spotifyAuthListenerRef.current = null;
+        cleanup();
       } else if (event.data?.type === 'SPOTIFY_AUTH_ERROR') {
         console.error('[Spotify] Auth error:', event.data.error);
         setToast({ message: "Spotify authentication failed. Please try again.", type: "error" });
-        window.removeEventListener('message', handleMessage);
-        spotifyAuthListenerRef.current = null;
+        cleanup();
       }
     };
     spotifyAuthListenerRef.current = handleMessage;
     window.addEventListener('message', handleMessage);
+
+    // Poll for popup closed without completing auth (user closed popup, redirect failed, etc.)
+    spotifyAuthPollRef.current = setInterval(() => {
+      if (authCompleted) return;
+      try {
+        if (authWindow.closed) {
+          cleanup();
+          setToast({ message: "Spotify connection was cancelled or failed. Please try again.", type: "error" });
+        }
+      } catch {
+        // Cross-origin access error — popup navigated away, keep polling
+      }
+    }, 500);
+
+    // Safety timeout: clean up after 2 minutes if auth never completes
+    setTimeout(() => {
+      if (!authCompleted) {
+        cleanup();
+        try { authWindow.close(); } catch { /* */ }
+        setToast({ message: "Spotify connection timed out. Please try again.", type: "error" });
+      }
+    }, 120000);
   }, [user?.id, initializeSpotifyPlayer]);
 
-  // Cleanup auth listener on unmount
+  // Cleanup auth listener and poll on unmount
   useEffect(() => {
     return () => {
       if (spotifyAuthListenerRef.current) {
         window.removeEventListener('message', spotifyAuthListenerRef.current);
         spotifyAuthListenerRef.current = null;
+      }
+      if (spotifyAuthPollRef.current) {
+        clearInterval(spotifyAuthPollRef.current);
+        spotifyAuthPollRef.current = null;
       }
     };
   }, []);
@@ -1783,6 +1833,7 @@ function RoomBody() {
                     musicSource={musicSource}
                     currentTrack={currentTrack}
                     spotifyNeedsAuth={spotifyNeedsAuth}
+                    spotifyAccountError={spotifyAccountError}
                     onSpotifyAuth={openSpotifyAuth}
                     isOwner={isOwner}
                     isPlayerReady={isPlayerReady}
@@ -1894,6 +1945,7 @@ function RoomBody() {
                             musicSource={musicSource}
                             currentTrack={currentTrack}
                             spotifyNeedsAuth={spotifyNeedsAuth}
+                            spotifyAccountError={spotifyAccountError}
                             onSpotifyAuth={openSpotifyAuth}
                             isOwner={isOwner}
                             isPlayerReady={isPlayerReady}
