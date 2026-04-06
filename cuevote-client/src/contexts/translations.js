@@ -150,7 +150,9 @@ export const translations = {
 			takingTooLong: "Taking longer than usual...",
 			checkConnection: "Please check your internet connection.",
 			networkThrottle: "YouTube has blocked this network's IP. Playback paused. Try switching to a mobile hotspot.",
-			retryPlayback: "Retry"
+			retryPlayback: "Retry",
+			reconnecting: "Reconnecting",
+			attempt: "Attempt"
 		},
 		track: {
 			playing: "Playing",
@@ -375,7 +377,9 @@ export const translations = {
 			takingTooLong: "Duurt langer dan gewoonlijk...",
 			checkConnection: "Controleer je internetverbinding.",
 			networkThrottle: "YouTube heeft het IP-adres van dit netwerk geblokkeerd. Afspelen gepauzeerd. Probeer over te schakelen naar een mobiele hotspot.",
-			retryPlayback: "Opnieuw"
+			retryPlayback: "Opnieuw",
+			reconnecting: "Opnieuw verbinden",
+			attempt: "Poging"
 		},
 		track: {
 			playing: "Speelt nu",
@@ -592,7 +596,9 @@ export const translations = {
 			takingTooLong: "Dauert länger als gewöhnlich...",
 			checkConnection: "Bitte überprüfen Sie Ihre Internetverbindung.",
 			networkThrottle: "YouTube hat die IP-Adresse dieses Netzwerks gesperrt. Wiedergabe pausiert. Versuche, zu einem mobilen Hotspot zu wechseln.",
-			retryPlayback: "Erneut versuchen"
+			retryPlayback: "Erneut versuchen",
+			reconnecting: "Verbinde erneut",
+			attempt: "Versuch"
 		},
 		track: {
 			playing: "Wiedergabe",
@@ -809,7 +815,9 @@ export const translations = {
 			takingTooLong: "Cela prend plus de temps que d'habitude...",
 			checkConnection: "Veuillez vérifier votre connexion internet.",
 			networkThrottle: "YouTube a bloqué l'IP de ce réseau. Lecture en pause. Essayez de passer à un point d'accès mobile.",
-			retryPlayback: "Réessayer"
+			retryPlayback: "Réessayer",
+			reconnecting: "Reconnexion",
+			attempt: "Tentative"
 		},
 		track: {
 			playing: "Lecture",
@@ -1023,7 +1031,9 @@ export const translations = {
 			takingTooLong: "Tarda más de lo habitual...",
 			checkConnection: "Por favor, comprueba tu conexión a internet.",
 			networkThrottle: "YouTube ha bloqueado la IP de esta red. Reproducción en pausa. Intenta cambiar a un punto de acceso móvil.",
-			retryPlayback: "Reintentar"
+			retryPlayback: "Reintentar",
+			reconnecting: "Reconectando",
+			attempt: "Intento"
 		},
 		track: {
 			playing: "Reproduciendo",
