@@ -890,6 +890,18 @@ function RoomBody() {
 
       player.addListener('ready', ({ device_id }) => {
         console.log('[Spotify] Ready with Device ID:', device_id);
+        // Resume AudioContext if browser suspended it (autoplay policy)
+        if (player._options?.id) {
+          try {
+            // Spotify SDK exposes the internal audio element; ensure it's not blocked
+            const audioElements = document.querySelectorAll('audio');
+            audioElements.forEach(el => {
+              if (el.paused && el.src && el.src.includes('spotify')) {
+                el.play().catch(() => {});
+              }
+            });
+          } catch { /* best-effort */ }
+        }
         setSpotifyDeviceId(device_id);
         setIsPlayerReady(true);
       });
@@ -955,9 +967,28 @@ function RoomBody() {
         setToast({ message: "Spotify Premium is required for playback.", type: "error" });
       });
 
-      await player.connect();
+      const connected = await player.connect();
+      if (!connected) {
+        console.error("[Spotify] Player connect() returned false — connection failed");
+        return;
+      }
       playerRef.current = player;
-      console.log("[Spotify] Player initialized");
+      console.log("[Spotify] Player connected successfully, waiting for 'ready' event...");
+
+      // Ensure any AudioContext created by the SDK is resumed (autoplay policy workaround)
+      try {
+        const audioCtx = window.AudioContext || window.webkitAudioContext;
+        if (audioCtx) {
+          // The SDK may use a global AudioContext; try to resume any suspended ones
+          const contexts = [player._options?.audioContext, window.__audioContext].filter(Boolean);
+          for (const ctx of contexts) {
+            if (ctx.state === 'suspended') {
+              console.log('[Spotify] Resuming suspended AudioContext...');
+              await ctx.resume();
+            }
+          }
+        }
+      } catch { /* best-effort AudioContext resume */ }
     } catch (err) {
       console.error("[Spotify] Initialization failed:", err);
     }
@@ -1131,14 +1162,22 @@ function RoomBody() {
 
   // Track the currently playing Spotify track to avoid redundant API calls
   const spotifyCurrentTrackIdRef = useRef(null);
+  // Guard: prevent spotifyResume() from firing while a new track is being loaded via PUT
+  const spotifyTrackLoadingRef = useRef(false);
 
   // Spotify resume helper: SDK has no resume(), use togglePlay with state check
   const spotifyResume = useCallback(async () => {
     const p = playerRef.current;
     if (!p) return;
+    // Don't interfere while a new track is being loaded via the Spotify API
+    if (spotifyTrackLoadingRef.current) {
+      console.log('[Spotify] Skipping resume — track is loading via API');
+      return;
+    }
     try {
       const state = await p.getCurrentState();
       if (state?.paused) {
+        console.log('[Spotify] Resuming paused playback via togglePlay');
         await p.togglePlay();
       }
     } catch (e) {
@@ -1152,19 +1191,48 @@ function RoomBody() {
       console.warn("[Spotify] Cannot play: no device ID. Player may not be ready.");
       return;
     }
+    // Set loading guard to prevent spotifyResume() from interfering
+    spotifyTrackLoadingRef.current = true;
     const token = await fetchSpotifyToken();
     if (!token) {
+      spotifyTrackLoadingRef.current = false;
       console.warn("[Spotify] Cannot play: token fetch failed. Re-auth may be needed.");
       setSpotifyNeedsAuth(true);
       return;
     }
     try {
+      console.log(`[Spotify] PUT /me/player/play — track=${trackId}, device=${spotifyDeviceId}, pos=${positionMs}ms`);
       const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ uris: [`spotify:track:${trackId}`], position_ms: positionMs }),
       });
-      if (!res.ok) {
+      if (res.ok) {
+        console.log(`[Spotify] Play request accepted (HTTP ${res.status}) — audio should start`);
+        // Ensure the SDK's audio isn't blocked by autoplay policy
+        const p = playerRef.current;
+        if (p) {
+          // Give Spotify a moment to route audio to the device, then verify playback
+          setTimeout(async () => {
+            spotifyTrackLoadingRef.current = false; // Clear loading guard
+            try {
+              const state = await p.getCurrentState();
+              if (state) {
+                console.log(`[Spotify] Player state: paused=${state.paused}, position=${state.position}, track=${state.track_window?.current_track?.name}`);
+                if (state.paused) {
+                  console.log('[Spotify] Player is paused after play request — attempting togglePlay()');
+                  await p.togglePlay();
+                }
+              } else {
+                console.warn('[Spotify] Player state is null after play request — device may not be receiving audio');
+              }
+            } catch (e) {
+              console.warn('[Spotify] Post-play state check failed:', e);
+            }
+          }, 1000);
+        }
+      } else {
+        spotifyTrackLoadingRef.current = false;
         const text = await res.text().catch(() => '');
         console.error(`[Spotify] Play track HTTP ${res.status}:`, text);
         if (res.status === 401) {
@@ -1188,6 +1256,7 @@ function RoomBody() {
         }
       }
     } catch (e) {
+      spotifyTrackLoadingRef.current = false;
       console.error("[Spotify] Play track failed:", e);
     }
   }, [spotifyDeviceId, fetchSpotifyToken, sendMessage]);
@@ -1995,6 +2064,7 @@ function RoomBody() {
               // Suggestions Props
               activeSuggestionId={activeSuggestionId}
               suggestions={manualSuggestions}
+              suggestionsError={suggestionsError}
               isFetchingSuggestions={isFetchingSuggestions}
               queueVideoIds={queueVideoIds}
               disableFloatingUI={!!previewTrack}
@@ -2108,6 +2178,7 @@ function RoomBody() {
             onAdd={handleLibraryAdd}
             activeSuggestionId={activeSuggestionId}
             suggestions={manualSuggestions}
+            suggestionsError={suggestionsError}
             isFetchingSuggestions={isFetchingSuggestions}
             queueVideoIds={queueVideoIds}
           />

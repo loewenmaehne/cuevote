@@ -19,6 +19,7 @@ export function PlaylistView({
     onAdd,
     activeSuggestionId,
     suggestions,
+    suggestionsError,
     isFetchingSuggestions,
     queueVideoIds,
     disableFloatingUI = false,
@@ -101,6 +102,7 @@ export function PlaylistView({
                             onRecommend={onRecommend}
                             activeSuggestionId={activeSuggestionId}
                             suggestions={suggestions}
+                            suggestionsError={suggestionsError}
                             isFetchingSuggestions={isFetchingSuggestions}
                             queueVideoIds={queueVideoIds}
                         />
@@ -137,6 +139,7 @@ export function PlaylistView({
                                         onPreview={onPreview}
                                         activeSuggestionId={activeSuggestionId}
                                         suggestions={suggestions}
+                                        suggestionsError={suggestionsError}
                                         isFetchingSuggestions={isFetchingSuggestions}
                                         queueVideoIds={queueVideoIds}
                                     />
@@ -165,6 +168,7 @@ export function PlaylistView({
                                     onAdd={onAdd}
                                     activeSuggestionId={activeSuggestionId}
                                     suggestions={suggestions}
+                                    suggestionsError={suggestionsError}
                                     isFetchingSuggestions={isFetchingSuggestions}
                                     queueVideoIds={queueVideoIds}
                                 />
@@ -242,6 +246,7 @@ PlaylistView.propTypes = {
     onAdd: PropTypes.func,
     activeSuggestionId: PropTypes.string,
     suggestions: PropTypes.array,
+    suggestionsError: PropTypes.string,
     isFetchingSuggestions: PropTypes.bool,
     queueVideoIds: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Set)]),
     disableFloatingUI: PropTypes.bool,

@@ -122,6 +122,13 @@ try {
   // Ignore duplicate column error
 }
 
+// Migration: Add music_source to persist Spotify vs YouTube per room
+try {
+  db.prepare("ALTER TABLE rooms ADD COLUMN music_source TEXT DEFAULT 'youtube'").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
+
 // Indexes for common query patterns (IF NOT EXISTS makes these idempotent)
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
@@ -169,11 +176,12 @@ module.exports = {
   // Room Management
   createRoom: (room) => {
     const stmt = db.prepare(`
-        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled, language_flag)
-        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled, @language_flag)
+        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled, language_flag, music_source)
+        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled, @language_flag, @music_source)
     `);
     if (room.captions_enabled === undefined) room.captions_enabled = 0;
     if (room.language_flag === undefined) room.language_flag = 'international';
+    if (room.music_source === undefined) room.music_source = 'youtube';
 
     stmt.run(room);
     return db.prepare('SELECT * FROM rooms WHERE id = ?').get(room.id);
@@ -218,6 +226,11 @@ module.exports = {
     if (settings.language_flag !== undefined) {
       updates.push("language_flag = ?");
       values.push(settings.language_flag);
+    }
+
+    if (settings.music_source !== undefined) {
+      updates.push("music_source = ?");
+      values.push(settings.music_source);
     }
 
     if (updates.length > 0) {

@@ -17,6 +17,7 @@ export function Queue({
   onAdd,
   activeSuggestionId,
   suggestions,
+  suggestionsError,
   isFetchingSuggestions,
   queueVideoIds
 }) {
@@ -51,6 +52,7 @@ export function Queue({
             onAdd={onAdd}
             activeSuggestionId={activeSuggestionId}
             suggestions={suggestions}
+            suggestionsError={suggestionsError}
             isFetchingSuggestions={isFetchingSuggestions}
             queueVideoIds={queueVideoIds}
           />
@@ -77,5 +79,6 @@ Queue.propTypes = {
   onAdd: PropTypes.func,
   activeSuggestionId: PropTypes.string,
   suggestions: PropTypes.array,
+  suggestionsError: PropTypes.string,
   isFetchingSuggestions: PropTypes.bool,
 };
