@@ -768,16 +768,16 @@ class Room {
             // Spotify rooms: use Spotify recommendations API
             if (isSpotifyRoom) {
                 if (!spotify.isConfigured()) {
-                    ws.send(JSON.stringify({ type: "error", message: "Spotify is not configured." }));
+                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: [], error: "Spotify is not configured." } }));
                     return;
                 }
                 const ownerToken = await spotify.getAccessToken(this.metadata.owner_id);
                 if (!ownerToken) {
-                    ws.send(JSON.stringify({ type: "error", message: "Room owner must connect Spotify." }));
+                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: [], error: "Room owner must connect Spotify." } }));
                     return;
                 }
                 try {
-                    const results = await spotify.getRecommendations(trackId, ownerToken, 6, artist);
+                    const results = await spotify.getRecommendations(trackId, ownerToken, 6, artist, title);
                     if (results && results.length > 0) {
                         const suggestions = results
                             .filter(r => r.trackId !== trackId)
@@ -791,11 +791,11 @@ class Room {
                         db.saveRelatedVideos(cacheKey, suggestions);
                         ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions } }));
                     } else {
-                        ws.send(JSON.stringify({ type: "error", message: "No suggestions found." }));
+                        ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: [], error: "No suggestions found." } }));
                     }
                 } catch (e) {
                     logger.error("[Spotify] Recommendations failed:", e);
-                    ws.send(JSON.stringify({ type: "error", message: "Failed to fetch suggestions." }));
+                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: [], error: "Failed to fetch suggestions." } }));
                 }
                 return;
             }

@@ -381,6 +381,8 @@ function RoomBody() {
   const [manualSuggestions, setManualSuggestions] = useState([]);
   const [activeSuggestionId, setActiveSuggestionId] = useState(null);
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
+  const [suggestionsError, setSuggestionsError] = useState(null);
+  const suggestionTimeoutRef = useRef(null);
   const [networkThrottle, setNetworkThrottle] = useState(null); // { until: timestamp } when YouTube throttles the venue IP
   const THROTTLE_DISMISS_KEY = 'cuevote_throttle_dismissed_until';
   const isThrottleDismissActive = useCallback(() => {
@@ -488,8 +490,15 @@ function RoomBody() {
     if (!lastMessage || lastMessage.type !== "SUGGESTION_RESULT") return;
     if (!activeSuggestionId) return; // Ignore if no suggestion panel is open
 
+    if (suggestionTimeoutRef.current) {
+      clearTimeout(suggestionTimeoutRef.current);
+      suggestionTimeoutRef.current = null;
+    }
+
     const suggestions = lastMessage.payload?.suggestions || [];
+    const error = lastMessage.payload?.error || null;
     setManualSuggestions(suggestions);
+    setSuggestionsError(error);
     setIsFetchingSuggestions(false);
   }, [lastMessage, activeSuggestionId]);
   const [showPendingPage, setShowPendingPage] = useState(false);
@@ -1363,13 +1372,25 @@ function RoomBody() {
     // Toggle if clicking same track
     if (activeSuggestionId === track.id) {
       setActiveSuggestionId(null);
+      if (suggestionTimeoutRef.current) {
+        clearTimeout(suggestionTimeoutRef.current);
+        suggestionTimeoutRef.current = null;
+      }
       return;
     }
 
     console.log("[App] handleFetchSuggestions triggered for:", track.title);
     setActiveSuggestionId(track.id);
     setManualSuggestions([]); // Clear previous
+    setSuggestionsError(null); // Clear previous error
     setIsFetchingSuggestions(true);
+
+    // Safety timeout: stop spinner after 10s if server never responds
+    if (suggestionTimeoutRef.current) clearTimeout(suggestionTimeoutRef.current);
+    suggestionTimeoutRef.current = setTimeout(() => {
+      setIsFetchingSuggestions(false);
+      setSuggestionsError("Request timed out. Please try again.");
+    }, 10000);
 
     sendMessage({
       type: "FETCH_SUGGESTIONS",
@@ -1774,6 +1795,7 @@ function RoomBody() {
                 currentTrack={currentTrack}
                 onRecommend={handleFetchSuggestions}
                 suggestions={manualSuggestions}
+                suggestionsError={suggestionsError}
                 isFetchingSuggestions={isFetchingSuggestions}
                 queueVideoIds={queueVideoIds}
               />

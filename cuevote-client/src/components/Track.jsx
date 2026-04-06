@@ -33,6 +33,7 @@ export function Track({
   onRecommend,
   activeSuggestionId, // <--- New Prop
   suggestions,        // <--- New Prop
+  suggestionsError,   // <--- New Prop
   isFetchingSuggestions, // <--- New Prop
   queueVideoIds       // <--- New Prop
 }) {
@@ -164,6 +165,10 @@ export function Track({
                   <Loader2 className="animate-spin text-orange-500" size={24} />
                   <p className="text-xs font-medium">{t('suggestions.loading', 'Finding similar videos...')}</p>
                 </div>
+              ) : suggestionsError ? (
+                <div className="text-center py-4 text-red-400/80 text-sm">
+                  {suggestionsError}
+                </div>
               ) : suggestions && suggestions.length > 0 ? (
                 <Suggestions suggestions={suggestions} onAdd={onAddSuggestion || onAdd} onPreview={onPreview} queueVideoIds={queueVideoIds} />
               ) : (
@@ -277,6 +282,7 @@ Track.propTypes = {
   onRecommend: PropTypes.func,
   activeSuggestionId: PropTypes.string,
   suggestions: PropTypes.array,
+  suggestionsError: PropTypes.string,
   isFetchingSuggestions: PropTypes.bool,
   queueVideoIds: PropTypes.object, // Set
 };

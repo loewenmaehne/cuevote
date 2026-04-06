@@ -207,7 +207,7 @@ async function getTrackDetails(trackId, accessToken) {
     return mapTrack(t);
 }
 
-async function getRecommendations(trackId, accessToken, limit = 6, artist = null) {
+async function getRecommendations(trackId, accessToken, limit = 6, artist = null, title = null) {
     // Try the recommendations API first (deprecated for new/restricted apps since Nov 2024)
     try {
         const params = new URLSearchParams({
@@ -217,26 +217,45 @@ async function getRecommendations(trackId, accessToken, limit = 6, artist = null
         const data = await spotifyFetch(`https://api.spotify.com/v1/recommendations?${params.toString()}`, accessToken, 'Recommendations');
         const tracks = data.tracks;
         if (tracks && tracks.length > 0) {
+            logger.info(`[Spotify] Recommendations API returned ${tracks.length} tracks`);
             return tracks.map(mapTrack);
         }
+        logger.info('[Spotify] Recommendations API returned empty, trying fallback');
     } catch (err) {
-        logger.warn('[Spotify] Recommendations API failed, falling back to artist search:', err.message);
+        logger.warn('[Spotify] Recommendations API failed (may be deprecated for this app), falling back:', err.message);
     }
 
-    // Fallback: search by artist name (similar to YouTube suggestion strategy)
+    // Fallback 1: search by primary artist name
+    let artistQuery = artist;
     try {
-        let artistQuery = artist;
         if (!artistQuery) {
             const trackDetails = await getTrackDetails(trackId, accessToken);
             artistQuery = trackDetails?.artist;
         }
         if (artistQuery) {
-            // Use first artist if multiple are comma-separated
             const primaryArtist = artistQuery.split(',')[0].trim();
-            return await searchSpotify(primaryArtist, accessToken, limit);
+            const results = await searchSpotify(primaryArtist, accessToken, limit);
+            if (results.length > 0) {
+                logger.info(`[Spotify] Artist search fallback returned ${results.length} tracks for "${primaryArtist}"`);
+                return results;
+            }
         }
     } catch (err) {
-        logger.error('[Spotify] Artist search fallback also failed:', err.message);
+        logger.warn('[Spotify] Artist search fallback failed:', err.message);
+    }
+
+    // Fallback 2: search by track title keywords (strips parenthetical suffixes like "feat." or "remix")
+    try {
+        const titleQuery = (title || '').replace(/\s*[\(\[].*[\)\]].*$/g, '').trim();
+        if (titleQuery && titleQuery.length > 2) {
+            const results = await searchSpotify(titleQuery, accessToken, limit);
+            if (results.length > 0) {
+                logger.info(`[Spotify] Title search fallback returned ${results.length} tracks for "${titleQuery}"`);
+                return results;
+            }
+        }
+    } catch (err) {
+        logger.warn('[Spotify] Title search fallback also failed:', err.message);
     }
 
     return [];
