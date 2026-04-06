@@ -1000,8 +1000,15 @@ function RoomBody() {
       if (authCompleted) return;
       try {
         if (authWindow.closed) {
-          cleanup();
-          setToast({ message: "Spotify connection was cancelled or failed. Please try again.", type: "error" });
+          // Stop polling but give any in-flight postMessage time to arrive
+          clearInterval(spotifyAuthPollRef.current);
+          spotifyAuthPollRef.current = null;
+          setTimeout(() => {
+            if (!authCompleted) {
+              cleanup();
+              setToast({ message: "Spotify connection was cancelled or failed. Please try again.", type: "error" });
+            }
+          }, 600);
         }
       } catch {
         // Cross-origin access error — popup navigated away, keep polling

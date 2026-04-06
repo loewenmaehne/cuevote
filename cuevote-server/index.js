@@ -104,7 +104,7 @@ const requestHandler = async (req, res) => {
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(`<html><body><script>
                 window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: ${safeError} }, ${postMessageOrigin});
-                window.close();
+                setTimeout(function() { window.close(); }, 500);
             </script><p>Authentication denied. You can close this window.</p></body></html>`);
             return;
         }
@@ -121,7 +121,7 @@ const requestHandler = async (req, res) => {
             res.writeHead(400, { 'Content-Type': 'text/html' });
             res.end(`<html><body><script>
                 window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'invalid_state' }, ${postMessageOrigin});
-                window.close();
+                setTimeout(function() { window.close(); }, 500);
             </script><p>Invalid or expired state. Please try again.</p></body></html>`);
             return;
         }
@@ -132,14 +132,14 @@ const requestHandler = async (req, res) => {
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(`<html><body><script>
                 window.opener?.postMessage({ type: 'SPOTIFY_AUTH_SUCCESS' }, ${postMessageOrigin});
-                window.close();
+                setTimeout(function() { window.close(); }, 500);
             </script><p>Connected to Spotify! You can close this window.</p></body></html>`);
         } catch (err) {
             logger.error('[Spotify] OAuth callback error:', err.message);
             res.writeHead(500, { 'Content-Type': 'text/html' });
             res.end(`<html><body><script>
                 window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'token_exchange_failed' }, ${postMessageOrigin});
-                window.close();
+                setTimeout(function() { window.close(); }, 500);
             </script><p>Authentication failed. You can close this window.</p></body></html>`);
         }
         return;
