@@ -15,7 +15,10 @@ const buildThumbnailUrl = (track) => {
   if (track.source === 'spotify') return track.thumbnail;
   return track.thumbnail || `https://i.ytimg.com/vi/${track.videoId}/hqdefault.jpg`;
 };
-const getTrackSourceId = (track) => track?.videoId || track?.trackId;
+const getTrackSourceId = (track) => {
+  if (track?.source === 'spotify') return track?.trackId || track?.videoId;
+  return track?.videoId || track?.trackId;
+};
 
 export function Track({
   track,

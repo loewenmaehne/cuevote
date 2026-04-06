@@ -1185,6 +1185,8 @@ function RoomBody() {
 
   // Spotify track loading helper
   const spotifyPlayTrack = useCallback(async (trackId, positionMs = 0) => {
+    // Safety: strip any sp: DB cache key prefix that may have leaked into the trackId
+    const cleanId = trackId.replace(/^sp:/, '');
     if (!spotifyDeviceId) {
       console.warn("[Spotify] Cannot play: no device ID. Player may not be ready.");
       return;
@@ -1212,11 +1214,11 @@ function RoomBody() {
       }
 
       // Step 2: Start playback on our device
-      console.log(`[Spotify] PUT /me/player/play — track=${trackId}, device=${spotifyDeviceId}, pos=${positionMs}ms`);
+      console.log(`[Spotify] PUT /me/player/play — track=${cleanId}, device=${spotifyDeviceId}, pos=${positionMs}ms`);
       const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uris: [`spotify:track:${trackId}`], position_ms: positionMs }),
+        body: JSON.stringify({ uris: [`spotify:track:${cleanId}`], position_ms: positionMs }),
       });
       if (res.ok) {
         console.log(`[Spotify] Play request accepted (HTTP ${res.status}) — audio should start`);
