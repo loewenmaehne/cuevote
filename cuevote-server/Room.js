@@ -1520,10 +1520,10 @@ class Room {
             history: newHistory,
             currentTrack: newCurrentTrack,
             progress: 0,
-            isPlaying: true,
+            // Preserve current play state: if playing, keep playing; if paused, stay paused
+            isPlaying: newCurrentTrack ? this.state.isPlaying : false,
         };
         if (!newCurrentTrack) {
-            newState.isPlaying = false;
             this.updateState(newState);
 
             if (this.state.autoRefill && this.state.history.length > 0 && !this.state.isRefilling) {

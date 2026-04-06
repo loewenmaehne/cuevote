@@ -208,54 +208,105 @@ async function getTrackDetails(trackId, accessToken) {
 }
 
 async function getRecommendations(trackId, accessToken, limit = 6, artist = null, title = null) {
-    // Try the recommendations API first (deprecated for new/restricted apps since Nov 2024)
-    try {
-        const params = new URLSearchParams({
-            seed_tracks: trackId,
-            limit: String(limit),
-        });
-        const data = await spotifyFetch(`https://api.spotify.com/v1/recommendations?${params.toString()}`, accessToken, 'Recommendations');
-        const tracks = data.tracks;
-        if (tracks && tracks.length > 0) {
-            logger.info(`[Spotify] Recommendations API returned ${tracks.length} tracks`);
-            return tracks.map(mapTrack);
+    // Resolve artist/title upfront if not provided (needed by multiple strategies)
+    let artistName = artist;
+    let trackTitle = title;
+    if (!artistName || !trackTitle) {
+        try {
+            const details = await getTrackDetails(trackId, accessToken);
+            if (!artistName) artistName = details?.artist;
+            if (!trackTitle) trackTitle = details?.title;
+        } catch (err) {
+            logger.warn('[Spotify] Failed to fetch track details for recommendations:', err.message);
         }
-        logger.info('[Spotify] Recommendations API returned empty, trying fallback');
-    } catch (err) {
-        logger.warn('[Spotify] Recommendations API failed (may be deprecated for this app), falling back:', err.message);
     }
 
-    // Fallback 1: search by primary artist name
-    let artistQuery = artist;
+    // Strategy 1: Get artist's top tracks (most relevant "similar" results)
     try {
-        if (!artistQuery) {
-            const trackDetails = await getTrackDetails(trackId, accessToken);
-            artistQuery = trackDetails?.artist;
+        if (artistName) {
+            const primaryArtist = artistName.split(',')[0].trim();
+            // Search for artist to get their Spotify ID
+            const artistSearchParams = new URLSearchParams({ q: primaryArtist, type: 'artist', limit: '1' });
+            const artistData = await spotifyFetch(`https://api.spotify.com/v1/search?${artistSearchParams}`, accessToken, 'Artist search');
+            const spotifyArtist = artistData.artists?.items?.[0];
+            if (spotifyArtist) {
+                // Get artist's top tracks
+                const topTracks = await spotifyFetch(`https://api.spotify.com/v1/artists/${spotifyArtist.id}/top-tracks`, accessToken, 'Artist top tracks');
+                if (topTracks.tracks && topTracks.tracks.length > 0) {
+                    const mapped = topTracks.tracks.map(mapTrack).filter(t => t.trackId !== trackId);
+                    if (mapped.length > 0) {
+                        logger.info(`[Spotify] Artist top tracks returned ${mapped.length} tracks for "${primaryArtist}"`);
+                        return mapped.slice(0, limit);
+                    }
+                }
+
+                // Get related artists and their top tracks for more variety
+                try {
+                    const related = await spotifyFetch(`https://api.spotify.com/v1/artists/${spotifyArtist.id}/related-artists`, accessToken, 'Related artists');
+                    if (related.artists && related.artists.length > 0) {
+                        // Pick top 2 related artists and get a track from each
+                        const relatedTracks = [];
+                        for (const relArtist of related.artists.slice(0, 3)) {
+                            try {
+                                const relTop = await spotifyFetch(`https://api.spotify.com/v1/artists/${relArtist.id}/top-tracks`, accessToken, 'Related artist top tracks');
+                                if (relTop.tracks?.[0]) relatedTracks.push(relTop.tracks[0]);
+                                if (relTop.tracks?.[1]) relatedTracks.push(relTop.tracks[1]);
+                            } catch { /* skip this related artist */ }
+                        }
+                        if (relatedTracks.length > 0) {
+                            logger.info(`[Spotify] Related artists returned ${relatedTracks.length} tracks`);
+                            return relatedTracks.map(mapTrack).filter(t => t.trackId !== trackId).slice(0, limit);
+                        }
+                    }
+                } catch (err) {
+                    logger.warn('[Spotify] Related artists lookup failed:', err.message);
+                }
+            }
         }
-        if (artistQuery) {
-            const primaryArtist = artistQuery.split(',')[0].trim();
-            const results = await searchSpotify(primaryArtist, accessToken, limit);
-            if (results.length > 0) {
-                logger.info(`[Spotify] Artist search fallback returned ${results.length} tracks for "${primaryArtist}"`);
-                return results;
+    } catch (err) {
+        logger.warn('[Spotify] Artist-based recommendations failed:', err.message);
+    }
+
+    // Strategy 2: Search by "artist genre" keywords for variety
+    try {
+        if (artistName) {
+            const primaryArtist = artistName.split(',')[0].trim();
+            const results = await searchSpotify(primaryArtist, accessToken, limit + 2);
+            const filtered = results.filter(r => r.trackId !== trackId).slice(0, limit);
+            if (filtered.length > 0) {
+                logger.info(`[Spotify] Artist search returned ${filtered.length} tracks for "${primaryArtist}"`);
+                return filtered;
             }
         }
     } catch (err) {
         logger.warn('[Spotify] Artist search fallback failed:', err.message);
     }
 
-    // Fallback 2: search by track title keywords (strips parenthetical suffixes like "feat." or "remix")
+    // Strategy 3: Search by track title keywords (strips parenthetical suffixes)
     try {
-        const titleQuery = (title || '').replace(/\s*[\(\[].*[\)\]].*$/g, '').trim();
+        const titleQuery = (trackTitle || '').replace(/\s*[\(\[].*[\)\]].*$/g, '').trim();
         if (titleQuery && titleQuery.length > 2) {
-            const results = await searchSpotify(titleQuery, accessToken, limit);
-            if (results.length > 0) {
-                logger.info(`[Spotify] Title search fallback returned ${results.length} tracks for "${titleQuery}"`);
-                return results;
+            const results = await searchSpotify(titleQuery, accessToken, limit + 2);
+            const filtered = results.filter(r => r.trackId !== trackId).slice(0, limit);
+            if (filtered.length > 0) {
+                logger.info(`[Spotify] Title search returned ${filtered.length} tracks for "${titleQuery}"`);
+                return filtered;
             }
         }
     } catch (err) {
         logger.warn('[Spotify] Title search fallback also failed:', err.message);
+    }
+
+    // Strategy 4: Try the deprecated recommendations API as last resort
+    try {
+        const params = new URLSearchParams({ seed_tracks: trackId, limit: String(limit) });
+        const data = await spotifyFetch(`https://api.spotify.com/v1/recommendations?${params}`, accessToken, 'Recommendations');
+        if (data.tracks && data.tracks.length > 0) {
+            logger.info(`[Spotify] Recommendations API returned ${data.tracks.length} tracks`);
+            return data.tracks.map(mapTrack);
+        }
+    } catch (err) {
+        logger.warn('[Spotify] Recommendations API failed (deprecated):', err.message);
     }
 
     return [];

@@ -808,6 +808,7 @@ function RoomBody() {
   const [spotifyNeedsAuth, setSpotifyNeedsAuth] = useState(false);
   const [spotifyAccountError, setSpotifyAccountError] = useState(false);
   const spotifyTokenRef = useRef(null);
+  const spotifyTokenExpiresRef = useRef(0);
 
   const loadSpotifySDK = useCallback(() => {
     return new Promise((resolve, reject) => {
@@ -829,6 +830,10 @@ function RoomBody() {
 
   const fetchSpotifyToken = useCallback(async () => {
     if (!user?.id) return null;
+    // Return cached token if still valid (50-minute TTL, Spotify tokens last 60 min)
+    if (spotifyTokenRef.current && Date.now() < spotifyTokenExpiresRef.current) {
+      return spotifyTokenRef.current;
+    }
     const sessionToken = localStorage.getItem("cuevote_session_token");
     if (!sessionToken) return null;
     const serverUrl = getServerUrl();
@@ -838,9 +843,14 @@ function RoomBody() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, session: sessionToken }),
       });
-      if (!res.ok) return null;
+      if (!res.ok) {
+        spotifyTokenRef.current = null;
+        spotifyTokenExpiresRef.current = 0;
+        return null;
+      }
       const data = await res.json();
       spotifyTokenRef.current = data.token;
+      spotifyTokenExpiresRef.current = Date.now() + 50 * 60 * 1000; // 50 min cache
       return data.token;
     } catch (e) {
       console.error("[Spotify] Token fetch failed:", e);
@@ -901,6 +911,13 @@ function RoomBody() {
           else setIsLocallyPlaying(false);
           if (duration > 0) {
             sendMessage({ type: "UPDATE_DURATION", payload: Math.round(duration / 1000) });
+          }
+          // Sync Spotify position to server so progress stays accurate
+          if (isOwnerRef.current && position > 0) {
+            const posSec = Math.round(position / 1000);
+            if (Math.abs(posSec - (progressRef.current || 0)) > 2) {
+              sendMessage({ type: "SEEK_TO", payload: posSec });
+            }
           }
         } else {
           setIsLocallyPaused(isPlayingRef.current);
@@ -1115,11 +1132,32 @@ function RoomBody() {
   // Track the currently playing Spotify track to avoid redundant API calls
   const spotifyCurrentTrackIdRef = useRef(null);
 
+  // Spotify resume helper: SDK has no resume(), use togglePlay with state check
+  const spotifyResume = useCallback(async () => {
+    const p = playerRef.current;
+    if (!p) return;
+    try {
+      const state = await p.getCurrentState();
+      if (state?.paused) {
+        await p.togglePlay();
+      }
+    } catch (e) {
+      console.warn("[Spotify] Resume via togglePlay failed:", e);
+    }
+  }, []);
+
   // Spotify track loading helper
   const spotifyPlayTrack = useCallback(async (trackId, positionMs = 0) => {
-    if (!spotifyDeviceId) return;
+    if (!spotifyDeviceId) {
+      console.warn("[Spotify] Cannot play: no device ID. Player may not be ready.");
+      return;
+    }
     const token = await fetchSpotifyToken();
-    if (!token) return;
+    if (!token) {
+      console.warn("[Spotify] Cannot play: token fetch failed. Re-auth may be needed.");
+      setSpotifyNeedsAuth(true);
+      return;
+    }
     try {
       const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
         method: 'PUT',
@@ -1130,7 +1168,9 @@ function RoomBody() {
         const text = await res.text().catch(() => '');
         console.error(`[Spotify] Play track HTTP ${res.status}:`, text);
         if (res.status === 401) {
-          // Token expired or invalid — need re-auth
+          // Token expired or invalid — invalidate cache and need re-auth
+          spotifyTokenRef.current = null;
+          spotifyTokenExpiresRef.current = 0;
           setSpotifyNeedsAuth(true);
           if (isOwnerRef.current) {
             sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_AUTH_ERROR' } });
@@ -1190,17 +1230,17 @@ function RoomBody() {
         if (isSpotify) playerRef.current.pause?.();
         else playerRef.current.pauseVideo?.();
       } else if (userHasInteractedRef.current && previewTrack) {
-        if (isSpotify) playerRef.current.resume?.();
+        if (isSpotify) spotifyResume();
         else playerRef.current.playVideo?.();
       } else if (userHasInteractedRef.current && (isPlaying || isLocallyPlaying) && !isLocallyPaused) {
-        if (isSpotify) playerRef.current.resume?.();
+        if (isSpotify) spotifyResume();
         else playerRef.current.playVideo?.();
       } else {
         if (isSpotify) playerRef.current.pause?.();
         else playerRef.current.pauseVideo?.();
       }
     }
-  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay]);
+  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay, spotifyResume]);
 
   useEffect(() => {
     if (isSpotify) return; // Spotify syncs via player_state_changed
@@ -1292,10 +1332,14 @@ function RoomBody() {
   }, [isPlaying, isPlayerReady, isOwner, progressRef, sendMessage]);
 
   // Progress bar update (polls ref to avoid re-renders from progress messages)
+  const currentTrackDuration = currentTrack?.duration || 0;
   useEffect(() => {
     if (!isPlayerReady) return;
     const update = () => {
-      const duration = playerRef.current?.getDuration?.() || 0;
+      // Spotify SDK has no getDuration() — use server-provided duration instead
+      const duration = isSpotify
+        ? currentTrackDuration
+        : (playerRef.current?.getDuration?.() || 0);
       if (duration > 0) {
         setProgress((progressRef.current / duration) * 100);
       } else {
@@ -1305,7 +1349,7 @@ function RoomBody() {
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, [isPlayerReady, progressRef]);
+  }, [isPlayerReady, progressRef, isSpotify, currentTrackDuration]);
 
   // Event Handlers
 
@@ -1333,7 +1377,7 @@ function RoomBody() {
         // User wants to PLAY
         setIsLocallyPaused(false);
         setIsLocallyPlaying(true);
-        if (isSpotify) playerRef.current?.resume?.();
+        if (isSpotify) spotifyResume();
         else playerRef.current?.playVideo?.();
       }
     }
