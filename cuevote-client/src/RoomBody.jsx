@@ -850,6 +850,11 @@ function RoomBody() {
   const initializeSpotifyPlayer = useCallback(async () => {
     if (!hasConsent || !isOwnerRef.current) return;
     const initId = ++playerInitIdRef.current;
+    // Clean up any existing player to prevent duplicate instances
+    if (playerRef.current && typeof playerRef.current.disconnect === 'function') {
+      try { playerRef.current.disconnect(); } catch { /* */ }
+      playerRef.current = null;
+    }
     try {
       const SpotifySDK = await loadSpotifySDK();
       if (initId !== playerInitIdRef.current) return;
@@ -881,6 +886,7 @@ function RoomBody() {
       player.addListener('not_ready', ({ device_id }) => {
         console.log('[Spotify] Device has gone offline:', device_id);
         setIsPlayerReady(false);
+        setSpotifyDeviceId(null);
       });
 
       player.addListener('player_state_changed', (state) => {
