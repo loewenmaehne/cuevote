@@ -916,8 +916,27 @@ function RoomBody() {
             }
           }
         }
+        if (!deviceConfirmed && pollToken) {
+          // Force Spotify to acknowledge the device by transferring playback
+          console.log('[Spotify] Device not found in poll — transferring playback to force registration...');
+          try {
+            const transferRes = await fetch('https://api.spotify.com/v1/me/player', {
+              method: 'PUT',
+              headers: { 'Authorization': `Bearer ${pollToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ device_ids: [device_id], play: false }),
+            });
+            if (transferRes.ok || transferRes.status === 204) {
+              console.log('[Spotify] Transfer playback succeeded — device should now be active');
+              deviceConfirmed = true;
+            } else {
+              console.warn(`[Spotify] Transfer playback failed (HTTP ${transferRes.status})`);
+            }
+          } catch (e) {
+            console.warn('[Spotify] Transfer playback error:', e.message);
+          }
+        }
         if (!deviceConfirmed) {
-          console.warn('[Spotify] Device never appeared in REST API device list after polling — playback may 404');
+          console.warn('[Spotify] Device never registered — playback may 404');
         }
         setIsPlayerReady(true);
         setIsMuted(false);
@@ -1279,7 +1298,14 @@ function RoomBody() {
         }
         if (res.status === 404) {
           console.warn(`[Spotify] Device not found (404) on attempt ${attempt + 1}`);
-          // Continue to next retry iteration
+          // Transfer playback to force device registration before next retry
+          try {
+            await fetch('https://api.spotify.com/v1/me/player', {
+              method: 'PUT',
+              headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ device_ids: [spotifyDeviceId], play: false }),
+            });
+          } catch { /* non-fatal */ }
           continue;
         }
         // Other errors: don't retry
