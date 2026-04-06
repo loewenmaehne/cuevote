@@ -163,31 +163,53 @@ function mapTrack(t) {
     };
 }
 
-// Spotify API fetch with 429 rate-limit handling (single retry after Retry-After delay)
+// Spotify API fetch with 429 rate-limit handling and per-request timeout
 async function spotifyFetch(url, accessToken, label) {
-    const res = await fetch(url, {
-        headers: { 'Authorization': `Bearer ${accessToken}` },
-    });
-    if (res.status === 429) {
-        const retryAfter = parseInt(res.headers.get('Retry-After') || '2', 10);
-        logger.warn(`[Spotify] Rate limited on ${label}, retrying after ${retryAfter}s`);
-        await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-        const retry = await fetch(url, {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    try {
+        const res = await fetch(url, {
             headers: { 'Authorization': `Bearer ${accessToken}` },
+            signal: controller.signal,
         });
-        if (!retry.ok) {
-            const text = await retry.text();
-            logger.error(`[Spotify] ${label} failed after retry:`, text);
-            throw new Error(`${label} failed: ${retry.status}`);
+        clearTimeout(timeout);
+        if (res.status === 429) {
+            const retryAfter = Math.min(parseInt(res.headers.get('Retry-After') || '2', 10), 5);
+            logger.warn(`[Spotify] Rate limited on ${label}, retrying after ${retryAfter}s`);
+            await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+            const retryController = new AbortController();
+            const retryTimeout = setTimeout(() => retryController.abort(), 8000);
+            try {
+                const retry = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` },
+                    signal: retryController.signal,
+                });
+                clearTimeout(retryTimeout);
+                if (!retry.ok) {
+                    const text = await retry.text();
+                    logger.error(`[Spotify] ${label} failed after retry:`, text);
+                    throw new Error(`${label} failed: ${retry.status}`);
+                }
+                return retry.json();
+            } catch (err) {
+                clearTimeout(retryTimeout);
+                throw err;
+            }
         }
-        return retry.json();
+        if (!res.ok) {
+            const text = await res.text();
+            logger.error(`[Spotify] ${label} failed:`, text);
+            throw new Error(`${label} failed: ${res.status}`);
+        }
+        return res.json();
+    } catch (err) {
+        clearTimeout(timeout);
+        if (err.name === 'AbortError') {
+            logger.warn(`[Spotify] ${label} timed out after 8s`);
+            throw new Error(`${label} timed out`);
+        }
+        throw err;
     }
-    if (!res.ok) {
-        const text = await res.text();
-        logger.error(`[Spotify] ${label} failed:`, text);
-        throw new Error(`${label} failed: ${res.status}`);
-    }
-    return res.json();
 }
 
 async function searchSpotify(query, accessToken, limit = 5) {
@@ -208,6 +230,12 @@ async function getTrackDetails(trackId, accessToken) {
 }
 
 async function getRecommendations(trackId, accessToken, limit = 6, artist = null, title = null) {
+    // Overall timeout: abort if recommendations take longer than 20s
+    const deadline = Date.now() + 20000;
+    const checkDeadline = () => {
+        if (Date.now() > deadline) throw new Error('Recommendations overall timeout');
+    };
+
     // Resolve artist/title upfront if not provided (needed by multiple strategies)
     let artistName = artist;
     let trackTitle = title;
@@ -223,6 +251,7 @@ async function getRecommendations(trackId, accessToken, limit = 6, artist = null
 
     // Strategy 1: Get artist's top tracks (most relevant "similar" results)
     try {
+        checkDeadline();
         if (artistName) {
             const primaryArtist = artistName.split(',')[0].trim();
             // Search for artist to get their Spotify ID
@@ -269,6 +298,7 @@ async function getRecommendations(trackId, accessToken, limit = 6, artist = null
 
     // Strategy 2: Search by "artist genre" keywords for variety
     try {
+        checkDeadline();
         if (artistName) {
             const primaryArtist = artistName.split(',')[0].trim();
             const results = await searchSpotify(primaryArtist, accessToken, limit + 2);
@@ -284,6 +314,7 @@ async function getRecommendations(trackId, accessToken, limit = 6, artist = null
 
     // Strategy 3: Search by track title keywords (strips parenthetical suffixes)
     try {
+        checkDeadline();
         const titleQuery = (trackTitle || '').replace(/\s*[\(\[].*[\)\]].*$/g, '').trim();
         if (titleQuery && titleQuery.length > 2) {
             const results = await searchSpotify(titleQuery, accessToken, limit + 2);
@@ -299,6 +330,7 @@ async function getRecommendations(trackId, accessToken, limit = 6, artist = null
 
     // Strategy 4: Try the deprecated recommendations API as last resort
     try {
+        checkDeadline();
         const params = new URLSearchParams({ seed_tracks: trackId, limit: String(limit) });
         const data = await spotifyFetch(`https://api.spotify.com/v1/recommendations?${params}`, accessToken, 'Recommendations');
         if (data.tracks && data.tracks.length > 0) {

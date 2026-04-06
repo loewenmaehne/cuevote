@@ -806,6 +806,7 @@ function RoomBody() {
   // Spotify Player Initialization
   const [spotifyDeviceId, setSpotifyDeviceId] = useState(null);
   const [spotifyNeedsAuth, setSpotifyNeedsAuth] = useState(false);
+  const spotifyActivateHandlerRef = useRef(null);
   const [spotifyAccountError, setSpotifyAccountError] = useState(false);
   const spotifyTokenRef = useRef(null);
   const spotifyTokenExpiresRef = useRef(0);
@@ -885,7 +886,7 @@ function RoomBody() {
           const freshToken = await fetchSpotifyToken();
           cb(freshToken);
         },
-        volume: volumeRef.current / 100,
+        volume: isMutedRef.current ? 0 : volumeRef.current / 100,
       });
 
       player.addListener('ready', ({ device_id }) => {
@@ -975,20 +976,22 @@ function RoomBody() {
       playerRef.current = player;
       console.log("[Spotify] Player connected successfully, waiting for 'ready' event...");
 
-      // Ensure any AudioContext created by the SDK is resumed (autoplay policy workaround)
-      try {
-        const audioCtx = window.AudioContext || window.webkitAudioContext;
-        if (audioCtx) {
-          // The SDK may use a global AudioContext; try to resume any suspended ones
-          const contexts = [player._options?.audioContext, window.__audioContext].filter(Boolean);
-          for (const ctx of contexts) {
-            if (ctx.state === 'suspended') {
-              console.log('[Spotify] Resuming suspended AudioContext...');
-              await ctx.resume();
-            }
-          }
-        }
-      } catch { /* best-effort AudioContext resume */ }
+      // Activate the SDK's audio element on next user gesture (required by browser autoplay policy).
+      // Without this, the SDK connects and reports state changes but no audio is output.
+      if (spotifyActivateHandlerRef.current) {
+        document.removeEventListener('click', spotifyActivateHandlerRef.current, true);
+        document.removeEventListener('touchstart', spotifyActivateHandlerRef.current, true);
+      }
+      const activateHandler = () => {
+        console.log('[Spotify] Activating audio element via user gesture');
+        player.activateElement();
+        document.removeEventListener('click', activateHandler, true);
+        document.removeEventListener('touchstart', activateHandler, true);
+        spotifyActivateHandlerRef.current = null;
+      };
+      spotifyActivateHandlerRef.current = activateHandler;
+      document.addEventListener('click', activateHandler, true);
+      document.addEventListener('touchstart', activateHandler, true);
     } catch (err) {
       console.error("[Spotify] Initialization failed:", err);
     }
@@ -1156,6 +1159,11 @@ function RoomBody() {
         playerRef.current = null;
         setIsPlayerReady(false);
         setSpotifyDeviceId(null);
+      }
+      if (spotifyActivateHandlerRef.current) {
+        document.removeEventListener('click', spotifyActivateHandlerRef.current, true);
+        document.removeEventListener('touchstart', spotifyActivateHandlerRef.current, true);
+        spotifyActivateHandlerRef.current = null;
       }
     };
   }, [isSpotify]);
@@ -1528,12 +1536,13 @@ function RoomBody() {
     setSuggestionsError(null); // Clear previous error
     setIsFetchingSuggestions(true);
 
-    // Safety timeout: stop spinner after 10s if server never responds
+    // Safety timeout: stop spinner if server never responds.
+    // Spotify recommendations make up to 9 sequential API calls, so allow 25s.
     if (suggestionTimeoutRef.current) clearTimeout(suggestionTimeoutRef.current);
     suggestionTimeoutRef.current = setTimeout(() => {
       setIsFetchingSuggestions(false);
       setSuggestionsError("Request timed out. Please try again.");
-    }, 10000);
+    }, 25000);
 
     sendMessage({
       type: "FETCH_SUGGESTIONS",
