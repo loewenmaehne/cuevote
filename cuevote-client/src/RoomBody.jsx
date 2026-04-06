@@ -889,16 +889,38 @@ function RoomBody() {
         volume: volumeRef.current / 100,
       });
 
-      player.addListener('ready', ({ device_id }) => {
+      player.addListener('ready', async ({ device_id }) => {
         console.log('[Spotify] Ready with Device ID:', device_id);
-        // Delay setting isPlayerReady: the device needs ~1s to register on Spotify's
-        // API servers after the SDK fires 'ready'. Playing too early causes 404.
         setSpotifyDeviceId(device_id);
-        setTimeout(() => {
-          setIsPlayerReady(true);
-          // Spotify handles autoplay via activateElement(), not muting — start unmuted
-          setIsMuted(false);
-        }, 1500);
+
+        // Poll GET /me/player/devices until our device_id actually appears in the
+        // REST API's device list. The SDK 'ready' event fires when the local WebSocket
+        // handshake completes, but the REST API needs extra time to register the device.
+        const pollToken = await fetchSpotifyToken();
+        let deviceConfirmed = false;
+        if (pollToken) {
+          for (let attempt = 1; attempt <= 8; attempt++) {
+            await new Promise(r => setTimeout(r, attempt <= 2 ? 500 : 1000));
+            try {
+              const devRes = await fetch('https://api.spotify.com/v1/me/player/devices', {
+                headers: { 'Authorization': `Bearer ${pollToken}` },
+              });
+              if (devRes.ok) {
+                const devData = await devRes.json();
+                const found = devData.devices?.some(d => d.id === device_id);
+                console.log(`[Spotify] Device poll #${attempt}: ${devData.devices?.length || 0} devices, ours ${found ? 'FOUND' : 'not yet'}`);
+                if (found) { deviceConfirmed = true; break; }
+              }
+            } catch (e) {
+              console.warn(`[Spotify] Device poll #${attempt} failed:`, e.message);
+            }
+          }
+        }
+        if (!deviceConfirmed) {
+          console.warn('[Spotify] Device never appeared in REST API device list after polling — playback may 404');
+        }
+        setIsPlayerReady(true);
+        setIsMuted(false);
       });
 
       player.addListener('not_ready', ({ device_id }) => {
@@ -1187,7 +1209,7 @@ function RoomBody() {
     }
   }, []);
 
-  // Spotify track loading helper
+  // Spotify track loading helper with exponential-backoff retry on 404
   const spotifyPlayTrack = useCallback(async (trackId, positionMs = 0) => {
     // Safety: strip any sp: DB cache key prefix that may have leaked into the trackId
     const cleanId = trackId.replace(/^sp:/, '');
@@ -1195,7 +1217,6 @@ function RoomBody() {
       console.warn("[Spotify] Cannot play: no device ID. Player may not be ready.");
       return;
     }
-    // Set loading guard to prevent spotifyResume() from interfering
     spotifyTrackLoadingRef.current = true;
     const token = await fetchSpotifyToken();
     if (!token) {
@@ -1204,109 +1225,70 @@ function RoomBody() {
       setSpotifyNeedsAuth(true);
       return;
     }
-    try {
-      // Step 1: Transfer playback to our SDK device (best-effort, non-blocking).
-      // 404 is normal when no prior active device exists.
+
+    // Retry loop: up to 4 attempts with exponential backoff (0, 1s, 2s, 4s)
+    const delays = [0, 1000, 2000, 4000];
+    for (let attempt = 0; attempt < delays.length; attempt++) {
+      if (attempt > 0) {
+        console.log(`[Spotify] Retry #${attempt} in ${delays[attempt]}ms...`);
+        await new Promise(r => setTimeout(r, delays[attempt]));
+        if (!playerRef.current || !spotifyDeviceId) { spotifyTrackLoadingRef.current = false; return; }
+      }
       try {
-        console.log(`[Spotify] Transferring playback to device ${spotifyDeviceId}`);
-        const transferRes = await fetch('https://api.spotify.com/v1/me/player', {
+        console.log(`[Spotify] PUT /me/player/play (attempt ${attempt + 1}) — track=${cleanId}, device=${spotifyDeviceId}, pos=${positionMs}ms`);
+        const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
           method: 'PUT',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ device_ids: [spotifyDeviceId], play: false }),
+          body: JSON.stringify({ uris: [`spotify:track:${cleanId}`], position_ms: positionMs }),
         });
-        if (transferRes.ok) {
-          // Give Spotify a moment to activate the device after transfer
-          await new Promise(r => setTimeout(r, 300));
-        }
-      } catch (e) {
-        console.warn('[Spotify] Device transfer failed (non-fatal):', e.message);
-      }
-
-      // Step 2: Start playback on our device
-      console.log(`[Spotify] PUT /me/player/play — track=${cleanId}, device=${spotifyDeviceId}, pos=${positionMs}ms`);
-      const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uris: [`spotify:track:${cleanId}`], position_ms: positionMs }),
-      });
-      if (res.ok) {
-        console.log(`[Spotify] Play request accepted (HTTP ${res.status}) — audio should start`);
-        const p = playerRef.current;
-        if (p) {
-          // Verify playback started and retry if needed (2 attempts with increasing delay)
-          const verifyAndResume = async (attempt, delay) => {
+        if (res.ok) {
+          console.log(`[Spotify] Play accepted (HTTP ${res.status}) — audio should start`);
+          // Verify playback actually started and nudge if paused
+          const verifyAndResume = async (n, delay) => {
             await new Promise(r => setTimeout(r, delay));
             if (!playerRef.current) return;
             try {
               const state = await playerRef.current.getCurrentState();
               if (state) {
-                console.log(`[Spotify] State check #${attempt}: paused=${state.paused}, pos=${state.position}, track=${state.track_window?.current_track?.name}`);
-                if (state.paused) {
-                  console.log(`[Spotify] Still paused — attempt #${attempt} resume via togglePlay()`);
-                  await playerRef.current.togglePlay();
-                }
-              } else {
-                console.warn(`[Spotify] State is null on attempt #${attempt} — device may not be receiving audio`);
+                console.log(`[Spotify] State check #${n}: paused=${state.paused}, pos=${state.position}, track=${state.track_window?.current_track?.name}`);
+                if (state.paused) await playerRef.current.togglePlay();
               }
-            } catch (e) {
-              console.warn(`[Spotify] State check #${attempt} failed:`, e);
-            }
+            } catch { /* non-fatal */ }
           };
-          // Check at 800ms, then again at 2500ms if still paused
           verifyAndResume(1, 800).then(() => {
             spotifyTrackLoadingRef.current = false;
             verifyAndResume(2, 1700);
           });
-        } else {
-          spotifyTrackLoadingRef.current = false;
+          return; // Success — exit retry loop
         }
-      } else {
-        spotifyTrackLoadingRef.current = false;
+
         const text = await res.text().catch(() => '');
-        console.error(`[Spotify] Play track HTTP ${res.status}:`, text);
+        console.error(`[Spotify] Play HTTP ${res.status}:`, text);
+
         if (res.status === 401) {
           spotifyTokenRef.current = null;
           spotifyTokenExpiresRef.current = 0;
           setSpotifyNeedsAuth(true);
-          if (isOwnerRef.current) {
-            sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_AUTH_ERROR' } });
-          }
-        } else if (res.status === 403) {
-          console.warn(`[Spotify] Track ${trackId} unavailable (403), skipping`);
-          if (isOwnerRef.current) {
-            sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_TRACK_UNAVAILABLE' } });
-          }
-        } else if (res.status === 404) {
-          // Device not yet registered on Spotify's servers — retry after a delay
-          // instead of destroying the player (which causes an infinite reconnect loop).
-          console.warn(`[Spotify] Device not found (404), retrying in 2s...`);
-          setTimeout(async () => {
-            if (!playerRef.current || !spotifyDeviceId) return;
-            try {
-              console.log(`[Spotify] Retry: PUT /me/player/play — track=${cleanId}, device=${spotifyDeviceId}`);
-              const retryRes = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uris: [`spotify:track:${cleanId}`], position_ms: positionMs }),
-              });
-              if (retryRes.ok) {
-                console.log('[Spotify] Retry succeeded — audio should start');
-              } else {
-                console.error(`[Spotify] Retry also failed: HTTP ${retryRes.status}`);
-                // Only now give up and reset the device
-                setSpotifyDeviceId(null);
-                setIsPlayerReady(false);
-              }
-            } catch (e) {
-              console.error('[Spotify] Retry failed:', e);
-            }
-          }, 2000);
+          if (isOwnerRef.current) sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_AUTH_ERROR' } });
+          break; // No point retrying auth errors
         }
+        if (res.status === 403) {
+          console.warn(`[Spotify] Track ${trackId} unavailable (403), skipping`);
+          if (isOwnerRef.current) sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_TRACK_UNAVAILABLE' } });
+          break; // No point retrying unavailable tracks
+        }
+        if (res.status === 404) {
+          console.warn(`[Spotify] Device not found (404) on attempt ${attempt + 1}`);
+          // Continue to next retry iteration
+          continue;
+        }
+        // Other errors: don't retry
+        break;
+      } catch (e) {
+        console.error(`[Spotify] Play attempt ${attempt + 1} threw:`, e);
       }
-    } catch (e) {
-      spotifyTrackLoadingRef.current = false;
-      console.error("[Spotify] Play track failed:", e);
     }
+    spotifyTrackLoadingRef.current = false;
   }, [spotifyDeviceId, fetchSpotifyToken, sendMessage]);
 
   // Main playback logic
