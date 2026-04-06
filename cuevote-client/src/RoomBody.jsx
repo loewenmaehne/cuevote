@@ -886,25 +886,15 @@ function RoomBody() {
           const freshToken = await fetchSpotifyToken();
           cb(freshToken);
         },
-        volume: isMutedRef.current ? 0 : volumeRef.current / 100,
+        volume: volumeRef.current / 100,
       });
 
       player.addListener('ready', ({ device_id }) => {
         console.log('[Spotify] Ready with Device ID:', device_id);
-        // Resume AudioContext if browser suspended it (autoplay policy)
-        if (player._options?.id) {
-          try {
-            // Spotify SDK exposes the internal audio element; ensure it's not blocked
-            const audioElements = document.querySelectorAll('audio');
-            audioElements.forEach(el => {
-              if (el.paused && el.src && el.src.includes('spotify')) {
-                el.play().catch(() => {});
-              }
-            });
-          } catch { /* best-effort */ }
-        }
         setSpotifyDeviceId(device_id);
         setIsPlayerReady(true);
+        // Spotify handles autoplay via activateElement(), not muting — start unmuted
+        setIsMuted(false);
       });
 
       player.addListener('not_ready', ({ device_id }) => {
@@ -1209,6 +1199,19 @@ function RoomBody() {
       return;
     }
     try {
+      // Step 1: Transfer playback to our SDK device to ensure it's the active device.
+      // Without this, Spotify may route audio to a phone/desktop app instead.
+      console.log(`[Spotify] Transferring playback to device ${spotifyDeviceId}`);
+      const transferRes = await fetch('https://api.spotify.com/v1/me/player', {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ device_ids: [spotifyDeviceId], play: false }),
+      });
+      if (!transferRes.ok && transferRes.status !== 404) {
+        console.warn(`[Spotify] Device transfer HTTP ${transferRes.status} (non-fatal, continuing)`);
+      }
+
+      // Step 2: Start playback on our device
       console.log(`[Spotify] PUT /me/player/play — track=${trackId}, device=${spotifyDeviceId}, pos=${positionMs}ms`);
       const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
         method: 'PUT',
@@ -1217,34 +1220,40 @@ function RoomBody() {
       });
       if (res.ok) {
         console.log(`[Spotify] Play request accepted (HTTP ${res.status}) — audio should start`);
-        // Ensure the SDK's audio isn't blocked by autoplay policy
         const p = playerRef.current;
         if (p) {
-          // Give Spotify a moment to route audio to the device, then verify playback
-          setTimeout(async () => {
-            spotifyTrackLoadingRef.current = false; // Clear loading guard
+          // Verify playback started and retry if needed (2 attempts with increasing delay)
+          const verifyAndResume = async (attempt, delay) => {
+            await new Promise(r => setTimeout(r, delay));
+            if (!playerRef.current) return;
             try {
-              const state = await p.getCurrentState();
+              const state = await playerRef.current.getCurrentState();
               if (state) {
-                console.log(`[Spotify] Player state: paused=${state.paused}, position=${state.position}, track=${state.track_window?.current_track?.name}`);
+                console.log(`[Spotify] State check #${attempt}: paused=${state.paused}, pos=${state.position}, track=${state.track_window?.current_track?.name}`);
                 if (state.paused) {
-                  console.log('[Spotify] Player is paused after play request — attempting togglePlay()');
-                  await p.togglePlay();
+                  console.log(`[Spotify] Still paused — attempt #${attempt} resume via togglePlay()`);
+                  await playerRef.current.togglePlay();
                 }
               } else {
-                console.warn('[Spotify] Player state is null after play request — device may not be receiving audio');
+                console.warn(`[Spotify] State is null on attempt #${attempt} — device may not be receiving audio`);
               }
             } catch (e) {
-              console.warn('[Spotify] Post-play state check failed:', e);
+              console.warn(`[Spotify] State check #${attempt} failed:`, e);
             }
-          }, 1000);
+          };
+          // Check at 800ms, then again at 2500ms if still paused
+          verifyAndResume(1, 800).then(() => {
+            spotifyTrackLoadingRef.current = false;
+            verifyAndResume(2, 1700);
+          });
+        } else {
+          spotifyTrackLoadingRef.current = false;
         }
       } else {
         spotifyTrackLoadingRef.current = false;
         const text = await res.text().catch(() => '');
         console.error(`[Spotify] Play track HTTP ${res.status}:`, text);
         if (res.status === 401) {
-          // Token expired or invalid — invalidate cache and need re-auth
           spotifyTokenRef.current = null;
           spotifyTokenExpiresRef.current = 0;
           setSpotifyNeedsAuth(true);
@@ -1252,13 +1261,11 @@ function RoomBody() {
             sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_AUTH_ERROR' } });
           }
         } else if (res.status === 403) {
-          // Track unavailable (regional restriction, Premium required, etc.) — skip it
           console.warn(`[Spotify] Track ${trackId} unavailable (403), skipping`);
           if (isOwnerRef.current) {
             sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_TRACK_UNAVAILABLE' } });
           }
         } else if (res.status === 404) {
-          // Device not found — player may have disconnected
           setSpotifyDeviceId(null);
           setIsPlayerReady(false);
         }
@@ -1431,6 +1438,10 @@ function RoomBody() {
   // Event Handlers
 
   const handlePlayPause = () => {
+    // Ensure SDK audio is activated on this user gesture (autoplay policy safety net)
+    if (isSpotify && playerRef.current?.activateElement) {
+      playerRef.current.activateElement();
+    }
     const isEffectivelyPlaying = (isPlaying || isLocallyPlaying) && !isLocallyPaused;
 
     if (isOwner) {
@@ -1463,6 +1474,10 @@ function RoomBody() {
 
 
   const handleMuteToggle = () => {
+    // Ensure SDK audio is activated on this user gesture (autoplay policy safety net)
+    if (isSpotify && playerRef.current?.activateElement) {
+      playerRef.current.activateElement();
+    }
     if (isSpotify) {
       if (isMuted) playerRef.current?.setVolume?.(volumeRef.current / 100);
       else playerRef.current?.setVolume?.(0);
