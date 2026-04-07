@@ -8,7 +8,7 @@ const spotify = require("./spotify");
 function getSourceId(track) {
     if (!track) return null;
     if (track.source === 'spotify') return track.trackId || null;
-    return track.videoId || track.trackId || null;
+    return track.videoId || null;
 }
 
 // Helper to check ownership

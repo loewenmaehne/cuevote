@@ -36,6 +36,7 @@ const SuggestSongPayload = z.object({
   query: z.string().min(1).max(500),
 });
 
+// NOTE: trackId here is the internal queue UUID (Track.id), NOT the Spotify track ID
 const VotePayload = z.object({
   trackId: z.string().min(1).max(100),
   voteType: z.enum(['up', 'down']),
