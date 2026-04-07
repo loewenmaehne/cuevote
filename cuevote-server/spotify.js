@@ -147,7 +147,7 @@ async function getAccessToken(userId) {
 }
 
 function hasTokens(userId) {
-    return tokenStore.has(userId);
+    return tokenStore.has(userId) && !!tokenStore.get(userId)?.refreshToken;
 }
 
 // Map Spotify API track object to our internal format

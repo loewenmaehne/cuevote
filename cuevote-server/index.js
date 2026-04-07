@@ -645,12 +645,12 @@ wss.on("connection", (ws, req) => {
                     }
                     const { name, description, color, isPrivate, password, captionsEnabled, languageFlag, musicSource } = createResult.data;
 
-                    // Warn if owner already has an active Spotify room (only 1 player per account)
+                    // Block if owner already has an active Spotify room (only 1 player per account)
                     if (musicSource === 'spotify') {
                         for (const room of rooms.values()) {
                             if (room.metadata.owner_id === ws.user.id && room.state.musicSource === 'spotify' && room.clients.size > 0) {
-                                ws.send(JSON.stringify({ type: "info", message: "Note: You already have an active Spotify room. Only one Spotify player can run per account." }));
-                                break;
+                                ws.send(JSON.stringify({ type: "error", message: "You already have an active Spotify room. Only one Spotify player can run per account." }));
+                                return;
                             }
                         }
                     }
