@@ -70,25 +70,25 @@ const TrackIdPayload = z.object({
 });
 
 const VideoIdPayload = z.object({
-  videoId: z.string().min(1).max(50).optional(),
-  trackId: z.string().min(1).max(100).optional(),
+  videoId: z.string().min(1).max(50).nullish(),
+  trackId: z.string().min(1).max(100).nullish(),
 }).refine(obj => obj.videoId || obj.trackId, {
   message: 'Either videoId or trackId must be provided',
 });
 
 const FetchSuggestionsPayload = z.object({
-  videoId: z.string().min(1).max(50).optional(),
-  trackId: z.string().min(1).max(100).optional(),
-  title: z.string().max(500).optional(),
-  artist: z.string().max(500).optional(),
+  videoId: z.string().min(1).max(50).nullish(),
+  trackId: z.string().min(1).max(100).nullish(),
+  title: z.string().max(500).nullish(),
+  artist: z.string().max(500).nullish(),
 }).refine(obj => obj.videoId || obj.trackId, {
   message: 'Either videoId or trackId must be provided',
 });
 
 const PlaybackErrorPayload = z.object({
-  videoId: z.string().min(1).max(50).optional(),
-  trackId: z.string().min(1).max(100).optional(),
-  errorCode: z.union([z.number(), z.string()]).optional(),
+  videoId: z.string().min(1).max(50).nullish(),
+  trackId: z.string().min(1).max(100).nullish(),
+  errorCode: z.union([z.number(), z.string()]).nullish(),
 }).refine(obj => obj.videoId || obj.trackId, {
   message: 'Either videoId or trackId must be provided',
 });
