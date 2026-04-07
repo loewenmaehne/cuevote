@@ -759,7 +759,9 @@ class Room {
             const cached = db.getRelatedVideos(cacheKey);
             if (cached) {
                 const age = Math.floor(Date.now() / 1000) - cached.fetched_at;
-                if (age < 2419200) { // 28 days, consistent with search cache TTL
+                // YouTube: 28-day TTL (TOS). Spotify: no TOS restriction, use 90 days.
+                const cacheTTL = isSpotifyRoom ? 7776000 : 2419200;
+                if (age < cacheTTL) {
                     ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: cached.data } }));
                     return;
                 }
@@ -1263,7 +1265,8 @@ class Room {
             const cachedVideo = db.getVideo(dbId);
             if (cachedVideo) {
                 const age = Math.floor(Date.now() / 1000) - cachedVideo.fetched_at;
-                if (age <= 2419200 && cachedVideo.source === 'spotify') {
+                // Spotify: no TOS restriction on cache TTL, use 90 days
+                if (age <= 7776000 && cachedVideo.source === 'spotify') {
                     // Check if banned
                     if (this.state.bannedVideos.some(b => getSourceId(b) === query)) {
                         ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
@@ -1299,7 +1302,8 @@ class Room {
                 const cachedVideo = db.getVideo(cachedTrackId);
                 if (cachedVideo) {
                     const nowSeconds = Math.floor(Date.now() / 1000);
-                    if (nowSeconds - cachedVideo.fetched_at <= 2419200) {
+                    // Spotify: no TOS restriction on cache TTL, use 90 days
+                    if (nowSeconds - cachedVideo.fetched_at <= 7776000) {
                         const rawId = cachedVideo.id.replace(/^sp:/, '');
 
                         if (this.state.bannedVideos.some(b => getSourceId(b) === rawId)) {

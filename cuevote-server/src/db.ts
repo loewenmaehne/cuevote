@@ -377,27 +377,34 @@ export function deleteRoomState(roomId: string): void {
 export function cleanupRoomHistory(): number { return 0; }
 
 export function cleanupStaleVideoMetadata(): number {
+  // YouTube API TOS: clear stale metadata after 28 days.
+  // Spotify has no such requirement — skip Spotify entries to preserve metadata.
   const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
   const result = db.prepare(`
     UPDATE videos SET title = NULL, artist = NULL, thumbnail = NULL,
     duration = NULL, category_id = NULL, language = NULL
     WHERE fetched_at < ? AND title IS NOT NULL
+    AND (source IS NULL OR source != 'spotify')
   `).run(threshold);
-  log.info(`[DB Cleanup] Cleared metadata from ${result.changes} stale video entries.`);
+  log.info(`[DB Cleanup] Cleared metadata from ${result.changes} stale video entries (YouTube only).`);
   return result.changes;
 }
 
 export function cleanupSearchCache(): number {
+  // YouTube API TOS: 28-day TTL for cached search results.
+  // Spotify search mappings (sp: prefix) are exempt — no TOS restriction.
   const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
-  const result = db.prepare('DELETE FROM search_cache WHERE created_at < ?').run(threshold);
-  log.info(`[DB Cleanup] Removed ${result.changes} stale search cache entries.`);
+  const result = db.prepare("DELETE FROM search_cache WHERE created_at < ? AND term NOT LIKE 'sp:%'").run(threshold);
+  log.info(`[DB Cleanup] Removed ${result.changes} stale search cache entries (YouTube only).`);
   return result.changes;
 }
 
 export function cleanupRelatedVideosCache(): number {
+  // YouTube API TOS: 28-day TTL for cached related videos.
+  // Spotify recommendations (sp: prefix) are exempt — no TOS restriction.
   const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
-  const result = db.prepare('DELETE FROM related_videos_cache WHERE fetched_at < ?').run(threshold);
-  log.info(`[DB Cleanup] Removed ${result.changes} stale related videos cache entries.`);
+  const result = db.prepare("DELETE FROM related_videos_cache WHERE fetched_at < ? AND source_video_id NOT LIKE 'sp:%'").run(threshold);
+  log.info(`[DB Cleanup] Removed ${result.changes} stale related videos cache entries (YouTube only).`);
   return result.changes;
 }
 
