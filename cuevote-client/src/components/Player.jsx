@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Music } from "lucide-react";
 
-export const Player = React.memo(function Player({ playerContainerRef, musicSource, currentTrack, spotifyNeedsAuth, spotifyAccountError, onSpotifyAuth, isOwner, isPlayerReady }) {
+export const Player = React.memo(function Player({ playerContainerRef, musicSource, currentTrack, spotifyNeedsAuth, spotifyAccountError, onSpotifyAuth, isOwner, isPlayerReady, t }) {
   if (musicSource === 'spotify') {
     const SpotifyLogo = () => (
       <svg viewBox="0 0 24 24" className="w-8 h-8 text-[#1DB954]" fill="currentColor">
@@ -18,13 +18,13 @@ export const Player = React.memo(function Player({ playerContainerRef, musicSour
             <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
               <SpotifyLogo />
             </div>
-            <p className="text-white font-bold text-lg">Spotify Premium Required</p>
-            <p className="text-neutral-400 text-sm max-w-xs">Playback requires a Spotify Premium subscription. Please upgrade your account and try again.</p>
+            <p className="text-white font-bold text-lg">{t('player.spotifyPremiumRequired', 'Spotify Premium Required')}</p>
+            <p className="text-neutral-400 text-sm max-w-xs">{t('player.spotifyPremiumDesc', 'Playback requires a Spotify Premium subscription. Please upgrade your account and try again.')}</p>
             <button
               onClick={onSpotifyAuth}
               className="px-6 py-3 rounded-full bg-[#1DB954] text-white font-bold hover:bg-[#1ed760] transition-all"
             >
-              Reconnect Spotify
+              {t('player.reconnectSpotify', 'Reconnect Spotify')}
             </button>
           </div>
         </div>
@@ -39,13 +39,13 @@ export const Player = React.memo(function Player({ playerContainerRef, musicSour
             <div className="w-16 h-16 rounded-full bg-[#1DB954]/10 flex items-center justify-center">
               <SpotifyLogo />
             </div>
-            <p className="text-white font-bold text-lg">Connect Spotify</p>
-            <p className="text-neutral-400 text-sm max-w-xs">Connect your Spotify Premium account to play music in this room.</p>
+            <p className="text-white font-bold text-lg">{t('player.connectSpotify', 'Connect Spotify')}</p>
+            <p className="text-neutral-400 text-sm max-w-xs">{t('player.connectSpotifyDesc', 'Connect your Spotify Premium account to play music in this room.')}</p>
             <button
               onClick={onSpotifyAuth}
               className="px-6 py-3 rounded-full bg-[#1DB954] text-white font-bold hover:bg-[#1ed760] transition-all"
             >
-              Connect Spotify
+              {t('player.connectSpotify', 'Connect Spotify')}
             </button>
           </div>
         </div>
@@ -60,8 +60,8 @@ export const Player = React.memo(function Player({ playerContainerRef, musicSour
             <div className="w-16 h-16 rounded-full bg-[#1DB954]/10 flex items-center justify-center">
               <SpotifyLogo />
             </div>
-            <p className="text-white font-medium">Waiting for music...</p>
-            <p className="text-neutral-500 text-sm max-w-xs">The room owner controls Spotify playback.</p>
+            <p className="text-white font-medium">{t('player.waitingForMusic', 'Waiting for music...')}</p>
+            <p className="text-neutral-500 text-sm max-w-xs">{t('player.ownerControlsSpotify', 'The room owner controls Spotify playback.')}</p>
           </div>
         </div>
       );
@@ -83,7 +83,7 @@ export const Player = React.memo(function Player({ playerContainerRef, musicSour
                 <audio src={currentTrack.previewUrl} controls className="mt-2 w-64 h-8 opacity-80" />
               )}
               {!isOwner && !currentTrack.previewUrl && (
-                <p className="text-neutral-600 text-xs mt-1">Owner controls playback</p>
+                <p className="text-neutral-600 text-xs mt-1">{t('player.ownerControlsPlayback', 'Owner controls playback')}</p>
               )}
             </div>
           </>
@@ -111,4 +111,5 @@ Player.propTypes = {
   onSpotifyAuth: PropTypes.func,
   isOwner: PropTypes.bool,
   isPlayerReady: PropTypes.bool,
+  t: PropTypes.func,
 };

@@ -46,7 +46,15 @@ export const translations = {
 			ipBlockMessage: "YouTube is restricting video playback on your current network. Try switching to mobile data or a different Wi-Fi connection.",
 			ipBlockYouTubeStatus: "youtube.com — Playback restricted",
 			ipBlockRetry: "Reload",
-			ipBlockDismiss: "Dismiss"
+			ipBlockDismiss: "Dismiss",
+			spotifyPremiumRequired: "Spotify Premium Required",
+			spotifyPremiumDesc: "Playback requires a Spotify Premium subscription. Please upgrade your account and try again.",
+			connectSpotify: "Connect Spotify",
+			connectSpotifyDesc: "Connect your Spotify Premium account to play music in this room.",
+			reconnectSpotify: "Reconnect Spotify",
+			waitingForMusic: "Waiting for music...",
+			ownerControlsSpotify: "The room owner controls Spotify playback.",
+			ownerControlsPlayback: "Owner controls playback"
 		},
 		cookie: {
 			title: "Privacy & Playback",
