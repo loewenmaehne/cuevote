@@ -605,7 +605,7 @@ wss.on("connection", (ws, req) => {
                             if (roomData) {
                                 const resolvedId = roomData.id;
                                 logger.info(`Waking up idle room: ${roomData.name} (${resolvedId})`);
-                                room = new Room(resolvedId, roomData.name, YOUTUBE_API_KEY, roomData);
+                                room = new Room(resolvedId, roomData.name, roomData.music_source === 'spotify' ? null : YOUTUBE_API_KEY, roomData);
                                 rooms.set(resolvedId, room);
                             }
                         } catch (e) {
@@ -676,7 +676,7 @@ wss.on("connection", (ws, req) => {
                             };
 
                             db.createRoom(roomData);
-                            rooms.set(id, new Room(id, name, YOUTUBE_API_KEY, roomData));
+                            rooms.set(id, new Room(id, name, musicSource === 'spotify' ? null : YOUTUBE_API_KEY, roomData));
 
                             const { password: _hash, ...safeRoomData } = roomData;
                             ws.send(JSON.stringify({ type: "ROOM_CREATED", payload: safeRoomData }));

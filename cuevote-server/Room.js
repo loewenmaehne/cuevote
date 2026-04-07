@@ -1729,6 +1729,17 @@ class Room {
         if (typeof autoRefill === 'boolean') updates.autoRefill = autoRefill;
         if (typeof captionsEnabled === 'boolean') updates.captionsEnabled = captionsEnabled;
 
+        // Music source switching — merge into updates to avoid double broadcast
+        const isSourceSwitch = (musicSource === 'youtube' || musicSource === 'spotify') && musicSource !== this.state.musicSource;
+        if (isSourceSwitch) {
+            updates.musicSource = musicSource;
+            updates.queue = [];
+            updates.currentTrack = null;
+            updates.isPlaying = false;
+            updates.progress = 0;
+            updates.pendingSuggestions = [];
+        }
+
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
 
@@ -1747,28 +1758,18 @@ class Room {
                 } catch (e) { logger.error("Failed to persist auto_refill", e); }
             }
 
-            // Trigger Auto-Refill if enabled and queue is empty
-            if (updates.autoRefill === true && this.state.queue.length === 0
-                && this.state.history.length >= 1 && !this.state.isRefilling) {
-                this.populateQueueFromHistory();
-            }
-        }
-
-        // Music source switching (clear queue to avoid mixed-source tracks)
-        if (musicSource === 'youtube' || musicSource === 'spotify') {
-            if (musicSource !== this.state.musicSource) {
-                this.updateState({
-                    musicSource: musicSource,
-                    queue: [],
-                    currentTrack: null,
-                    isPlaying: false,
-                    progress: 0,
-                    pendingSuggestions: [],
-                });
+            // Persist music_source to DB
+            if (isSourceSwitch) {
                 this.metadata.music_source = musicSource;
                 try {
                     db.updateRoomSettings(this.id, { music_source: musicSource });
                 } catch (e) { logger.error("Failed to persist music_source", e); }
+            }
+
+            // Trigger Auto-Refill if enabled and queue is empty
+            if (updates.autoRefill === true && this.state.queue.length === 0
+                && this.state.history.length >= 1 && !this.state.isRefilling) {
+                this.populateQueueFromHistory();
             }
         }
     }
