@@ -129,6 +129,18 @@ try {
   // Ignore duplicate column error
 }
 
+// Migration: Add source and preview_url to videos for Spotify support
+try {
+  db.prepare("ALTER TABLE videos ADD COLUMN source TEXT DEFAULT 'youtube'").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
+try {
+  db.prepare("ALTER TABLE videos ADD COLUMN preview_url TEXT").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
+
 // Indexes for common query patterns (IF NOT EXISTS makes these idempotent)
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
@@ -358,7 +370,7 @@ module.exports = {
       artist: track.artist,
       thumbnail: track.thumbnail,
       duration: track.duration,
-      category_id: track.category_id || '10', // Default to music if unknown
+      category_id: track.category_id || null,
       language: track.language || null,
       source: track.source || 'youtube',
       preview_url: track.previewUrl || null,

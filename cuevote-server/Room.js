@@ -378,7 +378,6 @@ class Room {
             // 1. Target Size: Half of maxQueueSize (def 50 -> 25), or total history if less
             if (history.length < 1) {
                 logger.info(`[AutoRefill] No history. Abort.`);
-                this.updateState({ isRefilling: false });
                 return;
             }
 
@@ -392,7 +391,10 @@ class Room {
 
             // Deduplicate history for the candidate pool to avoid frequency bias
             const uniqueHistoryMap = new Map();
-            history.forEach(track => uniqueHistoryMap.set(getSourceId(track), track));
+            history.forEach(track => {
+                const sid = getSourceId(track);
+                if (sid) uniqueHistoryMap.set(sid, track);
+            });
             const uniqueHistory = Array.from(uniqueHistoryMap.values());
 
             // Check if we have enough unique history?
@@ -412,6 +414,8 @@ class Room {
 
             // Perform strict duplicate check against CURRENT QUEUE + Recent History
             const queueSourceIds = new Set(this.state.queue.map(t => getSourceId(t)));
+            const queueTitles = new Set(this.state.queue.filter(t => t.title).map(t => t.title.toLowerCase().trim()));
+            const bannedVideoIds = new Set((this.state.bannedVideos || []).map(b => getSourceId(b) || b.videoId));
 
             for (const track of shuffledHistory) {
                 if (candidates.length >= needed) break;
@@ -419,11 +423,16 @@ class Room {
                 const trackSourceId = getSourceId(track);
                 if (!trackSourceId) continue;
 
-                // Duration Check (skip if known; null duration passes through for API re-fetch)
+                // Banned video check
+                if (bannedVideoIds.has(trackSourceId)) continue;
+
+                // Duration Check — skip if over limit or if metadata is stale (null)
                 if (maxDuration > 0 && track.duration && track.duration > maxDuration) continue;
+                if (maxDuration > 0 && !track.duration) continue;
 
                 // Music-only filter (YouTube only — Spotify is music-only by nature)
                 if (!isSpotifyRoom && musicOnly && track.category_id && track.category_id !== '10') continue;
+                if (!isSpotifyRoom && musicOnly && !track.category_id) continue;
 
                 // IP Cooldown Check (YouTube only)
                 if (!isSpotifyRoom) {
@@ -435,8 +444,9 @@ class Room {
                 const title = track.title ? track.title.toLowerCase().trim() : null;
                 if (title && historyTitles.includes(title)) continue;
 
-                // Check if track is ALREADY IN QUEUE (prevent immediate duplicate)
+                // Check if track is ALREADY IN QUEUE by ID or title (prevent duplicates incl. re-uploads)
                 if (queueSourceIds.has(trackSourceId)) continue;
+                if (title && queueTitles.has(title)) continue;
 
                 // Check if we already picked this title in current candidates
                 if (title && candidates.some(c => c.title && c.title.toLowerCase().trim() === title)) continue;
@@ -452,7 +462,14 @@ class Room {
                     if (candidates.length >= needed) break;
                     const trackSourceId = getSourceId(track);
                     if (!trackSourceId) continue;
+                    if (bannedVideoIds.has(trackSourceId)) continue;
                     if (maxDuration > 0 && track.duration && track.duration > maxDuration) continue;
+                    if (maxDuration > 0 && !track.duration) continue;
+                    if (!isSpotifyRoom && musicOnly && track.category_id && track.category_id !== '10') continue;
+                    if (!isSpotifyRoom && musicOnly && !track.category_id) continue;
+                    if (queueSourceIds.has(trackSourceId)) continue;
+                    const title = track.title ? track.title.toLowerCase().trim() : null;
+                    if (title && queueTitles.has(title)) continue;
                     if (!isSpotifyRoom) {
                         const ipEntry = this.ipBlockedVideos.get(trackSourceId);
                         if (ipEntry && (Date.now() - ipEntry.lastFailedAt) < 1800000) continue;
@@ -464,16 +481,14 @@ class Room {
 
             if (candidates.length === 0) {
                 logger.info("[AutoRefill] No valid candidates found after filtering.");
-                this.updateState({ isRefilling: false });
                 return;
             }
 
             // 3. Check Video Availability (YouTube only — Spotify tracks don't need API validation)
-            const validVideos = isSpotifyRoom
-                ? new Map(videoIdsToCheck.map(id => [id, null]))
-                : (this.hasViewers()
-                    ? await this.checkVideoAvailability(videoIdsToCheck)
-                    : new Map(videoIdsToCheck.map(id => [id, null])));
+            const skipApiCheck = isSpotifyRoom || !this.hasViewers();
+            const { validVideos, unresolvedIds } = skipApiCheck
+                ? { validVideos: new Map(videoIdsToCheck.map(id => [id, null])), unresolvedIds: new Set() }
+                : await this.checkVideoAvailability(videoIdsToCheck);
 
             const finalTracks = [];
             const invalidVideoIds = new Set();
@@ -491,9 +506,11 @@ class Room {
                         suggestedBy: 'System',
                         suggestedByUsername: 'Channel Mix'
                     });
-                } else {
+                } else if (!unresolvedIds.has(trackSourceId)) {
+                    // Genuinely invalid (API confirmed missing) — remove from history
                     invalidVideoIds.add(trackSourceId);
                 }
+                // Unresolved (API error) — skip silently, don't remove from history
             }
 
             // Remove invalid videos from history entirely (use current state so we don't drop entries added during async work)
@@ -504,20 +521,10 @@ class Room {
             }
 
             if (finalTracks.length > 0) {
-                // User: "Make sure that half of the queue size get succesfully added."
-                // We tried our best.
-
                 // Add to Queue
                 const newQueue = [...this.state.queue, ...finalTracks];
 
-                // If queue was empty and we added songs, we should start playing?
-                // The tick logic sets isPlaying = false if queue is empty.
-                // We are async here. Tick might have finished.
-                // We need to wake it up.
-                const newState = {
-                    queue: newQueue,
-                    isRefilling: false
-                };
+                const newState = { queue: newQueue };
 
                 if (!this.state.isPlaying && newQueue.length > 0) {
                     newState.currentTrack = { ...newQueue[0], startedAt: Date.now() };
@@ -529,21 +536,24 @@ class Room {
 
                 this.updateState(newState);
                 logger.info(`[AutoRefill] Added ${finalTracks.length} videos to queue.`);
-
-            } else {
-                this.updateState({ isRefilling: false });
             }
 
         } catch (err) {
             logger.error("[AutoRefill] Error:", err);
-            this.updateState({ isRefilling: false });
+        } finally {
+            if (this.state.isRefilling) {
+                this.updateState({ isRefilling: false });
+            }
         }
     }
 
     async checkVideoAvailability(videoIds) {
-        if (!this.apiKey || videoIds.length === 0) return new Map(videoIds.map(id => [id, null]));
+        if (!this.apiKey || videoIds.length === 0) {
+            return { validVideos: new Map(videoIds.map(id => [id, null])), unresolvedIds: new Set() };
+        }
 
         const validVideos = new Map();
+        const unresolvedIds = new Set();
 
         const chunkSize = 50;
         for (let i = 0; i < videoIds.length; i += chunkSize) {
@@ -555,14 +565,14 @@ class Room {
                 if (!response.ok) {
                     const errorBody = await response.text().catch(() => '');
                     logger.error(`[AutoRefill] API returned HTTP ${response.status}: ${errorBody.slice(0, 200)}`);
-                    for (const id of chunk) validVideos.set(id, null);
+                    // API error — mark as unresolved (don't add to queue, don't remove from history)
+                    for (const id of chunk) unresolvedIds.add(id);
                     continue;
                 }
 
                 const data = await response.json();
 
                 if (data.items) {
-                    const returnedIds = new Set(data.items.map(item => item.id));
                     for (const item of data.items) {
                         const status = item.status;
                         if (status) {
@@ -599,10 +609,11 @@ class Room {
                 }
             } catch (e) {
                 logger.error("[AutoRefill] API Check Failed:", e);
-                for (const id of chunk) validVideos.set(id, null);
+                // Network error — mark as unresolved
+                for (const id of chunk) unresolvedIds.add(id);
             }
         }
-        return validVideos;
+        return { validVideos, unresolvedIds };
     }
 
     async handleMessage(ws, message) {
@@ -1590,14 +1601,11 @@ class Room {
             // Preserve current play state: if playing, keep playing; if paused, stay paused
             isPlaying: newCurrentTrack ? this.state.isPlaying : false,
         };
-        if (!newCurrentTrack) {
-            this.updateState(newState);
 
-            if (this.state.autoRefill && this.state.history.length > 0 && !this.state.isRefilling) {
-                this.populateQueueFromHistory();
-            }
-        } else {
-            this.updateState(newState);
+        this.updateState(newState);
+
+        if (!newCurrentTrack && this.state.autoRefill && this.state.history.length > 0 && !this.state.isRefilling) {
+            this.populateQueueFromHistory();
         }
     }
 

@@ -219,6 +219,197 @@ describe('Room', () => {
     });
   });
 
+  describe('Auto-DJ (populateQueueFromHistory)', () => {
+    function makeTrack(id, title, opts = {}) {
+      return {
+        videoId: id,
+        title: title,
+        artist: opts.artist || 'Artist',
+        thumbnail: 'thumb.jpg',
+        duration: opts.duration || 180,
+        category_id: opts.category_id || '10',
+        score: 0,
+        voters: {},
+        playedAt: Date.now(),
+        ...opts,
+      };
+    }
+
+    it('should populate queue from history when queue is empty', async () => {
+      const room = new Room('refill-basic', 'Refill Basic', null, { owner_id: 'owner-1', auto_refill: 1 });
+      room.state.history = [
+        makeTrack('v1', 'Song A'),
+        makeTrack('v2', 'Song B'),
+        makeTrack('v3', 'Song C'),
+      ];
+
+      // No viewers → skips API validation
+      await room.populateQueueFromHistory();
+
+      assert.ok(room.state.queue.length > 0, 'Queue should have tracks');
+      assert.equal(room.state.isRefilling, false, 'isRefilling should be reset');
+      assert.equal(room.state.isPlaying, true, 'Should auto-start playback');
+      assert.ok(room.state.currentTrack, 'Should have a current track');
+      room.destroy();
+    });
+
+    it('should skip banned videos during refill', async () => {
+      const room = new Room('refill-banned', 'Refill Banned', null, { owner_id: 'owner-1', auto_refill: 1 });
+      room.state.history = [
+        makeTrack('v1', 'Banned Song'),
+        makeTrack('v2', 'Good Song'),
+      ];
+      room.state.bannedVideos = [{ videoId: 'v1', title: 'Banned Song' }];
+
+      await room.populateQueueFromHistory();
+
+      const queueIds = room.state.queue.map(t => t.videoId);
+      assert.ok(!queueIds.includes('v1'), 'Banned video should not be in queue');
+      assert.ok(queueIds.includes('v2'), 'Non-banned video should be in queue');
+      room.destroy();
+    });
+
+    it('should prevent concurrent refills via isRefilling guard', async () => {
+      const room = new Room('refill-guard', 'Refill Guard', null, { owner_id: 'owner-1', auto_refill: 1 });
+      room.state.history = [makeTrack('v1', 'Song')];
+      room.state.isRefilling = true;
+
+      await room.populateQueueFromHistory();
+
+      assert.equal(room.state.queue.length, 0, 'Should not refill when already refilling');
+      room.destroy();
+    });
+
+    it('should reset isRefilling even after error', async () => {
+      const room = new Room('refill-finally', 'Refill Finally', null, { owner_id: 'owner-1', auto_refill: 1 });
+      // Empty history to trigger early return
+      room.state.history = [];
+
+      await room.populateQueueFromHistory();
+
+      assert.equal(room.state.isRefilling, false, 'isRefilling should be reset after empty history');
+      room.destroy();
+    });
+
+    it('should skip tracks with null duration when maxDuration is active', async () => {
+      const room = new Room('refill-stale-dur', 'Refill Stale', null, { owner_id: 'owner-1', auto_refill: 1 });
+      room.state.maxDuration = 300;
+      room.state.history = [
+        makeTrack('v1', 'Stale Song', { duration: null }),
+        makeTrack('v2', 'Valid Song', { duration: 200 }),
+      ];
+
+      await room.populateQueueFromHistory();
+
+      const queueIds = room.state.queue.map(t => t.videoId);
+      assert.ok(!queueIds.includes('v1'), 'Track with null duration should be skipped');
+      assert.ok(queueIds.includes('v2'), 'Track with valid duration should be included');
+      room.destroy();
+    });
+
+    it('should skip tracks with null category_id when musicOnly is active', async () => {
+      const room = new Room('refill-stale-cat', 'Refill Stale Cat', null, { owner_id: 'owner-1', auto_refill: 1 });
+      room.state.musicOnly = true;
+      room.state.history = [
+        makeTrack('v1', 'Unknown Category', { category_id: null }),
+        makeTrack('v2', 'Music Video', { category_id: '10' }),
+      ];
+
+      await room.populateQueueFromHistory();
+
+      const queueIds = room.state.queue.map(t => t.videoId);
+      assert.ok(!queueIds.includes('v1'), 'Track with null category should be skipped');
+      assert.ok(queueIds.includes('v2'), 'Track with music category should be included');
+      room.destroy();
+    });
+
+    it('should not add tracks already in queue (by videoId)', async () => {
+      const room = new Room('refill-dup-id', 'Refill Dup ID', null, { owner_id: 'owner-1', auto_refill: 1 });
+      room.state.queue = [makeTrack('v1', 'Already Queued')];
+      room.state.currentTrack = room.state.queue[0];
+      room.state.isPlaying = true;
+      room.state.history = [
+        makeTrack('v1', 'Already Queued'),
+        makeTrack('v2', 'New Song'),
+      ];
+
+      await room.populateQueueFromHistory();
+
+      const v1Count = room.state.queue.filter(t => t.videoId === 'v1').length;
+      assert.equal(v1Count, 1, 'Should not duplicate v1 in queue');
+      room.destroy();
+    });
+
+    it('should not add tracks already in queue (by title)', async () => {
+      const room = new Room('refill-dup-title', 'Refill Dup Title', null, { owner_id: 'owner-1', auto_refill: 1 });
+      room.state.queue = [makeTrack('v1', 'Same Title Song')];
+      room.state.currentTrack = room.state.queue[0];
+      room.state.isPlaying = true;
+      room.state.history = [
+        makeTrack('v2', 'Same Title Song'),  // Different videoId, same title
+        makeTrack('v3', 'Unique Song'),
+      ];
+
+      await room.populateQueueFromHistory();
+
+      const titleCount = room.state.queue.filter(t => t.title === 'Same Title Song').length;
+      assert.equal(titleCount, 1, 'Should not add track with duplicate title');
+      room.destroy();
+    });
+
+    it('should filter tracks with undefined videoId from history dedup', async () => {
+      const room = new Room('refill-no-id', 'Refill No ID', null, { owner_id: 'owner-1', auto_refill: 1 });
+      room.state.history = [
+        { title: 'No ID Track', duration: 180 },  // Missing videoId
+        makeTrack('v1', 'Valid Track'),
+      ];
+
+      await room.populateQueueFromHistory();
+
+      assert.ok(room.state.queue.length > 0, 'Should still refill with valid tracks');
+      const queueIds = room.state.queue.map(t => t.videoId);
+      assert.ok(queueIds.includes('v1'), 'Valid track should be included');
+      room.destroy();
+    });
+
+    it('should apply queue checks in relaxed fallback', async () => {
+      const room = new Room('refill-relaxed', 'Refill Relaxed', null, { owner_id: 'owner-1', auto_refill: 1 });
+      room.state.duplicateCooldown = 100; // High cooldown to force all strict candidates to fail
+      // Only one song in history, and it's in the queue — relaxed fallback should still skip it
+      room.state.queue = [makeTrack('v1', 'Only Song')];
+      room.state.currentTrack = room.state.queue[0];
+      room.state.isPlaying = true;
+      room.state.history = [makeTrack('v1', 'Only Song')];
+
+      await room.populateQueueFromHistory();
+
+      const v1Count = room.state.queue.filter(t => t.videoId === 'v1').length;
+      assert.equal(v1Count, 1, 'Relaxed fallback should not duplicate queue tracks');
+      room.destroy();
+    });
+
+    it('should trigger auto-refill when last track ends via handleNextTrack', async () => {
+      const room = new Room('refill-next', 'Refill Next', null, { owner_id: 'owner-1', auto_refill: 1 });
+      room.state.queue = [
+        makeTrack('v1', 'Last Track'),
+      ];
+      room.state.currentTrack = room.state.queue[0];
+      room.state.isPlaying = true;
+      room.state.history = [makeTrack('v2', 'History Track')];
+
+      room.handleNextTrack();
+
+      // Wait for async auto-refill to complete
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // After auto-refill, queue should have tracks from history and be playing again
+      assert.ok(room.state.queue.length > 0, 'Auto-refill should have populated the queue');
+      assert.equal(room.state.isPlaying, true, 'Should be playing after auto-refill');
+      assert.equal(room.state.isRefilling, false, 'isRefilling should be reset');
+      room.destroy();
+    });
+  });
+
   describe('Broadcast', () => {
     it('should broadcast delta state on updateState', () => {
       const room = new Room('broadcast-room', 'Broadcast', null, { owner_id: 'owner-1' });
