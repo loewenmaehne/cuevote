@@ -1293,7 +1293,7 @@ class Room {
             }
         }
 
-        // Search Spotify API if no cache hit
+        // Fetch from Spotify API if no cache hit
         if (!track) {
             if (!spotify.isConfigured()) {
                 ws.send(JSON.stringify({ type: "error", message: "Spotify is not configured on this server." }));
@@ -1308,23 +1308,50 @@ class Room {
             }
 
             try {
-                const results = await spotify.searchSpotify(query, ownerToken, 5);
-                if (!results || results.length === 0) {
-                    ws.send(JSON.stringify({ type: "error", message: "No tracks found on Spotify." }));
-                    return;
+                // Detect if query is a Spotify track ID (Base62, 22 chars) vs a text search.
+                // Suggestions panel sends raw trackIds; the search bar sends human text.
+                const isSpotifyId = /^[A-Za-z0-9]{22}$/.test(query);
+                let selectedResult = null;
+
+                if (isSpotifyId) {
+                    // Direct lookup by ID — avoids text-searching a random ID string
+                    try {
+                        selectedResult = await spotify.getTrackDetails(query, ownerToken);
+                    } catch (err) {
+                        logger.warn("[Spotify] Direct track lookup failed, falling back to search:", err.message);
+                    }
                 }
 
-                // Find first non-banned, valid-duration result
-                let selectedResult = null;
-                for (const result of results) {
-                    if (this.state.bannedVideos.some(b => getSourceId(b) === result.trackId)) continue;
-                    if (this.state.maxDuration > 0 && !canBypass && result.duration > this.state.maxDuration) continue;
-                    selectedResult = result;
-                    break;
+                // Fallback: text search (also the primary path for search-bar input)
+                if (!selectedResult) {
+                    const results = await spotify.searchSpotify(query, ownerToken, 5);
+                    if (!results || results.length === 0) {
+                        ws.send(JSON.stringify({ type: "error", message: "No tracks found on Spotify." }));
+                        return;
+                    }
+
+                    // Find first non-banned, valid-duration result
+                    for (const result of results) {
+                        if (this.state.bannedVideos.some(b => getSourceId(b) === result.trackId)) continue;
+                        if (this.state.maxDuration > 0 && !canBypass && result.duration > this.state.maxDuration) continue;
+                        selectedResult = result;
+                        break;
+                    }
                 }
 
                 if (!selectedResult) {
                     ws.send(JSON.stringify({ type: "error", message: "No eligible tracks found (banned or too long)." }));
+                    return;
+                }
+
+                // Validate bans/duration for direct-lookup results too
+                if (this.state.bannedVideos.some(b => getSourceId(b) === selectedResult.trackId)) {
+                    ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
+                    return;
+                }
+                if (this.state.maxDuration > 0 && !canBypass && selectedResult.duration > this.state.maxDuration) {
+                    const maxMinutes = Math.floor(this.state.maxDuration / 60);
+                    ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
                     return;
                 }
 
