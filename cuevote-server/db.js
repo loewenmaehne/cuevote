@@ -341,7 +341,7 @@ module.exports = {
       artist: track.artist,
       thumbnail: track.thumbnail,
       duration: track.duration,
-      category_id: track.category_id || '10', // Default to music if unknown
+      category_id: track.category_id || null,
       language: track.language || null
     });
 
