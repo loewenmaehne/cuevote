@@ -19,6 +19,9 @@ dist-ssr
 # Local config
 *.local
 
+# Local HTTPS certificates (generated via mkcert)
+certs/
+
 # Claude Code
 .claude/
 
@@ -40,6 +43,10 @@ cuevote.db
 *.db
 *.db-shm
 *.db-wal
+
+# Cloudflare tunnel (local dev)
+.cloudflared.pid
+.tunnel_original_redirect_uri
 
 # Backups
 backups/

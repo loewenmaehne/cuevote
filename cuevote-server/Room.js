@@ -2,6 +2,14 @@ const crypto = require("crypto");
 const db = require("./db");
 const logger = require("./logger");
 const schemas = require("./schemas");
+const spotify = require("./spotify");
+
+// Helper to get the provider-specific ID from a track
+function getSourceId(track) {
+    if (!track) return null;
+    if (track.source === 'spotify') return track.trackId || null;
+    return track.videoId || track.trackId || null;
+}
 
 // Helper to check ownership
 function isOwner(room, ws) {
@@ -42,7 +50,8 @@ class Room {
             is_public: metadata.is_public !== undefined ? metadata.is_public : 1,
             password: metadata.password || null,
             captions_enabled: metadata.captions_enabled !== undefined ? metadata.captions_enabled : 0,
-            language_flag: metadata.language_flag || 'international'
+            language_flag: metadata.language_flag || 'international',
+            music_source: metadata.music_source || 'youtube'
         };
         this.clients = new Set();
         this.knownVideos = new Set(); // Stores videoIds of approved videos
@@ -77,6 +86,7 @@ class Room {
             autoApproveKnown: true, // Default true
             autoRefill: metadata.auto_refill !== undefined ? !!metadata.auto_refill : true,
             captionsEnabled: !!(metadata.captions_enabled), // Initialize from metadata
+            musicSource: metadata.music_source || 'youtube',
             bannedVideos: [], // List of banned videos { videoId, title, artist, ... }
         };
 
@@ -175,7 +185,8 @@ class Room {
                 artist: track.artist,
             } : null,
             isActive: true,
-            language_flag: this.metadata.language_flag
+            language_flag: this.metadata.language_flag,
+            music_source: this.metadata.music_source || 'youtube'
         };
     }
 
@@ -212,6 +223,16 @@ class Room {
 
     removeClient(ws) {
         this.clients.delete(ws);
+
+        // If the owner disconnected from a Spotify room, pause playback
+        // since the Spotify player only runs in the owner's browser
+        if (this.state.musicSource === 'spotify' && ws.user && ws.user.id === this.metadata.owner_id) {
+            if (this.state.isPlaying) {
+                logger.info(`[Room ${this.id}] Spotify room owner disconnected — pausing playback`);
+                this.updateState({ isPlaying: false });
+                this.broadcast({ type: "SPOTIFY_OWNER_LEFT", payload: {} });
+            }
+        }
     }
 
     broadcastState() {
@@ -367,9 +388,11 @@ class Room {
 
             // 2. Filter Candidates (Repetition, Duration)
 
+            const isSpotifyRoom = this.state.musicSource === 'spotify';
+
             // Deduplicate history for the candidate pool to avoid frequency bias
             const uniqueHistoryMap = new Map();
-            history.forEach(track => uniqueHistoryMap.set(track.videoId, track));
+            history.forEach(track => uniqueHistoryMap.set(getSourceId(track), track));
             const uniqueHistory = Array.from(uniqueHistoryMap.values());
 
             // Check if we have enough unique history?
@@ -388,35 +411,38 @@ class Room {
             const videoIdsToCheck = [];
 
             // Perform strict duplicate check against CURRENT QUEUE + Recent History
-            const queueVideoIds = new Set(this.state.queue.map(t => t.videoId));
+            const queueSourceIds = new Set(this.state.queue.map(t => getSourceId(t)));
 
             for (const track of shuffledHistory) {
                 if (candidates.length >= needed) break;
 
-                if (!track.videoId) continue;
+                const trackSourceId = getSourceId(track);
+                if (!trackSourceId) continue;
 
                 // Duration Check (skip if known; null duration passes through for API re-fetch)
                 if (maxDuration > 0 && track.duration && track.duration > maxDuration) continue;
 
-                // Music-only filter (skip if known; null category passes through for API re-fetch)
-                if (musicOnly && track.category_id && track.category_id !== '10') continue;
+                // Music-only filter (YouTube only — Spotify is music-only by nature)
+                if (!isSpotifyRoom && musicOnly && track.category_id && track.category_id !== '10') continue;
 
-                // IP Cooldown Check — skip videos that recently failed due to IP blocks (30 min cooldown)
-                const ipEntry = this.ipBlockedVideos.get(track.videoId);
-                if (ipEntry && (Date.now() - ipEntry.lastFailedAt) < 1800000) continue;
+                // IP Cooldown Check (YouTube only)
+                if (!isSpotifyRoom) {
+                    const ipEntry = this.ipBlockedVideos.get(trackSourceId);
+                    if (ipEntry && (Date.now() - ipEntry.lastFailedAt) < 1800000) continue;
+                }
 
                 // Repetition Check (History cooldown) — skip if title unknown (cleared metadata)
                 const title = track.title ? track.title.toLowerCase().trim() : null;
                 if (title && historyTitles.includes(title)) continue;
 
-                // Check if video is ALREADY IN QUEUE (prevent immediate duplicate)
-                if (queueVideoIds.has(track.videoId)) continue;
+                // Check if track is ALREADY IN QUEUE (prevent immediate duplicate)
+                if (queueSourceIds.has(trackSourceId)) continue;
 
                 // Check if we already picked this title in current candidates
                 if (title && candidates.some(c => c.title && c.title.toLowerCase().trim() === title)) continue;
 
                 candidates.push(track);
-                videoIdsToCheck.push(track.videoId);
+                videoIdsToCheck.push(trackSourceId);
             }
 
             // Fallback: when library is very small, relax duplicate/cooldown checks to allow looping
@@ -424,12 +450,15 @@ class Room {
                 logger.info(`[AutoRefill] No candidates after strict filtering. Relaxing checks for small library (${uniqueHistory.length} unique videos).`);
                 for (const track of shuffledHistory) {
                     if (candidates.length >= needed) break;
-                    if (!track.videoId) continue;
+                    const trackSourceId = getSourceId(track);
+                    if (!trackSourceId) continue;
                     if (maxDuration > 0 && track.duration && track.duration > maxDuration) continue;
-                    const ipEntry = this.ipBlockedVideos.get(track.videoId);
-                    if (ipEntry && (Date.now() - ipEntry.lastFailedAt) < 1800000) continue;
+                    if (!isSpotifyRoom) {
+                        const ipEntry = this.ipBlockedVideos.get(trackSourceId);
+                        if (ipEntry && (Date.now() - ipEntry.lastFailedAt) < 1800000) continue;
+                    }
                     candidates.push(track);
-                    videoIdsToCheck.push(track.videoId);
+                    videoIdsToCheck.push(trackSourceId);
                 }
             }
 
@@ -439,19 +468,20 @@ class Room {
                 return;
             }
 
-            // 3. Check Video Availability
-            // Skip API validation when no viewers to save quota — DB 28-day history already filters stale entries.
-            // Full API validation runs when viewers are present (e.g. on first join).
-            const validVideos = this.hasViewers()
-                ? await this.checkVideoAvailability(videoIdsToCheck)
-                : new Map(videoIdsToCheck.map(id => [id, null]));
+            // 3. Check Video Availability (YouTube only — Spotify tracks don't need API validation)
+            const validVideos = isSpotifyRoom
+                ? new Map(videoIdsToCheck.map(id => [id, null]))
+                : (this.hasViewers()
+                    ? await this.checkVideoAvailability(videoIdsToCheck)
+                    : new Map(videoIdsToCheck.map(id => [id, null])));
 
             const finalTracks = [];
             const invalidVideoIds = new Set();
 
             for (const track of candidates) {
-                if (validVideos.has(track.videoId)) {
-                    const fresh = validVideos.get(track.videoId);
+                const trackSourceId = getSourceId(track);
+                if (validVideos.has(trackSourceId)) {
+                    const fresh = validVideos.get(trackSourceId);
                     finalTracks.push({
                         ...track,
                         ...(fresh || {}),
@@ -462,13 +492,13 @@ class Room {
                         suggestedByUsername: 'Channel Mix'
                     });
                 } else {
-                    invalidVideoIds.add(track.videoId);
+                    invalidVideoIds.add(trackSourceId);
                 }
             }
 
             // Remove invalid videos from history entirely (use current state so we don't drop entries added during async work)
             if (invalidVideoIds.size > 0) {
-                const cleanedHistory = this.state.history.filter(t => !invalidVideoIds.has(t.videoId));
+                const cleanedHistory = this.state.history.filter(t => !invalidVideoIds.has(getSourceId(t)));
                 this.updateState({ history: cleanedHistory });
                 logger.info(`[AutoRefill] Removed ${invalidVideoIds.size} invalid videos from history.`);
             }
@@ -614,11 +644,14 @@ class Room {
                     this.handleNextTrack();
                 }
                 break;
-            case "PLAYBACK_ERROR":
+            case "PLAYBACK_ERROR": {
+                const r = schemas.PlaybackErrorPayload.safeParse(message.payload);
+                if (!r.success) break;
                 if (isOwner(this, ws)) {
-                    await this.handlePlaybackError(ws, message.payload);
+                    await this.handlePlaybackError(ws, r.data);
                 }
                 break;
+            }
             case "UPDATE_DURATION": {
                 const r = schemas.UpdateDurationPayload.safeParse(message.payload);
                 if (!r.success) break;
@@ -714,18 +747,57 @@ class Room {
         }
     }
 
-    async handleFetchSuggestions(ws, { videoId, title, artist }) {
-        if (!videoId) return;
+    async handleFetchSuggestions(ws, { videoId, trackId, title, artist }) {
+        const sourceId = videoId || trackId;
+        if (!sourceId) return;
+
+        const isSpotifyRoom = this.state.musicSource === 'spotify';
+        const cacheKey = isSpotifyRoom ? `sp:${sourceId}` : sourceId;
 
         try {
             // 1. Check Cache
-            const cached = db.getRelatedVideos(videoId);
+            const cached = db.getRelatedVideos(cacheKey);
             if (cached) {
                 const age = Math.floor(Date.now() / 1000) - cached.fetched_at;
-                if (age < 2592000) {
-                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: videoId, suggestions: cached.data } }));
+                if (age < 2419200) { // 28 days, consistent with search cache TTL
+                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: cached.data } }));
                     return;
                 }
+            }
+
+            // Spotify rooms: use Spotify recommendations API
+            if (isSpotifyRoom) {
+                if (!spotify.isConfigured()) {
+                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: [], error: "Spotify is not configured." } }));
+                    return;
+                }
+                const ownerToken = await spotify.getAccessToken(this.metadata.owner_id);
+                if (!ownerToken) {
+                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: [], error: "Room owner must connect Spotify." } }));
+                    return;
+                }
+                try {
+                    const results = await spotify.getRecommendations(trackId, ownerToken, 6, artist, title);
+                    if (results && results.length > 0) {
+                        const suggestions = results
+                            .filter(r => r.trackId !== trackId)
+                            .map(r => ({
+                                trackId: r.trackId,
+                                title: r.title,
+                                artist: r.artist,
+                                thumbnail: r.thumbnail,
+                                source: 'spotify',
+                            }));
+                        db.saveRelatedVideos(cacheKey, suggestions);
+                        ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions } }));
+                    } else {
+                        ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: [], error: "No suggestions found." } }));
+                    }
+                } catch (e) {
+                    logger.error("[Spotify] Recommendations failed:", e);
+                    ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions: [], error: "Failed to fetch suggestions." } }));
+                }
+                return;
             }
 
             if (!this.apiKey) {
@@ -763,10 +835,10 @@ class Room {
                     }));
 
                 // Save to Cache
-                db.saveRelatedVideos(videoId, suggestions);
+                db.saveRelatedVideos(cacheKey, suggestions);
 
                 // Send to Client
-                ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: videoId, suggestions } }));
+                ws.send(JSON.stringify({ type: "SUGGESTION_RESULT", payload: { sourceVideoId: cacheKey, suggestions } }));
             } else {
                 logger.error("[Suggestions] No items found in response (pageInfo: %j)", data?.pageInfo);
                 ws.send(JSON.stringify({ type: "error", message: "No suggestions found." }));
@@ -789,6 +861,11 @@ class Room {
         if (!this.state.suggestionsEnabled && !canBypass) {
             ws.send(JSON.stringify({ type: "error", message: "Suggestions are currently disabled by the room owner." }));
             return;
+        }
+
+        // Route to Spotify handler for Spotify rooms
+        if (this.state.musicSource === 'spotify') {
+            return this.handleSuggestSongSpotify(ws, payload, canBypass, isUserOwner);
         }
 
         const { query } = payload; // Moved up for title check
@@ -1078,10 +1155,10 @@ class Room {
             // Manual Review Check
             if (this.state.suggestionMode === 'manual' && !canBypass) {
                 // Check if video is known and auto-approve is enabled
-                const isKnown = this.knownVideos.has(track.videoId);
+                const isKnown = this.knownVideos.has(getSourceId(track));
                 if (this.state.autoApproveKnown && isKnown) {
                     // Auto-approve: Skip adding to pending, proceed to queue
-                    logger.info(`[Auto-Approve] Video ${track.title} (${track.videoId}) is known. Bypassing review.`);
+                    logger.info(`[Auto-Approve] Video ${track.title} (${getSourceId(track)}) is known. Bypassing review.`);
                     // Fallthrough to add to queue and send success at the end
                 } else {
                     const newPending = [...(this.state.pendingSuggestions || []), track];
@@ -1131,6 +1208,285 @@ class Room {
             ws.send(JSON.stringify({ type: "success", message: "Added" }));
         }
 
+    }
+
+    async handleSuggestSongSpotify(ws, payload, canBypass, isUserOwner) {
+        const { query } = payload;
+        const userId = ws.user.id;
+
+        // Max Queue Size check
+        let indexToRemove = -1;
+        if (this.state.maxQueueSize > 0 && !canBypass && this.state.queue.length >= this.state.maxQueueSize) {
+            if (this.state.smartQueue) {
+                const upcomingQueue = this.state.queue.slice(1);
+                let worstTrackIndex = -1;
+                let minScore = 0;
+                upcomingQueue.forEach((track, index) => {
+                    const score = track.score || 0;
+                    if (score < 0) {
+                        if (worstTrackIndex === -1 || score < minScore) {
+                            minScore = score;
+                            worstTrackIndex = index + 1;
+                        }
+                    }
+                });
+                if (worstTrackIndex !== -1) {
+                    indexToRemove = worstTrackIndex;
+                } else {
+                    ws.send(JSON.stringify({ type: "error", message: `Queue is full. Max size is ${this.state.maxQueueSize}.` }));
+                    return;
+                }
+            } else {
+                ws.send(JSON.stringify({ type: "error", message: `Queue is full. Max size is ${this.state.maxQueueSize}.` }));
+                return;
+            }
+        }
+
+        // Rate Limiting (5 seconds)
+        const now = Date.now();
+        if (!canBypass && ws.lastSuggestionTime && (now - ws.lastSuggestionTime < 5000)) {
+            ws.send(JSON.stringify({ type: "error", message: "Please wait before suggesting another song." }));
+            return;
+        }
+        ws.lastSuggestionTime = now;
+
+        let track = null;
+
+        // Detect if query is a Spotify track ID (Base62, 22 chars) vs a text search.
+        // Suggestions panel sends raw trackIds; the search bar sends human text.
+        const isSpotifyId = /^[A-Za-z0-9]{22}$/.test(query);
+
+        if (isSpotifyId) {
+            // Direct ID: check video DB directly (not the search-term cache, which may
+            // hold stale wrong mappings from when IDs were accidentally text-searched).
+            const dbId = `sp:${query}`;
+            const cachedVideo = db.getVideo(dbId);
+            if (cachedVideo) {
+                const age = Math.floor(Date.now() / 1000) - cachedVideo.fetched_at;
+                if (age <= 2419200 && cachedVideo.source === 'spotify') {
+                    // Check if banned
+                    if (this.state.bannedVideos.some(b => getSourceId(b) === query)) {
+                        ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
+                        return;
+                    }
+                    if (this.state.maxDuration > 0 && !canBypass && cachedVideo.duration > this.state.maxDuration) {
+                        const maxMinutes = Math.floor(this.state.maxDuration / 60);
+                        ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
+                        return;
+                    }
+
+                    track = {
+                        id: crypto.randomUUID(),
+                        trackId: query,
+                        source: 'spotify',
+                        title: cachedVideo.title,
+                        artist: cachedVideo.artist,
+                        thumbnail: cachedVideo.thumbnail,
+                        duration: cachedVideo.duration,
+                        previewUrl: cachedVideo.preview_url || null,
+                        score: 0,
+                        voters: {},
+                        suggestedBy: userId,
+                        suggestedByUsername: ws.user.name,
+                    };
+                }
+            }
+        } else {
+            // Text search: use the search-term cache (maps "baby justin bieber" → sp:TRACK_ID)
+            const cacheKey = `sp:${query}`;
+            const cachedTrackId = db.getSearchTermVideo(cacheKey);
+            if (cachedTrackId) {
+                const cachedVideo = db.getVideo(cachedTrackId);
+                if (cachedVideo) {
+                    const nowSeconds = Math.floor(Date.now() / 1000);
+                    if (nowSeconds - cachedVideo.fetched_at <= 2419200) {
+                        const rawId = cachedVideo.id.replace(/^sp:/, '');
+
+                        if (this.state.bannedVideos.some(b => getSourceId(b) === rawId)) {
+                            ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
+                            return;
+                        }
+                        if (this.state.maxDuration > 0 && !canBypass && cachedVideo.duration > this.state.maxDuration) {
+                            const maxMinutes = Math.floor(this.state.maxDuration / 60);
+                            ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
+                            return;
+                        }
+
+                        track = {
+                            id: crypto.randomUUID(),
+                            trackId: rawId,
+                            source: 'spotify',
+                            title: cachedVideo.title,
+                            artist: cachedVideo.artist,
+                            thumbnail: cachedVideo.thumbnail,
+                            duration: cachedVideo.duration,
+                            previewUrl: cachedVideo.preview_url || null,
+                            score: 0,
+                            voters: {},
+                            suggestedBy: userId,
+                            suggestedByUsername: ws.user.name,
+                        };
+                    }
+                }
+            }
+        }
+
+        // Fetch from Spotify API if no cache hit
+        if (!track) {
+            if (!spotify.isConfigured()) {
+                ws.send(JSON.stringify({ type: "error", message: "Spotify is not configured on this server." }));
+                return;
+            }
+
+            const ownerToken = await spotify.getAccessToken(this.metadata.owner_id);
+            if (!ownerToken) {
+                ws.send(JSON.stringify({ type: "error", message: "Room owner must connect their Spotify account." }));
+                return;
+            }
+
+            try {
+                let selectedResult = null;
+
+                if (isSpotifyId) {
+                    // Direct lookup by ID — avoids text-searching a random ID string
+                    try {
+                        selectedResult = await spotify.getTrackDetails(query, ownerToken);
+                    } catch (err) {
+                        logger.warn("[Spotify] Direct track lookup failed, falling back to search:", err.message);
+                    }
+                }
+
+                // Fallback: text search (also the primary path for search-bar input)
+                if (!selectedResult) {
+                    const results = await spotify.searchSpotify(query, ownerToken, 5);
+                    if (!results || results.length === 0) {
+                        ws.send(JSON.stringify({ type: "error", message: "No tracks found on Spotify." }));
+                        return;
+                    }
+
+                    for (const result of results) {
+                        if (this.state.bannedVideos.some(b => getSourceId(b) === result.trackId)) continue;
+                        if (this.state.maxDuration > 0 && !canBypass && result.duration > this.state.maxDuration) continue;
+                        selectedResult = result;
+                        break;
+                    }
+                }
+
+                if (!selectedResult) {
+                    ws.send(JSON.stringify({ type: "error", message: "No eligible tracks found (banned or too long)." }));
+                    return;
+                }
+
+                // Validate bans/duration for direct-lookup results too
+                if (this.state.bannedVideos.some(b => getSourceId(b) === selectedResult.trackId)) {
+                    ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
+                    return;
+                }
+                if (this.state.maxDuration > 0 && !canBypass && selectedResult.duration > this.state.maxDuration) {
+                    const maxMinutes = Math.floor(this.state.maxDuration / 60);
+                    ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
+                    return;
+                }
+
+                track = {
+                    id: crypto.randomUUID(),
+                    trackId: selectedResult.trackId,
+                    source: 'spotify',
+                    title: selectedResult.title,
+                    artist: selectedResult.artist,
+                    thumbnail: selectedResult.thumbnail,
+                    duration: selectedResult.duration,
+                    previewUrl: selectedResult.previewUrl,
+                    score: 0,
+                    voters: {},
+                    suggestedBy: userId,
+                    suggestedByUsername: ws.user.name,
+                };
+
+                // Cache to video DB
+                const dbId = `sp:${selectedResult.trackId}`;
+                db.upsertVideo({
+                    id: dbId,
+                    title: track.title,
+                    artist: track.artist,
+                    thumbnail: track.thumbnail,
+                    duration: track.duration,
+                    category_id: null,
+                    language: null,
+                    source: 'spotify',
+                    preview_url: selectedResult.previewUrl || null,
+                });
+                // Only cache search-term mapping for text searches, not for ID lookups
+                if (!isSpotifyId) {
+                    db.cacheSearchTerm(`sp:${query}`, dbId);
+                }
+            } catch (err) {
+                logger.error("[Spotify] Search failed:", err);
+                ws.send(JSON.stringify({ type: "error", message: "Spotify search failed." }));
+                return;
+            }
+        }
+
+        // Duplicate Title Check
+        if (track && this.state.duplicateCooldown > 0 && !canBypass) {
+            const cooldown = this.state.duplicateCooldown;
+            const titleToCheck = track.title.toLowerCase().trim();
+            const queueTitles = this.state.queue.map(t => t.title.toLowerCase().trim());
+            const historyToCheck = this.state.history.slice(-cooldown).map(t => t.title.toLowerCase().trim());
+            const combinedList = [...historyToCheck, ...queueTitles];
+            const recentTracks = combinedList.slice(-cooldown);
+            if (recentTracks.some(t => t === titleToCheck)) {
+                ws.send(JSON.stringify({ type: "error", message: `This song was recently played (Limit: ${cooldown}).` }));
+                return;
+            }
+        }
+
+        if (track) {
+            if (indexToRemove !== -1 && indexToRemove < this.state.queue.length) {
+                this.state.queue.splice(indexToRemove, 1);
+            }
+
+            // Manual Review Check
+            if (this.state.suggestionMode === 'manual' && !canBypass) {
+                const sourceId = getSourceId(track);
+                const isKnown = this.knownVideos.has(sourceId);
+                if (this.state.autoApproveKnown && isKnown) {
+                    logger.info(`[Auto-Approve] Spotify track ${track.title} (${track.trackId}) is known. Bypassing review.`);
+                } else {
+                    const newPending = [...(this.state.pendingSuggestions || []), track];
+                    this.updateState({ pendingSuggestions: newPending });
+                    ws.send(JSON.stringify({ type: "info", message: "Submitted" }));
+                    return;
+                }
+            }
+
+            // Priority Check
+            if (this.state.ownerQueueBypass && isUserOwner) {
+                track.isOwnerPriority = true;
+            }
+
+            const newQueue = [...this.state.queue, track];
+            const newState = { queue: newQueue };
+            if (newQueue.length === 1) {
+                newState.currentTrack = { ...newQueue[0], startedAt: Date.now() };
+                newQueue[0] = newState.currentTrack;
+                newState.isPlaying = true;
+                newState.progress = 0;
+            } else {
+                const current = newQueue[0];
+                let upcoming = newQueue.slice(1);
+                upcoming.sort((a, b) => {
+                    if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
+                    if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
+                    const scoreDiff = (b.score || 0) - (a.score || 0);
+                    if (scoreDiff !== 0) return scoreDiff;
+                    return 0;
+                });
+                newState.queue = [current, ...upcoming];
+            }
+            this.updateState(newState);
+            ws.send(JSON.stringify({ type: "success", message: "Added" }));
+        }
     }
 
     handleVote(ws, { trackId, voteType }) {
@@ -1227,10 +1583,10 @@ class Room {
             history: newHistory,
             currentTrack: newCurrentTrack,
             progress: 0,
-            isPlaying: true,
+            // Preserve current play state: if playing, keep playing; if paused, stay paused
+            isPlaying: newCurrentTrack ? this.state.isPlaying : false,
         };
         if (!newCurrentTrack) {
-            newState.isPlaying = false;
             this.updateState(newState);
 
             if (this.state.autoRefill && this.state.history.length > 0 && !this.state.isRefilling) {
@@ -1241,8 +1597,22 @@ class Room {
         }
     }
 
-    async handlePlaybackError(ws, { videoId, errorCode }) {
-        if (!videoId || !this.state.currentTrack || this.state.currentTrack.videoId !== videoId) return;
+    async handlePlaybackError(ws, { videoId, trackId, errorCode }) {
+        const errorSourceId = videoId || trackId;
+        const currentSourceId = getSourceId(this.state.currentTrack);
+        if (!errorSourceId || !this.state.currentTrack || currentSourceId !== errorSourceId) return;
+
+        // Spotify: no IP block detection, just handle auth errors or skip
+        if (this.state.musicSource === 'spotify') {
+            logger.info(`[PlaybackError] Spotify error for ${errorSourceId}: ${errorCode}`);
+            if (errorCode === 'SPOTIFY_AUTH_ERROR') {
+                this.broadcast({ type: "SPOTIFY_REAUTH", payload: {} });
+                this.updateState({ isPlaying: false });
+            } else {
+                this.handleNextTrack();
+            }
+            return;
+        }
 
         const now = Date.now();
         const THROTTLE_WINDOW_MS = 6 * 60 * 60 * 1000; // 6 hours — IP blocks typically last hours, not minutes
@@ -1328,7 +1698,7 @@ class Room {
         }
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled, musicSource }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
@@ -1371,6 +1741,24 @@ class Room {
                 this.populateQueueFromHistory();
             }
         }
+
+        // Music source switching (clear queue to avoid mixed-source tracks)
+        if (musicSource === 'youtube' || musicSource === 'spotify') {
+            if (musicSource !== this.state.musicSource) {
+                this.updateState({
+                    musicSource: musicSource,
+                    queue: [],
+                    currentTrack: null,
+                    isPlaying: false,
+                    progress: 0,
+                    pendingSuggestions: [],
+                });
+                this.metadata.music_source = musicSource;
+                try {
+                    db.updateRoomSettings(this.id, { music_source: musicSource });
+                } catch (e) { logger.error("Failed to persist music_source", e); }
+            }
+        }
     }
 
     handleApproveSuggestion({ trackId }) {
@@ -1382,7 +1770,7 @@ class Room {
             newPending.splice(index, 1);
 
             const newQueue = [...this.state.queue, track];
-            this.knownVideos.add(track.videoId);
+            this.knownVideos.add(getSourceId(track));
             const newState = {
                 pendingSuggestions: newPending
             };
@@ -1431,11 +1819,14 @@ class Room {
             newPending.splice(index, 1);
 
             // Add to banned list
-            if (!this.state.bannedVideos.some(b => b.videoId === track.videoId)) {
+            const trackSourceId = getSourceId(track);
+            if (!this.state.bannedVideos.some(b => getSourceId(b) === trackSourceId)) {
                 const newBanned = [
                     ...this.state.bannedVideos,
                     {
-                        videoId: track.videoId,
+                        videoId: track.videoId || null,
+                        trackId: track.trackId || null,
+                        source: track.source || 'youtube',
                         title: track.title,
                         artist: track.artist,
                         thumbnail: track.thumbnail,
@@ -1452,30 +1843,31 @@ class Room {
         }
     }
 
-    handleUnbanSong({ videoId }) {
+    handleUnbanSong({ videoId, trackId }) {
+        const sourceId = videoId || trackId;
+        if (!sourceId) return;
         const banned = this.state.bannedVideos || [];
-        const newBanned = banned.filter(t => t.videoId !== videoId);
+        const newBanned = banned.filter(t => getSourceId(t) !== sourceId);
         this.updateState({ bannedVideos: newBanned });
     }
 
-    handleRemoveFromLibrary({ videoId }) {
-        if (!videoId) return;
+    handleRemoveFromLibrary({ videoId, trackId }) {
+        const sourceId = videoId || trackId;
+        if (!sourceId) return;
         const initialCount = this.state.history.length;
-        // Filter out all instances of this videoId
-        const newHistory = this.state.history.filter(t => t.videoId !== videoId);
+        const newHistory = this.state.history.filter(t => getSourceId(t) !== sourceId);
 
-        // Also remove from knownSongs cache
-        if (this.knownVideos.has(videoId)) {
-            this.knownVideos.delete(videoId);
+        if (this.knownVideos.has(sourceId)) {
+            this.knownVideos.delete(sourceId);
         }
 
         if (newHistory.length !== initialCount) {
-            logger.info(`[Room ${this.id}] Removed video ${videoId} from history.`);
+            logger.info(`[Room ${this.id}] Removed track ${sourceId} from history.`);
             this.updateState({ history: newHistory });
 
-            // Delete from persistent database as well
+            const dbId = trackId ? `sp:${trackId}` : videoId;
             try {
-                db.removeFromRoomHistory(this.id, videoId);
+                db.removeFromRoomHistory(this.id, dbId);
             } catch (err) {
                 logger.error(`[Room ${this.id}] Failed to remove track from DB history:`, err);
             }

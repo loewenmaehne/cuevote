@@ -5,8 +5,20 @@ import { Language } from '../contexts/LanguageContext';
 import { Consent } from '../contexts/ConsentContext';
 import { Suggestions } from "./Suggestions";
 
-const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;
-const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+const buildWatchUrl = (track) => {
+  if (track.source === 'spotify' && track.trackId) {
+    return `https://open.spotify.com/track/${track.trackId}`;
+  }
+  return `https://www.youtube.com/watch?v=${track.videoId}`;
+};
+const buildThumbnailUrl = (track) => {
+  if (track.source === 'spotify') return track.thumbnail;
+  return track.thumbnail || `https://i.ytimg.com/vi/${track.videoId}/hqdefault.jpg`;
+};
+const getTrackSourceId = (track) => {
+  if (track?.source === 'spotify') return track?.trackId || track?.videoId;
+  return track?.videoId || track?.trackId;
+};
 
 export function Track({
   track,
@@ -24,6 +36,7 @@ export function Track({
   onRecommend,
   activeSuggestionId, // <--- New Prop
   suggestions,        // <--- New Prop
+  suggestionsError,   // <--- New Prop
   isFetchingSuggestions, // <--- New Prop
   queueVideoIds       // <--- New Prop
 }) {
@@ -60,12 +73,12 @@ export function Track({
         <div className="flex items-center gap-4 flex-1 min-w-0">
           {hasConsent ? (
             <img
-              src={track.thumbnail ?? buildThumbnailUrl(track.videoId)}
+              src={track.thumbnail ?? buildThumbnailUrl(track)}
               alt={track.title}
               className="w-16 h-16 rounded-3xl object-cover shadow-md flex-shrink-0"
               loading="lazy"
               onError={(e) => {
-                const fallback = buildThumbnailUrl(track.videoId);
+                const fallback = buildThumbnailUrl(track);
                 if (e.target.src !== fallback) e.target.src = fallback;
               }}
             />
@@ -155,6 +168,10 @@ export function Track({
                   <Loader2 className="animate-spin text-orange-500" size={24} />
                   <p className="text-xs font-medium">{t('suggestions.loading', 'Finding similar videos...')}</p>
                 </div>
+              ) : suggestionsError ? (
+                <div className="text-center py-4 text-red-400/80 text-sm">
+                  {suggestionsError}
+                </div>
               ) : suggestions && suggestions.length > 0 ? (
                 <Suggestions suggestions={suggestions} onAdd={onAddSuggestion || onAdd} onPreview={onPreview} queueVideoIds={queueVideoIds} />
               ) : (
@@ -166,11 +183,11 @@ export function Track({
           )}
 
           <div className="flex flex-col gap-3">
-            {onAdd && !queueVideoIds?.has(track.videoId) && (
+            {onAdd && !queueVideoIds?.has(getTrackSourceId(track)) && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onAdd(track.videoId);
+                  onAdd(getTrackSourceId(track));
                 }}
                 className="flex-1 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition-all shadow-lg shadow-orange-900/20 active:scale-95"
               >
@@ -238,13 +255,13 @@ export function Track({
             )}
           </div>
           <a
-            href={buildWatchUrl(track.videoId)}
+            href={buildWatchUrl(track)}
             target="_blank"
             rel="noreferrer"
             onClick={(event) => event.stopPropagation()}
             className="inline-flex items-center gap-2 text-orange-400 text-sm hover:text-orange-300 transition-colors"
           >
-            {t('track.watch')}
+            {track.source === 'spotify' ? t('track.listenSpotify', 'Listen on Spotify') : t('track.watch')}
           </a>
         </div>
       )}
@@ -268,6 +285,7 @@ Track.propTypes = {
   onRecommend: PropTypes.func,
   activeSuggestionId: PropTypes.string,
   suggestions: PropTypes.array,
+  suggestionsError: PropTypes.string,
   isFetchingSuggestions: PropTypes.bool,
   queueVideoIds: PropTypes.object, // Set
 };

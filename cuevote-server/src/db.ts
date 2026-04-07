@@ -91,6 +91,9 @@ const migrations = [
   "ALTER TABLE rooms ADD COLUMN auto_refill INTEGER DEFAULT 1",
   "ALTER TABLE rooms ADD COLUMN language_flag TEXT DEFAULT 'international'",
   "ALTER TABLE rooms ADD COLUMN lobby_preview TEXT DEFAULT NULL",
+  "ALTER TABLE rooms ADD COLUMN music_source TEXT DEFAULT 'youtube'",
+  "ALTER TABLE videos ADD COLUMN source TEXT DEFAULT 'youtube'",
+  "ALTER TABLE videos ADD COLUMN preview_url TEXT DEFAULT NULL",
 ];
 for (const sql of migrations) {
   try { db.prepare(sql).run(); } catch { /* column already exists */ }
@@ -142,9 +145,10 @@ export function deleteSession(token: string): void {
 export function createRoom(room: Partial<RoomData>): RoomData {
   if (room.captions_enabled === undefined) room.captions_enabled = 0;
   if (room.language_flag === undefined) room.language_flag = 'international';
+  if (room.music_source === undefined) room.music_source = 'youtube';
   db.prepare(`
-    INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled, language_flag)
-    VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled, @language_flag)
+    INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled, language_flag, music_source)
+    VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled, @language_flag, @music_source)
   `).run(room);
   return db.prepare('SELECT * FROM rooms WHERE id = ?').get(room.id) as RoomData;
 }
@@ -198,6 +202,10 @@ export function updateRoomSettings(id: string, settings: RoomSettings): void {
     updates.push("language_flag = ?");
     values.push(settings.language_flag);
   }
+  if (settings.music_source !== undefined) {
+    updates.push("music_source = ?");
+    values.push(settings.music_source);
+  }
 
   if (updates.length > 0) {
     values.push(id);
@@ -206,12 +214,15 @@ export function updateRoomSettings(id: string, settings: RoomSettings): void {
 }
 
 export function upsertVideo(video: Partial<Video>): void {
+  if (!video.source) video.source = 'youtube';
+  if (video.preview_url === undefined) video.preview_url = null;
   db.prepare(`
-    INSERT INTO videos (id, title, artist, thumbnail, duration, category_id, language, fetched_at)
-    VALUES (@id, @title, @artist, @thumbnail, @duration, @category_id, @language, unixepoch())
+    INSERT INTO videos (id, title, artist, thumbnail, duration, category_id, language, source, preview_url, fetched_at)
+    VALUES (@id, @title, @artist, @thumbnail, @duration, @category_id, @language, @source, @preview_url, unixepoch())
     ON CONFLICT(id) DO UPDATE SET
       title = @title, artist = @artist, thumbnail = @thumbnail,
-      duration = @duration, category_id = @category_id, language = @language, fetched_at = unixepoch()
+      duration = @duration, category_id = @category_id, language = @language, source = @source,
+      preview_url = @preview_url, fetched_at = unixepoch()
   `).run(video);
 }
 
@@ -285,21 +296,28 @@ export function backup(destination: string): Promise<Database.BackupMetadata> {
 }
 
 export function addToRoomHistory(roomId: string, track: Partial<HistoryTrack>): void {
-  if (!track.videoId) return;
+  const sourceId = track.videoId || track.trackId;
+  if (!sourceId) return;
+
+  const isSpotify = track.source === 'spotify';
+  const dbId = isSpotify ? `sp:${track.trackId}` : track.videoId!;
+
   upsertVideo({
-    id: track.videoId,
+    id: dbId,
     title: track.title ?? null,
     artist: track.artist ?? null,
     thumbnail: track.thumbnail ?? null,
     duration: track.duration ?? null,
-    category_id: track.category_id || '10',
+    category_id: track.category_id || (isSpotify ? null : '10'),
     language: track.language || null,
+    source: track.source || 'youtube',
+    preview_url: track.previewUrl ?? null,
   });
   const playedAt = track.playedAt ? Math.floor(track.playedAt / 1000) : Math.floor(Date.now() / 1000);
   db.prepare(`
     INSERT INTO room_history (room_id, video_id, played_at) VALUES (?, ?, ?)
     ON CONFLICT(room_id, video_id) DO UPDATE SET played_at = excluded.played_at
-  `).run(roomId, track.videoId, playedAt);
+  `).run(roomId, dbId, playedAt);
 }
 
 export function getRoomHistory(roomId: string): HistoryTrack[] {
@@ -307,11 +325,18 @@ export function getRoomHistory(roomId: string): HistoryTrack[] {
     SELECT v.*, h.played_at FROM room_history h
     JOIN videos v ON h.video_id = v.id WHERE h.room_id = ? ORDER BY h.played_at ASC
   `).all(roomId) as (Video & { played_at: number })[];
-  return rows.map(row => ({
-    ...row,
-    videoId: row.id,
-    playedAt: row.played_at * 1000,
-  }));
+  return rows.map(row => {
+    const isSpotify = row.source === 'spotify';
+    const rawId = isSpotify ? row.id.replace(/^sp:/, '') : row.id;
+    return {
+      ...row,
+      videoId: isSpotify ? undefined : rawId,
+      trackId: isSpotify ? rawId : undefined,
+      previewUrl: row.preview_url || null,
+      source: row.source || 'youtube',
+      playedAt: row.played_at * 1000,
+    };
+  });
 }
 
 export function removeFromRoomHistory(roomId: string, videoId: string): void {

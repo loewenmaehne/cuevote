@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AlertTriangle, Maximize2 } from 'lucide-react';
+import { AlertTriangle, Maximize2, Music } from 'lucide-react';
 import { Player } from './Player';
 import PlayerErrorBoundary from './PlayerErrorBoundary';
 
-export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef, t, isCinemaMode }) {
+export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef, t, isCinemaMode, musicSource, previewTrack }) {
 	const containerRef = useRef(null);
 	const [isTooSmall, setIsTooSmall] = useState(false);
 	const [CookieBlockedPlaceholderComponent, setCookieBlockedPlaceholder] = useState(null);
@@ -53,7 +53,31 @@ export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef
 					</div>
 				) : (
 					<PlayerErrorBoundary>
-						{hasConsent ? (
+						{musicSource === 'spotify' && previewTrack ? (
+							<div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-900 to-black relative overflow-hidden">
+								{previewTrack.thumbnail && (
+									<img src={previewTrack.thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20 blur-2xl scale-110" />
+								)}
+								<div className="relative z-10 flex flex-col items-center gap-4 p-6 text-center">
+									{previewTrack.thumbnail ? (
+										<img src={previewTrack.thumbnail} alt={previewTrack.title} className="w-40 h-40 rounded-2xl shadow-2xl ring-1 ring-white/10" />
+									) : (
+										<div className="w-40 h-40 rounded-2xl bg-neutral-800 flex items-center justify-center">
+											<Music size={48} className="text-neutral-500" />
+										</div>
+									)}
+									<div className="max-w-xs">
+										<p className="text-white font-bold text-lg truncate">{previewTrack.title}</p>
+										<p className="text-neutral-400 text-sm truncate">{previewTrack.artist}</p>
+									</div>
+									{previewTrack.previewUrl ? (
+										<audio src={previewTrack.previewUrl} controls autoPlay className="mt-2 w-64" />
+									) : (
+										<p className="text-neutral-500 text-xs mt-2">{t('player.noPreview', 'No preview available')}</p>
+									)}
+								</div>
+							</div>
+						) : hasConsent ? (
 							playbackError ? (
 								<div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-center p-6 space-y-4">
 									<div className="w-12 h-12 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400">
@@ -68,6 +92,8 @@ export function PrelistenOverlay({ hasConsent, playbackError, playerContainerRef
 							) : (
 								<Player
 									playerContainerRef={playerContainerRef}
+									musicSource={musicSource}
+									currentTrack={previewTrack}
 								/>
 							)
 						) : (CookieBlockedPlaceholderComponent ? <CookieBlockedPlaceholderComponent /> : <div className="absolute inset-0 flex items-center justify-center bg-black text-neutral-500">Loading…</div>)}

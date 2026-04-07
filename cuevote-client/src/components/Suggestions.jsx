@@ -14,36 +14,37 @@ export function Suggestions({ suggestions, onAdd, onPreview, queueVideoIds }) {
 
 	if (!suggestions || suggestions.length === 0) return null;
 
-	const handleAdd = (e, videoId) => {
+	const handleAdd = (e, id) => {
 		e.stopPropagation();
-		if (addedIds.has(videoId)) return;
+		if (addedIds.has(id)) return;
 
-		const success = onAdd(videoId);
+		const success = onAdd(id);
 		// If handler returns explicit false, do not mark as added
 		if (success !== false) {
-			setAddedIds(prev => new Set(prev).add(videoId));
+			setAddedIds(prev => new Set(prev).add(id));
 		}
 	};
 
 	return (
 		<div className="flex gap-4 overflow-x-auto pb-4 px-1 scroll-smooth snap-x snap-mandatory custom-scrollbar">
 			{suggestions.map((video) => {
-				const isAdded = queueVideoIds?.has(video.videoId);
+				const id = video.videoId || video.trackId;
+				const isAdded = queueVideoIds?.has(id);
 				return (
 					<div
-						key={video.videoId}
+						key={id}
 						className={`group relative flex-shrink-0 w-40 snap-start bg-white/5 rounded-xl overflow-hidden hover:bg-white/10 transition-all cursor-pointer border border-white/5 ${isAdded ? 'opacity-50 grayscale' : ''}`}
-						onClick={(e) => !isAdded && handleAdd(e, video.videoId)}
+						onClick={(e) => !isAdded && handleAdd(e, id)}
 					>
 						{/* Thumbnail */}
 						<div className="aspect-video w-full overflow-hidden relative">
 							<img
-								src={video.thumbnail ?? buildThumbnailUrl(video.videoId)}
+								src={video.thumbnail ?? buildThumbnailUrl(id)}
 								alt={video.title}
 								className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 								loading="lazy"
 								onError={(e) => {
-									const fallback = buildThumbnailUrl(video.videoId);
+									const fallback = buildThumbnailUrl(id);
 									if (e.target.src !== fallback) e.target.src = fallback;
 								}}
 							/>
@@ -66,7 +67,7 @@ export function Suggestions({ suggestions, onAdd, onPreview, queueVideoIds }) {
 										</button>
 									)}
 									<button
-										onClick={(e) => handleAdd(e, video.videoId)}
+										onClick={(e) => handleAdd(e, id)}
 										className="p-2 rounded-full bg-orange-500 hover:bg-orange-400 text-white transition-colors hover:scale-110 active:scale-95 shadow-lg"
 										title={t('track.add')}
 									>

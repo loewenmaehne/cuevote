@@ -122,6 +122,13 @@ try {
   // Ignore duplicate column error
 }
 
+// Migration: Add music_source to persist Spotify vs YouTube per room
+try {
+  db.prepare("ALTER TABLE rooms ADD COLUMN music_source TEXT DEFAULT 'youtube'").run();
+} catch (e) {
+  // Ignore duplicate column error
+}
+
 // Indexes for common query patterns (IF NOT EXISTS makes these idempotent)
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
@@ -169,11 +176,12 @@ module.exports = {
   // Room Management
   createRoom: (room) => {
     const stmt = db.prepare(`
-        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled, language_flag)
-        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled, @language_flag)
+        INSERT INTO rooms (id, name, description, owner_id, color, is_public, password, captions_enabled, language_flag, music_source)
+        VALUES (@id, @name, @description, @owner_id, @color, @is_public, @password, @captions_enabled, @language_flag, @music_source)
     `);
     if (room.captions_enabled === undefined) room.captions_enabled = 0;
     if (room.language_flag === undefined) room.language_flag = 'international';
+    if (room.music_source === undefined) room.music_source = 'youtube';
 
     stmt.run(room);
     return db.prepare('SELECT * FROM rooms WHERE id = ?').get(room.id);
@@ -218,6 +226,11 @@ module.exports = {
     if (settings.language_flag !== undefined) {
       updates.push("language_flag = ?");
       values.push(settings.language_flag);
+    }
+
+    if (settings.music_source !== undefined) {
+      updates.push("music_source = ?");
+      values.push(settings.music_source);
     }
 
     if (updates.length > 0) {
@@ -332,17 +345,23 @@ module.exports = {
 
   // Room History
   addToRoomHistory: (roomId, track) => {
-    if (!track.videoId) return;
+    // Derive the DB id: Spotify tracks use sp: prefix, YouTube tracks use videoId directly
+    const dbId = track.source === 'spotify'
+      ? (track.trackId ? `sp:${track.trackId}` : null)
+      : track.videoId;
+    if (!dbId) return;
 
     // 1. Ensure the video exists in the videos table first
     module.exports.upsertVideo({
-      id: track.videoId,
+      id: dbId,
       title: track.title,
       artist: track.artist,
       thumbnail: track.thumbnail,
       duration: track.duration,
       category_id: track.category_id || '10', // Default to music if unknown
-      language: track.language || null
+      language: track.language || null,
+      source: track.source || 'youtube',
+      preview_url: track.previewUrl || null,
     });
 
     // 2. Insert or update the history record
@@ -353,12 +372,12 @@ module.exports = {
       ON CONFLICT(room_id, video_id) DO UPDATE SET
         played_at = excluded.played_at
     `);
-    stmt.run(roomId, track.videoId, playedAt);
+    stmt.run(roomId, dbId, playedAt);
   },
 
   getRoomHistory: (roomId) => {
     const rows = db.prepare(`
-        SELECT v.*, h.played_at 
+        SELECT v.*, h.played_at
         FROM room_history h
         JOIN videos v ON h.video_id = v.id
         WHERE h.room_id = ?
@@ -366,11 +385,16 @@ module.exports = {
     `).all(roomId);
 
     // Map DB rows back to the track object format expected by the frontend/Room.js
-    return rows.map(row => ({
-      ...row, // Contains title, artist, duration etc from videos table
-      videoId: row.id,
-      playedAt: row.played_at * 1000 // Convert back to milliseconds
-    }));
+    return rows.map(row => {
+      const isSpotify = row.source === 'spotify';
+      return {
+        ...row,
+        // Spotify DB ids use sp: prefix — strip it for trackId, don't set videoId
+        videoId: isSpotify ? null : row.id,
+        trackId: isSpotify ? row.id.replace(/^sp:/, '') : undefined,
+        playedAt: row.played_at * 1000,
+      };
+    });
   },
 
   removeFromRoomHistory: (roomId, videoId) => {

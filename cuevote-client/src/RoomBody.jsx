@@ -22,6 +22,21 @@ import { LoadingScreen } from "./components/LoadingScreen";
 
 
 
+// Derive HTTP server URL from WebSocket URL or fall back to current origin
+function getServerUrl() {
+  const wsUrl = import.meta.env.VITE_WS_URL;
+  if (!wsUrl) return window.location.origin;
+  try {
+    const url = new URL(wsUrl);
+    if (url.protocol === 'wss:') url.protocol = 'https:';
+    else if (url.protocol === 'ws:') url.protocol = 'http:';
+    url.pathname = '';
+    return url.origin;
+  } catch {
+    return window.location.origin;
+  }
+}
+
 const YouTubeState = {
   UNSTARTED: -1,
   ENDED: 0,
@@ -156,16 +171,21 @@ function RoomBody() {
     autoApproveKnown = true,
     autoRefill = false,
     bannedVideos = [], // Added this
-    captionsEnabled = false
+    captionsEnabled = false,
+    musicSource = 'youtube'
   } = serverState || {};
 
-  // Calculate set of ALL videoIds currently in the queue or playing for suggestion "Added" check
+  const isSpotify = musicSource === 'spotify';
+
+  // Calculate set of ALL source IDs currently in the queue or playing for suggestion "Added" check
   const queueVideoIds = useMemo(() => {
     const ids = new Set();
-    if (currentTrack?.videoId) ids.add(currentTrack.videoId);
+    const cid = currentTrack?.videoId || currentTrack?.trackId;
+    if (cid) ids.add(cid);
     if (queue) {
       queue.forEach(t => {
-        if (t.videoId) ids.add(t.videoId);
+        const id = t.videoId || t.trackId;
+        if (id) ids.add(id);
       });
     }
     return ids;
@@ -214,8 +234,12 @@ function RoomBody() {
     sendMessage({ type: "BAN_SUGGESTION", payload: { trackId } });
   };
 
-  const handleUnbanSong = (videoId) => {
-    sendMessage({ type: "UNBAN_SONG", payload: { videoId } });
+  const handleUnbanSong = (sourceId) => {
+    if (isSpotify) {
+      sendMessage({ type: "UNBAN_SONG", payload: { trackId: sourceId } });
+    } else {
+      sendMessage({ type: "UNBAN_SONG", payload: { videoId: sourceId } });
+    }
   };
 
   // Trace Render Cycle
@@ -358,6 +382,8 @@ function RoomBody() {
   const [manualSuggestions, setManualSuggestions] = useState([]);
   const [activeSuggestionId, setActiveSuggestionId] = useState(null);
   const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
+  const [suggestionsError, setSuggestionsError] = useState(null);
+  const suggestionTimeoutRef = useRef(null);
   const [networkThrottle, setNetworkThrottle] = useState(null); // { until: timestamp } when YouTube throttles the venue IP
   const THROTTLE_DISMISS_KEY = 'cuevote_throttle_dismissed_until';
   const isThrottleDismissActive = useCallback(() => {
@@ -408,8 +434,9 @@ function RoomBody() {
     }
   }, [lastMessage]);
 
-  // Handle VIDEO_STATUS from server (playback error diagnosis)
+  // Handle VIDEO_STATUS from server (YouTube only)
   useEffect(() => {
+    if (isSpotify) return;
     if (!lastMessage || lastMessage.type !== "VIDEO_STATUS") return;
     const { videoId, status } = lastMessage.payload || {};
     if (!videoId) return;
@@ -434,13 +461,26 @@ function RoomBody() {
     }
   }, [lastMessage, isOwner, currentTrack, t]);
 
-  // Handle NETWORK_THROTTLE from server (venue IP is being throttled by YouTube)
+  // Handle NETWORK_THROTTLE from server (YouTube only)
   useEffect(() => {
+    if (isSpotify) return;
     if (!lastMessage || lastMessage.type !== "NETWORK_THROTTLE") return;
     const { until } = lastMessage.payload || {};
     setNetworkThrottle({ until: until || (Date.now() + 15 * 60 * 1000) });
     if (!isThrottleDismissActive()) setIpBlockDetected(true);
   }, [lastMessage, isThrottleDismissActive]);
+
+  // Handle SPOTIFY_REAUTH from server
+  useEffect(() => {
+    if (!lastMessage || lastMessage.type !== "SPOTIFY_REAUTH") return;
+    setSpotifyNeedsAuth(true);
+  }, [lastMessage]);
+
+  // Handle Spotify room owner disconnect
+  useEffect(() => {
+    if (!lastMessage || lastMessage.type !== "SPOTIFY_OWNER_LEFT") return;
+    setToast({ message: "Room owner disconnected — playback paused.", type: "error" });
+  }, [lastMessage]);
 
   // No auto-clear for network throttle — IP blocks last hours, not minutes.
   // The banner clears only when the owner presses Retry and playback succeeds
@@ -451,8 +491,15 @@ function RoomBody() {
     if (!lastMessage || lastMessage.type !== "SUGGESTION_RESULT") return;
     if (!activeSuggestionId) return; // Ignore if no suggestion panel is open
 
+    if (suggestionTimeoutRef.current) {
+      clearTimeout(suggestionTimeoutRef.current);
+      suggestionTimeoutRef.current = null;
+    }
+
     const suggestions = lastMessage.payload?.suggestions || [];
+    const error = lastMessage.payload?.error || null;
     setManualSuggestions(suggestions);
+    setSuggestionsError(error);
     setIsFetchingSuggestions(false);
   }, [lastMessage, activeSuggestionId]);
   const [showPendingPage, setShowPendingPage] = useState(false);
@@ -614,14 +661,14 @@ function RoomBody() {
     setPlaybackError(null);
 
     // Track-cycling detection: if 2+ tracks load without any successful playback, something systemic is wrong
-    if (currentTrack) {
+    if (currentTrack && !isSpotify) {
       trackFailTimesRef.current.push(Date.now());
       if (trackFailTimesRef.current.length >= 2 && Date.now() - lastSuccessfulPlayRef.current > 5000) {
         console.warn("[Player] IP block detected — tracks keep failing without playback");
         if (!isThrottleDismissActive()) setIpBlockDetected(true);
       }
     }
-    if (isPlayerReady && playerRef.current) {
+    if (!isSpotify && isPlayerReady && playerRef.current) {
       try {
         if (captionsEnabled && currentTrack?.language) {
           console.log("[Player] Setting Caption Language:", currentTrack.language);
@@ -635,7 +682,7 @@ function RoomBody() {
         console.error("Failed to set/clear caption language", e);
       }
     }
-  }, [currentTrack, isPlayerReady, captionsEnabled]);
+  }, [currentTrack, isPlayerReady, captionsEnabled, isSpotify]);
 
 
   // YouTube API Loading
@@ -756,8 +803,362 @@ function RoomBody() {
     });
   }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled]);
 
+  // Spotify Player Initialization
+  const [spotifyDeviceId, setSpotifyDeviceId] = useState(null);
+  const [spotifyNeedsAuth, setSpotifyNeedsAuth] = useState(false);
+  const spotifyActivateHandlerRef = useRef(null);
+  const [spotifyAccountError, setSpotifyAccountError] = useState(false);
+  const spotifyTokenRef = useRef(null);
+  const spotifyTokenExpiresRef = useRef(0);
+
+  const loadSpotifySDK = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      if (!hasConsent) return reject("No Consent");
+      if (window.Spotify) return resolve(window.Spotify);
+      // Prevent duplicate script tags if SDK is already loading
+      const existing = document.querySelector('script[src="https://sdk.scdn.co/spotify-player.js"]');
+      if (existing) {
+        window.onSpotifyWebPlaybackSDKReady = () => resolve(window.Spotify);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://sdk.scdn.co/spotify-player.js";
+      script.onerror = reject;
+      document.head.appendChild(script);
+      window.onSpotifyWebPlaybackSDKReady = () => resolve(window.Spotify);
+    });
+  }, [hasConsent]);
+
+  const fetchSpotifyToken = useCallback(async () => {
+    if (!user?.id) return null;
+    // Return cached token if still valid (50-minute TTL, Spotify tokens last 60 min)
+    if (spotifyTokenRef.current && Date.now() < spotifyTokenExpiresRef.current) {
+      return spotifyTokenRef.current;
+    }
+    const sessionToken = localStorage.getItem("cuevote_session_token");
+    if (!sessionToken) return null;
+    const serverUrl = getServerUrl();
+    try {
+      const res = await fetch(`${serverUrl}/api/spotify/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, session: sessionToken }),
+      });
+      if (!res.ok) {
+        spotifyTokenRef.current = null;
+        spotifyTokenExpiresRef.current = 0;
+        return null;
+      }
+      const data = await res.json();
+      spotifyTokenRef.current = data.token;
+      spotifyTokenExpiresRef.current = Date.now() + 50 * 60 * 1000; // 50 min cache
+      return data.token;
+    } catch (e) {
+      console.error("[Spotify] Token fetch failed:", e);
+      return null;
+    }
+  }, [user?.id]);
+
+  const initializeSpotifyPlayer = useCallback(async () => {
+    if (!hasConsent || !isOwnerRef.current) return;
+    const initId = ++playerInitIdRef.current;
+    // Clean up any existing player to prevent duplicate instances
+    if (playerRef.current && typeof playerRef.current.disconnect === 'function') {
+      try { playerRef.current.disconnect(); } catch { /* */ }
+      playerRef.current = null;
+    }
+    try {
+      const SpotifySDK = await loadSpotifySDK();
+      if (initId !== playerInitIdRef.current) return;
+
+      const token = await fetchSpotifyToken();
+      if (!token) {
+        console.warn("[Spotify] No token — user needs to authenticate");
+        setSpotifyNeedsAuth(true);
+        return;
+      }
+      setSpotifyNeedsAuth(false);
+      setSpotifyAccountError(false);
+
+      const player = new SpotifySDK.Player({
+        name: 'CueVote',
+        getOAuthToken: async (cb) => {
+          const freshToken = await fetchSpotifyToken();
+          cb(freshToken);
+        },
+        volume: volumeRef.current / 100,
+      });
+
+      player.addListener('ready', async ({ device_id }) => {
+        console.log('[Spotify] Ready with Device ID:', device_id);
+        setSpotifyDeviceId(device_id);
+
+        // Poll GET /me/player/devices until our device_id actually appears in the
+        // REST API's device list. The SDK 'ready' event fires when the local WebSocket
+        // handshake completes, but the REST API needs extra time to register the device.
+        const pollToken = await fetchSpotifyToken();
+        let deviceConfirmed = false;
+        if (pollToken) {
+          for (let attempt = 1; attempt <= 8; attempt++) {
+            await new Promise(r => setTimeout(r, attempt <= 2 ? 500 : 1000));
+            try {
+              const devRes = await fetch('https://api.spotify.com/v1/me/player/devices', {
+                headers: { 'Authorization': `Bearer ${pollToken}` },
+              });
+              if (devRes.ok) {
+                const devData = await devRes.json();
+                const found = devData.devices?.some(d => d.id === device_id);
+                console.log(`[Spotify] Device poll #${attempt}: ${devData.devices?.length || 0} devices, ours ${found ? 'FOUND' : 'not yet'}`);
+                if (found) { deviceConfirmed = true; break; }
+              }
+            } catch (e) {
+              console.warn(`[Spotify] Device poll #${attempt} failed:`, e.message);
+            }
+          }
+        }
+        if (!deviceConfirmed && pollToken) {
+          // Force Spotify to acknowledge the device by transferring playback
+          console.log('[Spotify] Device not found in poll — transferring playback to force registration...');
+          try {
+            const transferRes = await fetch('https://api.spotify.com/v1/me/player', {
+              method: 'PUT',
+              headers: { 'Authorization': `Bearer ${pollToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ device_ids: [device_id], play: false }),
+            });
+            if (transferRes.ok || transferRes.status === 204) {
+              console.log('[Spotify] Transfer playback succeeded — device should now be active');
+              deviceConfirmed = true;
+            } else {
+              console.warn(`[Spotify] Transfer playback failed (HTTP ${transferRes.status})`);
+            }
+          } catch (e) {
+            console.warn('[Spotify] Transfer playback error:', e.message);
+          }
+        }
+        if (!deviceConfirmed) {
+          console.warn('[Spotify] Device never registered — playback may 404');
+        }
+        setIsPlayerReady(true);
+        setIsMuted(false);
+      });
+
+      player.addListener('not_ready', ({ device_id }) => {
+        console.log('[Spotify] Device has gone offline:', device_id);
+        setIsPlayerReady(false);
+        setSpotifyDeviceId(null);
+      });
+
+      player.addListener('player_state_changed', (state) => {
+        if (!state) return;
+        const { paused, position, duration, track_window } = state;
+        if (!paused) {
+          setIsLocallyPaused(false);
+          lastSuccessfulPlayRef.current = Date.now();
+          trackFailTimesRef.current = [];
+          if (!isPlayingRef.current) setIsLocallyPlaying(true);
+          else setIsLocallyPlaying(false);
+          if (duration > 0) {
+            sendMessage({ type: "UPDATE_DURATION", payload: Math.round(duration / 1000) });
+          }
+          // Sync Spotify position to server so progress stays accurate
+          if (isOwnerRef.current && position > 0) {
+            const posSec = Math.round(position / 1000);
+            if (Math.abs(posSec - (progressRef.current || 0)) > 2) {
+              sendMessage({ type: "SEEK_TO", payload: posSec });
+            }
+          }
+        } else {
+          setIsLocallyPaused(isPlayingRef.current);
+          setIsLocallyPlaying(false);
+        }
+
+        // Detect track end: paused at position 0 with previous tracks means the track finished,
+        // OR paused at a position very close to the duration (within 1s tolerance)
+        const isAtEnd = paused && (
+          (position === 0 && track_window?.previous_tracks?.length > 0) ||
+          (duration > 0 && position >= duration - 1000)
+        );
+        if (isAtEnd) {
+          if (isOwnerRef.current) {
+            sendMessage({ type: "NEXT_TRACK" });
+          }
+        }
+      });
+
+      player.addListener('initialization_error', ({ message }) => {
+        console.error('[Spotify] Init error:', message);
+      });
+
+      player.addListener('authentication_error', ({ message }) => {
+        console.error('[Spotify] Auth error:', message);
+        setSpotifyNeedsAuth(true);
+        if (isOwnerRef.current) {
+          sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId: currentTrackRef.current?.trackId, errorCode: 'SPOTIFY_AUTH_ERROR' } });
+        }
+      });
+
+      player.addListener('account_error', ({ message }) => {
+        console.error('[Spotify] Account error (Premium required?):', message);
+        setSpotifyAccountError(true);
+        setToast({ message: "Spotify Premium is required for playback.", type: "error" });
+      });
+
+      const connected = await player.connect();
+      if (!connected) {
+        console.error("[Spotify] Player connect() returned false — connection failed");
+        return;
+      }
+      playerRef.current = player;
+      console.log("[Spotify] Player connected successfully, waiting for 'ready' event...");
+
+      // Activate the SDK's audio element on next user gesture (required by browser autoplay policy).
+      // Without this, the SDK connects and reports state changes but no audio is output.
+      if (spotifyActivateHandlerRef.current) {
+        document.removeEventListener('click', spotifyActivateHandlerRef.current, true);
+        document.removeEventListener('touchstart', spotifyActivateHandlerRef.current, true);
+      }
+      const activateHandler = () => {
+        console.log('[Spotify] Activating audio element via user gesture');
+        player.activateElement();
+        document.removeEventListener('click', activateHandler, true);
+        document.removeEventListener('touchstart', activateHandler, true);
+        spotifyActivateHandlerRef.current = null;
+      };
+      spotifyActivateHandlerRef.current = activateHandler;
+      document.addEventListener('click', activateHandler, true);
+      document.addEventListener('touchstart', activateHandler, true);
+    } catch (err) {
+      console.error("[Spotify] Initialization failed:", err);
+    }
+  }, [loadSpotifySDK, fetchSpotifyToken, hasConsent, sendMessage]);
+
+  // Spotify auth popup handler
+  const spotifyAuthListenerRef = useRef(null);
+  const spotifyAuthPollRef = useRef(null);
+  const openSpotifyAuth = useCallback(() => {
+    if (!user?.id) return;
+    // Clean up any previous auth listener and poll
+    if (spotifyAuthListenerRef.current) {
+      window.removeEventListener('message', spotifyAuthListenerRef.current);
+    }
+    if (spotifyAuthPollRef.current) {
+      clearInterval(spotifyAuthPollRef.current);
+      spotifyAuthPollRef.current = null;
+    }
+    const serverUrl = getServerUrl();
+    const authWindow = window.open(`${serverUrl}/api/spotify/auth?userId=${user.id}`, 'spotify-auth', 'width=450,height=700');
+
+    // Popup blocker detection
+    if (!authWindow || authWindow.closed) {
+      setToast({ message: "Popup blocked. Please allow popups for this site and try again.", type: "error" });
+      return;
+    }
+
+    let authCompleted = false;
+
+    const cleanup = () => {
+      authCompleted = true;
+      window.removeEventListener('message', handleMessage);
+      spotifyAuthListenerRef.current = null;
+      if (spotifyAuthPollRef.current) {
+        clearInterval(spotifyAuthPollRef.current);
+        spotifyAuthPollRef.current = null;
+      }
+    };
+
+    const handleMessage = (event) => {
+      // Validate origin to prevent spoofed postMessage attacks
+      if (event.origin !== new URL(serverUrl).origin) return;
+      if (event.data?.type === 'SPOTIFY_AUTH_SUCCESS') {
+        setSpotifyNeedsAuth(false);
+        initializeSpotifyPlayer();
+        cleanup();
+      } else if (event.data?.type === 'SPOTIFY_AUTH_ERROR') {
+        console.error('[Spotify] Auth error:', event.data.error);
+        setToast({ message: "Spotify authentication failed. Please try again.", type: "error" });
+        cleanup();
+      }
+    };
+    spotifyAuthListenerRef.current = handleMessage;
+    window.addEventListener('message', handleMessage);
+
+    // Poll for popup closed without completing auth (user closed popup, redirect failed, etc.)
+    spotifyAuthPollRef.current = setInterval(() => {
+      if (authCompleted) return;
+      try {
+        if (authWindow.closed) {
+          // Stop polling — check server-side tokens as fallback (postMessage
+          // often fails because window.opener is null after cross-origin redirect)
+          clearInterval(spotifyAuthPollRef.current);
+          spotifyAuthPollRef.current = null;
+          (async () => {
+            if (authCompleted) return;
+            console.log('[Spotify] Popup closed, checking server for tokens...');
+            try {
+              const token = await fetchSpotifyToken();
+              console.log('[Spotify] Token fallback result:', token ? 'got token' : 'no token');
+              if (authCompleted) return;
+              if (token) {
+                setSpotifyNeedsAuth(false);
+                initializeSpotifyPlayer();
+                cleanup();
+              } else {
+                cleanup();
+                setToast({ message: "Spotify connection was cancelled or failed. Please try again.", type: "error" });
+              }
+            } catch (e) {
+              console.error('[Spotify] Token fallback error:', e);
+              cleanup();
+              setToast({ message: "Spotify connection was cancelled or failed. Please try again.", type: "error" });
+            }
+          })();
+        }
+      } catch {
+        // Cross-origin access error — popup navigated away, keep polling
+      }
+    }, 500);
+
+    // Safety timeout: clean up after 2 minutes if auth never completes
+    setTimeout(() => {
+      if (!authCompleted) {
+        cleanup();
+        try { authWindow.close(); } catch { /* */ }
+        setToast({ message: "Spotify connection timed out. Please try again.", type: "error" });
+      }
+    }, 120000);
+  }, [user?.id, fetchSpotifyToken, initializeSpotifyPlayer]);
+
+  // Cleanup auth listener and poll on unmount
+  useEffect(() => {
+    return () => {
+      if (spotifyAuthListenerRef.current) {
+        window.removeEventListener('message', spotifyAuthListenerRef.current);
+        spotifyAuthListenerRef.current = null;
+      }
+      if (spotifyAuthPollRef.current) {
+        clearInterval(spotifyAuthPollRef.current);
+        spotifyAuthPollRef.current = null;
+      }
+    };
+  }, []);
+
   const playerContainerRef = useCallback(node => {
     if (!hasConsent) return;
+    if (isSpotify) {
+      if (node !== null) {
+        initializeSpotifyPlayer();
+      } else {
+        playerInitIdRef.current++;
+        if (playerRef.current && typeof playerRef.current.disconnect === 'function') {
+          try { playerRef.current.disconnect(); } catch (e) { /* */ }
+          playerRef.current = null;
+          setIsPlayerReady(false);
+          setSpotifyDeviceId(null);
+        }
+      }
+      return;
+    }
+    // YouTube path
     if (node !== null) {
       initializePlayer(node);
     } else {
@@ -770,21 +1171,180 @@ function RoomBody() {
         setIsPlayerReady(false);
       }
     }
-  }, [initializePlayer, hasConsent]);
+  }, [initializePlayer, initializeSpotifyPlayer, hasConsent, isSpotify]);
+
+  // Retry Spotify init when owner status becomes known (fixes race where DOM mounts before server state)
+  useEffect(() => {
+    if (isSpotify && isOwner && hasConsent && !isPlayerReady && !spotifyNeedsAuth) {
+      initializeSpotifyPlayer();
+    }
+  }, [isOwner, isSpotify, hasConsent, isPlayerReady, spotifyNeedsAuth, initializeSpotifyPlayer]);
+
+  // Clean up old player when music source switches
+  useEffect(() => {
+    return () => {
+      if (playerRef.current) {
+        playerInitIdRef.current++;
+        if (typeof playerRef.current.disconnect === 'function') {
+          try { playerRef.current.disconnect(); } catch (e) { /* Spotify cleanup */ }
+        }
+        if (typeof playerRef.current.destroy === 'function') {
+          try { playerRef.current.destroy(); } catch (e) { /* YouTube cleanup */ }
+        }
+        playerRef.current = null;
+        setIsPlayerReady(false);
+        setSpotifyDeviceId(null);
+      }
+      if (spotifyActivateHandlerRef.current) {
+        document.removeEventListener('click', spotifyActivateHandlerRef.current, true);
+        document.removeEventListener('touchstart', spotifyActivateHandlerRef.current, true);
+        spotifyActivateHandlerRef.current = null;
+      }
+    };
+  }, [isSpotify]);
+
+  // Track the currently playing Spotify track to avoid redundant API calls
+  const spotifyCurrentTrackIdRef = useRef(null);
+  // Guard: prevent spotifyResume() from firing while a new track is being loaded via PUT
+  const spotifyTrackLoadingRef = useRef(false);
+
+  // Spotify resume helper: SDK has no resume(), use togglePlay with state check
+  const spotifyResume = useCallback(async () => {
+    const p = playerRef.current;
+    if (!p) return;
+    // Don't interfere while a new track is being loaded via the Spotify API
+    if (spotifyTrackLoadingRef.current) {
+      console.log('[Spotify] Skipping resume — track is loading via API');
+      return;
+    }
+    try {
+      const state = await p.getCurrentState();
+      if (state?.paused) {
+        console.log('[Spotify] Resuming paused playback via togglePlay');
+        await p.togglePlay();
+      }
+    } catch (e) {
+      console.warn("[Spotify] Resume via togglePlay failed:", e);
+    }
+  }, []);
+
+  // Spotify track loading helper with exponential-backoff retry on 404
+  const spotifyPlayTrack = useCallback(async (trackId, positionMs = 0) => {
+    // Safety: strip any sp: DB cache key prefix that may have leaked into the trackId
+    const cleanId = trackId.replace(/^sp:/, '');
+    if (!spotifyDeviceId) {
+      console.warn("[Spotify] Cannot play: no device ID. Player may not be ready.");
+      return;
+    }
+    spotifyTrackLoadingRef.current = true;
+    const token = await fetchSpotifyToken();
+    if (!token) {
+      spotifyTrackLoadingRef.current = false;
+      console.warn("[Spotify] Cannot play: token fetch failed. Re-auth may be needed.");
+      setSpotifyNeedsAuth(true);
+      return;
+    }
+
+    // Retry loop: up to 4 attempts with exponential backoff (0, 1s, 2s, 4s)
+    const delays = [0, 1000, 2000, 4000];
+    for (let attempt = 0; attempt < delays.length; attempt++) {
+      if (attempt > 0) {
+        console.log(`[Spotify] Retry #${attempt} in ${delays[attempt]}ms...`);
+        await new Promise(r => setTimeout(r, delays[attempt]));
+        if (!playerRef.current || !spotifyDeviceId) { spotifyTrackLoadingRef.current = false; return; }
+      }
+      try {
+        console.log(`[Spotify] PUT /me/player/play (attempt ${attempt + 1}) — track=${cleanId}, device=${spotifyDeviceId}, pos=${positionMs}ms`);
+        const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uris: [`spotify:track:${cleanId}`], position_ms: positionMs }),
+        });
+        if (res.ok) {
+          console.log(`[Spotify] Play accepted (HTTP ${res.status}) — audio should start`);
+          // Verify playback actually started and nudge if paused
+          const verifyAndResume = async (n, delay) => {
+            await new Promise(r => setTimeout(r, delay));
+            if (!playerRef.current) return;
+            try {
+              const state = await playerRef.current.getCurrentState();
+              if (state) {
+                console.log(`[Spotify] State check #${n}: paused=${state.paused}, pos=${state.position}, track=${state.track_window?.current_track?.name}`);
+                if (state.paused) await playerRef.current.togglePlay();
+              }
+            } catch { /* non-fatal */ }
+          };
+          verifyAndResume(1, 800).then(() => {
+            spotifyTrackLoadingRef.current = false;
+            verifyAndResume(2, 1700);
+          });
+          return; // Success — exit retry loop
+        }
+
+        const text = await res.text().catch(() => '');
+        console.error(`[Spotify] Play HTTP ${res.status}:`, text);
+
+        if (res.status === 401) {
+          spotifyTokenRef.current = null;
+          spotifyTokenExpiresRef.current = 0;
+          setSpotifyNeedsAuth(true);
+          if (isOwnerRef.current) sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_AUTH_ERROR' } });
+          break; // No point retrying auth errors
+        }
+        if (res.status === 403) {
+          console.warn(`[Spotify] Track ${trackId} unavailable (403), skipping`);
+          if (isOwnerRef.current) sendMessage({ type: "PLAYBACK_ERROR", payload: { trackId, errorCode: 'SPOTIFY_TRACK_UNAVAILABLE' } });
+          break; // No point retrying unavailable tracks
+        }
+        if (res.status === 404) {
+          console.warn(`[Spotify] Device not found (404) on attempt ${attempt + 1}`);
+          // Transfer playback to force device registration before next retry
+          try {
+            await fetch('https://api.spotify.com/v1/me/player', {
+              method: 'PUT',
+              headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ device_ids: [spotifyDeviceId], play: false }),
+            });
+          } catch { /* non-fatal */ }
+          continue;
+        }
+        // Other errors: don't retry
+        break;
+      } catch (e) {
+        console.error(`[Spotify] Play attempt ${attempt + 1} threw:`, e);
+      }
+    }
+    spotifyTrackLoadingRef.current = false;
+  }, [spotifyDeviceId, fetchSpotifyToken, sendMessage]);
 
   // Main playback logic
   useEffect(() => {
     const targetTrack = previewTrack || currentTrack;
     if (isPlayerReady && playerRef.current && targetTrack) {
-      const currentVideoIdInPlayer = playerRef.current.getVideoData?.()?.video_id;
-      if (targetTrack.videoId !== currentVideoIdInPlayer) {
-        const startTime = previewTrack ? 0 : progressRef.current;
-        playerRef.current.loadVideoById?.(targetTrack.videoId, startTime);
+      if (isSpotify) {
+        const targetId = targetTrack.trackId;
+        // Only call Spotify API when the track actually changes (avoid redundant plays on state updates)
+        if (targetId && targetId !== spotifyCurrentTrackIdRef.current) {
+          spotifyCurrentTrackIdRef.current = targetId;
+          const startMs = previewTrack ? 0 : (progressRef.current * 1000);
+          spotifyPlayTrack(targetId, startMs);
+        }
+      } else {
+        const currentVideoIdInPlayer = playerRef.current.getVideoData?.()?.video_id;
+        if (targetTrack.videoId !== currentVideoIdInPlayer) {
+          const startTime = previewTrack ? 0 : progressRef.current;
+          playerRef.current.loadVideoById?.(targetTrack.videoId, startTime);
+        }
       }
     } else if (isPlayerReady && playerRef.current && !targetTrack) {
-      playerRef.current.stopVideo?.();
+      spotifyCurrentTrackIdRef.current = null;
+      if (isSpotify) {
+        playerRef.current.pause?.();
+      } else {
+        playerRef.current.stopVideo?.();
+      }
     }
-  }, [isPlayerReady, currentTrack, previewTrack, progressRef]);
+  }, [isPlayerReady, currentTrack, previewTrack, progressRef, isSpotify, spotifyPlayTrack]);
 
   const tvUnmuteVisible = deviceDetection.isTV() && isMuted && isPlayerReady && !isAnyPlaylistView;
   const hasFullscreenOverlay = showQRModal || headerOverlay || settingsOverlay || tvUnmuteVisible;
@@ -792,18 +1352,23 @@ function RoomBody() {
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
       if (hasFullscreenOverlay) {
-        playerRef.current.pauseVideo?.();
+        if (isSpotify) playerRef.current.pause?.();
+        else playerRef.current.pauseVideo?.();
       } else if (userHasInteractedRef.current && previewTrack) {
-        playerRef.current.playVideo?.();
+        if (isSpotify) spotifyResume();
+        else playerRef.current.playVideo?.();
       } else if (userHasInteractedRef.current && (isPlaying || isLocallyPlaying) && !isLocallyPaused) {
-        playerRef.current.playVideo?.();
+        if (isSpotify) spotifyResume();
+        else playerRef.current.playVideo?.();
       } else {
-        playerRef.current.pauseVideo?.();
+        if (isSpotify) playerRef.current.pause?.();
+        else playerRef.current.pauseVideo?.();
       }
     }
-  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay]);
+  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay, spotifyResume]);
 
   useEffect(() => {
+    if (isSpotify) return; // Spotify syncs via player_state_changed
     if (!isPlayerReady || !playerRef.current || !isPlaying || previewTrack) return;
     const interval = setInterval(() => {
       if (playerRef.current?.getPlayerState?.() === YouTubeState.ENDED) return;
@@ -813,10 +1378,11 @@ function RoomBody() {
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [isPlayerReady, isPlaying, previewTrack, progressRef]);
+  }, [isPlayerReady, isPlaying, previewTrack, progressRef, isSpotify]);
 
-  // Autoplay detection
+  // Autoplay detection (YouTube only — Spotify SDK handles internally)
   useEffect(() => {
+    if (isSpotify) { setAutoplayBlocked(false); return; }
     if (isPlaying && isPlayerReady && playerRef.current) {
       const check = setTimeout(() => {
         const state = playerRef.current.getPlayerState?.();
@@ -836,10 +1402,11 @@ function RoomBody() {
     }
   }, [isPlaying, isPlayerReady, currentTrack]);
 
-  // Infinite Load Guard (Stall Detection)
+  // Infinite Load Guard (Stall Detection) — YouTube only
   const stallRetriesRef = useRef(0); // Track number of stall retries
 
   useEffect(() => {
+    if (isSpotify) return; // Spotify SDK handles stall detection internally
     // Reset retries when track changes
     stallRetriesRef.current = 0;
   }, [currentTrack]);
@@ -890,10 +1457,14 @@ function RoomBody() {
   }, [isPlaying, isPlayerReady, isOwner, progressRef, sendMessage]);
 
   // Progress bar update (polls ref to avoid re-renders from progress messages)
+  const currentTrackDuration = currentTrack?.duration || 0;
   useEffect(() => {
     if (!isPlayerReady) return;
     const update = () => {
-      const duration = playerRef.current?.getDuration?.() || 0;
+      // Spotify SDK has no getDuration() — use server-provided duration instead
+      const duration = isSpotify
+        ? currentTrackDuration
+        : (playerRef.current?.getDuration?.() || 0);
       if (duration > 0) {
         setProgress((progressRef.current / duration) * 100);
       } else {
@@ -903,11 +1474,15 @@ function RoomBody() {
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, [isPlayerReady, progressRef]);
+  }, [isPlayerReady, progressRef, isSpotify, currentTrackDuration]);
 
   // Event Handlers
 
   const handlePlayPause = () => {
+    // Ensure SDK audio is activated on this user gesture (autoplay policy safety net)
+    if (isSpotify && playerRef.current?.activateElement) {
+      playerRef.current.activateElement();
+    }
     const isEffectivelyPlaying = (isPlaying || isLocallyPlaying) && !isLocallyPaused;
 
     if (isOwner) {
@@ -925,12 +1500,14 @@ function RoomBody() {
         // User wants to PAUSE
         setIsLocallyPaused(true);
         setIsLocallyPlaying(false);
-        playerRef.current?.pauseVideo?.();
+        if (isSpotify) playerRef.current?.pause?.();
+        else playerRef.current?.pauseVideo?.();
       } else {
         // User wants to PLAY
         setIsLocallyPaused(false);
         setIsLocallyPlaying(true);
-        playerRef.current?.playVideo?.();
+        if (isSpotify) spotifyResume();
+        else playerRef.current?.playVideo?.();
       }
     }
   };
@@ -938,33 +1515,34 @@ function RoomBody() {
 
 
   const handleMuteToggle = () => {
-
-    if (isMuted) playerRef.current?.unMute?.();
-
-    else playerRef.current?.mute?.();
-
+    // Ensure SDK audio is activated on this user gesture (autoplay policy safety net)
+    if (isSpotify && playerRef.current?.activateElement) {
+      playerRef.current.activateElement();
+    }
+    if (isSpotify) {
+      if (isMuted) playerRef.current?.setVolume?.(volumeRef.current / 100);
+      else playerRef.current?.setVolume?.(0);
+    } else {
+      if (isMuted) playerRef.current?.unMute?.();
+      else playerRef.current?.mute?.();
+    }
     setIsMuted(!isMuted);
-
   };
 
 
 
   const handleVolumeChange = (e) => {
-
     const newVolume = Number(e.target.value);
-
     setVolume(newVolume);
-
     if (playerRef.current) {
-
-      playerRef.current.setVolume?.(newVolume);
-
+      if (isSpotify) {
+        playerRef.current.setVolume?.(newVolume / 100);
+      } else {
+        playerRef.current.setVolume?.(newVolume);
+      }
       if (isMuted) {
-
-        playerRef.current.unMute?.();
-
+        if (!isSpotify) playerRef.current.unMute?.();
         setIsMuted(false);
-
       }
 
     }
@@ -981,31 +1559,52 @@ function RoomBody() {
     sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
   }, [user, sendMessage, t]);
 
-  const handleLibraryAdd = useCallback((videoId) => {
-    return handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
-  }, [handleSongSuggested]);
+  const handleLibraryAdd = useCallback((sourceId) => {
+    if (isSpotify) {
+      return handleSongSuggested(sourceId);
+    }
+    return handleSongSuggested(`https://www.youtube.com/watch?v=${sourceId}`);
+  }, [handleSongSuggested, isSpotify]);
 
-  const handleRemoveFromLibrary = useCallback((videoId) => {
-    console.log("[App] Removing from Library:", videoId);
-    sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { videoId } });
-  }, [sendMessage]);
+  const handleRemoveFromLibrary = useCallback((sourceId) => {
+    console.log("[App] Removing from Library:", sourceId);
+    if (isSpotify) {
+      sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { trackId: sourceId } });
+    } else {
+      sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { videoId: sourceId } });
+    }
+  }, [sendMessage, isSpotify]);
 
   const handleFetchSuggestions = useCallback((track) => {
     // Toggle if clicking same track
     if (activeSuggestionId === track.id) {
       setActiveSuggestionId(null);
+      if (suggestionTimeoutRef.current) {
+        clearTimeout(suggestionTimeoutRef.current);
+        suggestionTimeoutRef.current = null;
+      }
       return;
     }
 
     console.log("[App] handleFetchSuggestions triggered for:", track.title);
     setActiveSuggestionId(track.id);
     setManualSuggestions([]); // Clear previous
+    setSuggestionsError(null); // Clear previous error
     setIsFetchingSuggestions(true);
+
+    // Safety timeout: stop spinner if server never responds.
+    // Spotify recommendations make up to 9 sequential API calls, so allow 25s.
+    if (suggestionTimeoutRef.current) clearTimeout(suggestionTimeoutRef.current);
+    suggestionTimeoutRef.current = setTimeout(() => {
+      setIsFetchingSuggestions(false);
+      setSuggestionsError("Request timed out. Please try again.");
+    }, 25000);
 
     sendMessage({
       type: "FETCH_SUGGESTIONS",
       payload: {
-        videoId: track.videoId,
+        videoId: track.videoId || null,
+        trackId: track.trackId || null,
         title: track.title,
         artist: track.artist
       }
@@ -1039,8 +1638,9 @@ function RoomBody() {
   const handleStopPreview = useCallback(() => {
     setPreviewTrack(null);
     setIsLocallyPaused(false);
-    playerRef.current?.seekTo?.(progressRef.current);
-  }, [progressRef]);
+    if (isSpotify) playerRef.current?.seek?.(progressRef.current * 1000);
+    else playerRef.current?.seekTo?.(progressRef.current);
+  }, [progressRef, isSpotify]);
 
   // Watch for Room Not Found Error
   useEffect(() => {
@@ -1060,12 +1660,15 @@ function RoomBody() {
 
   const handleSeek = (percentage) => {
     if (!playerRef.current) return;
-    const duration = playerRef.current.getDuration();
+    const duration = isSpotify
+      ? (currentTrack?.duration || 0)
+      : playerRef.current.getDuration();
     if (!duration) return;
     const seconds = (percentage / 100) * duration;
     if (isOwner) {
       sendMessage({ type: "SEEK_TO", payload: seconds });
-      playerRef.current.seekTo(seconds, true);
+      if (isSpotify) playerRef.current.seek?.(seconds * 1000);
+      else playerRef.current.seekTo(seconds, true);
     }
   };
 
@@ -1237,6 +1840,7 @@ function RoomBody() {
           captionsEnabled={captionsEnabled}
           isConnected={isConnected}
           onFullscreenOverlay={setSettingsOverlay}
+          musicSource={musicSource}
         />
       </div>
     );
@@ -1251,7 +1855,7 @@ function RoomBody() {
       className={`text-white flex flex-col ${isAnyPlaylistView ? "h-[100dvh] h-screen overflow-hidden bg-[#0a0a0a] pb-0" : (isQueueMinimized && !isCinemaMode ? "h-[100dvh] h-screen overflow-hidden bg-black" : "min-h-screen bg-black pb-32")}`}
       style={isQueueMinimized && !isCinemaMode && !isAnyPlaylistView ? { paddingBottom: `${controlsHeight}px` } : undefined}
     >
-      {ipBlockDetected && !throttleDismissed && (
+      {ipBlockDetected && !throttleDismissed && !isSpotify && (
         <div className="fixed inset-0 z-[100] bg-[#050505] text-white flex items-center justify-center p-6 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-[#050505] to-[#050505] pointer-events-none" />
           <div className="relative z-10 w-full flex flex-col items-center justify-center text-center max-w-md animate-in fade-in zoom-in-95 duration-500">
@@ -1399,6 +2003,7 @@ function RoomBody() {
                 currentTrack={currentTrack}
                 onRecommend={handleFetchSuggestions}
                 suggestions={manualSuggestions}
+                suggestionsError={suggestionsError}
                 isFetchingSuggestions={isFetchingSuggestions}
                 queueVideoIds={queueVideoIds}
               />
@@ -1455,6 +2060,13 @@ function RoomBody() {
                 ) : (
                   <Player
                     playerContainerRef={playerContainerRef}
+                    musicSource={musicSource}
+                    currentTrack={currentTrack}
+                    spotifyNeedsAuth={spotifyNeedsAuth}
+                    spotifyAccountError={spotifyAccountError}
+                    onSpotifyAuth={openSpotifyAuth}
+                    isOwner={isOwner}
+                    isPlayerReady={isPlayerReady}
                   />
                 )
               ) : (CookieBlockedPlaceholderComponent ? <CookieBlockedPlaceholderComponent /> : <div className="w-full h-full flex items-center justify-center bg-black text-neutral-500">Loading…</div>)}
@@ -1517,6 +2129,7 @@ function RoomBody() {
               // Suggestions Props
               activeSuggestionId={activeSuggestionId}
               suggestions={manualSuggestions}
+              suggestionsError={suggestionsError}
               isFetchingSuggestions={isFetchingSuggestions}
               queueVideoIds={queueVideoIds}
               disableFloatingUI={!!previewTrack}
@@ -1530,6 +2143,8 @@ function RoomBody() {
                 playerContainerRef={playerContainerRef}
                 isCinemaMode={isCinemaMode}
                 t={t}
+                musicSource={musicSource}
+                previewTrack={previewTrack}
               />
             )}
           </div>
@@ -1558,11 +2173,40 @@ function RoomBody() {
                         ) : (
                           <Player
                             playerContainerRef={playerContainerRef}
+                            musicSource={musicSource}
+                            currentTrack={currentTrack}
+                            spotifyNeedsAuth={spotifyNeedsAuth}
+                            spotifyAccountError={spotifyAccountError}
+                            onSpotifyAuth={openSpotifyAuth}
+                            isOwner={isOwner}
+                            isPlayerReady={isPlayerReady}
                           />
                         )}
                       </PlayerErrorBoundary>
                     </div>
-                    {!(currentTrack || previewTrack) && <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">{t('playlist.queueEmpty')}</div>}
+                    {!(currentTrack || previewTrack) && (
+                      isSpotify && isOwner && !isPlayerReady ? (
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-900 to-black">
+                          <div className="flex flex-col items-center gap-4 p-6 text-center">
+                            <div className="w-16 h-16 rounded-full bg-[#1DB954]/10 flex items-center justify-center">
+                              <svg viewBox="0 0 24 24" className="w-8 h-8 text-[#1DB954]" fill="currentColor">
+                                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                              </svg>
+                            </div>
+                            <p className="text-white font-bold text-lg">Connect Spotify</p>
+                            <p className="text-neutral-400 text-sm max-w-xs">Connect your Spotify Premium account to play music in this room.</p>
+                            <button
+                              onClick={openSpotifyAuth}
+                              className="px-6 py-3 rounded-full bg-[#1DB954] text-white font-bold hover:bg-[#1ed760] transition-all"
+                            >
+                              Connect Spotify
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-neutral-500 bg-neutral-900">{t('playlist.queueEmpty')}</div>
+                      )
+                    )}
                   </>
                 )}
               </div>
@@ -1599,6 +2243,7 @@ function RoomBody() {
             onAdd={handleLibraryAdd}
             activeSuggestionId={activeSuggestionId}
             suggestions={manualSuggestions}
+            suggestionsError={suggestionsError}
             isFetchingSuggestions={isFetchingSuggestions}
             queueVideoIds={queueVideoIds}
           />

@@ -14,11 +14,15 @@ process.on('uncaughtException', (error) => {
 });
 
 const http = require("http");
+const https = require("https");
+const fs = require("fs");
+const path = require("path");
 const WebSocket = require("ws");
 const crypto = require("crypto");
 const bcrypt = require('bcryptjs');
 const { slugify } = require('transliteration');
 const db = require('./db');
+const spotify = require('./spotify');
 const backupScheduler = require('./backup_scheduler');
 backupScheduler.start();
 
@@ -37,15 +41,162 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
     : [];
 
-const server = http.createServer((req, res) => {
-    if (req.url === '/health' && req.method === 'GET') {
+const CORS_HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+// Use HTTPS locally when mkcert certificates are available.
+// In production, nginx terminates TLS — Node.js stays plain HTTP.
+const CERT_DIR = path.resolve(__dirname, '..', 'certs');
+const certPath = path.join(CERT_DIR, 'localhost.pem');
+const keyPath = path.join(CERT_DIR, 'localhost-key.pem');
+const useHttps = fs.existsSync(certPath) && fs.existsSync(keyPath);
+
+const requestHandler = async (req, res) => {
+    const proto = useHttps ? 'https' : 'http';
+    const parsedUrl = new URL(req.url, `${proto}://${req.headers.host}`);
+    const pathname = parsedUrl.pathname;
+
+    // CORS preflight for /api/* routes
+    if (req.method === 'OPTIONS' && pathname.startsWith('/api/')) {
+        res.writeHead(204, CORS_HEADERS);
+        res.end();
+        return;
+    }
+
+    if (pathname === '/health' && req.method === 'GET') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ status: 'ok' }));
         return;
     }
+
+    // --- Spotify OAuth Routes ---
+
+    if (pathname === '/api/spotify/auth' && req.method === 'GET') {
+        const userId = parsedUrl.searchParams.get('userId');
+        if (!userId) {
+            res.writeHead(400, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+            res.end(JSON.stringify({ error: 'userId required' }));
+            return;
+        }
+        const authUrl = spotify.getAuthUrl(userId);
+        if (!authUrl) {
+            res.writeHead(503, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+            res.end(JSON.stringify({ error: 'Spotify not configured' }));
+            return;
+        }
+        res.writeHead(302, { 'Location': authUrl });
+        res.end();
+        return;
+    }
+
+    if (pathname === '/api/spotify/callback' && req.method === 'GET') {
+        const code = parsedUrl.searchParams.get('code');
+        const stateToken = parsedUrl.searchParams.get('state');
+        const error = parsedUrl.searchParams.get('error');
+        const postMessageOrigin = JSON.stringify(ALLOWED_ORIGINS[0] || process.env.URL || '*');
+
+        if (error) {
+            logger.info(`[Spotify] OAuth denied: ${error}`);
+            const safeError = JSON.stringify(String(error));
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(`<html><body><script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: ${safeError} }, ${postMessageOrigin});
+                setTimeout(function() { window.close(); }, 500);
+            </script><p>Authentication denied. You can close this window.</p></body></html>`);
+            return;
+        }
+
+        if (!code || !stateToken) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Missing code or state' }));
+            return;
+        }
+
+        // Validate CSRF state token and resolve to userId
+        const userId = spotify.validateState(stateToken);
+        if (!userId) {
+            res.writeHead(400, { 'Content-Type': 'text/html' });
+            res.end(`<html><body><script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'invalid_state' }, ${postMessageOrigin});
+                setTimeout(function() { window.close(); }, 500);
+            </script><p>Invalid or expired state. Please try again.</p></body></html>`);
+            return;
+        }
+
+        try {
+            const tokenData = await spotify.exchangeCode(code);
+            spotify.storeTokens(userId, tokenData);
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(`<html><body><script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_SUCCESS' }, ${postMessageOrigin});
+                setTimeout(function() { window.close(); }, 500);
+            </script><p>Connected to Spotify! You can close this window.</p></body></html>`);
+        } catch (err) {
+            logger.error('[Spotify] OAuth callback error:', err.message);
+            res.writeHead(500, { 'Content-Type': 'text/html' });
+            res.end(`<html><body><script>
+                window.opener?.postMessage({ type: 'SPOTIFY_AUTH_ERROR', error: 'token_exchange_failed' }, ${postMessageOrigin});
+                setTimeout(function() { window.close(); }, 500);
+            </script><p>Authentication failed. You can close this window.</p></body></html>`);
+        }
+        return;
+    }
+
+    if (pathname === '/api/spotify/token' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => { body += chunk; });
+        req.on('end', async () => {
+            try {
+                const { userId, session: sessionToken } = JSON.parse(body);
+                if (!userId) {
+                    res.writeHead(400, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                    res.end(JSON.stringify({ error: 'userId required' }));
+                    return;
+                }
+                if (!sessionToken) {
+                    res.writeHead(401, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                    res.end(JSON.stringify({ error: 'session required' }));
+                    return;
+                }
+                const session = db.getSession(sessionToken);
+                if (!session || session.user_id !== userId) {
+                    res.writeHead(403, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                    res.end(JSON.stringify({ error: 'Unauthorized' }));
+                    return;
+                }
+                const token = await spotify.getAccessToken(userId);
+                if (!token) {
+                    res.writeHead(401, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                    res.end(JSON.stringify({ error: 'Not authenticated' }));
+                    return;
+                }
+                res.writeHead(200, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                res.end(JSON.stringify({ token }));
+            } catch (err) {
+                logger.error('[Spotify] Token fetch error:', err.message);
+                res.writeHead(500, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+                res.end(JSON.stringify({ error: 'Token fetch failed' }));
+            }
+        });
+        return;
+    }
+
     res.writeHead(404);
     res.end();
-});
+};
+
+const server = useHttps
+    ? https.createServer({ cert: fs.readFileSync(certPath), key: fs.readFileSync(keyPath) }, requestHandler)
+    : http.createServer(requestHandler);
+
+if (useHttps) {
+    logger.info('[HTTPS] Local TLS enabled using mkcert certificates from certs/');
+} else {
+    logger.info('[HTTP] Running plain HTTP (production behind nginx, or certs/ not found)');
+}
 
 const wss = new WebSocket.Server({
     server,
@@ -112,6 +263,17 @@ const schemas = require('./schemas');
 
 // Room Manager
 const rooms = new Map();
+
+// Notify Spotify rooms when a token refresh fails so clients can re-auth
+spotify.setOnTokenInvalidated((userId) => {
+    for (const room of rooms.values()) {
+        if (room.metadata.owner_id === userId && room.state.musicSource === 'spotify') {
+            logger.info(`[Spotify] Token invalidated for owner of room ${room.id} — broadcasting SPOTIFY_REAUTH`);
+            room.broadcast({ type: "SPOTIFY_REAUTH", payload: {} });
+            room.updateState({ isPlaying: false });
+        }
+    }
+});
 
 // Default rooms removed
 
@@ -481,7 +643,17 @@ wss.on("connection", (ws, req) => {
                         ws.send(JSON.stringify({ type: "error", message: "Invalid room data. Name is required (max 100 chars)." }));
                         return;
                     }
-                    const { name, description, color, isPrivate, password, captionsEnabled, languageFlag } = createResult.data;
+                    const { name, description, color, isPrivate, password, captionsEnabled, languageFlag, musicSource } = createResult.data;
+
+                    // Warn if owner already has an active Spotify room (only 1 player per account)
+                    if (musicSource === 'spotify') {
+                        for (const room of rooms.values()) {
+                            if (room.metadata.owner_id === ws.user.id && room.state.musicSource === 'spotify' && room.clients.size > 0) {
+                                ws.send(JSON.stringify({ type: "info", message: "Note: You already have an active Spotify room. Only one Spotify player can run per account." }));
+                                break;
+                            }
+                        }
+                    }
 
                     let attempts = 0;
                     let success = false;
@@ -499,7 +671,8 @@ wss.on("connection", (ws, req) => {
                                 is_public: isPrivate ? 0 : 1,
                                 password: (isPrivate && password) ? bcrypt.hashSync(password, 10) : null,
                                 captions_enabled: captionsEnabled ? 1 : 0,
-                                language_flag: languageFlag || 'international'
+                                language_flag: languageFlag || 'international',
+                                music_source: (musicSource === 'spotify') ? 'spotify' : 'youtube'
                             };
 
                             db.createRoom(roomData);
@@ -604,7 +777,8 @@ wss.on("connection", (ws, req) => {
                                 currentTrack: lobbyPreview,
                                 is_protected: !!dbr.password,
                                 isActive: false,
-                                language_flag: dbr.language_flag || 'international'
+                                language_flag: dbr.language_flag || 'international',
+                                music_source: dbr.music_source || 'youtube'
                             });
                         }
                     });

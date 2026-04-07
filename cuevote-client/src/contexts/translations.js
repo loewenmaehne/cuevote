@@ -150,7 +150,9 @@ export const translations = {
 			takingTooLong: "Taking longer than usual...",
 			checkConnection: "Please check your internet connection.",
 			networkThrottle: "YouTube has blocked this network's IP. Playback paused. Try switching to a mobile hotspot.",
-			retryPlayback: "Retry"
+			retryPlayback: "Retry",
+			reconnecting: "Reconnecting",
+			attempt: "Attempt"
 		},
 		track: {
 			playing: "Playing",
@@ -161,6 +163,7 @@ export const translations = {
 			confirmDelete: "Confirm Delete",
 			delete: "Delete Video",
 			watch: "Watch on YouTube",
+			listenSpotify: "Listen on Spotify",
 			recommend: "Get Suggestions"
 		},
 		library: {
@@ -375,7 +378,9 @@ export const translations = {
 			takingTooLong: "Duurt langer dan gewoonlijk...",
 			checkConnection: "Controleer je internetverbinding.",
 			networkThrottle: "YouTube heeft het IP-adres van dit netwerk geblokkeerd. Afspelen gepauzeerd. Probeer over te schakelen naar een mobiele hotspot.",
-			retryPlayback: "Opnieuw"
+			retryPlayback: "Opnieuw",
+			reconnecting: "Opnieuw verbinden",
+			attempt: "Poging"
 		},
 		track: {
 			playing: "Speelt nu",
@@ -386,6 +391,7 @@ export const translations = {
 			confirmDelete: "Bevestig",
 			delete: "Verwijder",
 			watch: "Op YouTube",
+			listenSpotify: "Luisteren op Spotify",
 			recommend: "Krijg Suggesties"
 		},
 		library: {
@@ -592,7 +598,9 @@ export const translations = {
 			takingTooLong: "Dauert länger als gewöhnlich...",
 			checkConnection: "Bitte überprüfen Sie Ihre Internetverbindung.",
 			networkThrottle: "YouTube hat die IP-Adresse dieses Netzwerks gesperrt. Wiedergabe pausiert. Versuche, zu einem mobilen Hotspot zu wechseln.",
-			retryPlayback: "Erneut versuchen"
+			retryPlayback: "Erneut versuchen",
+			reconnecting: "Verbinde erneut",
+			attempt: "Versuch"
 		},
 		track: {
 			playing: "Wiedergabe",
@@ -603,6 +611,7 @@ export const translations = {
 			confirmDelete: "Bestätigen",
 			delete: "Löschen",
 			watch: "Auf YouTube",
+			listenSpotify: "Auf Spotify anhören",
 			recommend: "Vorschläge erhalten"
 		},
 		library: {
@@ -809,7 +818,9 @@ export const translations = {
 			takingTooLong: "Cela prend plus de temps que d'habitude...",
 			checkConnection: "Veuillez vérifier votre connexion internet.",
 			networkThrottle: "YouTube a bloqué l'IP de ce réseau. Lecture en pause. Essayez de passer à un point d'accès mobile.",
-			retryPlayback: "Réessayer"
+			retryPlayback: "Réessayer",
+			reconnecting: "Reconnexion",
+			attempt: "Tentative"
 		},
 		track: {
 			playing: "Lecture",
@@ -820,6 +831,7 @@ export const translations = {
 			confirmDelete: "Confirmer",
 			delete: "Supprimer",
 			watch: "Sur YouTube",
+			listenSpotify: "Écouter sur Spotify",
 			recommend: "Obtenir des suggestions"
 		},
 		library: {
@@ -1023,7 +1035,9 @@ export const translations = {
 			takingTooLong: "Tarda más de lo habitual...",
 			checkConnection: "Por favor, comprueba tu conexión a internet.",
 			networkThrottle: "YouTube ha bloqueado la IP de esta red. Reproducción en pausa. Intenta cambiar a un punto de acceso móvil.",
-			retryPlayback: "Reintentar"
+			retryPlayback: "Reintentar",
+			reconnecting: "Reconectando",
+			attempt: "Intento"
 		},
 		track: {
 			playing: "Reproduciendo",
@@ -1034,6 +1048,7 @@ export const translations = {
 			confirmDelete: "Confirmar",
 			delete: "Eliminar",
 			watch: "En YouTube",
+			listenSpotify: "Escuchar en Spotify",
 			recommend: "Obtener Sugerencias"
 		},
 		library: {
@@ -1236,7 +1251,8 @@ export const translations = {
 			cancel: "Annulla",
 			confirmDelete: "Conferma",
 			delete: "Elimina",
-			watch: "Su YouTube"
+			watch: "Su YouTube",
+			listenSpotify: "Ascolta su Spotify"
 		},
 		library: {
 			searchPlaceholder: "Cerca nella libreria...",
@@ -1439,7 +1455,8 @@ export const translations = {
 			cancel: "Cancelar",
 			confirmDelete: "Confirmar",
 			delete: "Excluir",
-			watch: "No YouTube"
+			watch: "No YouTube",
+			listenSpotify: "Ouvir no Spotify"
 		},
 		library: {
 			searchPlaceholder: "Buscar na biblioteca...",
@@ -1636,7 +1653,8 @@ export const translations = {
 			cancel: "取消",
 			confirmDelete: "确认删除",
 			delete: "删除",
-			watch: "在 YouTube 观看"
+			watch: "在 YouTube 观看",
+			listenSpotify: "在Spotify上收听"
 		},
 		library: {
 			searchPlaceholder: "搜索媒体库...",
@@ -1834,7 +1852,8 @@ export const translations = {
 			cancel: "取消",
 			confirmDelete: "確認刪除",
 			delete: "刪除",
-			watch: "在 YouTube 觀看"
+			watch: "在 YouTube 觀看",
+			listenSpotify: "在Spotify上收聽"
 		},
 		library: {
 			searchPlaceholder: "搜尋媒體庫...",
@@ -2032,7 +2051,8 @@ export const translations = {
 			cancel: "キャンセル",
 			confirmDelete: "削除確認",
 			delete: "削除",
-			watch: "YouTubeで見る"
+			watch: "YouTubeで見る",
+			listenSpotify: "Spotifyで聴く"
 		},
 		library: {
 			searchPlaceholder: "ライブラリを検索...",
@@ -2229,7 +2249,8 @@ export const translations = {
 			cancel: "취소",
 			confirmDelete: "확인",
 			delete: "삭제",
-			watch: "YouTube에서 보기"
+			watch: "YouTube에서 보기",
+			listenSpotify: "Spotify에서 듣기"
 		},
 		library: {
 			searchPlaceholder: "라이브러리 검색...",
@@ -2427,7 +2448,8 @@ export const translations = {
 			cancel: "रद्द करें",
 			confirmDelete: "पुष्टि करें",
 			delete: "हटाएं",
-			watch: "YouTube पर देखें"
+			watch: "YouTube पर देखें",
+			listenSpotify: "Spotify पर सुनें"
 		},
 		library: {
 			searchPlaceholder: "लाइब्रेरी खोजें...",
@@ -2620,7 +2642,8 @@ export const translations = {
 			cancel: "ยกเลิก",
 			confirmDelete: "ยืนยัน",
 			delete: "ลบ",
-			watch: "ดูบน YouTube"
+			watch: "ดูบน YouTube",
+			listenSpotify: "ฟังบน Spotify"
 		},
 		library: {
 			searchPlaceholder: "ค้นหาคลังวิดีโอ...",
@@ -2813,7 +2836,8 @@ export const translations = {
 			cancel: "Hủy",
 			confirmDelete: "Xác nhận",
 			delete: "Xóa",
-			watch: "Xem trên YouTube"
+			watch: "Xem trên YouTube",
+			listenSpotify: "Nghe trên Spotify"
 		},
 		library: {
 			searchPlaceholder: "Tìm kiếm thư viện...",
@@ -3006,7 +3030,8 @@ export const translations = {
 			cancel: "Batal",
 			confirmDelete: "Konfirmasi",
 			delete: "Hapus",
-			watch: "Tonton di YouTube"
+			watch: "Tonton di YouTube",
+			listenSpotify: "Dengarkan di Spotify"
 		},
 		library: {
 			searchPlaceholder: "Cari pustaka...",
@@ -3199,7 +3224,8 @@ export const translations = {
 			cancel: "Batal",
 			confirmDelete: "Sahkan",
 			delete: "Padam",
-			watch: "Tonton di YouTube"
+			watch: "Tonton di YouTube",
+			listenSpotify: "Dengar di Spotify"
 		},
 		library: {
 			searchPlaceholder: "Cari pustaka...",
@@ -3391,7 +3417,8 @@ export const translations = {
 			cancel: "Kanselahin",
 			confirmDelete: "Kumpirmahin",
 			delete: "Tanggalin",
-			watch: "Panoorin sa YouTube"
+			watch: "Panoorin sa YouTube",
+			listenSpotify: "Makinig sa Spotify"
 		},
 		library: {
 			searchPlaceholder: "Maghanap sa library...",
@@ -3567,7 +3594,8 @@ export const translations = {
 			cancel: "Anuluj",
 			confirmDelete: "Potwierdź",
 			delete: "Usuń",
-			watch: "Oglądaj na YouTube"
+			watch: "Oglądaj na YouTube",
+			listenSpotify: "Słuchaj na Spotify"
 		},
 		library: {
 			searchPlaceholder: "Szukaj w bibliotece...",
@@ -3760,7 +3788,8 @@ export const translations = {
 			cancel: "Avbryt",
 			confirmDelete: "Bekräfta",
 			delete: "Ta bort",
-			watch: "Titta på YouTube"
+			watch: "Titta på YouTube",
+			listenSpotify: "Lyssna på Spotify"
 		},
 		library: {
 			searchPlaceholder: "Sök i biblioteket...",
@@ -3952,7 +3981,8 @@ export const translations = {
 			cancel: "Annuller",
 			confirmDelete: "Bekræft",
 			delete: "Slet",
-			watch: "Se på YouTube"
+			watch: "Se på YouTube",
+			listenSpotify: "Lyt på Spotify"
 		},
 		library: {
 			searchPlaceholder: "Søg i bibliotek...",
@@ -4144,7 +4174,8 @@ export const translations = {
 			cancel: "Avbryt",
 			confirmDelete: "Bekreft",
 			delete: "Slett",
-			watch: "Se på YouTube"
+			watch: "Se på YouTube",
+			listenSpotify: "Lytt på Spotify"
 		},
 		library: {
 			searchPlaceholder: "Søk i bibliotek...",
@@ -4336,7 +4367,8 @@ export const translations = {
 			cancel: "Peruuta",
 			confirmDelete: "Vahvista",
 			delete: "Poista",
-			watch: "Katso YouTubessa"
+			watch: "Katso YouTubessa",
+			listenSpotify: "Kuuntele Spotifyssa"
 		},
 		library: {
 			searchPlaceholder: "Etsi kirjastosta...",
@@ -4528,7 +4560,8 @@ export const translations = {
 			cancel: "İptal",
 			confirmDelete: "Onayla",
 			delete: "Sil",
-			watch: "YouTube'da İzle"
+			watch: "YouTube'da İzle",
+			listenSpotify: "Spotify'da Dinle"
 		},
 		library: {
 			searchPlaceholder: "Kütüphanede ara...",
@@ -4720,7 +4753,8 @@ export const translations = {
 			cancel: "Ακύρωση",
 			confirmDelete: "Επιβεβαίωση",
 			delete: "Διαγραφή",
-			watch: "Δείτε στο YouTube"
+			watch: "Δείτε στο YouTube",
+			listenSpotify: "Ακούστε στο Spotify"
 		},
 		library: {
 			searchPlaceholder: "Αναζήτηση βιβλιοθήκης...",
@@ -4912,7 +4946,8 @@ export const translations = {
 			cancel: "Отмена",
 			confirmDelete: "Подтвердить",
 			delete: "Удалить",
-			watch: "Смотреть на YouTube"
+			watch: "Смотреть на YouTube",
+			listenSpotify: "Слушать на Spotify"
 		},
 		library: {
 			searchPlaceholder: "Поиск в библиотеке...",
@@ -5104,7 +5139,8 @@ export const translations = {
 			cancel: "Скасувати",
 			confirmDelete: "Підтвердити",
 			delete: "Видалити",
-			watch: "Дивитися на YouTube"
+			watch: "Дивитися на YouTube",
+			listenSpotify: "Слухати на Spotify"
 		},
 		library: {
 			searchPlaceholder: "Пошук у бібліотеці...",
@@ -5297,7 +5333,8 @@ export const translations = {
 			cancel: "Zrušit",
 			confirmDelete: "Potvrdit",
 			delete: "Smazat",
-			watch: "Sledovat na YouTube"
+			watch: "Sledovat na YouTube",
+			listenSpotify: "Poslouchat na Spotify"
 		},
 		library: {
 			searchPlaceholder: "Hledat v knihovně...",
@@ -5489,7 +5526,8 @@ export const translations = {
 			cancel: "Mégse",
 			confirmDelete: "Megerősítés",
 			delete: "Törlés",
-			watch: "Megtekintés YouTube-on"
+			watch: "Megtekintés YouTube-on",
+			listenSpotify: "Hallgasd meg a Spotify-on"
 		},
 		library: {
 			searchPlaceholder: "Keresés a könyvtárban...",
@@ -5681,7 +5719,8 @@ export const translations = {
 			cancel: "Anulează",
 			confirmDelete: "Confirmă",
 			delete: "Șterge",
-			watch: "Vezi pe YouTube"
+			watch: "Vezi pe YouTube",
+			listenSpotify: "Ascultă pe Spotify"
 		},
 		library: {
 			searchPlaceholder: "Caută în bibliotecă...",
@@ -5873,7 +5912,8 @@ export const translations = {
 			cancel: "Отказ",
 			confirmDelete: "Потвърди",
 			delete: "Изтрий",
-			watch: "Гледай в YouTube"
+			watch: "Гледай в YouTube",
+			listenSpotify: "Слушай в Spotify"
 		},
 		library: {
 			searchPlaceholder: "Търсене в библиотеката...",
@@ -6065,7 +6105,8 @@ export const translations = {
 			cancel: "Odustani",
 			confirmDelete: "Potvrdi",
 			delete: "Izbriši",
-			watch: "Gledaj na YouTubeu"
+			watch: "Gledaj na YouTubeu",
+			listenSpotify: "Slušaj na Spotifyju"
 		},
 		library: {
 			searchPlaceholder: "Traži u knjižnici...",
@@ -6257,7 +6298,8 @@ export const translations = {
 			cancel: "Otkaži",
 			confirmDelete: "Potvrdi",
 			delete: "Obriši",
-			watch: "Gledaj na YouTube-u"
+			watch: "Gledaj na YouTube-u",
+			listenSpotify: "Slušaj na Spotify-u"
 		},
 		library: {
 			searchPlaceholder: "Traži u biblioteci...",
@@ -6449,7 +6491,8 @@ export const translations = {
 			cancel: "Zrušiť",
 			confirmDelete: "Potvrdiť",
 			delete: "Zmazať",
-			watch: "Sledovať na YouTube"
+			watch: "Sledovať na YouTube",
+			listenSpotify: "Počúvať na Spotify"
 		},
 		library: {
 			searchPlaceholder: "Hľadať v knižnici...",
@@ -6641,7 +6684,8 @@ export const translations = {
 			cancel: "إلغاء",
 			confirmDelete: "تأكيد",
 			delete: "حذف",
-			watch: "مشاهدة على YouTube"
+			watch: "مشاهدة على YouTube",
+			listenSpotify: "استمع على Spotify"
 		},
 		library: {
 			searchPlaceholder: "بحث في المكتبة...",
@@ -6833,7 +6877,8 @@ export const translations = {
 			cancel: "ביטול",
 			confirmDelete: "אשר",
 			delete: "מחק",
-			watch: "צפה ב-YouTube"
+			watch: "צפה ב-YouTube",
+			listenSpotify: "האזן ב-Spotify"
 		},
 		library: {
 			searchPlaceholder: "חפש בספרייה...",

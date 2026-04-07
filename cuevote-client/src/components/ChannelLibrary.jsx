@@ -12,6 +12,7 @@ export function ChannelLibrary({
 	onRecommend,
 	activeSuggestionId,
 	suggestions,
+	suggestionsError,
 	isFetchingSuggestions,
 	queueVideoIds,
 }) {
@@ -146,6 +147,7 @@ export function ChannelLibrary({
 									onRecommend={onRecommend}
 									activeSuggestionId={activeSuggestionId}
 									suggestions={suggestions}
+									suggestionsError={suggestionsError}
 									isFetchingSuggestions={isFetchingSuggestions}
 									queueVideoIds={queueVideoIds}
 								/>
@@ -173,6 +175,7 @@ ChannelLibrary.propTypes = {
 	onRecommend: PropTypes.func,
 	activeSuggestionId: PropTypes.string,
 	suggestions: PropTypes.array,
+	suggestionsError: PropTypes.string,
 	isFetchingSuggestions: PropTypes.bool,
 	queueVideoIds: PropTypes.array,
 };
