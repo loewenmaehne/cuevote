@@ -1252,23 +1252,23 @@ class Room {
 
         let track = null;
 
-        // Check search cache first
-        const cacheKey = `sp:${query}`;
-        const cachedTrackId = db.getSearchTermVideo(cacheKey);
-        if (cachedTrackId) {
-            const cachedVideo = db.getVideo(cachedTrackId);
-            if (cachedVideo) {
-                const nowSeconds = Math.floor(Date.now() / 1000);
-                if (nowSeconds - cachedVideo.fetched_at <= 2419200) {
-                    const isSpotify = cachedVideo.source === 'spotify';
-                    const rawId = isSpotify ? cachedVideo.id.replace(/^sp:/, '') : cachedVideo.id;
+        // Detect if query is a Spotify track ID (Base62, 22 chars) vs a text search.
+        // Suggestions panel sends raw trackIds; the search bar sends human text.
+        const isSpotifyId = /^[A-Za-z0-9]{22}$/.test(query);
 
+        if (isSpotifyId) {
+            // Direct ID: check video DB directly (not the search-term cache, which may
+            // hold stale wrong mappings from when IDs were accidentally text-searched).
+            const dbId = `sp:${query}`;
+            const cachedVideo = db.getVideo(dbId);
+            if (cachedVideo) {
+                const age = Math.floor(Date.now() / 1000) - cachedVideo.fetched_at;
+                if (age <= 2419200 && cachedVideo.source === 'spotify') {
                     // Check if banned
-                    if (this.state.bannedVideos.some(b => getSourceId(b) === rawId)) {
+                    if (this.state.bannedVideos.some(b => getSourceId(b) === query)) {
                         ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
                         return;
                     }
-                    // Duration check
                     if (this.state.maxDuration > 0 && !canBypass && cachedVideo.duration > this.state.maxDuration) {
                         const maxMinutes = Math.floor(this.state.maxDuration / 60);
                         ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
@@ -1277,7 +1277,7 @@ class Room {
 
                     track = {
                         id: crypto.randomUUID(),
-                        trackId: rawId,
+                        trackId: query,
                         source: 'spotify',
                         title: cachedVideo.title,
                         artist: cachedVideo.artist,
@@ -1291,6 +1291,44 @@ class Room {
                     };
                 }
             }
+        } else {
+            // Text search: use the search-term cache (maps "baby justin bieber" → sp:TRACK_ID)
+            const cacheKey = `sp:${query}`;
+            const cachedTrackId = db.getSearchTermVideo(cacheKey);
+            if (cachedTrackId) {
+                const cachedVideo = db.getVideo(cachedTrackId);
+                if (cachedVideo) {
+                    const nowSeconds = Math.floor(Date.now() / 1000);
+                    if (nowSeconds - cachedVideo.fetched_at <= 2419200) {
+                        const rawId = cachedVideo.id.replace(/^sp:/, '');
+
+                        if (this.state.bannedVideos.some(b => getSourceId(b) === rawId)) {
+                            ws.send(JSON.stringify({ type: "error", message: "This song has been banned from this channel." }));
+                            return;
+                        }
+                        if (this.state.maxDuration > 0 && !canBypass && cachedVideo.duration > this.state.maxDuration) {
+                            const maxMinutes = Math.floor(this.state.maxDuration / 60);
+                            ws.send(JSON.stringify({ type: "error", message: `Song is too long. Max duration is ${maxMinutes} minutes.` }));
+                            return;
+                        }
+
+                        track = {
+                            id: crypto.randomUUID(),
+                            trackId: rawId,
+                            source: 'spotify',
+                            title: cachedVideo.title,
+                            artist: cachedVideo.artist,
+                            thumbnail: cachedVideo.thumbnail,
+                            duration: cachedVideo.duration,
+                            previewUrl: cachedVideo.preview_url || null,
+                            score: 0,
+                            voters: {},
+                            suggestedBy: userId,
+                            suggestedByUsername: ws.user.name,
+                        };
+                    }
+                }
+            }
         }
 
         // Fetch from Spotify API if no cache hit
@@ -1300,7 +1338,6 @@ class Room {
                 return;
             }
 
-            // Get access token from room owner
             const ownerToken = await spotify.getAccessToken(this.metadata.owner_id);
             if (!ownerToken) {
                 ws.send(JSON.stringify({ type: "error", message: "Room owner must connect their Spotify account." }));
@@ -1308,9 +1345,6 @@ class Room {
             }
 
             try {
-                // Detect if query is a Spotify track ID (Base62, 22 chars) vs a text search.
-                // Suggestions panel sends raw trackIds; the search bar sends human text.
-                const isSpotifyId = /^[A-Za-z0-9]{22}$/.test(query);
                 let selectedResult = null;
 
                 if (isSpotifyId) {
@@ -1330,7 +1364,6 @@ class Room {
                         return;
                     }
 
-                    // Find first non-banned, valid-duration result
                     for (const result of results) {
                         if (this.state.bannedVideos.some(b => getSourceId(b) === result.trackId)) continue;
                         if (this.state.maxDuration > 0 && !canBypass && result.duration > this.state.maxDuration) continue;
@@ -1370,7 +1403,7 @@ class Room {
                     suggestedByUsername: ws.user.name,
                 };
 
-                // Cache to DB
+                // Cache to video DB
                 const dbId = `sp:${selectedResult.trackId}`;
                 db.upsertVideo({
                     id: dbId,
@@ -1383,7 +1416,10 @@ class Room {
                     source: 'spotify',
                     preview_url: selectedResult.previewUrl || null,
                 });
-                db.cacheSearchTerm(cacheKey, dbId);
+                // Only cache search-term mapping for text searches, not for ID lookups
+                if (!isSpotifyId) {
+                    db.cacheSearchTerm(`sp:${query}`, dbId);
+                }
             } catch (err) {
                 logger.error("[Spotify] Search failed:", err);
                 ws.send(JSON.stringify({ type: "error", message: "Spotify search failed." }));
