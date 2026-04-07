@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 let Room;
+let getSourceId;
 let db;
 
 function mockWs(user = null) {
@@ -33,6 +34,7 @@ describe('Room', () => {
     delete require.cache[require.resolve('../migrator')];
     db = require('../db');
     Room = require('../Room');
+    getSourceId = Room.getSourceId;
 
     db.upsertUser({
       id: 'owner-1',
@@ -433,6 +435,163 @@ describe('Room', () => {
 
       room.updateState({ musicOnly: true });
       assert.equal(ws._messages.length, 0);
+      room.destroy();
+    });
+  });
+
+  describe('Spotify Integration', () => {
+    it('should create a room with musicSource spotify', () => {
+      const room = new Room('spotify-room', 'Spotify Room', null, {
+        owner_id: 'owner-1',
+        music_source: 'spotify',
+      });
+      assert.equal(room.state.musicSource, 'spotify');
+      assert.equal(room.metadata.music_source, 'spotify');
+      room.destroy();
+    });
+
+    it('should default musicSource to youtube when not specified', () => {
+      const room = new Room('yt-room', 'YT Room', null, { owner_id: 'owner-1' });
+      assert.equal(room.state.musicSource, 'youtube');
+      assert.equal(room.metadata.music_source, 'youtube');
+      room.destroy();
+    });
+
+    describe('getSourceId', () => {
+      it('should return videoId for YouTube tracks', () => {
+        assert.equal(getSourceId({ videoId: 'abc123', source: 'youtube' }), 'abc123');
+      });
+
+      it('should return trackId for Spotify tracks', () => {
+        assert.equal(getSourceId({ trackId: 'sp123', source: 'spotify' }), 'sp123');
+      });
+
+      it('should return null for null/undefined', () => {
+        assert.equal(getSourceId(null), null);
+        assert.equal(getSourceId(undefined), null);
+      });
+
+      it('should return null for YouTube track without videoId', () => {
+        assert.equal(getSourceId({ source: 'youtube' }), null);
+      });
+
+      it('should not fall back to trackId for non-Spotify tracks', () => {
+        assert.equal(getSourceId({ trackId: 'xyz', source: 'youtube' }), null);
+      });
+    });
+
+    it('should clear queue when switching music source', () => {
+      const room = new Room('switch-room', 'Switch Room', null, {
+        owner_id: 'owner-1',
+        music_source: 'youtube',
+      });
+      room.state.queue = [
+        { id: 'track-1', videoId: 'v1', title: 'YT Track', score: 0, voters: {} },
+      ];
+      room.state.currentTrack = room.state.queue[0];
+      room.state.isPlaying = true;
+
+      room.handleUpdateSettings({ musicSource: 'spotify' });
+
+      assert.equal(room.state.musicSource, 'spotify');
+      assert.deepEqual(room.state.queue, []);
+      assert.equal(room.state.currentTrack, null);
+      assert.equal(room.state.isPlaying, false);
+      assert.equal(room.metadata.music_source, 'spotify');
+      room.destroy();
+    });
+
+    it('should not clear queue when setting same music source', () => {
+      const room = new Room('same-source', 'Same Source', null, {
+        owner_id: 'owner-1',
+        music_source: 'spotify',
+      });
+      room.state.queue = [
+        { id: 'track-1', trackId: 'sp1', source: 'spotify', title: 'SP Track', score: 0, voters: {} },
+      ];
+      room.state.currentTrack = room.state.queue[0];
+
+      room.handleUpdateSettings({ musicSource: 'spotify' });
+
+      assert.equal(room.state.queue.length, 1, 'Queue should not be cleared');
+      assert.ok(room.state.currentTrack, 'Current track should remain');
+      room.destroy();
+    });
+
+    it('should emit single broadcast when switching source with other settings', () => {
+      const room = new Room('single-broadcast', 'Single Broadcast', null, {
+        owner_id: 'owner-1',
+        music_source: 'youtube',
+      });
+      const ws = mockWs({ id: 'guest-1', name: 'Guest' });
+      room.addClient(ws);
+      ws._messages.length = 0;
+
+      room.handleUpdateSettings({ musicSource: 'spotify', musicOnly: true });
+
+      const deltas = ws._messages.filter(m => m.type === 'state_delta');
+      assert.equal(deltas.length, 1, 'Should be exactly one state_delta broadcast');
+      assert.equal(deltas[0].payload.musicSource, 'spotify');
+      assert.equal(deltas[0].payload.musicOnly, true);
+      room.destroy();
+    });
+
+    it('should pause and broadcast SPOTIFY_OWNER_LEFT when owner disconnects', () => {
+      const room = new Room('owner-dc', 'Owner DC', null, {
+        owner_id: 'owner-1',
+        music_source: 'spotify',
+      });
+      const ownerWs = mockWs({ id: 'owner-1', name: 'Owner' });
+      const guestWs = mockWs({ id: 'guest-1', name: 'Guest' });
+      room.addClient(ownerWs);
+      room.addClient(guestWs);
+      room.state.isPlaying = true;
+
+      room.removeClient(ownerWs);
+
+      assert.equal(room.state.isPlaying, false, 'Playback should be paused');
+      const ownerLeftMsg = guestWs._messages.find(m => m.type === 'SPOTIFY_OWNER_LEFT');
+      assert.ok(ownerLeftMsg, 'Should broadcast SPOTIFY_OWNER_LEFT to remaining clients');
+      room.destroy();
+    });
+
+    it('should not broadcast SPOTIFY_OWNER_LEFT for YouTube rooms', () => {
+      const room = new Room('yt-owner-dc', 'YT Owner DC', null, {
+        owner_id: 'owner-1',
+        music_source: 'youtube',
+      });
+      const ownerWs = mockWs({ id: 'owner-1', name: 'Owner' });
+      const guestWs = mockWs({ id: 'guest-1', name: 'Guest' });
+      room.addClient(ownerWs);
+      room.addClient(guestWs);
+      room.state.isPlaying = true;
+      guestWs._messages.length = 0;
+
+      room.removeClient(ownerWs);
+
+      const ownerLeftMsg = guestWs._messages.find(m => m.type === 'SPOTIFY_OWNER_LEFT');
+      assert.equal(ownerLeftMsg, undefined, 'Should NOT broadcast SPOTIFY_OWNER_LEFT for YouTube rooms');
+      room.destroy();
+    });
+
+    it('should skip musicOnly filter for Spotify rooms during auto-refill', async () => {
+      const room = new Room('spotify-refill', 'Spotify Refill', null, {
+        owner_id: 'owner-1',
+        auto_refill: 1,
+        music_source: 'spotify',
+      });
+      room.state.musicOnly = true;
+      room.state.history = [
+        {
+          trackId: 'sp1', source: 'spotify', title: 'Spotify Track',
+          artist: 'Artist', thumbnail: 'thumb.jpg', duration: 180,
+          category_id: null, score: 0, voters: {}, playedAt: Date.now(),
+        },
+      ];
+
+      await room.populateQueueFromHistory();
+
+      assert.ok(room.state.queue.length > 0, 'Spotify track without category_id should still be included');
       room.destroy();
     });
   });
