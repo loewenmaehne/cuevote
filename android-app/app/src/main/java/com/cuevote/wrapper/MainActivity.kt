@@ -33,6 +33,9 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
 
     private lateinit var webView: WebView
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
+    private var wasOffline = false
+    private var reconnectHandler: android.os.Handler? = null
+    private var reconnectRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -210,6 +213,7 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         })
 
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        reconnectHandler = android.os.Handler(mainLooper)
         val request = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
@@ -219,14 +223,29 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
                     if (::webView.isInitialized) {
                         offlineView.visibility = android.view.View.GONE
                         webView.visibility = android.view.View.VISIBLE
-                        webView.evaluateJavascript("window.cuevoteReconnect && window.cuevoteReconnect()", null)
+                        // Only reconnect if we were actually offline, debounced
+                        if (wasOffline) {
+                            wasOffline = false
+                            reconnectRunnable?.let { reconnectHandler?.removeCallbacks(it) }
+                            val runnable = Runnable {
+                                webView.evaluateJavascript("window.cuevoteReconnect && window.cuevoteReconnect()", null)
+                            }
+                            reconnectRunnable = runnable
+                            reconnectHandler?.postDelayed(runnable, 1000)
+                        }
                     }
                 }
             }
             override fun onLost(network: Network) {
                 runOnUiThread {
-                    if (::webView.isInitialized) {
-                        offlineView.visibility = android.view.View.VISIBLE
+                    // Only show offline if no other network is available
+                    val activeNetwork = cm.activeNetwork
+                    val capabilities = activeNetwork?.let { cm.getNetworkCapabilities(it) }
+                    if (capabilities == null || !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
+                        wasOffline = true
+                        if (::webView.isInitialized) {
+                            offlineView.visibility = android.view.View.VISIBLE
+                        }
                     }
                 }
             }
@@ -250,6 +269,8 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
     }
 
     override fun onDestroy() {
+        reconnectRunnable?.let { reconnectHandler?.removeCallbacks(it) }
+        reconnectHandler = null
         networkCallback?.let {
             val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             cm.unregisterNetworkCallback(it)
