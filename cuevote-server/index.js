@@ -240,7 +240,7 @@ async function verifyGoogleToken(token) {
             throw new Error('Invalid or expired access token');
         }
         const tokenInfo = await tokenInfoRes.json();
-        logger.info("Token aud:", tokenInfo.aud, "Valid IDs:", VALID_GOOGLE_CLIENT_IDS);
+        logger.info({ aud: tokenInfo.aud, validIds: VALID_GOOGLE_CLIENT_IDS }, "Token aud check");
         if (!VALID_GOOGLE_CLIENT_IDS.includes(tokenInfo.aud)) {
             throw new Error('Token was not issued for this application');
         }
