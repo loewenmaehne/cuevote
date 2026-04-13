@@ -236,11 +236,12 @@ async function verifyGoogleToken(token) {
         const tokenInfoRes = await fetch(
             `https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(token)}`
         );
+        const tokenInfoBody = await tokenInfoRes.json();
+        logger.info({ status: tokenInfoRes.status, body: tokenInfoBody, validIds: VALID_GOOGLE_CLIENT_IDS }, "Token verification debug");
         if (!tokenInfoRes.ok) {
             throw new Error('Invalid or expired access token');
         }
-        const tokenInfo = await tokenInfoRes.json();
-        logger.info({ aud: tokenInfo.aud, validIds: VALID_GOOGLE_CLIENT_IDS }, "Token aud check");
+        const tokenInfo = tokenInfoBody;
         if (!VALID_GOOGLE_CLIENT_IDS.includes(tokenInfo.aud)) {
             throw new Error('Token was not issued for this application');
         }
