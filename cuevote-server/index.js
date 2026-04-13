@@ -79,6 +79,8 @@ server.listen(process.env.PORT || 8080, '0.0.0.0');
 
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_IOS_CLIENT_ID = process.env.GOOGLE_IOS_CLIENT_ID;
+const VALID_GOOGLE_CLIENT_IDS = [GOOGLE_CLIENT_ID, GOOGLE_IOS_CLIENT_ID].filter(Boolean);
 
 async function verifyGoogleToken(token) {
     try {
@@ -89,7 +91,7 @@ async function verifyGoogleToken(token) {
             throw new Error('Invalid or expired access token');
         }
         const tokenInfo = await tokenInfoRes.json();
-        if (tokenInfo.aud !== GOOGLE_CLIENT_ID) {
+        if (!VALID_GOOGLE_CLIENT_IDS.includes(tokenInfo.aud)) {
             throw new Error('Token was not issued for this application');
         }
 
