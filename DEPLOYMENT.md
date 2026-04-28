@@ -64,8 +64,27 @@ ACTIVE_CHANNEL_DAYS=60
 ### Start Backend
 ```bash
 pm2 start index.js --name cuevote-server
+```
+
+### Enable Auto-Start on Reboot
+This is a **two-step process**. Skipping the second step means PM2 will NOT restart the server after a reboot.
+
+```bash
+# Step 1: Generate the systemd service command
+pm2 startup systemd
+```
+
+PM2 will print a `sudo env PATH=... pm2 startup systemd -u <user> --hp /home/<user>` command. **Copy and run that exact command** — only this step actually creates the systemd service.
+
+```bash
+# Step 2: Save the current process list so it gets restored on boot
 pm2 save
-pm2 startup
+```
+
+Verify the service is active:
+```bash
+systemctl status pm2-$USER
+# Should show "active (running)"
 ```
 
 ## 4. Frontend Setup (cuevote-client)
