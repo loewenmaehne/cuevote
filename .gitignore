@@ -46,3 +46,13 @@ backups/
 
 # Server-specific backup directories
 cuevote-server/backups/
+
+# Local Cloudflare tunnel state
+.cloudflared.pid
+.tunnel_original_redirect_uri
+
+# TLS certificates / keys (must never be committed)
+certs/
+*.pem
+*.key
+*.crt
