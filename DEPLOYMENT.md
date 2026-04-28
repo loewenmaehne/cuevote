@@ -225,6 +225,40 @@ sudo systemctl start fail2ban
 ```
 It works automatically out of the box for SSH.
 
+### Automatic Security Updates (unattended-upgrades)
+A server that never updates becomes vulnerable to known exploits within weeks. Install `unattended-upgrades` to apply security patches automatically.
+
+```bash
+sudo apt install -y unattended-upgrades
+```
+
+Enable the automatic schedule (daily check, daily install):
+```bash
+sudo tee /etc/apt/apt.conf.d/20auto-upgrades > /dev/null <<'EOF'
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+APT::Periodic::AutocleanInterval "7";
+EOF
+```
+
+The default policy in `/etc/apt/apt.conf.d/50unattended-upgrades` only installs from the `${distro_id}:${distro_codename}-security` archive — i.e. **security updates only**, no feature upgrades that could break Node.js, nginx, or PM2.
+
+**Auto-reboot is intentionally left off.** A kernel update will install but won't be active until you reboot manually. This trades a small window of vulnerability for never having the server reboot itself unexpectedly. If you want auto-reboot anyway, add to `/etc/apt/apt.conf.d/50unattended-upgrades`:
+```
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-Time "03:00";
+```
+
+Verify the configuration with a dry run:
+```bash
+sudo unattended-upgrade --dry-run --debug
+```
+
+Check what was actually upgraded later:
+```bash
+cat /var/log/unattended-upgrades/unattended-upgrades.log
+```
+
 ### Use SSH Keys (Best Practice)
 For maximum security, disable password login entirely and use SSH keys.
 1. Generate a key on your local machine: `ssh-keygen -t ed25519`
