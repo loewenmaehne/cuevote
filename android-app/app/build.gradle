@@ -21,8 +21,25 @@ android {
         buildConfig true
     }
 
+    signingConfigs {
+        release {
+            // Configured via ~/.gradle/gradle.properties (never committed).
+            // Falls back gracefully if properties are missing — produces an
+            // unsigned release APK instead of a confusing build error.
+            if (project.hasProperty("CUEVOTE_KEYSTORE_FILE")) {
+                storeFile file(project.property("CUEVOTE_KEYSTORE_FILE"))
+                storePassword project.property("CUEVOTE_KEYSTORE_PASSWORD")
+                keyAlias project.property("CUEVOTE_KEY_ALIAS")
+                keyPassword project.property("CUEVOTE_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (project.hasProperty("CUEVOTE_KEYSTORE_FILE")) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
