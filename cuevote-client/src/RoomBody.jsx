@@ -816,10 +816,15 @@ function RoomBody() {
     return () => clearInterval(interval);
   }, [isPlayerReady, isPlaying, previewTrack, progressRef]);
 
-  // Autoplay detection
+  // Autoplay detection.
+  // Long window (15s) so slow networks have time to buffer a fresh track without
+  // false-flagging. Real autoplay blocks stay in CUED indefinitely, so the delay
+  // doesn't hide them — it just gives legitimate loads room to breathe.
+  const autoplayCheckTimerRef = useRef(null);
   useEffect(() => {
     if (isPlaying && isPlayerReady && playerRef.current) {
-      const check = setTimeout(() => {
+      autoplayCheckTimerRef.current = setTimeout(() => {
+        autoplayCheckTimerRef.current = null;
         // Browser autoplay policy blocks playback until first user interaction —
         // that's expected, not a fault. The bottom-left play button handles it.
         // Backgrounded tabs also throttle the player into a non-playing state.
@@ -837,8 +842,13 @@ function RoomBody() {
         } else {
           setAutoplayBlocked(false);
         }
-      }, 2000);
-      return () => clearTimeout(check);
+      }, 15000);
+      return () => {
+        if (autoplayCheckTimerRef.current) {
+          clearTimeout(autoplayCheckTimerRef.current);
+          autoplayCheckTimerRef.current = null;
+        }
+      };
     } else {
       setAutoplayBlocked(false);
     }
@@ -854,6 +864,12 @@ function RoomBody() {
       if (!document.hidden) {
         stallRetriesRef.current = 0;
         trackFailTimesRef.current = [];
+        // Cancel any pending autoplay-block check scheduled while hidden so
+        // it can't briefly re-show the overlay just as the user returns.
+        if (autoplayCheckTimerRef.current) {
+          clearTimeout(autoplayCheckTimerRef.current);
+          autoplayCheckTimerRef.current = null;
+        }
         setAutoplayBlocked(false);
       }
     };
