@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { deviceDetection } from './utils/deviceDetection';
-import { Volume2, VolumeX, ArrowLeft, Lock, X, Maximize2, WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
+import { Volume2, VolumeX, ArrowLeft, Lock, X, Maximize2, WifiOff, RefreshCw, AlertTriangle, Play } from "lucide-react";
 import { Consent } from './contexts/ConsentContext';
 import { Language } from './contexts/LanguageContext';
 import { Header } from "./components/Header";
@@ -339,9 +339,13 @@ function RoomBody() {
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
   const userHasInteractedRef = useRef(false);
+  const [userHasInteracted, setUserHasInteracted] = useState(false);
 
   useEffect(() => {
-    const markInteracted = () => { userHasInteractedRef.current = true; };
+    const markInteracted = () => {
+      userHasInteractedRef.current = true;
+      setUserHasInteracted(true);
+    };
     window.addEventListener('click', markInteracted, { once: true, capture: true });
     window.addEventListener('keydown', markInteracted, { once: true, capture: true });
     window.addEventListener('touchstart', markInteracted, { once: true, capture: true });
@@ -350,6 +354,15 @@ function RoomBody() {
       window.removeEventListener('keydown', markInteracted, { capture: true });
       window.removeEventListener('touchstart', markInteracted, { capture: true });
     };
+  }, []);
+
+  // Click handler for the pre-playback overlay — the click satisfies the browser's
+  // autoplay-permission requirement, which lets playVideo() actually start the IFrame.
+  const handleStartPlayback = useCallback(() => {
+    userHasInteractedRef.current = true;
+    setUserHasInteracted(true);
+    setAutoplayBlocked(false);
+    playerRef.current?.playVideo?.();
   }, []);
 
 
@@ -794,15 +807,15 @@ function RoomBody() {
     if (isPlayerReady && playerRef.current) {
       if (hasFullscreenOverlay) {
         playerRef.current.pauseVideo?.();
-      } else if (userHasInteractedRef.current && previewTrack) {
+      } else if (userHasInteracted && previewTrack) {
         playerRef.current.playVideo?.();
-      } else if (userHasInteractedRef.current && (isPlaying || isLocallyPlaying) && !isLocallyPaused) {
+      } else if (userHasInteracted && (isPlaying || isLocallyPlaying) && !isLocallyPaused) {
         playerRef.current.playVideo?.();
       } else {
         playerRef.current.pauseVideo?.();
       }
     }
-  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay]);
+  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay, userHasInteracted]);
 
   useEffect(() => {
     if (!isPlayerReady || !playerRef.current || !isPlaying || previewTrack) return;
@@ -1609,13 +1622,18 @@ function RoomBody() {
               </div>
             )}
 
-            {autoplayBlocked && (
-              <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-sm">
+            {(!userHasInteracted || autoplayBlocked) && hasConsent && !showPendingPage && !showBannedPage && (currentTrack || previewTrack) && (
+              <div
+                onClick={handleStartPlayback}
+                className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm cursor-pointer"
+              >
                 <button
-                  onClick={() => window.location.reload()}
-                  className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-lg shadow-lg hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all active:scale-95"
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); handleStartPlayback(); }}
+                  className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-lg shadow-lg hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all active:scale-95 flex items-center gap-3"
                 >
-                  {t('app.reloadToJoin')}
+                  <Play size={20} fill="currentColor" />
+                  {t('app.tapToPlay')}
                 </button>
               </div>
             )}
