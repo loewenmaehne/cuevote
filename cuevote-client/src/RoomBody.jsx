@@ -613,8 +613,9 @@ function RoomBody() {
     currentTrackRef.current = currentTrack;
     setPlaybackError(null);
 
-    // Track-cycling detection: if 2+ tracks load without any successful playback, something systemic is wrong
-    if (currentTrack) {
+    // Track-cycling detection: if 2+ tracks load without any successful playback, something systemic is wrong.
+    // Skip while the tab is hidden — backgrounded players are throttled by the browser and look like cycling failures.
+    if (currentTrack && !document.hidden) {
       trackFailTimesRef.current.push(Date.now());
       if (trackFailTimesRef.current.length >= 2 && Date.now() - lastSuccessfulPlayRef.current > 5000) {
         console.warn("[Player] IP block detected — tracks keep failing without playback");
@@ -815,10 +816,22 @@ function RoomBody() {
     return () => clearInterval(interval);
   }, [isPlayerReady, isPlaying, previewTrack, progressRef]);
 
-  // Autoplay detection
+  // Autoplay detection.
+  // Long window (15s) so slow networks have time to buffer a fresh track without
+  // false-flagging. Real autoplay blocks stay in CUED indefinitely, so the delay
+  // doesn't hide them — it just gives legitimate loads room to breathe.
+  const autoplayCheckTimerRef = useRef(null);
   useEffect(() => {
     if (isPlaying && isPlayerReady && playerRef.current) {
-      const check = setTimeout(() => {
+      autoplayCheckTimerRef.current = setTimeout(() => {
+        autoplayCheckTimerRef.current = null;
+        // Browser autoplay policy blocks playback until first user interaction —
+        // that's expected, not a fault. The bottom-left play button handles it.
+        // Backgrounded tabs also throttle the player into a non-playing state.
+        if (!userHasInteractedRef.current || document.hidden) {
+          setAutoplayBlocked(false);
+          return;
+        }
         const state = playerRef.current.getPlayerState?.();
         if (
           state !== undefined &&
@@ -829,8 +842,13 @@ function RoomBody() {
         } else {
           setAutoplayBlocked(false);
         }
-      }, 2000);
-      return () => clearTimeout(check);
+      }, 15000);
+      return () => {
+        if (autoplayCheckTimerRef.current) {
+          clearTimeout(autoplayCheckTimerRef.current);
+          autoplayCheckTimerRef.current = null;
+        }
+      };
     } else {
       setAutoplayBlocked(false);
     }
@@ -838,6 +856,26 @@ function RoomBody() {
 
   // Infinite Load Guard (Stall Detection)
   const stallRetriesRef = useRef(0); // Track number of stall retries
+
+  // Returning from a backgrounded tab: clear transient counters that may have
+  // accumulated because the browser was throttling the player.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        stallRetriesRef.current = 0;
+        trackFailTimesRef.current = [];
+        // Cancel any pending autoplay-block check scheduled while hidden so
+        // it can't briefly re-show the overlay just as the user returns.
+        if (autoplayCheckTimerRef.current) {
+          clearTimeout(autoplayCheckTimerRef.current);
+          autoplayCheckTimerRef.current = null;
+        }
+        setAutoplayBlocked(false);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
 
   useEffect(() => {
     // Reset retries when track changes
@@ -848,6 +886,9 @@ function RoomBody() {
     if (!isPlaying || !isPlayerReady || !playerRef.current) return;
 
     const checkInterval = setInterval(() => {
+      // Backgrounded tabs throttle the player into BUFFERING/UNSTARTED — counting that as a stall
+      // would falsely flag an IP block.
+      if (document.hidden) return;
       const state = playerRef.current.getPlayerState?.();
       if (state === YouTubeState.BUFFERING || state === YouTubeState.UNSTARTED) {
         stallRetriesRef.current += 1;

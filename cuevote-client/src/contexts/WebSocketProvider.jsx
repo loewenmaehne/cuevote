@@ -263,7 +263,7 @@ export function WebSocketProvider({ children }) {
       };
 
       const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible') {
+        if (!document.hidden) {
           wasHidden = false;
           handleResume();
         } else {
