@@ -805,7 +805,7 @@ function RoomBody() {
   }, [isPlayerReady, currentTrack, previewTrack, progressRef, userHasInteracted]);
 
   const tvUnmuteVisible = deviceDetection.isTV() && isMuted && isPlayerReady && !isAnyPlaylistView;
-  const hasFullscreenOverlay = showQRModal || headerOverlay || settingsOverlay || tvUnmuteVisible;
+  const hasFullscreenOverlay = showQRModal || headerOverlay || settingsOverlay || showSettings || tvUnmuteVisible;
 
   useEffect(() => {
     if (isPlayerReady && playerRef.current) {
@@ -837,12 +837,20 @@ function RoomBody() {
   const stallRetriesRef = useRef(0); // Track number of stall retries
 
   // Returning from a backgrounded tab: clear transient counters that may have
-  // accumulated because the browser was throttling the player.
+  // accumulated because the browser was throttling the player. Also clear the
+  // session-long IP-block evidence Sets — they accumulate across the entire
+  // session without time-bound cleanup, so a single phantom failure from
+  // earlier could combine with a fresh post-return phantom and falsely trigger
+  // the "YouTube unavailable" banner. Real IP blocks re-trigger from the
+  // server-side NETWORK_THROTTLE / VIDEO_STATUS paths, which aren't gated on
+  // visibility, so we don't lose true positives.
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         stallRetriesRef.current = 0;
         trackFailTimesRef.current = [];
+        ipBlockedVideosRef.current = new Set();
+        recentSkipTimesRef.current = [];
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -1220,40 +1228,10 @@ function RoomBody() {
 
   // NOTE: handleDeleteSong and handleSeek are now defined before the early return (see above)
 
-  if (showSettings) {
-    return (
-      <div className="w-full h-screen bg-[#1a1a1a] text-white overflow-hidden">
-        <SettingsView
-          onClose={() => setShowSettings(false)}
-          pendingCount={pendingSuggestions.length}
-          suggestionMode={suggestionMode}
-          onManageRequests={() => {
-            setShowPendingPage(true);
-            setShowSettings(false);
-          }}
-          onUpdateSettings={handleUpdateSettings}
-          suggestionsEnabled={suggestionsEnabled}
-          autoApproveKnown={autoApproveKnown}
-          musicOnly={musicOnly}
-          maxDuration={maxDuration}
-          maxQueueSize={maxQueueSize}
-          duplicateCooldown={duplicateCooldown}
-          smartQueue={smartQueue}
-          autoRefill={autoRefill}
-          playlistViewMode={playlistViewMode}
-          allowPrelisten={allowPrelisten}
-          votesEnabled={serverState?.votesEnabled ?? true}
-          ownerBypass={ownerBypass}
-          ownerQueueBypass={serverState?.ownerQueueBypass}
-          ownerPopups={ownerPopups}
-          onDeleteChannel={handleDeleteChannel}
-          captionsEnabled={captionsEnabled}
-          isConnected={isConnected}
-          onFullscreenOverlay={setSettingsOverlay}
-        />
-      </div>
-    );
-  }
+  // SettingsView is rendered as a fixed overlay near the bottom of the JSX so the
+  // YouTube IFrame stays mounted during settings navigation. Destroying and
+  // recreating it on every settings open/close caused the iframe to come back
+  // empty whenever a track changed during the brief reinit window.
 
 
 
@@ -1683,6 +1661,39 @@ function RoomBody() {
           onClose={() => setToast(null)}
         />
       )}
+      {showSettings && (
+        <div className="fixed inset-0 z-[200] w-full h-screen bg-[#1a1a1a] text-white overflow-hidden">
+          <SettingsView
+            onClose={() => setShowSettings(false)}
+            pendingCount={pendingSuggestions.length}
+            suggestionMode={suggestionMode}
+            onManageRequests={() => {
+              setShowPendingPage(true);
+              setShowSettings(false);
+            }}
+            onUpdateSettings={handleUpdateSettings}
+            suggestionsEnabled={suggestionsEnabled}
+            autoApproveKnown={autoApproveKnown}
+            musicOnly={musicOnly}
+            maxDuration={maxDuration}
+            maxQueueSize={maxQueueSize}
+            duplicateCooldown={duplicateCooldown}
+            smartQueue={smartQueue}
+            autoRefill={autoRefill}
+            playlistViewMode={playlistViewMode}
+            allowPrelisten={allowPrelisten}
+            votesEnabled={serverState?.votesEnabled ?? true}
+            ownerBypass={ownerBypass}
+            ownerQueueBypass={serverState?.ownerQueueBypass}
+            ownerPopups={ownerPopups}
+            onDeleteChannel={handleDeleteChannel}
+            captionsEnabled={captionsEnabled}
+            isConnected={isConnected}
+            onFullscreenOverlay={setSettingsOverlay}
+          />
+        </div>
+      )}
+
       {/* TV Unmute Overlay - only when video is visible (not in playlist-only view) */}
       {deviceDetection.isTV() && isMuted && isPlayerReady && !isAnyPlaylistView && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-500">
