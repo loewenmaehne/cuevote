@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { deviceDetection } from './utils/deviceDetection';
-import { Volume2, VolumeX, ArrowLeft, Lock, X, Maximize2, WifiOff, RefreshCw, AlertTriangle, Play } from "lucide-react";
+import { Volume2, VolumeX, ArrowLeft, Lock, X, Maximize2, WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
 import { Consent } from './contexts/ConsentContext';
 import { Language } from './contexts/LanguageContext';
 import { Header } from "./components/Header";
@@ -356,17 +356,6 @@ function RoomBody() {
     };
   }, []);
 
-  // Click handler for the pre-playback overlay — the click satisfies the browser's
-  // autoplay-permission requirement, which lets playVideo() actually start the IFrame.
-  const handleStartPlayback = useCallback(() => {
-    userHasInteractedRef.current = true;
-    setUserHasInteracted(true);
-    setAutoplayBlocked(false);
-    playerRef.current?.playVideo?.();
-  }, []);
-
-
-
   // Suggestion state (must be declared before effects that use it)
   const [manualSuggestions, setManualSuggestions] = useState([]);
   const [activeSuggestionId, setActiveSuggestionId] = useState(null);
@@ -472,7 +461,6 @@ function RoomBody() {
   const [showBannedPage, setShowBannedPage] = useState(false); // Added this
   const [volume, setVolume] = useState(80);
   const [isQueueMinimized, setIsQueueMinimized] = useState(true);
-  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
   const [isLocallyPlaying, setIsLocallyPlaying] = useState(false);
   const [previewTrack, setPreviewTrack] = useState(null);
@@ -718,7 +706,14 @@ function RoomBody() {
                 setIsLocallyPlaying(false);
               }
 
-              setAutoplayBlocked(false);
+              // If playback started, the user has interacted — either via our
+              // controls or via YouTube's branded play button inside the iframe
+              // (which we can't observe directly from a cross-origin frame).
+              // Sync the flag so future track changes use loadVideoById.
+              if (!userHasInteractedRef.current) {
+                userHasInteractedRef.current = true;
+                setUserHasInteracted(true);
+              }
               const duration = event.target.getDuration();
               if (duration && duration > 0) {
                 sendMessage({ type: "UPDATE_DURATION", payload: duration });
@@ -793,12 +788,21 @@ function RoomBody() {
       const currentVideoIdInPlayer = playerRef.current.getVideoData?.()?.video_id;
       if (targetTrack.videoId !== currentVideoIdInPlayer) {
         const startTime = previewTrack ? 0 : progressRef.current;
-        playerRef.current.loadVideoById?.(targetTrack.videoId, startTime);
+        // Cue (no autoplay attempt) until the user has interacted: browser
+        // autoplay policy would block loadVideoById and strand the IFrame on a
+        // black frame. Cued state shows YouTube's branded thumbnail + play
+        // button so the user can start playback via the IFrame's own UI —
+        // no overlay needed, fully TOS-compliant.
+        if (userHasInteracted) {
+          playerRef.current.loadVideoById?.(targetTrack.videoId, startTime);
+        } else {
+          playerRef.current.cueVideoById?.(targetTrack.videoId, startTime);
+        }
       }
     } else if (isPlayerReady && playerRef.current && !targetTrack) {
       playerRef.current.stopVideo?.();
     }
-  }, [isPlayerReady, currentTrack, previewTrack, progressRef]);
+  }, [isPlayerReady, currentTrack, previewTrack, progressRef, userHasInteracted]);
 
   const tvUnmuteVisible = deviceDetection.isTV() && isMuted && isPlayerReady && !isAnyPlaylistView;
   const hasFullscreenOverlay = showQRModal || headerOverlay || settingsOverlay || tvUnmuteVisible;
@@ -829,44 +833,6 @@ function RoomBody() {
     return () => clearInterval(interval);
   }, [isPlayerReady, isPlaying, previewTrack, progressRef]);
 
-  // Autoplay detection.
-  // Long window (15s) so slow networks have time to buffer a fresh track without
-  // false-flagging. Real autoplay blocks stay in CUED indefinitely, so the delay
-  // doesn't hide them — it just gives legitimate loads room to breathe.
-  const autoplayCheckTimerRef = useRef(null);
-  useEffect(() => {
-    if (isPlaying && isPlayerReady && playerRef.current) {
-      autoplayCheckTimerRef.current = setTimeout(() => {
-        autoplayCheckTimerRef.current = null;
-        // Browser autoplay policy blocks playback until first user interaction —
-        // that's expected, not a fault. The bottom-left play button handles it.
-        // Backgrounded tabs also throttle the player into a non-playing state.
-        if (!userHasInteractedRef.current || document.hidden) {
-          setAutoplayBlocked(false);
-          return;
-        }
-        const state = playerRef.current.getPlayerState?.();
-        if (
-          state !== undefined &&
-          state !== YouTubeState.PLAYING &&
-          state !== YouTubeState.BUFFERING
-        ) {
-          setAutoplayBlocked(true);
-        } else {
-          setAutoplayBlocked(false);
-        }
-      }, 15000);
-      return () => {
-        if (autoplayCheckTimerRef.current) {
-          clearTimeout(autoplayCheckTimerRef.current);
-          autoplayCheckTimerRef.current = null;
-        }
-      };
-    } else {
-      setAutoplayBlocked(false);
-    }
-  }, [isPlaying, isPlayerReady, currentTrack]);
-
   // Infinite Load Guard (Stall Detection)
   const stallRetriesRef = useRef(0); // Track number of stall retries
 
@@ -877,13 +843,6 @@ function RoomBody() {
       if (!document.hidden) {
         stallRetriesRef.current = 0;
         trackFailTimesRef.current = [];
-        // Cancel any pending autoplay-block check scheduled while hidden so
-        // it can't briefly re-show the overlay just as the user returns.
-        if (autoplayCheckTimerRef.current) {
-          clearTimeout(autoplayCheckTimerRef.current);
-          autoplayCheckTimerRef.current = null;
-        }
-        setAutoplayBlocked(false);
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -1622,21 +1581,6 @@ function RoomBody() {
               </div>
             )}
 
-            {(!userHasInteracted || autoplayBlocked) && hasConsent && !showPendingPage && !showBannedPage && (currentTrack || previewTrack) && (
-              <div
-                onClick={handleStartPlayback}
-                className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm cursor-pointer"
-              >
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); handleStartPlayback(); }}
-                  className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-lg shadow-lg hover:from-orange-400 hover:to-orange-500 hover:scale-105 transition-all active:scale-95 flex items-center gap-3"
-                >
-                  <Play size={20} fill="currentColor" />
-                  {t('app.tapToPlay')}
-                </button>
-              </div>
-            )}
           </>
         )}
       </div>
