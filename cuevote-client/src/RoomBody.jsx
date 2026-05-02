@@ -34,8 +34,11 @@ const YouTubeState = {
 // "Stuck while supposed to be playing" deadline. If the server says playback
 // is on but no PLAYING event has fired for this long, we escalate. Tuned to
 // be longer than any reasonable buffering / first-load on a slow network so
-// healthy-but-slow sessions don't trip it.
-const STUCK_DEADLINE_MS = 60 * 1000;
+// healthy-but-slow sessions don't trip it. The detector polls every 5s and
+// self-refreshes the anchor whenever it observes the player IS playing, so
+// during normal playback the anchor stays fresh and the deadline never
+// triggers — it only fires when the player genuinely never reaches PLAYING.
+const STUCK_DEADLINE_MS = 20 * 1000;
 
 function RoomBody() {
   const [CookieBlockedPlaceholderComponent, setCookieBlockedPlaceholder] = useState(null);
