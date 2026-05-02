@@ -338,23 +338,11 @@ function RoomBody() {
   const [expandedTrackId, setExpandedTrackId] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showSuggest, setShowSuggest] = useState(false);
-  const userHasInteractedRef = useRef(false);
-  const [userHasInteracted, setUserHasInteracted] = useState(false);
-
-  useEffect(() => {
-    const markInteracted = () => {
-      userHasInteractedRef.current = true;
-      setUserHasInteracted(true);
-    };
-    window.addEventListener('click', markInteracted, { once: true, capture: true });
-    window.addEventListener('keydown', markInteracted, { once: true, capture: true });
-    window.addEventListener('touchstart', markInteracted, { once: true, capture: true });
-    return () => {
-      window.removeEventListener('click', markInteracted, { capture: true });
-      window.removeEventListener('keydown', markInteracted, { capture: true });
-      window.removeEventListener('touchstart', markInteracted, { capture: true });
-    };
-  }, []);
+  // Set to true the first time onStateChange fires PLAYING. Used to gate the
+  // IP-block heuristics (track-cycling, stall detection) so a slow first-load
+  // can't trip the "YouTube unavailable" banner before any track has actually
+  // played.
+  const hasEverPlayedRef = useRef(false);
 
   // Suggestion state (must be declared before effects that use it)
   const [manualSuggestions, setManualSuggestions] = useState([]);
@@ -459,7 +447,10 @@ function RoomBody() {
   }, [lastMessage, activeSuggestionId]);
   const [showPendingPage, setShowPendingPage] = useState(false);
   const [showBannedPage, setShowBannedPage] = useState(false); // Added this
-  const [volume, setVolume] = useState(80);
+  // On mobile, the OS volume slider is the only loudness control that matters
+  // (per-tab volume is rarely exposed); start at 100% so the OS can do its job
+  // without our app slider artificially capping it.
+  const [volume, setVolume] = useState(() => deviceDetection.isMobile() ? 100 : 80);
   const [isQueueMinimized, setIsQueueMinimized] = useState(true);
   const [isLocallyPaused, setIsLocallyPaused] = useState(false);
   const [isLocallyPlaying, setIsLocallyPlaying] = useState(false);
@@ -616,7 +607,8 @@ function RoomBody() {
 
     // Track-cycling detection: if 2+ tracks load without any successful playback, something systemic is wrong.
     // Skip while the tab is hidden — backgrounded players are throttled by the browser and look like cycling failures.
-    if (currentTrack && !document.hidden) {
+    // Skip until we've had at least one successful PLAYING — slow first loads on fresh joins are not IP blocks.
+    if (currentTrack && !document.hidden && hasEverPlayedRef.current) {
       trackFailTimesRef.current.push(Date.now());
       if (trackFailTimesRef.current.length >= 2 && Date.now() - lastSuccessfulPlayRef.current > 5000) {
         console.warn("[Player] IP block detected — tracks keep failing without playback");
@@ -672,7 +664,12 @@ function RoomBody() {
         host: 'https://www.youtube.com',
         playerVars: {
           autoplay: 0,
-          controls: 1,
+          // Hide YouTube's native chrome (scrubber, volume, mute, "more videos").
+          // Our app's controls are the single source of truth — without this,
+          // users could scrub off-sync from the server or unmute via the iframe
+          // without our React state catching up. The YouTube logo bottom-right
+          // stays visible, satisfying the IFrame API branding requirement.
+          controls: 0,
           origin: window.location.origin,
           widget_referrer: window.location.origin,
           cc_load_policy: captionsEnabled ? 1 : 0,
@@ -706,14 +703,7 @@ function RoomBody() {
                 setIsLocallyPlaying(false);
               }
 
-              // If playback started, the user has interacted — either via our
-              // controls or via YouTube's branded play button inside the iframe
-              // (which we can't observe directly from a cross-origin frame).
-              // Sync the flag so future track changes use loadVideoById.
-              if (!userHasInteractedRef.current) {
-                userHasInteractedRef.current = true;
-                setUserHasInteracted(true);
-              }
+              hasEverPlayedRef.current = true;
               const duration = event.target.getDuration();
               if (duration && duration > 0) {
                 sendMessage({ type: "UPDATE_DURATION", payload: duration });
@@ -781,28 +771,23 @@ function RoomBody() {
     }
   }, [initializePlayer, hasConsent]);
 
-  // Main playback logic
+  // Main playback logic. The player starts muted by default (isMuted=true),
+  // which lets the browser allow muted autoplay even before any user
+  // interaction — so loadVideoById both loads and starts playing immediately,
+  // no cued state or overlay needed. Audio stays silent until the user clicks
+  // unmute via our controls.
   useEffect(() => {
     const targetTrack = previewTrack || currentTrack;
     if (isPlayerReady && playerRef.current && targetTrack) {
       const currentVideoIdInPlayer = playerRef.current.getVideoData?.()?.video_id;
       if (targetTrack.videoId !== currentVideoIdInPlayer) {
         const startTime = previewTrack ? 0 : progressRef.current;
-        // Cue (no autoplay attempt) until the user has interacted: browser
-        // autoplay policy would block loadVideoById and strand the IFrame on a
-        // black frame. Cued state shows YouTube's branded thumbnail + play
-        // button so the user can start playback via the IFrame's own UI —
-        // no overlay needed, fully TOS-compliant.
-        if (userHasInteracted) {
-          playerRef.current.loadVideoById?.(targetTrack.videoId, startTime);
-        } else {
-          playerRef.current.cueVideoById?.(targetTrack.videoId, startTime);
-        }
+        playerRef.current.loadVideoById?.(targetTrack.videoId, startTime);
       }
     } else if (isPlayerReady && playerRef.current && !targetTrack) {
       playerRef.current.stopVideo?.();
     }
-  }, [isPlayerReady, currentTrack, previewTrack, progressRef, userHasInteracted]);
+  }, [isPlayerReady, currentTrack, previewTrack, progressRef]);
 
   const tvUnmuteVisible = deviceDetection.isTV() && isMuted && isPlayerReady && !isAnyPlaylistView;
   const hasFullscreenOverlay = showQRModal || headerOverlay || settingsOverlay || showSettings || tvUnmuteVisible;
@@ -811,15 +796,15 @@ function RoomBody() {
     if (isPlayerReady && playerRef.current) {
       if (hasFullscreenOverlay) {
         playerRef.current.pauseVideo?.();
-      } else if (userHasInteracted && previewTrack) {
+      } else if (previewTrack) {
         playerRef.current.playVideo?.();
-      } else if (userHasInteracted && (isPlaying || isLocallyPlaying) && !isLocallyPaused) {
+      } else if ((isPlaying || isLocallyPlaying) && !isLocallyPaused) {
         playerRef.current.playVideo?.();
       } else {
         playerRef.current.pauseVideo?.();
       }
     }
-  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay, userHasInteracted]);
+  }, [isPlayerReady, isPlaying, currentTrack, isLocallyPaused, isLocallyPlaying, previewTrack, hasFullscreenOverlay]);
 
   useEffect(() => {
     if (!isPlayerReady || !playerRef.current || !isPlaying || previewTrack) return;
@@ -867,8 +852,9 @@ function RoomBody() {
 
     const checkInterval = setInterval(() => {
       // Backgrounded tabs throttle the player into BUFFERING/UNSTARTED — counting that as a stall
-      // would falsely flag an IP block.
+      // would falsely flag an IP block. Same for the slow first-load before any track has played.
       if (document.hidden) return;
+      if (!hasEverPlayedRef.current) return;
       const state = playerRef.current.getPlayerState?.();
       if (state === YouTubeState.BUFFERING || state === YouTubeState.UNSTARTED) {
         stallRetriesRef.current += 1;
