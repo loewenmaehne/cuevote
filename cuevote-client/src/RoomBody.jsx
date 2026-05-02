@@ -608,7 +608,10 @@ function RoomBody() {
     // Track-cycling detection: if 2+ tracks load without any successful playback, something systemic is wrong.
     // Skip while the tab is hidden — backgrounded players are throttled by the browser and look like cycling failures.
     // Skip until we've had at least one successful PLAYING — slow first loads on fresh joins are not IP blocks.
-    if (currentTrack && !document.hidden && hasEverPlayedRef.current) {
+    // Skip when the player isn't mounted (e.g. user is in Playlist view without a preview): the server keeps
+    // advancing tracks via its duration timer, but with no player to play them every track change would be
+    // counted as a failure and falsely trigger the "YouTube unavailable" overlay after a couple of skips.
+    if (currentTrack && !document.hidden && hasEverPlayedRef.current && isPlayerReady) {
       trackFailTimesRef.current.push(Date.now());
       if (trackFailTimesRef.current.length >= 2 && Date.now() - lastSuccessfulPlayRef.current > 5000) {
         console.warn("[Player] IP block detected — tracks keep failing without playback");
@@ -767,6 +770,13 @@ function RoomBody() {
         } catch (e) { console.error("Player cleanup error", e); }
         playerRef.current = null;
         setIsPlayerReady(false);
+        // Counters tied to a live player session. Without a reset here, a
+        // single stale entry from before the unmount can combine with a
+        // fresh post-remount entry and falsely trigger the "YouTube
+        // unavailable" overlay after the player remounts.
+        trackFailTimesRef.current = [];
+        stallRetriesRef.current = 0;
+        ipBlockedVideosRef.current = new Set();
       }
     }
   }, [initializePlayer, hasConsent]);
