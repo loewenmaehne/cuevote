@@ -31,6 +31,11 @@ const YouTubeState = {
   CUED: 5,
 };
 
+// Rolling window for IP-block evidence accumulators. Entries older than this
+// don't count toward the "two strikes" threshold, so unrelated blips spaced
+// far apart can't combine into a phantom block.
+const IP_BLOCK_EVIDENCE_WINDOW_MS = 2 * 60 * 1000;
+
 function RoomBody() {
   const [CookieBlockedPlaceholderComponent, setCookieBlockedPlaceholder] = useState(null);
   const [pendingRequestsExports, setPendingRequestsExports] = useState(null);
@@ -343,6 +348,13 @@ function RoomBody() {
   // can't trip the "YouTube unavailable" banner before any track has actually
   // played.
   const hasEverPlayedRef = useRef(false);
+  // Counts how many "first-play deadline" windows have expired without the
+  // player ever reaching PLAYING. The other heuristics are gated by
+  // hasEverPlayedRef and so are blind to networks where the player loads
+  // (onReady fires) but never plays a single frame — e.g. a Tor exit node
+  // where YouTube serves a "sign in to confirm" interstitial inside the
+  // iframe and the IFrame Player API never advances past UNSTARTED.
+  const firstPlayStallTicksRef = useRef(0);
 
   // Suggestion state (must be declared before effects that use it)
   const [manualSuggestions, setManualSuggestions] = useState([]);
@@ -413,7 +425,18 @@ function RoomBody() {
     // ip_blocked/check_failed/no_api_key come with NETWORK_THROTTLE — that path is
     // the authoritative IP-block signal, so no client-side counter is needed.
     if (['private', 'rejected', 'not_embeddable', 'unavailable'].includes(status)) {
+      // The server confirmed this video is genuinely unavailable — it's a normal
+      // skip, not evidence of an IP block. Walk the matching evidence back out:
+      //  - drop the per-video error entry (if any)
+      //  - drop the most-recent track-cycling entry that was pushed for this skip
+      //  - refresh lastSuccessfulPlay so subsequent skips don't combine with
+      //    pre-skip evidence and trip the > 5s grace check
+      // Otherwise back-to-back unavailable tracks (auto-DJ refill, stale playlists,
+      // music-only filter rejections) can falsely trigger the overlay even though
+      // the server's API check is reporting normally.
       ipBlockedVideosRef.current.delete(videoId);
+      trackFailTimesRef.current.pop();
+      lastSuccessfulPlayRef.current = Date.now();
     }
 
     if (isOwner) {
@@ -463,10 +486,27 @@ function RoomBody() {
   // const [user, setUser] = useState(null); // Now from Context
   const [progress, setProgress] = useState(0);
   const [playbackError, setPlaybackError] = useState(null); // New State: Track playback errors
-  const ipBlockedVideosRef = useRef(new Set());
+  // IP-block heuristic accumulators are time-bounded by IP_BLOCK_EVIDENCE_WINDOW_MS.
+  // ipBlockedVideosRef: Map<videoId, timestampMs> — the timestamp is the most
+  // recent error for that video. The size threshold checks only entries inside
+  // the rolling window so old evidence can't combine with new.
+  const ipBlockedVideosRef = useRef(new Map());
   const trackFailTimesRef = useRef([]);
   const lastSuccessfulPlayRef = useRef(Date.now());
   const [ipBlockDetected, setIpBlockDetected] = useState(false);
+  // Helper: count fail-evidence entries within the rolling window.
+  const recentIpBlockEvidence = useCallback(() => {
+    const cutoff = Date.now() - IP_BLOCK_EVIDENCE_WINDOW_MS;
+    let n = 0;
+    for (const ts of ipBlockedVideosRef.current.values()) {
+      if (ts >= cutoff) n += 1;
+    }
+    return n;
+  }, []);
+  const recentTrackFails = useCallback(() => {
+    const cutoff = Date.now() - IP_BLOCK_EVIDENCE_WINDOW_MS;
+    return trackFailTimesRef.current.filter((ts) => ts >= cutoff).length;
+  }, []);
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true); // Track footer visibility
   const [isWindowTooSmall, setIsWindowTooSmall] = useState(false);
@@ -617,7 +657,9 @@ function RoomBody() {
     // counted as a failure and falsely trigger the "YouTube unavailable" overlay after a couple of skips.
     if (currentTrack && !document.hidden && hasEverPlayedRef.current && isPlayerReady) {
       trackFailTimesRef.current.push(Date.now());
-      if (trackFailTimesRef.current.length >= 2 && Date.now() - lastSuccessfulPlayRef.current > 5000) {
+      // Count only fails inside the rolling window — a stale entry from minutes
+      // ago should not combine with a fresh one to trip the heuristic.
+      if (recentTrackFails() >= 2 && Date.now() - lastSuccessfulPlayRef.current > 5000) {
         console.warn("[Player] IP block detected — tracks keep failing without playback");
         if (!isThrottleDismissActive()) setIpBlockDetected(true);
       }
@@ -636,7 +678,7 @@ function RoomBody() {
         console.error("Failed to set/clear caption language", e);
       }
     }
-  }, [currentTrack, isPlayerReady, captionsEnabled]);
+  }, [currentTrack, isPlayerReady, captionsEnabled, isThrottleDismissActive, recentTrackFails]);
 
 
   // YouTube API Loading
@@ -658,9 +700,37 @@ function RoomBody() {
   }, [hasConsent]);
 
   // Player Initialization
+  // onReadyTimeoutRef holds the "did onReady ever fire?" deadline for the
+  // current init. If the IFrame Player API handshake never completes — for
+  // example, when YouTube refuses the embed entirely (Tor exit nodes seeing
+  // the "sign in to confirm" interstitial often manifest this way) — none
+  // of our other heuristics fire because they're all gated behind
+  // isPlayerReady. The deadline gives us a way to escalate.
+  const onReadyTimeoutRef = useRef(null);
   const initializePlayer = useCallback((container) => {
     if (!hasConsent) return;
     const initId = ++playerInitIdRef.current;
+    if (onReadyTimeoutRef.current) {
+      clearTimeout(onReadyTimeoutRef.current);
+      onReadyTimeoutRef.current = null;
+    }
+    onReadyTimeoutRef.current = setTimeout(() => {
+      if (initId !== playerInitIdRef.current) return;
+      // Backgrounded tabs delay script loading and player init; don't penalize.
+      if (document.hidden) return;
+      console.warn("[Player] onReady deadline expired — IFrame Player API handshake never completed.");
+      if (isOwnerRef.current) {
+        sendMessage({
+          type: "PLAYBACK_ERROR",
+          payload: {
+            videoId: currentTrackRef.current?.videoId,
+            errorCode: 'stuck_on_load',
+          },
+        });
+      } else if (!isThrottleDismissActive()) {
+        setIpBlockDetected(true);
+      }
+    }, 30000);
     loadYouTubeAPI().then((YT) => {
       if (initId !== playerInitIdRef.current) return;
       if (playerRef.current && typeof playerRef.current.destroy === 'function') {
@@ -686,6 +756,10 @@ function RoomBody() {
         events: {
           onReady: (event) => {
             // console.log("[Player] YouTube Player onReady fired");
+            if (onReadyTimeoutRef.current) {
+              clearTimeout(onReadyTimeoutRef.current);
+              onReadyTimeoutRef.current = null;
+            }
             setIsPlayerReady(true);
             // Anchor the track-cycling heuristic's "last successful play" timestamp
             // to now whenever a fresh player becomes ready. Without this, a stale
@@ -712,7 +786,8 @@ function RoomBody() {
               // ones and trip the overlay long after playback proved healthy.
               trackFailTimesRef.current = [];
               stallRetriesRef.current = 0;
-              ipBlockedVideosRef.current = new Set();
+              ipBlockedVideosRef.current = new Map();
+              firstPlayStallTicksRef.current = 0;
 
               // Only set override if the SERVER is not currently playing.
               // If Server IS playing, then this event is likely just a sync result, so we are synced (local=false).
@@ -757,9 +832,9 @@ function RoomBody() {
               if (errorCode === 101 || errorCode === 150) {
                 const videoId = currentTrackRef.current?.videoId;
                 if (videoId) {
-                  ipBlockedVideosRef.current.add(videoId);
-                  if (ipBlockedVideosRef.current.size >= 2) {
-                    console.warn("[Player] IP block detected — multiple videos restricted:", [...ipBlockedVideosRef.current]);
+                  ipBlockedVideosRef.current.set(videoId, Date.now());
+                  if (recentIpBlockEvidence() >= 2) {
+                    console.warn("[Player] IP block detected — multiple videos restricted:", [...ipBlockedVideosRef.current.keys()]);
                     if (!isThrottleDismissActive()) setIpBlockDetected(true);
                   }
                 }
@@ -773,7 +848,7 @@ function RoomBody() {
         },
       });
     });
-  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled]);
+  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled, isThrottleDismissActive, recentIpBlockEvidence]);
 
   const playerContainerRef = useCallback(node => {
     if (!hasConsent) return;
@@ -781,6 +856,10 @@ function RoomBody() {
       initializePlayer(node);
     } else {
       playerInitIdRef.current++;
+      if (onReadyTimeoutRef.current) {
+        clearTimeout(onReadyTimeoutRef.current);
+        onReadyTimeoutRef.current = null;
+      }
       if (playerRef.current && typeof playerRef.current.destroy === 'function') {
         try {
           playerRef.current.destroy();
@@ -793,7 +872,8 @@ function RoomBody() {
         // unavailable" overlay after the player remounts.
         trackFailTimesRef.current = [];
         stallRetriesRef.current = 0;
-        ipBlockedVideosRef.current = new Set();
+        ipBlockedVideosRef.current = new Map();
+        firstPlayStallTicksRef.current = 0;
       }
     }
   }, [initializePlayer, hasConsent]);
@@ -861,7 +941,8 @@ function RoomBody() {
       if (!document.hidden) {
         stallRetriesRef.current = 0;
         trackFailTimesRef.current = [];
-        ipBlockedVideosRef.current = new Set();
+        ipBlockedVideosRef.current = new Map();
+        firstPlayStallTicksRef.current = 0;
         // Refresh the time anchor too, otherwise the > 5s grace check fails
         // immediately on return and a couple of post-return track changes
         // before PLAYING could trip the overlay.
@@ -904,8 +985,9 @@ function RoomBody() {
           } else {
             console.warn("[Player] Stall limit exceeded for guest. Triggering IP block overlay.");
             setPlaybackError(100);
-            ipBlockedVideosRef.current.add(currentTrackRef.current?.videoId);
-            if (ipBlockedVideosRef.current.size >= 2) {
+            const stalledId = currentTrackRef.current?.videoId;
+            if (stalledId) ipBlockedVideosRef.current.set(stalledId, Date.now());
+            if (recentIpBlockEvidence() >= 2) {
               if (!isThrottleDismissActive()) setIpBlockDetected(true);
             }
           }
@@ -924,7 +1006,63 @@ function RoomBody() {
     }, 8000);
 
     return () => clearInterval(checkInterval);
-  }, [isPlaying, isPlayerReady, isOwner, progressRef, sendMessage]);
+  }, [isPlaying, isPlayerReady, isOwner, progressRef, sendMessage, isThrottleDismissActive, recentIpBlockEvidence]);
+
+  // First-play stall detection — fires when the player loaded but never played.
+  //
+  // The stall detection above is gated by hasEverPlayedRef so a slow first
+  // load can't trip it. That gate creates a blind spot: if the player loads
+  // (onReady fires) but the iframe never advances past UNSTARTED/BUFFERING/
+  // CUED — for example, on a Tor exit node where YouTube serves a "sign in
+  // to confirm you're not a bot" interstitial inside the iframe, or any
+  // network where the IFrame Player API completes its handshake but the
+  // video never actually starts — none of the other heuristics ever fire
+  // and the overlay never shows even though playback is clearly broken.
+  //
+  // Run a 25-second deadline from the moment we have (player ready) +
+  // (current track loaded) + (PLAYING never reached). Each expiry without
+  // playback is one tick. Two ticks (~50s) is conclusive evidence:
+  //   - Owner: report as PLAYBACK_ERROR with errorCode 'stuck_on_load' so
+  //     the server can run its API check (server playable -> owner-IP
+  //     blocked -> NETWORK_THROTTLE; server unplayable -> genuine
+  //     unavailability and skip).
+  //   - Guest: fire the overlay locally. The server can't help — owner's
+  //     network is fine, only the guest's network can't reach the player.
+  useEffect(() => {
+    if (!isPlayerReady || !currentTrack || hasEverPlayedRef.current) return;
+    const interval = setInterval(() => {
+      if (document.hidden) return;
+      if (hasEverPlayedRef.current) {
+        firstPlayStallTicksRef.current = 0;
+        return;
+      }
+      const state = playerRef.current?.getPlayerState?.();
+      const stuck = state === undefined
+        || state === YouTubeState.UNSTARTED
+        || state === YouTubeState.BUFFERING
+        || state === YouTubeState.CUED;
+      if (!stuck) return;
+      firstPlayStallTicksRef.current += 1;
+      console.warn(`[Player] First-play deadline expired (tick ${firstPlayStallTicksRef.current}, state=${state}).`);
+      if (firstPlayStallTicksRef.current >= 2) {
+        clearInterval(interval);
+        if (isOwner) {
+          console.warn("[Player] First-play stuck for owner. Reporting as playback error.");
+          sendMessage({
+            type: "PLAYBACK_ERROR",
+            payload: {
+              videoId: currentTrackRef.current?.videoId,
+              errorCode: 'stuck_on_load',
+            },
+          });
+        } else {
+          console.warn("[Player] First-play stuck for guest. Triggering IP block overlay.");
+          if (!isThrottleDismissActive()) setIpBlockDetected(true);
+        }
+      }
+    }, 25000);
+    return () => clearInterval(interval);
+  }, [isPlayerReady, currentTrack, isOwner, sendMessage, isThrottleDismissActive]);
 
   // Progress bar update (polls ref to avoid re-renders from progress messages)
   useEffect(() => {
