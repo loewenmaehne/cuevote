@@ -404,11 +404,16 @@ function RoomBody() {
     const { videoId, status } = lastMessage.payload || {};
     if (!videoId) return;
 
-    // Detect repeated skipping — if 2+ videos are skipped in this session, something systemic is wrong
-    recentSkipTimesRef.current.push(Date.now());
-    if (recentSkipTimesRef.current.length >= 2) {
-      console.warn("[Player] IP block detected — multiple videos skipped by server");
-      if (!isThrottleDismissActive()) setIpBlockDetected(true);
+    // Server-confirmed genuinely-unavailable videos (private/rejected/deleted/not-
+    // embeddable) shouldn't count toward the local IP-block heuristic, which is
+    // populated by the player's onError handler from errors 101/150 — those errors
+    // fire for both true IP blocks and per-video embed restrictions, indistinguishable
+    // client-side. Remove server-confirmed unavailable entries so two unrelated
+    // unembeddable videos in a session can't combine to falsely trigger the overlay.
+    // ip_blocked/check_failed/no_api_key come with NETWORK_THROTTLE — that path is
+    // the authoritative IP-block signal, so no client-side counter is needed.
+    if (['private', 'rejected', 'not_embeddable', 'unavailable'].includes(status)) {
+      ipBlockedVideosRef.current.delete(videoId);
     }
 
     if (isOwner) {
@@ -459,7 +464,6 @@ function RoomBody() {
   const [progress, setProgress] = useState(0);
   const [playbackError, setPlaybackError] = useState(null); // New State: Track playback errors
   const ipBlockedVideosRef = useRef(new Set());
-  const recentSkipTimesRef = useRef([]);
   const trackFailTimesRef = useRef([]);
   const lastSuccessfulPlayRef = useRef(Date.now());
   const [ipBlockDetected, setIpBlockDetected] = useState(false);
@@ -683,6 +687,13 @@ function RoomBody() {
           onReady: (event) => {
             // console.log("[Player] YouTube Player onReady fired");
             setIsPlayerReady(true);
+            // Anchor the track-cycling heuristic's "last successful play" timestamp
+            // to now whenever a fresh player becomes ready. Without this, a stale
+            // anchor from before a remount (e.g. user came back from Playlist view)
+            // makes the > 5s grace check immediately fail, so a couple of rapid
+            // track changes between onReady and the first PLAYING event could
+            // falsely trigger the overlay.
+            lastSuccessfulPlayRef.current = Date.now();
             event.target.setVolume(volumeRef.current);
             if (isMutedRef.current) {
               event.target.mute();
@@ -695,7 +706,13 @@ function RoomBody() {
             if (state === YouTubeState.PLAYING) {
               setIsLocallyPaused(false);
               lastSuccessfulPlayRef.current = Date.now();
+              // A confirmed PLAYING means YouTube isn't blocked on this network —
+              // clear ALL the IP-block heuristic accumulators, not just track-cycling.
+              // Otherwise stale evidence from earlier blips could combine with future
+              // ones and trip the overlay long after playback proved healthy.
               trackFailTimesRef.current = [];
+              stallRetriesRef.current = 0;
+              ipBlockedVideosRef.current = new Set();
 
               // Only set override if the SERVER is not currently playing.
               // If Server IS playing, then this event is likely just a sync result, so we are synced (local=false).
@@ -837,15 +854,18 @@ function RoomBody() {
   // session without time-bound cleanup, so a single phantom failure from
   // earlier could combine with a fresh post-return phantom and falsely trigger
   // the "YouTube unavailable" banner. Real IP blocks re-trigger from the
-  // server-side NETWORK_THROTTLE / VIDEO_STATUS paths, which aren't gated on
-  // visibility, so we don't lose true positives.
+  // server-side NETWORK_THROTTLE path, which isn't gated on visibility, so we
+  // don't lose true positives.
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         stallRetriesRef.current = 0;
         trackFailTimesRef.current = [];
         ipBlockedVideosRef.current = new Set();
-        recentSkipTimesRef.current = [];
+        // Refresh the time anchor too, otherwise the > 5s grace check fails
+        // immediately on return and a couple of post-return track changes
+        // before PLAYING could trip the overlay.
+        lastSuccessfulPlayRef.current = Date.now();
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
