@@ -38,7 +38,7 @@ const YouTubeState = {
 // self-refreshes the anchor whenever it observes the player IS playing, so
 // during normal playback the anchor stays fresh and the deadline never
 // triggers — it only fires when the player genuinely never reaches PLAYING.
-const STUCK_DEADLINE_MS = 20 * 1000;
+const STUCK_DEADLINE_MS = 15 * 1000;
 
 function RoomBody() {
   const [CookieBlockedPlaceholderComponent, setCookieBlockedPlaceholder] = useState(null);
