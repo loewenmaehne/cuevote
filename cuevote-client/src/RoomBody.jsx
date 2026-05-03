@@ -756,7 +756,15 @@ function RoomBody() {
             // produced the false-positive overlays we kept hitting, so the
             // overlay is now driven purely by NETWORK_THROTTLE and the
             // stuck-deadline detector.
-            if ([100, 101, 150].includes(errorCode)) {
+            //
+            // Error 153 was added by YouTube in late 2025 and indicates the
+            // request didn't include a valid HTTP Referer / API Client
+            // identification. It surfaces in WebViews and any context where
+            // the referer is stripped. Treat it the same as 100/101/150 —
+            // the server's API check disambiguates "video unavailable" from
+            // "network can't authenticate the embed" and broadcasts
+            // NETWORK_THROTTLE in the latter case.
+            if ([100, 101, 150, 153].includes(errorCode)) {
               if (isOwnerRef.current) {
                 console.warn("[Player] Video error. Sending to server for verification...", currentTrackRef.current?.title);
                 sendMessage({
@@ -952,11 +960,17 @@ function RoomBody() {
       if (document.hidden) return;
       if (stuckReportedRef.current) return;
       const state = playerRef.current?.getPlayerState?.();
-      if (state === YouTubeState.PLAYING) {
-        // The IFrame Player API can occasionally drop a PLAYING state
-        // change on the floor (especially after iframe re-attachment).
+      if (state === YouTubeState.PLAYING || state === YouTubeState.CUED) {
+        // PLAYING — the IFrame Player API can occasionally drop a PLAYING
+        // state change on the floor (especially after iframe re-attachment).
         // If we're polling and see the player IS playing, refresh the
         // anchor ourselves so the deadline can't fire spuriously.
+        //
+        // CUED — the player loaded the video but the browser blocked
+        // autoplay (iOS Safari, some embedded WebViews, strict media
+        // policies). The user can fix this with one tap; it is NOT an IP
+        // block. Firing the "playback restricted" overlay here would be
+        // misleading, so treat CUED as a non-stuck state.
         lastSuccessfulPlayRef.current = Date.now();
         return;
       }
@@ -975,7 +989,7 @@ function RoomBody() {
       } else if (!isThrottleDismissActive()) {
         setIpBlockDetected(true);
       }
-    }, 5000);
+    }, 2000);
     return () => clearInterval(interval);
   }, [hasConsent, currentTrack, isPlaying, isLocallyPaused, previewTrack, hasFullscreenOverlay, isOwner, sendMessage, isThrottleDismissActive]);
 
