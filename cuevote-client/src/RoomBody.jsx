@@ -34,7 +34,7 @@ const YouTubeState = {
 // "Stuck while supposed to be playing" deadline. If the server says playback
 // is on but no PLAYING event has fired for this long, we escalate. Tuned to
 // be longer than any reasonable buffering / first-load on a slow network so
-// healthy-but-slow sessions don't trip it. The detector polls every 5s and
+// healthy-but-slow sessions don't trip it. The detector polls every 2s and
 // self-refreshes the anchor whenever it observes the player IS playing, so
 // during normal playback the anchor stays fresh and the deadline never
 // triggers — it only fires when the player genuinely never reaches PLAYING.
@@ -692,12 +692,12 @@ function RoomBody() {
           onReady: (event) => {
             // console.log("[Player] YouTube Player onReady fired");
             setIsPlayerReady(true);
-            // Anchor the track-cycling heuristic's "last successful play" timestamp
-            // to now whenever a fresh player becomes ready. Without this, a stale
-            // anchor from before a remount (e.g. user came back from Playlist view)
-            // makes the > 5s grace check immediately fail, so a couple of rapid
-            // track changes between onReady and the first PLAYING event could
-            // falsely trigger the overlay.
+            // Anchor the stuck-deadline detector's "last successful play"
+            // timestamp to now whenever a fresh player becomes ready. Without
+            // this, a stale anchor from before a remount (e.g. user came back
+            // from Playlist view) could already be older than the deadline,
+            // so the detector would fire immediately on remount before the
+            // first PLAYING event has had a chance to refresh it.
             lastSuccessfulPlayRef.current = Date.now();
             event.target.setVolume(volumeRef.current);
             if (isMutedRef.current) {
