@@ -881,12 +881,17 @@ function RoomBody() {
           && !previewTrack
         ) {
           const state = playerRef.current.getPlayerState?.();
-          // Nudge any non-PLAYING state. CUED (autoplay-blocked while
-          // hidden) might now be unblocked because the user just brought
-          // the tab to the foreground; if the browser still blocks,
-          // playVideo() silently fails — no harm. UNSTARTED / BUFFERING /
-          // PAUSED all benefit from the explicit kick.
-          if (state !== YouTubeState.PLAYING) {
+          // Nudge any non-PLAYING state EXCEPT ENDED. CUED (autoplay-
+          // blocked while hidden) might now be unblocked because the user
+          // just brought the tab to the foreground; if the browser still
+          // blocks, playVideo() silently fails — no harm. UNSTARTED /
+          // BUFFERING / PAUSED all benefit from the explicit kick.
+          // ENDED is skipped because YT.Player.playVideo() on an ended
+          // video restarts it from the beginning — if a track ended while
+          // the tab was hidden and the server hasn't advanced yet, we'd
+          // briefly replay the just-finished track until currentTrack
+          // changes. Let the playback effect load the next track instead.
+          if (state !== YouTubeState.PLAYING && state !== YouTubeState.ENDED) {
             try { playerRef.current.playVideo?.(); } catch { /* gone */ }
           }
         }
@@ -976,6 +981,7 @@ function RoomBody() {
   useEffect(() => {
     if (!hasConsent) return;
     if (!currentTrack) return;
+    if (!isPlayerReady) return;
     if (!isPlaying) return;
     if (isLocallyPaused) return;
     if (previewTrack) return;
@@ -1034,7 +1040,7 @@ function RoomBody() {
       }
     }, 2000);
     return () => clearInterval(interval);
-  }, [hasConsent, currentTrack, isPlaying, isLocallyPaused, previewTrack, hasFullscreenOverlay, isOwner, sendMessage, isThrottleDismissActive]);
+  }, [hasConsent, currentTrack, isPlayerReady, isPlaying, isLocallyPaused, previewTrack, hasFullscreenOverlay, isOwner, sendMessage, isThrottleDismissActive]);
 
   // Progress bar update (polls ref to avoid re-renders from progress messages)
   useEffect(() => {
