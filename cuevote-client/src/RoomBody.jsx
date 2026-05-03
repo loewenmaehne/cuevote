@@ -856,21 +856,40 @@ function RoomBody() {
   // Infinite Load Guard (Stall Detection)
   const stallRetriesRef = useRef(0); // Track number of stall retries
 
-  // Returning from a backgrounded tab: refresh the playback timer anchor.
-  // Backgrounded players are throttled by the browser, so the apparent
-  // "no PLAYING for X seconds" while hidden isn't real evidence — the
-  // stuck-deadline detector should give the player a fresh window.
+  // Returning from a backgrounded tab: refresh the playback timer anchor and,
+  // if the server says we should be playing but the player isn't, nudge it.
+  // Browsers throttle backgrounded iframes — Chrome can pause a track that
+  // started loading while the tab was hidden, leaving it stuck in UNSTARTED
+  // when the user returns. Without an explicit nudge, the playback effect
+  // doesn't auto-call playVideo() (its deps haven't changed), so the player
+  // would sit there until the user clicked play. Refreshing the anchor +
+  // calling playVideo() on return covers all the "tab was inactive, now I'm
+  // back, video should resume" cases.
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         stallRetriesRef.current = 0;
         stuckReportedRef.current = false;
         lastSuccessfulPlayRef.current = Date.now();
+        if (
+          isPlayerReady
+          && playerRef.current
+          && currentTrack
+          && isPlaying
+          && !isLocallyPaused
+          && !hasFullscreenOverlay
+          && !previewTrack
+        ) {
+          const state = playerRef.current.getPlayerState?.();
+          if (state !== YouTubeState.PLAYING && state !== YouTubeState.CUED) {
+            try { playerRef.current.playVideo?.(); } catch { /* gone */ }
+          }
+        }
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, []);
+  }, [isPlayerReady, currentTrack, isPlaying, isLocallyPaused, hasFullscreenOverlay, previewTrack]);
 
   useEffect(() => {
     // Reset retries when track changes
@@ -956,11 +975,22 @@ function RoomBody() {
     if (isLocallyPaused) return;
     if (previewTrack) return;
     if (hasFullscreenOverlay) return;
+    // Anchor refresh on activation: every time we transition into "supposed
+    // to be playing" (after a pause / settings being open / a preview ending
+    // / server-side pause-then-play), reset the anchor so the time the user
+    // spent in the bailed-out state doesn't count toward the deadline. Real
+    // genuinely-stuck cases still fire after STUCK_DEADLINE_MS from now.
+    lastSuccessfulPlayRef.current = Date.now();
+    stuckReportedRef.current = false;
     const interval = setInterval(() => {
       if (document.hidden) return;
       if (stuckReportedRef.current) return;
       const state = playerRef.current?.getPlayerState?.();
-      if (state === YouTubeState.PLAYING || state === YouTubeState.CUED) {
+      if (
+        state === YouTubeState.PLAYING
+        || state === YouTubeState.CUED
+        || state === YouTubeState.PAUSED
+      ) {
         // PLAYING — the IFrame Player API can occasionally drop a PLAYING
         // state change on the floor (especially after iframe re-attachment).
         // If we're polling and see the player IS playing, refresh the
@@ -971,6 +1001,14 @@ function RoomBody() {
         // policies). The user can fix this with one tap; it is NOT an IP
         // block. Firing the "playback restricted" overlay here would be
         // misleading, so treat CUED as a non-stuck state.
+        //
+        // PAUSED — by the time we reach the polling check, every "user
+        // paused on purpose" path has already bailed out above (server
+        // !isPlaying, isLocallyPaused, hasFullscreenOverlay, previewTrack).
+        // What's left for the player to be PAUSED while the server says we
+        // should be playing is browser interaction policy — unmuted-autoplay
+        // blocked, an ad break, the OS audio session being preempted, etc.
+        // None of those are IP blocks; firing the overlay would be wrong.
         lastSuccessfulPlayRef.current = Date.now();
         return;
       }
