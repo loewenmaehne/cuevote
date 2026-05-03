@@ -881,7 +881,12 @@ function RoomBody() {
           && !previewTrack
         ) {
           const state = playerRef.current.getPlayerState?.();
-          if (state !== YouTubeState.PLAYING && state !== YouTubeState.CUED) {
+          // Nudge any non-PLAYING state. CUED (autoplay-blocked while
+          // hidden) might now be unblocked because the user just brought
+          // the tab to the foreground; if the browser still blocks,
+          // playVideo() silently fails — no harm. UNSTARTED / BUFFERING /
+          // PAUSED all benefit from the explicit kick.
+          if (state !== YouTubeState.PLAYING) {
             try { playerRef.current.playVideo?.(); } catch { /* gone */ }
           }
         }
