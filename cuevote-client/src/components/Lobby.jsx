@@ -50,6 +50,18 @@ export function Lobby() {
         };
     }, []);
 
+    // Debounce the LoadingScreen — brief mobile disconnects (< 2.5 s) shouldn't flash the overlay
+    // and steal the rooms grid mid-scroll. Starts true so the initial mount shows the spinner immediately.
+    const [showConnectingOverlay, setShowConnectingOverlay] = useState(true);
+    useEffect(() => {
+        if (isConnected) {
+            setShowConnectingOverlay(false);
+            return;
+        }
+        const timer = setTimeout(() => setShowConnectingOverlay(true), 2500);
+        return () => clearTimeout(timer);
+    }, [isConnected]);
+
     // Native Bridge: Sync QR Button State (LOBBY ONLY)
     useEffect(() => {
         // Show QR only if user has consented AND no banner is shown (implicit Lobby because this component IS valid)
@@ -761,7 +773,7 @@ export function Lobby() {
                     </div>
                 </div>
 
-                {!isConnected ? (
+                {showConnectingOverlay ? (
                     <div className="col-span-full py-12">
                         <LoadingScreen embedded isOnline={isOnline} message={t('lobby.connecting')} reconnectAttempt={reconnectAttempt} onForceReconnect={forceReconnect} />
                     </div>
