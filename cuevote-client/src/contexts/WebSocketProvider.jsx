@@ -144,8 +144,8 @@ export function WebSocketProvider({ children }) {
         }
       };
 
-      const handleClose = () => {
-        console.log("WebSocket disconnected");
+      const handleClose = (event) => {
+        console.log("WebSocket disconnected", { code: event?.code, reason: event?.reason, wasClean: event?.wasClean });
         cleanupConnectionListeners();
         setIsConnected(false);
         setReconnectAttempt(prev => prev + 1);
