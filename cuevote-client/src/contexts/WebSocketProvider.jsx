@@ -132,8 +132,6 @@ export function WebSocketProvider({ children }) {
       const handleOpen = () => {
         console.log("WebSocket connected");
         setIsConnected(true);
-        setReconnectAttempt(0);
-        reconnectDelay = 1000;
         const token = sessionTokenRef.current;
         if (token) {
           socket.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token } }));
@@ -142,10 +140,18 @@ export function WebSocketProvider({ children }) {
           const queued = messageQueue.current.shift();
           socket.send(JSON.stringify(queued));
         }
+        // Only reset the backoff after the socket survives 10s. Without this, a server
+        // that closes immediately after opening (e.g. rate limit at server/index.js:169)
+        // keeps resetting reconnectDelay back to 1s, sustaining a 1-2s reload loop.
+        socket._stabilityTimer = setTimeout(() => {
+          setReconnectAttempt(0);
+          reconnectDelay = 1000;
+        }, 10000);
       };
 
       const handleClose = (event) => {
         console.log("WebSocket disconnected", { code: event?.code, reason: event?.reason, wasClean: event?.wasClean });
+        if (socket._stabilityTimer) clearTimeout(socket._stabilityTimer);
         cleanupConnectionListeners();
         setIsConnected(false);
         setReconnectAttempt(prev => prev + 1);
