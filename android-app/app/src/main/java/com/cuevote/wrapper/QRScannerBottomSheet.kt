@@ -13,9 +13,11 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
+import com.journeyapps.barcodescanner.DefaultDecoderFactory
 
 class QRScannerBottomSheet : BottomSheetDialogFragment() {
 
@@ -59,7 +61,17 @@ class QRScannerBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         barcodeView = view.findViewById(R.id.barcode_scanner)
-        
+
+        // CueVote's share QR renders white-on-dark (inverted). SCAN_TYPE_MIXED (2)
+        // makes the decoder try both regular and inverted orientations so Android
+        // matches iOS's native scanner behavior.
+        barcodeView.barcodeView.decoderFactory = DefaultDecoderFactory(
+            listOf(BarcodeFormat.QR_CODE),
+            null,
+            null,
+            2
+        )
+
         // QR Code Decoding Callback
         barcodeView.decodeContinuous(object : BarcodeCallback {
             override fun barcodeResult(result: BarcodeResult?) {
