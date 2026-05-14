@@ -32,6 +32,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
 
     private lateinit var webView: WebView
+    private lateinit var fab: FloatingActionButton
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
     private var wasOffline = false
     private var reconnectHandler: android.os.Handler? = null
@@ -171,7 +172,7 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         container.addView(webView)
 
         // 4. Create Floating Action Button (QR Scan)
-        val fab = FloatingActionButton(this)
+        fab = FloatingActionButton(this)
         val fabParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.WRAP_CONTENT,
             FrameLayout.LayoutParams.WRAP_CONTENT
@@ -303,6 +304,10 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         }
 
         finalUrl?.let {
+            // webView.loadUrl triggers a full page reload, which tears down the JS
+            // context before the Lobby useEffect cleanup can call toggleQRButton(false).
+            // Hide the FAB from Kotlin so it doesn't linger over the room view.
+            fab.hide()
             webView.loadUrl(it)
         }
     }
