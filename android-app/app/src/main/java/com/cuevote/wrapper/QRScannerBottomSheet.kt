@@ -17,10 +17,15 @@ import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
-import com.journeyapps.barcodescanner.Decoder
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 
 class QRScannerBottomSheet : BottomSheetDialogFragment() {
+
+    companion object {
+        // journeyapps 4.3.0 doesn't expose this as a public constant. Confirmed
+        // from the DefaultDecoderFactory bytecode: 0=regular, 1=inverted, 2=mixed.
+        private const val SCAN_TYPE_MIXED = 2
+    }
 
     interface QRScanListener {
         fun onScanComplete(url: String)
@@ -70,7 +75,7 @@ class QRScannerBottomSheet : BottomSheetDialogFragment() {
             listOf(BarcodeFormat.QR_CODE),
             null,
             null,
-            Decoder.SCAN_TYPE_MIXED
+            SCAN_TYPE_MIXED
         )
 
         // QR Code Decoding Callback
