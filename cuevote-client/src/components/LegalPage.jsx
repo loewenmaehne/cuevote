@@ -45,7 +45,7 @@ export function LegalPage() {
 
     const dates = {
         terms: "April 1, 2026",
-        privacy: "May 16, 2026",
+        privacy: "May 17, 2026",
         imprint: "December 26, 2025"
     };
     const LastUpdated = dates[activeTab];
