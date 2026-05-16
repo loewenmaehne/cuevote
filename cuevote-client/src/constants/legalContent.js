@@ -74,10 +74,10 @@ const enContent = {
 					title: "2. Data Collection & Purpose",
 					intro: "We process data for specific, legitimate purposes:",
 					list: [
-						{ title: "Google Account Information", text: "When you login via Google, we verify your identity and store your email, name, and avatar URL to display your profile in rooms. Retention: data is kept until you delete your account or after 24 months of inactivity. Legal basis: Contract (Art. 6.1.b GDPR)." },
-						{ title: "Usage Statistics", text: "We log room history and voted videos to improve recommendations. This data is internal to CueVote. Retention: rolling 12 months. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." },
-						{ title: "YouTube API Data", text: "When you search or play songs, we send requests to YouTube's API. YouTube may collect data on your viewing behavior via their embedded player. Retention: requests are transient and not persistently stored by CueVote (any caching is purely technical and short-lived). Legal basis: Contract/Consent (via your use of YouTube)." },
-						{ title: "Server Logs & Security", text: "To ensure the stability and security of our service (e.g., defense against DDoS attacks), we process technical connection data (IP address, timestamp, user agent). This connection data is initially processed by our CDN provider (Cloudflare) at the network edge for security and routing purposes before reaching our servers. Retention: these logs are deleted automatically after 14 days. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." }
+						{ title: "Google Account Information", text: "When you login via Google, we verify your identity and store your email, name, and avatar URL to display your profile in rooms. Retention: data is kept until you delete your account; we do not perform automated deletion based on inactivity. Legal basis: Contract (Art. 6.1.b GDPR)." },
+						{ title: "Usage Statistics", text: "We log a history of which videos were played in which rooms to improve recommendations. Votes are processed in real-time only and are not stored persistently. This data is internal to CueVote. Retention: room history is retained for the lifetime of the associated room; empty rooms are deleted automatically after 7 days. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." },
+						{ title: "YouTube API Data", text: "When you search or play songs, we send requests to YouTube's API. YouTube may collect data on your viewing behavior via their embedded player. Retention: cached video metadata (titles, thumbnails, durations) is cleared after 28 days; search and related-video caches are deleted after 28 days. Video IDs may be retained as part of room history. Legal basis: Contract/Consent (via your use of YouTube)." },
+						{ title: "Server Logs & Security", text: "To ensure the stability and security of our service (e.g., defense against DDoS attacks), we process technical connection data (IP address and timestamp). This connection data is initially processed by our CDN provider (Cloudflare) at the network edge for security and routing purposes before reaching our servers. Retention: these logs are deleted automatically after 14 days. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." }
 					]
 				},
 				{
@@ -86,8 +86,7 @@ const enContent = {
 					listSimple: [
 						`<strong>Google/YouTube</strong> (Auth & Content API) - USA. <br /><span class="text-sm">See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.</span>`,
 						`<strong>Cloudflare, Inc.</strong> (CDN, Reverse Proxy, DDoS Protection, Web Analytics, Email Routing) - USA. <br /><span class="text-sm">All traffic to cuevote.com is routed through Cloudflare's global network for security, performance, and privacy-friendly analytics. Additionally, email sent to addresses on our domain (e.g. privacy@cuevote.com) is processed and forwarded by Cloudflare Email Routing before reaching our mailbox; email content is processed solely for delivery purposes and not permanently stored by Cloudflare. Cloudflare is certified under the EU-US Data Privacy Framework. See <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare Privacy Policy</a>.</span>`,
-						`<strong>Hosting Provider</strong> (Server Infrastructure) - Germany/France (EU)`,
-						`<strong>Database Provider</strong> (Data Storage) - EU/USA`
+						`<strong>Hosting Provider</strong> (Server Infrastructure & self-hosted SQLite database stored locally on the same server) - EU.`
 					]
 				},
 				{
@@ -98,7 +97,7 @@ const enContent = {
                     <strong>Right to rectification (Art. 16)</strong> – correct inaccurate or incomplete data.<br />
                     <strong>Right to erasure / "Right to be Forgotten" (Art. 17)</strong> – request deletion of your data.<br />
                     <strong>Right to restriction of processing (Art. 18)</strong> – limit how we process your data.<br />
-                    <strong>Right to data portability (Art. 20)</strong> – receive your data in a structured, machine-readable format.<br />
+                    <strong>Right to data portability (Art. 20)</strong> – request a copy of your data in a structured, machine-readable format (handled manually upon written request to our contact email).<br />
                     <strong>Right to object (Art. 21)</strong> – object at any time to processing based on legitimate interest (e.g. usage statistics, server logs).<br />
                     <strong>Right to withdraw consent (Art. 7.3)</strong> – withdraw any consent you have given, without affecting the lawfulness of processing prior to withdrawal.
                     <br /><br />
@@ -192,10 +191,10 @@ const nlContent = {
 					title: "2. Gegevensverzameling & Doel",
 					intro: "Wij verwerken gegevens voor specifieke, legitieme doeleinden:",
 					list: [
-						{ title: "Google Accountinformatie", text: "Wanneer u inlogt via Google, verifiëren wij uw identiteit en slaan uw e-mail, naam en avatar-URL op om uw profiel in kamers weer te geven. Bewaartermijn: gegevens worden bewaard totdat u uw account verwijdert of na 24 maanden inactiviteit. Rechtsgrond: Overeenkomst (Art. 6.1.b AVG)." },
-						{ title: "Gebruiksstatistieken", text: "Wij loggen kamergeschiedenis en gestemde nummers om aanbevelingen te verbeteren. Deze gegevens zijn intern voor CueVote. Bewaartermijn: rollend 12 maanden. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." },
-						{ title: "YouTube API Gegevens", text: "Wanneer u zoekt of nummers afspeelt, sturen wij verzoeken naar de API van YouTube. YouTube kan gegevens verzamelen over uw kijkgedrag via hun embedded speler. Bewaartermijn: verzoeken zijn tijdelijk en worden niet permanent door CueVote opgeslagen (eventuele caching is puur technisch en kortstondig). Rechtsgrond: Overeenkomst/Toestemming (via uw gebruik van YouTube)." },
-						{ title: "Serverlogs & Beveiliging", text: "Om de stabiliteit en veiligheid van onze dienst te garanderen (bijv. verdediging tegen DDoS-aanvallen), verwerken wij technische verbindingsgegevens (IP-adres, tijdstempel, user agent). Deze verbindingsgegevens worden eerst door onze CDN-provider (Cloudflare) verwerkt aan de rand van het netwerk voor beveiligings- en routeringsdoeleinden voordat ze onze servers bereiken. Bewaartermijn: deze logs worden automatisch verwijderd na 14 dagen. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." }
+						{ title: "Google Accountinformatie", text: "Wanneer u inlogt via Google, verifiëren wij uw identiteit en slaan uw e-mail, naam en avatar-URL op om uw profiel in kamers weer te geven. Bewaartermijn: gegevens worden bewaard totdat u uw account verwijdert; wij voeren geen geautomatiseerde verwijdering uit op basis van inactiviteit. Rechtsgrond: Overeenkomst (Art. 6.1.b AVG)." },
+						{ title: "Gebruiksstatistieken", text: "Wij loggen een geschiedenis van welke video's in welke kamers zijn afgespeeld om aanbevelingen te verbeteren. Stemmen worden uitsluitend in realtime verwerkt en niet permanent opgeslagen. Deze gegevens zijn intern voor CueVote. Bewaartermijn: kamergeschiedenis wordt bewaard zolang de bijbehorende kamer bestaat; lege kamers worden automatisch na 7 dagen verwijderd. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." },
+						{ title: "YouTube API Gegevens", text: "Wanneer u zoekt of nummers afspeelt, sturen wij verzoeken naar de API van YouTube. YouTube kan gegevens verzamelen over uw kijkgedrag via hun embedded speler. Bewaartermijn: gecachte videometadata (titels, thumbnails, duur) wordt na 28 dagen gewist; zoek- en gerelateerde-video-caches worden na 28 dagen verwijderd. Video-ID's kunnen worden bewaard als onderdeel van de kamergeschiedenis. Rechtsgrond: Overeenkomst/Toestemming (via uw gebruik van YouTube)." },
+						{ title: "Serverlogs & Beveiliging", text: "Om de stabiliteit en veiligheid van onze dienst te garanderen (bijv. verdediging tegen DDoS-aanvallen), verwerken wij technische verbindingsgegevens (IP-adres en tijdstempel). Deze verbindingsgegevens worden eerst door onze CDN-provider (Cloudflare) verwerkt aan de rand van het netwerk voor beveiligings- en routeringsdoeleinden voordat ze onze servers bereiken. Bewaartermijn: deze logs worden automatisch verwijderd na 14 dagen. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." }
 					]
 				},
 				{
@@ -204,8 +203,7 @@ const nlContent = {
 					listSimple: [
 						`<strong>Google/YouTube</strong> (Auth & Content API) - VS. <br /><span class="text-sm">Zie <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacybeleid</a>.</span>`,
 						`<strong>Cloudflare, Inc.</strong> (CDN, Reverse Proxy, DDoS-bescherming, Web Analytics, Email Routing) - VS. <br /><span class="text-sm">Al het verkeer naar cuevote.com wordt via het wereldwijde netwerk van Cloudflare geleid voor beveiliging, prestaties en privacyvriendelijke analyses. Daarnaast wordt e-mail die naar adressen op ons domein wordt verzonden (bijv. privacy@cuevote.com) verwerkt en doorgestuurd door Cloudflare Email Routing voordat deze onze mailbox bereikt; e-mailinhoud wordt uitsluitend voor bezorgingsdoeleinden verwerkt en niet permanent door Cloudflare opgeslagen. Cloudflare is gecertificeerd onder het EU-US Data Privacy Framework. Zie <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare Privacybeleid</a>.</span>`,
-						`<strong>Hosting Provider</strong> (Server Infrastructuur) - Duitsland/Frankrijk (EU)`,
-						`<strong>Database Provider</strong> (Gegevensopslag) - EU/VS`
+						`<strong>Hosting Provider</strong> (Server Infrastructuur & zelf-gehoste SQLite-database lokaal opgeslagen op dezelfde server) - EU.`
 					]
 				},
 				{
@@ -216,7 +214,7 @@ const nlContent = {
                     <strong>Recht op rectificatie (Art. 16)</strong> – onjuiste of onvolledige gegevens corrigeren.<br />
                     <strong>Recht op gegevenswissing / "Recht om vergeten te worden" (Art. 17)</strong> – verzoek tot verwijdering van uw gegevens.<br />
                     <strong>Recht op beperking van de verwerking (Art. 18)</strong> – beperken hoe wij uw gegevens verwerken.<br />
-                    <strong>Recht op gegevensoverdraagbaarheid (Art. 20)</strong> – ontvang uw gegevens in een gestructureerd, machineleesbaar formaat.<br />
+                    <strong>Recht op gegevensoverdraagbaarheid (Art. 20)</strong> – vraag een kopie op van uw gegevens in een gestructureerd, machineleesbaar formaat (handmatig verwerkt op schriftelijk verzoek aan ons contact-e-mailadres).<br />
                     <strong>Recht van bezwaar (Art. 21)</strong> – te allen tijde bezwaar maken tegen verwerking op basis van gerechtvaardigd belang (bijv. gebruiksstatistieken, serverlogs).<br />
                     <strong>Recht om toestemming in te trekken (Art. 7.3)</strong> – elke gegeven toestemming intrekken, zonder afbreuk te doen aan de rechtmatigheid van de verwerking vóór de intrekking.
                     <br /><br />
