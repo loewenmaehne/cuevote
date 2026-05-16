@@ -77,7 +77,7 @@ const enContent = {
 						{ title: "Google Account Information", text: "When you login via Google, we verify your identity and store your email, name, and avatar URL to display your profile in rooms. Legal basis: Contract (Art. 6.1.b GDPR)." },
 						{ title: "Usage Statistics", text: "We log room history and voted videos to improve recommendations. This data is internal to CueVote. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." },
 						{ title: "YouTube API Data", text: "When you search or play songs, we send requests to YouTube's API. YouTube may collect data on your viewing behavior via their embedded player. Legal basis: Contract/Consent (via your use of YouTube)." },
-						{ title: "Server Logs & Security", text: "To ensure the stability and security of our service (e.g., defense against DDoS attacks), we process technical connection data (IP address, timestamp, user agent). These logs are deleted automatically after 14 days. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." }
+						{ title: "Server Logs & Security", text: "To ensure the stability and security of our service (e.g., defense against DDoS attacks), we process technical connection data (IP address, timestamp, user agent). This connection data is initially processed by our CDN provider (Cloudflare) at the network edge for security and routing purposes before reaching our servers. These logs are deleted automatically after 14 days. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." }
 					]
 				},
 				{
@@ -85,6 +85,7 @@ const enContent = {
 					content: `We engage trusted third parties to operate our infrastructure. We ensure they are GDPR compliant.`,
 					listSimple: [
 						`<strong>Google/YouTube</strong> (Auth & Content API) - USA. <br /><span class="text-sm">See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.</span>`,
+						`<strong>Cloudflare, Inc.</strong> (CDN, Reverse Proxy, DDoS Protection, Web Analytics) - USA. <br /><span class="text-sm">All traffic to cuevote.com is routed through Cloudflare's global network for security, performance, and privacy-friendly analytics. Cloudflare is certified under the EU-US Data Privacy Framework. See <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare Privacy Policy</a>.</span>`,
 						`<strong>Hosting Provider</strong> (Server Infrastructure) - Germany/France (EU)`,
 						`<strong>Database Provider</strong> (Data Storage) - EU/USA`
 					]
@@ -97,7 +98,7 @@ const enContent = {
 				},
 				{
 					title: "5. Cookies",
-					content: `We use only essential local storage to maintain your session (e.g. your login token). We do not use third-party tracking cookies for advertising (marketing cookies) on our own domain, though third-party embeds (YouTube) may set their own cookies.`
+					content: `We use only essential local storage to maintain your session (e.g. your login token). Our CDN provider Cloudflare may set the essential <code>__cf_bm</code> cookie (30 minute lifetime) for bot mitigation purposes; this cookie does not store personal data and is classified as strictly necessary. We do not use third-party tracking cookies for advertising (marketing cookies) on our own domain, though third-party embeds (YouTube) may set their own cookies.`
 				}
 			]
 		},
@@ -184,7 +185,7 @@ const nlContent = {
 						{ title: "Google Accountinformatie", text: "Wanneer u inlogt via Google, verifiëren wij uw identiteit en slaan uw e-mail, naam en avatar-URL op om uw profiel in kamers weer te geven. Rechtsgrond: Overeenkomst (Art. 6.1.b AVG)." },
 						{ title: "Gebruiksstatistieken", text: "Wij loggen kamergeschiedenis en gestemde nummers om aanbevelingen te verbeteren. Deze gegevens zijn intern voor CueVote. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." },
 						{ title: "YouTube API Gegevens", text: "Wanneer u zoekt of nummers afspeelt, sturen wij verzoeken naar de API van YouTube. YouTube kan gegevens verzamelen over uw kijkgedrag via hun embedded speler. Rechtsgrond: Overeenkomst/Toestemming (via uw gebruik van YouTube)." },
-						{ title: "Serverlogs & Beveiliging", text: "Om de stabiliteit en veiligheid van onze dienst te garanderen (bijv. verdediging tegen DDoS-aanvallen), verwerken wij technische verbindingsgegevens (IP-adres, tijdstempel, user agent). Deze logs worden automatisch verwijderd na 14 dagen. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." }
+						{ title: "Serverlogs & Beveiliging", text: "Om de stabiliteit en veiligheid van onze dienst te garanderen (bijv. verdediging tegen DDoS-aanvallen), verwerken wij technische verbindingsgegevens (IP-adres, tijdstempel, user agent). Deze verbindingsgegevens worden eerst door onze CDN-provider (Cloudflare) verwerkt aan de rand van het netwerk voor beveiligings- en routeringsdoeleinden voordat ze onze servers bereiken. Deze logs worden automatisch verwijderd na 14 dagen. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." }
 					]
 				},
 				{
@@ -192,6 +193,7 @@ const nlContent = {
 					content: `Wij schakelen vertrouwde derden in om onze infrastructuur te beheren. Wij zorgen ervoor dat zij AVG-compliant zijn.`,
 					listSimple: [
 						`<strong>Google/YouTube</strong> (Auth & Content API) - VS. <br /><span class="text-sm">Zie <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacybeleid</a>.</span>`,
+						`<strong>Cloudflare, Inc.</strong> (CDN, Reverse Proxy, DDoS-bescherming, Web Analytics) - VS. <br /><span class="text-sm">Al het verkeer naar cuevote.com wordt via het wereldwijde netwerk van Cloudflare geleid voor beveiliging, prestaties en privacyvriendelijke analyses. Cloudflare is gecertificeerd onder het EU-US Data Privacy Framework. Zie <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare Privacybeleid</a>.</span>`,
 						`<strong>Hosting Provider</strong> (Server Infrastructuur) - Duitsland/Frankrijk (EU)`,
 						`<strong>Database Provider</strong> (Gegevensopslag) - EU/VS`
 					]
@@ -204,7 +206,7 @@ const nlContent = {
 				},
 				{
 					title: "5. Cookies",
-					content: `Wij gebruiken alleen essentiële lokale opslag om uw sessie te onderhouden (bijv. uw login token). Wij gebruiken geen tracking cookies van derden voor advertenties op ons eigen domein, hoewel embeds van derden (YouTube) hun eigen cookies kunnen plaatsen.`
+					content: `Wij gebruiken alleen essentiële lokale opslag om uw sessie te onderhouden (bijv. uw login token). Onze CDN-provider Cloudflare kan het essentiële <code>__cf_bm</code> cookie (30 minuten levensduur) plaatsen voor bot-mitigatiedoeleinden; dit cookie slaat geen persoonlijke gegevens op en wordt geclassificeerd als strikt noodzakelijk. Wij gebruiken geen tracking cookies van derden voor advertenties op ons eigen domein, hoewel embeds van derden (YouTube) hun eigen cookies kunnen plaatsen.`
 				}
 			]
 		},
