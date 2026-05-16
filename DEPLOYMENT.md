@@ -87,6 +87,27 @@ systemctl status pm2-$USER
 # Should show "active (running)"
 ```
 
+### Configure Log Rotation
+
+PM2 stores logs in `~/.pm2/logs/` and does **not** rotate them by default — over time they grow until the disk fills. Install `pm2-logrotate` and set sensible limits:
+
+```bash
+pm2 install pm2-logrotate
+pm2 set pm2-logrotate:max_size 10M
+pm2 set pm2-logrotate:retain 14
+pm2 set pm2-logrotate:compress true
+pm2 set pm2-logrotate:rotateInterval '0 0 * * *'   # daily at midnight
+```
+
+This keeps 14 rotated files of max 10 MB each, compressed. Aligned with the 14-day retention window stated in the Privacy Policy.
+
+Verify the module is installed:
+```bash
+pm2 list   # cuevote-server should appear; pm2-logrotate is a module, see "pm2 status"
+```
+
+Nginx access logs are rotated automatically by the Debian default `logrotate` config (`/etc/logrotate.d/nginx`, daily, 14 days kept) — no extra setup needed.
+
 ## 4. Frontend Setup (cuevote-client)
 
 ```bash
