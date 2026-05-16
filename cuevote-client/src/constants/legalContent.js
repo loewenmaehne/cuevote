@@ -74,10 +74,10 @@ const enContent = {
 					title: "2. Data Collection & Purpose",
 					intro: "We process data for specific, legitimate purposes:",
 					list: [
-						{ title: "Google Account Information", text: "When you login via Google, we verify your identity and store your email, name, and avatar URL to display your profile in rooms. Legal basis: Contract (Art. 6.1.b GDPR)." },
-						{ title: "Usage Statistics", text: "We log room history and voted videos to improve recommendations. This data is internal to CueVote. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." },
-						{ title: "YouTube API Data", text: "When you search or play songs, we send requests to YouTube's API. YouTube may collect data on your viewing behavior via their embedded player. Legal basis: Contract/Consent (via your use of YouTube)." },
-						{ title: "Server Logs & Security", text: "To ensure the stability and security of our service (e.g., defense against DDoS attacks), we process technical connection data (IP address, timestamp, user agent). This connection data is initially processed by our CDN provider (Cloudflare) at the network edge for security and routing purposes before reaching our servers. These logs are deleted automatically after 14 days. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." }
+						{ title: "Google Account Information", text: "When you login via Google, we verify your identity and store your email, name, and avatar URL to display your profile in rooms. Retention: data is kept until you delete your account or after 24 months of inactivity. Legal basis: Contract (Art. 6.1.b GDPR)." },
+						{ title: "Usage Statistics", text: "We log room history and voted videos to improve recommendations. This data is internal to CueVote. Retention: rolling 12 months. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." },
+						{ title: "YouTube API Data", text: "When you search or play songs, we send requests to YouTube's API. YouTube may collect data on your viewing behavior via their embedded player. Retention: requests are transient and not persistently stored by CueVote (any caching is purely technical and short-lived). Legal basis: Contract/Consent (via your use of YouTube)." },
+						{ title: "Server Logs & Security", text: "To ensure the stability and security of our service (e.g., defense against DDoS attacks), we process technical connection data (IP address, timestamp, user agent). This connection data is initially processed by our CDN provider (Cloudflare) at the network edge for security and routing purposes before reaching our servers. Retention: these logs are deleted automatically after 14 days. Legal basis: Legitimate Interest (Art. 6.1.f GDPR)." }
 					]
 				},
 				{
@@ -92,9 +92,19 @@ const enContent = {
 				},
 				{
 					title: "4. Your Rights",
-					content: `You have the right to access, correct, delete, or export your personal data at any time. To exercise these rights ("Right to be Forgotten" or "Revocation of Access"), contact us at the email provided above.
+					content: `Under the GDPR, you have the following rights regarding your personal data:
                     <br /><br />
-                    You can also revoke our access to your Google Data via the <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener noreferrer">Google Security Settings</a> page.`
+                    <strong>Right of access (Art. 15)</strong> – obtain confirmation and a copy of your personal data.<br />
+                    <strong>Right to rectification (Art. 16)</strong> – correct inaccurate or incomplete data.<br />
+                    <strong>Right to erasure / "Right to be Forgotten" (Art. 17)</strong> – request deletion of your data.<br />
+                    <strong>Right to restriction of processing (Art. 18)</strong> – limit how we process your data.<br />
+                    <strong>Right to data portability (Art. 20)</strong> – receive your data in a structured, machine-readable format.<br />
+                    <strong>Right to object (Art. 21)</strong> – object at any time to processing based on legitimate interest (e.g. usage statistics, server logs).<br />
+                    <strong>Right to withdraw consent (Art. 7.3)</strong> – withdraw any consent you have given, without affecting the lawfulness of processing prior to withdrawal.
+                    <br /><br />
+                    To exercise these rights, contact us at the email provided above. You can also revoke our access to your Google Data via the <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener noreferrer">Google Security Settings</a> page.
+                    <br /><br />
+                    <strong>Right to lodge a complaint (Art. 77):</strong> You have the right to lodge a complaint with a supervisory authority. The competent authority for CueVote is the Dutch Data Protection Authority – <a href="https://autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener noreferrer">Autoriteit Persoonsgegevens</a>.`
 				},
 				{
 					title: "5. Cookies",
@@ -182,10 +192,10 @@ const nlContent = {
 					title: "2. Gegevensverzameling & Doel",
 					intro: "Wij verwerken gegevens voor specifieke, legitieme doeleinden:",
 					list: [
-						{ title: "Google Accountinformatie", text: "Wanneer u inlogt via Google, verifiëren wij uw identiteit en slaan uw e-mail, naam en avatar-URL op om uw profiel in kamers weer te geven. Rechtsgrond: Overeenkomst (Art. 6.1.b AVG)." },
-						{ title: "Gebruiksstatistieken", text: "Wij loggen kamergeschiedenis en gestemde nummers om aanbevelingen te verbeteren. Deze gegevens zijn intern voor CueVote. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." },
-						{ title: "YouTube API Gegevens", text: "Wanneer u zoekt of nummers afspeelt, sturen wij verzoeken naar de API van YouTube. YouTube kan gegevens verzamelen over uw kijkgedrag via hun embedded speler. Rechtsgrond: Overeenkomst/Toestemming (via uw gebruik van YouTube)." },
-						{ title: "Serverlogs & Beveiliging", text: "Om de stabiliteit en veiligheid van onze dienst te garanderen (bijv. verdediging tegen DDoS-aanvallen), verwerken wij technische verbindingsgegevens (IP-adres, tijdstempel, user agent). Deze verbindingsgegevens worden eerst door onze CDN-provider (Cloudflare) verwerkt aan de rand van het netwerk voor beveiligings- en routeringsdoeleinden voordat ze onze servers bereiken. Deze logs worden automatisch verwijderd na 14 dagen. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." }
+						{ title: "Google Accountinformatie", text: "Wanneer u inlogt via Google, verifiëren wij uw identiteit en slaan uw e-mail, naam en avatar-URL op om uw profiel in kamers weer te geven. Bewaartermijn: gegevens worden bewaard totdat u uw account verwijdert of na 24 maanden inactiviteit. Rechtsgrond: Overeenkomst (Art. 6.1.b AVG)." },
+						{ title: "Gebruiksstatistieken", text: "Wij loggen kamergeschiedenis en gestemde nummers om aanbevelingen te verbeteren. Deze gegevens zijn intern voor CueVote. Bewaartermijn: rollend 12 maanden. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." },
+						{ title: "YouTube API Gegevens", text: "Wanneer u zoekt of nummers afspeelt, sturen wij verzoeken naar de API van YouTube. YouTube kan gegevens verzamelen over uw kijkgedrag via hun embedded speler. Bewaartermijn: verzoeken zijn tijdelijk en worden niet permanent door CueVote opgeslagen (eventuele caching is puur technisch en kortstondig). Rechtsgrond: Overeenkomst/Toestemming (via uw gebruik van YouTube)." },
+						{ title: "Serverlogs & Beveiliging", text: "Om de stabiliteit en veiligheid van onze dienst te garanderen (bijv. verdediging tegen DDoS-aanvallen), verwerken wij technische verbindingsgegevens (IP-adres, tijdstempel, user agent). Deze verbindingsgegevens worden eerst door onze CDN-provider (Cloudflare) verwerkt aan de rand van het netwerk voor beveiligings- en routeringsdoeleinden voordat ze onze servers bereiken. Bewaartermijn: deze logs worden automatisch verwijderd na 14 dagen. Rechtsgrond: Gerechtvaardigd Belang (Art. 6.1.f AVG)." }
 					]
 				},
 				{
@@ -200,9 +210,19 @@ const nlContent = {
 				},
 				{
 					title: "4. Uw Rechten",
-					content: `U heeft te allen tijde het recht om uw persoonlijke gegevens in te zien, te corrigeren, te verwijderen of te exporteren. Om deze rechten uit te oefenen ("Recht om vergeten te worden"), neem contact met ons op via het bovenstaande e-mailadres.
+					content: `Onder de AVG heeft u de volgende rechten met betrekking tot uw persoonlijke gegevens:
                     <br /><br />
-                    U kunt ook onze toegang tot uw Google Gegevens intrekken via de <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener noreferrer">Google Beveiligingsinstellingen</a> pagina.`
+                    <strong>Recht op inzage (Art. 15)</strong> – bevestiging verkrijgen en een kopie van uw persoonlijke gegevens.<br />
+                    <strong>Recht op rectificatie (Art. 16)</strong> – onjuiste of onvolledige gegevens corrigeren.<br />
+                    <strong>Recht op gegevenswissing / "Recht om vergeten te worden" (Art. 17)</strong> – verzoek tot verwijdering van uw gegevens.<br />
+                    <strong>Recht op beperking van de verwerking (Art. 18)</strong> – beperken hoe wij uw gegevens verwerken.<br />
+                    <strong>Recht op gegevensoverdraagbaarheid (Art. 20)</strong> – ontvang uw gegevens in een gestructureerd, machineleesbaar formaat.<br />
+                    <strong>Recht van bezwaar (Art. 21)</strong> – te allen tijde bezwaar maken tegen verwerking op basis van gerechtvaardigd belang (bijv. gebruiksstatistieken, serverlogs).<br />
+                    <strong>Recht om toestemming in te trekken (Art. 7.3)</strong> – elke gegeven toestemming intrekken, zonder afbreuk te doen aan de rechtmatigheid van de verwerking vóór de intrekking.
+                    <br /><br />
+                    Om deze rechten uit te oefenen, neem contact met ons op via het bovenstaande e-mailadres. U kunt ook onze toegang tot uw Google Gegevens intrekken via de <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener noreferrer">Google Beveiligingsinstellingen</a> pagina.
+                    <br /><br />
+                    <strong>Recht om een klacht in te dienen (Art. 77):</strong> U heeft het recht om een klacht in te dienen bij een toezichthoudende autoriteit. De bevoegde autoriteit voor CueVote is de Nederlandse toezichthoudende autoriteit – <a href="https://autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener noreferrer">Autoriteit Persoonsgegevens</a>.`
 				},
 				{
 					title: "5. Cookies",
