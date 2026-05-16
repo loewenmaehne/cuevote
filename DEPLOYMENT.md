@@ -101,10 +101,21 @@ pm2 set pm2-logrotate:rotateInterval '0 0 * * *'   # daily at midnight
 
 This keeps 14 rotated files of max 10 MB each, compressed. Aligned with the 14-day retention window stated in the Privacy Policy.
 
-Verify the module is installed:
+Verify the configuration:
 ```bash
-pm2 list   # cuevote-server should appear; pm2-logrotate is a module, see "pm2 status"
+pm2 conf pm2-logrotate   # should print the four values you just set
+pm2 status               # should list pm2-logrotate as a module, status "online"
 ```
+
+**If you are installing pm2-logrotate on a server that has been running for a while**, the existing log files will not be touched by the rotation policy and may already be huge. Check and truncate them safely (PM2 keeps writing into the same file descriptor, so this works without restart):
+
+```bash
+du -sh ~/.pm2/logs/cuevote-server-*
+sudo truncate -s 0 ~/.pm2/logs/cuevote-server-out.log
+sudo truncate -s 0 ~/.pm2/logs/cuevote-server-error.log
+```
+
+From the next rotation onwards, log files are bounded automatically.
 
 Nginx access logs are rotated automatically by the Debian default `logrotate` config (`/etc/logrotate.d/nginx`, daily, 14 days kept) — no extra setup needed.
 
