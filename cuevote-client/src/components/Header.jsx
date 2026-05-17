@@ -329,7 +329,9 @@ export function Header({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log("[Header] Leave confirmed, navigating home...");
+                    if (import.meta.env.DEV) {
+                      console.log("[Header] Leave confirmed, navigating home...");
+                    }
                     onGoHome();
                     setShowExitConfirm(false);
                     onShowSuggest(false);
@@ -489,7 +491,9 @@ export function Header({
                     </button>
                     <button
                       onClick={() => {
-                        console.log("Delete button clicked in Header");
+                        if (import.meta.env.DEV) {
+                          console.log("Delete button clicked in Header");
+                        }
                         onDeleteAccount();
                         setShowProfileModal(false);
                         setShowDeleteConfirm(false);

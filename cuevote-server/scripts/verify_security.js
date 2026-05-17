@@ -1,4 +1,9 @@
 
+if (process.env.NODE_ENV === 'production') {
+	console.error('Refusing to run dev script in production.');
+	process.exit(1);
+}
+
 const WebSocket = require('ws');
 const Database = require('better-sqlite3');
 const crypto = require('crypto');

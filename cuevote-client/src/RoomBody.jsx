@@ -121,12 +121,16 @@ function RoomBody() {
   // Handle Delete Account Success (Moved up to avoid conditional hook call error)
   useEffect(() => {
     if (lastMessage && lastMessage.type === "DELETE_ACCOUNT_SUCCESS") {
-      console.log("Account deleted successfully");
+      if (import.meta.env.DEV) {
+        console.log("Account deleted successfully");
+      }
       handleLogout();
       navigate('/');
     }
     if (lastMessage && (lastMessage.type === "ROOM_DELETED" || (lastMessage.type === "error" && lastMessage.code === "ROOM_DELETED"))) {
-      console.log("Room deleted, navigating to lobby");
+      if (import.meta.env.DEV) {
+        console.log("Room deleted, navigating to lobby");
+      }
       navigate('/');
     }
   }, [lastMessage, handleLogout, navigate]);
@@ -136,7 +140,9 @@ function RoomBody() {
   };
 
   const handleDeleteChannel = () => {
-    console.log("SENDING DELETE_ROOM message");
+    if (import.meta.env.DEV) {
+      console.log("SENDING DELETE_ROOM message");
+    }
     sendMessage({ type: "DELETE_ROOM", payload: {} });
   };
 
@@ -249,15 +255,21 @@ function RoomBody() {
         // Only apply "already in room" guards when NOT reconnecting.
         // After a reconnect the server has forgotten this client, so we must rejoin.
         if (location.state?.alreadyJoined && activeRoomId === serverRoomId) {
-          console.log("[App] Skipping join, already joined from Lobby");
+          if (import.meta.env.DEV) {
+            console.log("[App] Skipping join, already joined from Lobby");
+          }
           return;
         }
         if (serverRoomId && activeRoomId && serverRoomId.toString().trim().toLowerCase() === activeRoomId.toString().trim().toLowerCase()) {
-          console.log("[App] Skipping join, already in target room:", activeRoomId);
+          if (import.meta.env.DEV) {
+            console.log("[App] Skipping join, already in target room:", activeRoomId);
+          }
           return;
         }
       } else {
-        console.log("[App] New connection detected, forcing room join:", activeRoomId);
+        if (import.meta.env.DEV) {
+          console.log("[App] New connection detected, forcing room join:", activeRoomId);
+        }
       }
 
       const password = location.state?.password;
@@ -316,7 +328,9 @@ function RoomBody() {
   useEffect(() => {
     if (!isConnected || serverState) return;
     const timer = setTimeout(() => {
-      console.warn("[App] Connected but no state received in 5s. Resending JOIN_ROOM.");
+      if (import.meta.env.DEV) {
+        console.warn("[App] Connected but no state received in 5s. Resending JOIN_ROOM.");
+      }
       const password = lastPasswordAttemptRef.current || location.state?.password;
       sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password } });
     }, 5000);
@@ -630,11 +644,15 @@ function RoomBody() {
     if (isPlayerReady && playerRef.current) {
       try {
         if (captionsEnabled && currentTrack?.language) {
-          console.log("[Player] Setting Caption Language:", currentTrack.language);
+          if (import.meta.env.DEV) {
+            console.log("[Player] Setting Caption Language:", currentTrack.language);
+          }
           playerRef.current.setOption && playerRef.current.setOption('captions', 'track', { languageCode: currentTrack.language });
         } else {
           // Explicitly clear captions if disabled
-          console.log("[Player] Clearing Captions (Disabled)");
+          if (import.meta.env.DEV) {
+            console.log("[Player] Clearing Captions (Disabled)");
+          }
           playerRef.current.setOption && playerRef.current.setOption('captions', 'track', {});
         }
       } catch (e) {
@@ -746,7 +764,9 @@ function RoomBody() {
             }
           },
           onError: (event) => {
-            console.error("YouTube Player Error:", event.data);
+            if (import.meta.env.DEV) {
+              console.error("YouTube Player Error:", event.data);
+            }
             const errorCode = event.data;
             // The owner is the source of truth for genuine playback issues:
             // forward the error to the server so its API check can decide
@@ -766,7 +786,9 @@ function RoomBody() {
             // NETWORK_THROTTLE in the latter case.
             if ([100, 101, 150, 153].includes(errorCode)) {
               if (isOwnerRef.current) {
-                console.warn("[Player] Video error. Sending to server for verification...", currentTrackRef.current?.title);
+                if (import.meta.env.DEV) {
+                  console.warn("[Player] Video error. Sending to server for verification...", currentTrackRef.current?.title);
+                }
                 sendMessage({
                   type: "PLAYBACK_ERROR",
                   payload: {
@@ -775,7 +797,9 @@ function RoomBody() {
                   }
                 });
               } else {
-                console.warn("[Player] Playback Error shown to guest:", errorCode);
+                if (import.meta.env.DEV) {
+                  console.warn("[Player] Playback Error shown to guest:", errorCode);
+                }
                 setPlaybackError(errorCode);
               }
             } else {
@@ -798,7 +822,11 @@ function RoomBody() {
       if (playerRef.current && typeof playerRef.current.destroy === 'function') {
         try {
           playerRef.current.destroy();
-        } catch (e) { console.error("Player cleanup error", e); }
+        } catch (e) {
+          if (import.meta.env.DEV) {
+            console.error("Player cleanup error", e);
+          }
+        }
         playerRef.current = null;
         setIsPlayerReady(false);
         stallRetriesRef.current = 0;
@@ -917,12 +945,16 @@ function RoomBody() {
       const state = playerRef.current.getPlayerState?.();
       if (state === YouTubeState.BUFFERING || state === YouTubeState.UNSTARTED) {
         stallRetriesRef.current += 1;
-        console.warn(`[Player] Stall detected (Attempt ${stallRetriesRef.current}).`);
+        if (import.meta.env.DEV) {
+          console.warn(`[Player] Stall detected (Attempt ${stallRetriesRef.current}).`);
+        }
 
         const stallLimit = deviceDetection.isTV() ? 6 : (isOwner ? 4 : 2);
         if (stallRetriesRef.current > stallLimit) {
           if (isOwner) {
-            console.warn("[Player] Stall limit exceeded for owner. Reporting as playback error.");
+            if (import.meta.env.DEV) {
+              console.warn("[Player] Stall limit exceeded for owner. Reporting as playback error.");
+            }
             sendMessage({
               type: "PLAYBACK_ERROR",
               payload: {
@@ -934,14 +966,18 @@ function RoomBody() {
             // Guests just surface a local indicator; the overlay is driven by
             // NETWORK_THROTTLE and the stuck-deadline detector below, which
             // already escalates a guest-side total stuck condition.
-            console.warn("[Player] Stall limit exceeded for guest. Surfacing local indicator.");
+            if (import.meta.env.DEV) {
+              console.warn("[Player] Stall limit exceeded for guest. Surfacing local indicator.");
+            }
             setPlaybackError(100);
           }
           clearInterval(checkInterval);
           return;
         }
 
-        console.warn("[Player] Force-reloading video...");
+        if (import.meta.env.DEV) {
+          console.warn("[Player] Force-reloading video...");
+        }
         const currentTime = playerRef.current.getCurrentTime?.() || progressRef.current;
         playerRef.current.loadVideoById?.(currentTrackRef.current?.videoId, currentTime);
       } else {
@@ -1025,7 +1061,9 @@ function RoomBody() {
       }
       const noPlayingFor = Date.now() - lastSuccessfulPlayRef.current;
       if (noPlayingFor < STUCK_DEADLINE_MS) return;
-      console.warn(`[Player] Stuck — supposed to be playing, no PLAYING for ${Math.round(noPlayingFor / 1000)}s. State=${state}.`);
+      if (import.meta.env.DEV) {
+        console.warn(`[Player] Stuck — supposed to be playing, no PLAYING for ${Math.round(noPlayingFor / 1000)}s. State=${state}.`);
+      }
       stuckReportedRef.current = true;
       if (isOwner) {
         sendMessage({
@@ -1139,7 +1177,9 @@ function RoomBody() {
   }, [handleSongSuggested]);
 
   const handleRemoveFromLibrary = useCallback((videoId) => {
-    console.log("[App] Removing from Library:", videoId);
+    if (import.meta.env.DEV) {
+      console.log("[App] Removing from Library:", videoId);
+    }
     sendMessage({ type: "REMOVE_FROM_LIBRARY", payload: { videoId } });
   }, [sendMessage]);
 
@@ -1150,7 +1190,9 @@ function RoomBody() {
       return;
     }
 
-    console.log("[App] handleFetchSuggestions triggered for:", track.title);
+    if (import.meta.env.DEV) {
+      console.log("[App] handleFetchSuggestions triggered for:", track.title);
+    }
     setActiveSuggestionId(track.id);
     setManualSuggestions([]); // Clear previous
     setIsFetchingSuggestions(true);

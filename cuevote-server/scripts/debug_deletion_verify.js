@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV === 'production') {
+	console.error('Refusing to run dev script in production.');
+	process.exit(1);
+}
+
 const db = require('../db.js');
 const crypto = require('crypto');
 

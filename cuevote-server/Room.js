@@ -1545,7 +1545,7 @@ class Room {
             }
         } catch (err) {
             logger.error("Delete room failed", err);
-            ws.send(JSON.stringify({ type: "error", message: `Failed to delete room: ${err.message}` }));
+            ws.send(JSON.stringify({ type: "error", message: "Failed to delete room." }));
         }
     }
 

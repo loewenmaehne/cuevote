@@ -36,11 +36,9 @@ export function PlaybackControls({
   // Function to show controls temporarily (e.g. on video start or mouse leave)
   const activateTemporaryVisibility = () => {
     if (isHoveredRef.current) return; // Don't hide if hovered (checked via Ref for sync access)
-    // console.log("[PlaybackControls] Activating temporary visibility. Starting 3s timer.");
     setTempVisible(true);
     if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
     hideTimeoutRef.current = setTimeout(() => {
-      // console.log("[PlaybackControls] Timer expired. Setting tempVisible = false");
       setTempVisible(false);
     }, 3000);
   };
@@ -48,7 +46,6 @@ export function PlaybackControls({
   // Show temporarily when track changes
   useEffect(() => {
     if (currentTrack) {
-      // console.log("[PlaybackControls] Track changed, activating visibility.");
       activateTemporaryVisibility();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,19 +60,16 @@ export function PlaybackControls({
 
   const handleMouseEnter = () => {
     if (deviceDetection.isMobile()) return; // Disable hover logic on mobile
-    // if (!isHovered) console.log("[PlaybackControls] Mouse Enter");
     setIsHovered(true);
     isHoveredRef.current = true;
     setTempVisible(true); // Keep it visible without timeout while hovered
     if (hideTimeoutRef.current) {
-      // console.log("[PlaybackControls] Clearing timer due to hover");
       clearTimeout(hideTimeoutRef.current);
     }
   };
 
   const handleMouseLeave = () => {
     if (deviceDetection.isMobile()) return; // Disable hover logic on mobile
-    // console.log("[PlaybackControls] Mouse Leave");
     setIsHovered(false);
     isHoveredRef.current = false;
     activateTemporaryVisibility(); // Start timeout once mouse leaves
@@ -101,7 +95,6 @@ export function PlaybackControls({
   // Handle window blur (e.g. clicking into iframe) as a "leave" event
   useEffect(() => {
     const handleWindowBlur = () => {
-      // console.log(`[PlaybackControls] Window Blur. isHovered=${isHovered}`);
       if (isHovered) {
         handleMouseLeave();
       }

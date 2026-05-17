@@ -71,7 +71,9 @@ export function WebSocketProvider({ children }) {
   }, []);
 
   const handleLoginSuccess = useCallback((tokenResponse) => {
-    console.log("Sending Access Token to Backend...", tokenResponse);
+    if (import.meta.env.DEV) {
+      console.log("Sending Access Token to Backend...", tokenResponse);
+    }
     sendMessage({ type: "LOGIN", payload: { token: tokenResponse.access_token } });
   }, [sendMessage]);
 
@@ -89,7 +91,9 @@ export function WebSocketProvider({ children }) {
   useEffect(() => {
     if (lastMessage) {
       if (lastMessage.type === "LOGIN_SUCCESS") {
-        console.log("Backend Login Success:", lastMessage.payload.user);
+        if (import.meta.env.DEV) {
+          console.log("Backend Login Success:", lastMessage.payload.user);
+        }
         setUser(lastMessage.payload.user);
         if (lastMessage.payload.sessionToken) {
           sessionTokenRef.current = lastMessage.payload.sessionToken;

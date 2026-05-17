@@ -42,7 +42,9 @@ export const MobileRedirectGuard = ({ children }) => {
 			return children;
 		}
 
-		console.log("[MobileRedirectGuard] Blocking access - Android/TV detected", { userAgent, isAndroid, isWrapper });
+		if (import.meta.env.DEV) {
+			console.log("[MobileRedirectGuard] Blocking access - Android/TV detected", { userAgent, isAndroid, isWrapper });
+		}
 		return <MobileBlockPage />;
 	}
 

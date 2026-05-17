@@ -254,7 +254,7 @@ wss.on("connection", (ws, req) => {
                         }));
                     } catch (e) {
                         logger.error("[LOGIN FAILURE] Error Details:", e);
-                        ws.send(JSON.stringify({ type: "error", message: "Login failed: " + e.message }));
+                        ws.send(JSON.stringify({ type: "error", message: "Login failed. Please try again." }));
                     }
                     return;
                 }
