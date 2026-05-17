@@ -37,7 +37,7 @@ function App() {
               Enable & Join Party
             </button>
             <p className="text-xs text-neutral-600">
-              By joining, you agree to our <a href="/legal" target="_blank" className="underline hover:text-neutral-400">Privacy Policy</a>.
+              By joining, you agree to our <a href="/legal" target="_blank" rel="noopener noreferrer" className="underline hover:text-neutral-400">Privacy Policy</a>.
             </p>
           </div>
         </div>

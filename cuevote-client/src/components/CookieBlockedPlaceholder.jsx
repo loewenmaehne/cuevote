@@ -25,7 +25,7 @@ export function CookieBlockedPlaceholder() {
 							<p className="mt-2 text-xs text-neutral-500">
 								{t('cookie.youtubeConsent')}
 								<br />
-								<a href="/legal" target="_blank" className="text-orange-500 hover:text-orange-400 underline underline-offset-2 mt-1 inline-block">
+								<a href="/legal" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-400 underline underline-offset-2 mt-1 inline-block">
 									{t('cookie.policy')}
 								</a>
 							</p>

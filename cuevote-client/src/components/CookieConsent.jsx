@@ -24,7 +24,7 @@ export function CookieConsent({ onAccept }) {
 							<p className="text-neutral-400 text-sm leading-relaxed">
 								{t('cookie.description')}
 								<br />
-								<a href="/legal" target="_blank" className="text-orange-500 hover:text-orange-400 underline underline-offset-2">{t('cookie.policy')}</a>.
+								<a href="/legal" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-400 underline underline-offset-2">{t('cookie.policy')}</a>.
 							</p>
 						</div>
 						<button
