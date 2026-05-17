@@ -65,7 +65,7 @@ const enContent = {
 				{
 					title: "1. Who We Are",
 					content: `Data Controller:<br />
-                            <strong>${import.meta.env.VITE_LEGAL_NAME || "CueVote Digital"}</strong><br />
+                            <strong>${import.meta.env.VITE_LEGAL_NAME?.trim() || "CueVote Digital"}</strong><br />
                             ${import.meta.env.VITE_LEGAL_ADDRESS_LINE1 || "[Street Address]"}<br />
                             ${import.meta.env.VITE_LEGAL_ADDRESS_LINE2 || "[City, Country]"}, The Netherlands<br />
                             Contact: <a href="mailto:${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}">${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}</a>`
@@ -199,7 +199,7 @@ const nlContent = {
 				{
 					title: "1. Wie Wij Zijn",
 					content: `Verwerkingsverantwoordelijke:<br />
-                            <strong>${import.meta.env.VITE_LEGAL_NAME || "CueVote Digital"}</strong><br />
+                            <strong>${import.meta.env.VITE_LEGAL_NAME?.trim() || "CueVote Digital"}</strong><br />
                             ${import.meta.env.VITE_LEGAL_ADDRESS_LINE1 || "[Straatadres]"}<br />
                             ${import.meta.env.VITE_LEGAL_ADDRESS_LINE2 || "[Stad, Land]"}, Nederland<br />
                             Contact: <a href="mailto:${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}">${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}</a>`
