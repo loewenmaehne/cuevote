@@ -279,7 +279,16 @@ const nlContent = {
 		}
 };
 
-// --- Language Variants (UI Translated, Legal Content in English) ---
+// --- Language Variants ---
+// Coverage tiers:
+//   - Fully localised legal text: en, nl
+//   - UI chrome translated (title/back/center/lastUpdated/disclaimer); terms,
+//     privacy and imprint remain in English by design — the English version is
+//     the legally binding one (see `disclaimer` field):
+//     de, fr, es, it, pt, zh-CN, zh-TW, ja, ko
+//   - All other UI languages fall back to English here. LegalPage.jsx handles
+//     this via `legalContent[language] ?? legalContent.en`. To upgrade a
+//     language to tier-2, add it below with withEnglishContent({...}).
 // Single export: no mutation of LEGAL_CONTENT, so no TDZ when bundler evaluates modules.
 
 export const LEGAL_CONTENT = {
