@@ -71,7 +71,9 @@ export function WebSocketProvider({ children }) {
   }, []);
 
   const handleLoginSuccess = useCallback((tokenResponse) => {
-    console.log("Sending Access Token to Backend...", tokenResponse);
+    if (import.meta.env.DEV) {
+      console.log("Sending Access Token to Backend...", tokenResponse);
+    }
     sendMessage({ type: "LOGIN", payload: { token: tokenResponse.access_token } });
   }, [sendMessage]);
 
