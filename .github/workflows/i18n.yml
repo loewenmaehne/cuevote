@@ -1,0 +1,28 @@
+name: i18n
+
+on:
+  pull_request:
+    paths:
+      - 'cuevote-client/src/**'
+      - 'cuevote-client/scripts/check-i18n.mjs'
+      - 'cuevote-client/package.json'
+      - '.github/workflows/i18n.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'cuevote-client/src/**'
+      - 'cuevote-client/scripts/check-i18n.mjs'
+
+jobs:
+  check:
+    name: translation completeness
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cuevote-client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm run check:i18n
