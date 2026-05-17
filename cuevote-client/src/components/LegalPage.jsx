@@ -46,7 +46,7 @@ export function LegalPage() {
     const dates = {
         terms: "April 1, 2026",
         privacy: "May 17, 2026",
-        imprint: "December 26, 2025"
+        imprint: "May 17, 2026"
     };
     const LastUpdated = dates[activeTab];
 
@@ -214,8 +214,8 @@ export function LegalPage() {
                                                 <ul className="space-y-3 text-sm">
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Mail size={16} />
-                                                        <a href={`mailto:${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}`} className="text-orange-500 hover:text-white transition-colors">
-                                                            {import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}
+                                                        <a href={`mailto:${import.meta.env.VITE_IMPRINT_EMAIL || "hello@cuevote.com"}`} className="text-orange-500 hover:text-white transition-colors">
+                                                            {import.meta.env.VITE_IMPRINT_EMAIL || "hello@cuevote.com"}
                                                         </a>
                                                     </li>
                                                     <li className="flex items-center gap-3 text-neutral-400">
