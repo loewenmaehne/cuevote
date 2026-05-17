@@ -42,7 +42,7 @@ const languages = [
 ];
 
 function LanguageSwitcher({ minimized = false, className = "", isOpen: controlledIsOpen, onToggle: controlledOnToggle, focused = false, focusedLanguageIndex = -1 }) {
-	const { language, setLanguage } = Language.useLanguage();
+	const { language, setLanguage, t } = Language.useLanguage();
 	const [internalIsOpen, setInternalIsOpen] = useState(false);
 	const dropdownRef = useRef(null);
 	const listRef = useRef(null);
@@ -82,7 +82,7 @@ function LanguageSwitcher({ minimized = false, className = "", isOpen: controlle
 					else setInternalIsOpen(!internalIsOpen);
 				}}
 				className={`flex items-center gap-2 p-2 rounded-full hover:bg-neutral-800 transition-all ${isOpen ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'} ${focused ? 'ring-2 ring-orange-500 text-white z-20 bg-neutral-800' : ''}`}
-				title="Change Language"
+				title={t('header.changeLanguage')}
 			>
 				<Globe size={20} />
 				{!minimized && <span className="text-sm font-medium uppercase font-mono">{language}</span>}

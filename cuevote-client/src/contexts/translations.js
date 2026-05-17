@@ -6,6 +6,7 @@ export const translations = {
 			private: "Private",
 			myChannels: "My Channels",
 			searchPlaceholder: "Search channels...",
+			searchCountries: "Search countries...",
 			connecting: "Connecting to server...",
 			createChannel: "Create Channel",
 			acceptCookies: "Accept Cookies",
@@ -107,7 +108,8 @@ export const translations = {
 			leaveChannelConfirm: "Are you sure you want to return to the lobby?",
 			leave: "Leave",
 			copyUrl: "Copy URL",
-			close: "Close"
+			close: "Close",
+			changeLanguage: "Change Language"
 		},
 		suggest: {
 			placeholder: "Type a video name...",
@@ -144,12 +146,15 @@ export const translations = {
 			backToRadio: "Back to Radio",
 			retry: "Retry Connection",
 			retrying: "Retrying...",
+			reconnecting: "Reconnecting",
+			attempt: "Attempt",
 			connecting: "Connecting to server...",
 			connectionIssue: "Connection Issue",
 			takingTooLong: "Taking longer than usual...",
 			checkConnection: "Please check your internet connection.",
 			networkThrottle: "YouTube has blocked this network's IP. Playback paused. Try switching to a mobile hotspot.",
-			retryPlayback: "Retry"
+			retryPlayback: "Retry",
+			tapToUnmute: "Tap to Unmute"
 		},
 		track: {
 			playing: "Playing",

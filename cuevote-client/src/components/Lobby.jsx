@@ -641,7 +641,7 @@ export function Lobby() {
                                         }}
                                         onClick={performLogin}
                                         className={`p-3 rounded-full border border-neutral-700 bg-neutral-800 text-white transition-transform active:scale-90 ${disabled && focusedIndex !== INDEX_PROFILE ? 'opacity-50' : 'hover:bg-neutral-700'} ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 scale-105' : ''}`}
-                                        aria-label="Sign in with Google"
+                                        aria-label={t('lobby.signInGoogle')}
                                     >
                                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
@@ -660,7 +660,7 @@ export function Lobby() {
                             id="lobby-auth-button"
                             onClick={() => setShowProfileModal(true)}
                             className={`flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-neutral-800/50 hover:border-neutral-700 border transition-all group cursor-pointer ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 bg-neutral-800 border-neutral-700 scale-105' : 'border-transparent'}`}
-                            title="Profile & Settings"
+                            title={t('header.profileSettings')}
                         >
                             <div className="flex items-center gap-2">
                                 {user.picture ? (
@@ -1013,7 +1013,7 @@ export function Lobby() {
                                                         <input
                                                             type="text"
                                                             className="flex-1 bg-transparent text-white text-sm focus:outline-none placeholder-neutral-500"
-                                                            placeholder="Search countries..."
+                                                            placeholder={t('lobby.searchCountries')}
                                                             value={createFlagSearch}
                                                             onChange={(e) => setCreateFlagSearch(e.target.value)}
                                                             autoFocus
