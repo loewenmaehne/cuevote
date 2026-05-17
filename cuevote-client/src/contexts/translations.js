@@ -265,7 +265,8 @@ export const translations = {
 			startWithCaptions: "Start met Ondertiteling",
 			terms: "Voorwaarden & Juridisch",
 			videoLanguage: "Videotaal",
-			international: "Internationaal"
+			international: "Internationaal",
+			searchCountries: "Zoek landen..."
 		},
 		player: {
 			errorGeneric: "Er is een fout opgetreden bij het afspelen.",
@@ -336,7 +337,9 @@ export const translations = {
 			leaveChannelConfirm: "Weet je zeker dat je terug naar de lobby wilt?",
 			leave: "Verlaten",
 			copyUrl: "URL Kopiëren",
-			close: "Sluiten"
+			close: "Sluiten",
+			captionsTooltip: "Toon standaard ondertitels voor alle gebruikers wanneer ze de speler laden.",
+			changeLanguage: "Taal wijzigen"
 		},
 		suggest: {
 			placeholder: "Typ een titel...",
@@ -378,7 +381,10 @@ export const translations = {
 			takingTooLong: "Duurt langer dan gewoonlijk...",
 			checkConnection: "Controleer je internetverbinding.",
 			networkThrottle: "YouTube heeft het IP-adres van dit netwerk geblokkeerd. Afspelen gepauzeerd. Probeer over te schakelen naar een mobiele hotspot.",
-			retryPlayback: "Opnieuw"
+			retryPlayback: "Opnieuw",
+			reconnecting: "Opnieuw verbinden",
+			attempt: "Poging",
+			tapToUnmute: "Tik om geluid aan te zetten"
 		},
 		track: {
 			playing: "Speelt nu",
@@ -412,7 +418,8 @@ export const translations = {
 			preview: "Voorbeeld",
 			ban: "Verban",
 			decline: "Afwijzen",
-			accept: "Accepteren"
+			accept: "Accepteren",
+			pendingCount: "{count} in afwachting"
 		},
 		playlist: {
 			close: "Sluit Afspeellijst",
@@ -443,6 +450,13 @@ export const translations = {
 			downloadFail: "Als download mislukt:",
 			installInstruction: "Instellingen > Activeer \"Onbekende apps installeren\"",
 			privacyLegal: "Privacybeleid & Juridisch"
+		},
+		banned: {
+			title: "Geblokkeerde video's",
+			empty: "Geen geblokkeerde video's",
+			emptySubtitle: "Video's die geblokkeerd zijn voor aanvragen verschijnen hier.",
+			bannedOn: "Geblokkeerd op {date}",
+			unban: "Deblokkeren"
 		}
 	},
 	de: {
@@ -481,7 +495,8 @@ export const translations = {
 			startWithCaptions: "Mit Untertiteln starten",
 			terms: "Rechtliches",
 			videoLanguage: "Videosprache",
-			international: "International"
+			international: "International",
+			searchCountries: "Länder suchen..."
 		},
 		player: {
 			errorGeneric: "Ein Fehler ist bei der Wiedergabe aufgetreten.",
@@ -552,7 +567,9 @@ export const translations = {
 			leaveChannelConfirm: "Möchtest du wirklich zur Lobby zurückkehren?",
 			leave: "Verlassen",
 			copyUrl: "URL Kopieren",
-			close: "Schließen"
+			close: "Schließen",
+			captionsTooltip: "Untertitel standardmäßig für alle Nutzer anzeigen, wenn sie den Player laden.",
+			changeLanguage: "Sprache ändern"
 		},
 		suggest: {
 			placeholder: "Videotitel eingeben...",
@@ -594,7 +611,10 @@ export const translations = {
 			takingTooLong: "Dauert länger als gewöhnlich...",
 			checkConnection: "Bitte überprüfen Sie Ihre Internetverbindung.",
 			networkThrottle: "YouTube hat die IP-Adresse dieses Netzwerks gesperrt. Wiedergabe pausiert. Versuche, zu einem mobilen Hotspot zu wechseln.",
-			retryPlayback: "Erneut versuchen"
+			retryPlayback: "Erneut versuchen",
+			reconnecting: "Verbinde neu",
+			attempt: "Versuch",
+			tapToUnmute: "Tippen für Ton"
 		},
 		track: {
 			playing: "Wiedergabe",
@@ -628,7 +648,8 @@ export const translations = {
 			preview: "Vorschau",
 			ban: "Sperren",
 			decline: "Ablehnen",
-			accept: "Akzeptieren"
+			accept: "Akzeptieren",
+			pendingCount: "{count} ausstehend"
 		},
 		playlist: {
 			close: "Playlist schließen",
@@ -659,6 +680,13 @@ export const translations = {
 			downloadFail: "Falls der Download fehlschlägt:",
 			installInstruction: "Einstellungen > \"Unbekannte Apps installieren\" aktivieren",
 			privacyLegal: "Datenschutz & Rechtliches"
+		},
+		banned: {
+			title: "Gesperrte Videos",
+			empty: "Keine gesperrten Videos",
+			emptySubtitle: "Videos, die von Anfragen ausgeschlossen wurden, erscheinen hier.",
+			bannedOn: "Gesperrt am {date}",
+			unban: "Entsperren"
 		}
 	},
 	fr: {
@@ -697,7 +725,8 @@ export const translations = {
 			startWithCaptions: "Démarrer avec sous-titres",
 			terms: "Conditions & Légal",
 			videoLanguage: "Langue vidéo",
-			international: "International"
+			international: "International",
+			searchCountries: "Rechercher des pays..."
 		},
 		player: {
 			errorGeneric: "Une erreur est survenue lors de la lecture.",
@@ -768,7 +797,9 @@ export const translations = {
 			leaveChannelConfirm: "Voulez-vous vraiment retourner au lobby ?",
 			leave: "Quitter",
 			copyUrl: "Copier URL",
-			close: "Fermer"
+			close: "Fermer",
+			captionsTooltip: "Afficher les sous-titres par défaut pour tous les utilisateurs lorsqu'ils chargent le lecteur.",
+			changeLanguage: "Changer de langue"
 		},
 		suggest: {
 			placeholder: "Tapez un titre...",
@@ -810,7 +841,10 @@ export const translations = {
 			takingTooLong: "Cela prend plus de temps que d'habitude...",
 			checkConnection: "Veuillez vérifier votre connexion internet.",
 			networkThrottle: "YouTube a bloqué l'IP de ce réseau. Lecture en pause. Essayez de passer à un point d'accès mobile.",
-			retryPlayback: "Réessayer"
+			retryPlayback: "Réessayer",
+			reconnecting: "Reconnexion",
+			attempt: "Tentative",
+			tapToUnmute: "Appuyer pour activer le son"
 		},
 		track: {
 			playing: "Lecture",
@@ -844,7 +878,8 @@ export const translations = {
 			preview: "Aperçu",
 			ban: "Bannir",
 			decline: "Refuser",
-			accept: "Accepter"
+			accept: "Accepter",
+			pendingCount: "{count} en attente"
 		},
 		playlist: {
 			close: "Fermer la playlist",
@@ -875,6 +910,13 @@ export const translations = {
 			downloadFail: "Si le téléchargement échoue :",
 			installInstruction: "Paramètres > Activer \"Installation d'applis inconnues\"",
 			privacyLegal: "Confidentialité & Mentions Légales"
+		},
+		banned: {
+			title: "Vidéos bannies",
+			empty: "Aucune vidéo bannie",
+			emptySubtitle: "Les vidéos bannies des requêtes apparaîtront ici.",
+			bannedOn: "Bannie le {date}",
+			unban: "Débannir"
 		}
 	},
 	es: {
@@ -913,7 +955,8 @@ export const translations = {
 			startWithCaptions: "Iniciar con Subtítulos",
 			terms: "Términos y Legal",
 			videoLanguage: "Idioma del vídeo",
-			international: "Internacional"
+			international: "Internacional",
+			searchCountries: "Buscar países..."
 		},
 		player: {
 			errorGeneric: "Ocurrió un error al reproducir este video.",
@@ -926,7 +969,6 @@ export const translations = {
 			ipBlockRetry: "Recargar",
 			ipBlockDismiss: "Cerrar"
 		},
-
 		cookie: {
 			title: "Privacidad y Reproducción",
 			description: "Para reproducir vídeo, necesitamos cargar el reproductor de YouTube. Esto conecta con los servidores de Google.",
@@ -985,7 +1027,9 @@ export const translations = {
 			leaveChannelConfirm: "¿Seguro que quieres volver al lobby?",
 			leave: "Salir",
 			copyUrl: "Copiar URL",
-			close: "Cerrar"
+			close: "Cerrar",
+			captionsTooltip: "Mostrar subtítulos por defecto a todos los usuarios cuando carguen el reproductor.",
+			changeLanguage: "Cambiar idioma"
 		},
 		suggest: {
 			placeholder: "Escribe un título...",
@@ -993,13 +1037,17 @@ export const translations = {
 			submit: "Enviar",
 			adding: "Añadiendo...",
 			added: "Añadido",
-			error: "Introduce un enlace de YouTube o título."
+			error: "Introduce un enlace de YouTube o título.",
+			loginRequired: "Por favor inicia sesión para sugerir videos.",
+			loadSimilar: "Cargar videos similares",
+			similarTo: "Similar a"
 		},
 		suggestions: {
 			modalTitle: "Videos Relacionadas",
 			basedOn: "Basado en:",
 			loading: "Buscando videos similares...",
-			empty: "No se encontraron sugerencias."
+			empty: "No se encontraron sugerencias.",
+			title: "Videos relacionados"
 		},
 		app: {
 			switching: "Cambiando Canales...",
@@ -1023,7 +1071,10 @@ export const translations = {
 			takingTooLong: "Tarda más de lo habitual...",
 			checkConnection: "Por favor, comprueba tu conexión a internet.",
 			networkThrottle: "YouTube ha bloqueado la IP de esta red. Reproducción en pausa. Intenta cambiar a un punto de acceso móvil.",
-			retryPlayback: "Reintentar"
+			retryPlayback: "Reintentar",
+			reconnecting: "Reconectando",
+			attempt: "Intento",
+			tapToUnmute: "Toca para activar el sonido"
 		},
 		track: {
 			playing: "Reproduciendo",
@@ -1057,7 +1108,8 @@ export const translations = {
 			preview: "Vista previa",
 			ban: "Prohibir",
 			decline: "Rechazar",
-			accept: "Aceptar"
+			accept: "Aceptar",
+			pendingCount: "{count} pendientes"
 		},
 		playlist: {
 			close: "Cerrar lista",
@@ -1088,6 +1140,13 @@ export const translations = {
 			downloadFail: "Si falla la descarga:",
 			installInstruction: "Ajustes > Activar \"Instalar aplicaciones desconocidas\"",
 			privacyLegal: "Privacidad y Legal"
+		},
+		banned: {
+			title: "Videos bloqueados",
+			empty: "No hay videos bloqueados",
+			emptySubtitle: "Los videos bloqueados de las solicitudes aparecerán aquí.",
+			bannedOn: "Bloqueado el {date}",
+			unban: "Desbloquear"
 		}
 	},
 	it: {
@@ -1125,7 +1184,9 @@ export const translations = {
 			delete: "Elimina",
 			terms: "Termini & Legale",
 			videoLanguage: "Lingua video",
-			international: "Internazionale"
+			international: "Internazionale",
+			startWithCaptions: "Avvia con sottotitoli",
+			searchCountries: "Cerca paesi..."
 		},
 		player: {
 			errorGeneric: "Si è verificato un errore durante la riproduzione.",
@@ -1196,7 +1257,9 @@ export const translations = {
 			leaveChannelConfirm: "Vuoi tornare alla lobby?",
 			leave: "Lascia",
 			copyUrl: "Copia URL",
-			close: "Chiudi"
+			close: "Chiudi",
+			captionsTooltip: "Mostra i sottotitoli per impostazione predefinita a tutti gli utenti quando caricano il player.",
+			changeLanguage: "Cambia lingua"
 		},
 		suggest: {
 			placeholder: "Scrivi un titolo...",
@@ -1204,7 +1267,10 @@ export const translations = {
 			submit: "Invia",
 			adding: "Aggiunta...",
 			added: "Aggiunto",
-			error: "Inserisci link YouTube o titolo."
+			error: "Inserisci link YouTube o titolo.",
+			loginRequired: "Accedi per suggerire video.",
+			loadSimilar: "Carica video simili",
+			similarTo: "Simile a"
 		},
 		app: {
 			noInternet: "Nessuna connessione internet",
@@ -1225,7 +1291,13 @@ export const translations = {
 			lockedMessage: "Canale protetto da password.",
 			incorrectPasswordOrNotFound: "Password errata o canale non trovato.",
 			unlock: "Sblocca",
-			listenMusic: "Ascolta musica"
+			listenMusic: "Ascolta musica",
+			unmuteAndPlay: "Riattiva audio e riproduci",
+			reconnecting: "Riconnessione",
+			attempt: "Tentativo",
+			networkThrottle: "YouTube ha bloccato l'IP di questa rete. Riproduzione in pausa. Prova a passare a un hotspot mobile.",
+			retryPlayback: "Riprova",
+			tapToUnmute: "Tocca per riattivare l'audio"
 		},
 		track: {
 			playing: "In riproduzione",
@@ -1235,7 +1307,8 @@ export const translations = {
 			cancel: "Annulla",
 			confirmDelete: "Conferma",
 			delete: "Elimina",
-			watch: "Su YouTube"
+			watch: "Su YouTube",
+			recommend: "Ricevi suggerimenti"
 		},
 		library: {
 			searchPlaceholder: "Cerca nella libreria...",
@@ -1258,7 +1331,8 @@ export const translations = {
 			preview: "Anteprima",
 			ban: "Banna",
 			decline: "Rifiuta",
-			accept: "Accetta"
+			accept: "Accetta",
+			pendingCount: "{count} in attesa"
 		},
 		playlist: {
 			close: "Chiudi playlist",
@@ -1289,6 +1363,20 @@ export const translations = {
 			downloadFail: "Se il download fallisce:",
 			installInstruction: "Impostazioni > Abilita \"Installa app sconosciute\"",
 			privacyLegal: "Privacy e Legale"
+		},
+		suggestions: {
+			title: "Video correlati",
+			modalTitle: "Video correlati",
+			basedOn: "Basato su:",
+			loading: "Ricerca di video simili...",
+			empty: "Nessun suggerimento trovato."
+		},
+		banned: {
+			title: "Video bloccati",
+			empty: "Nessun video bloccato",
+			emptySubtitle: "I video bloccati dalle richieste appariranno qui.",
+			bannedOn: "Bloccato il {date}",
+			unban: "Sblocca"
 		}
 	},
 	pt: {
@@ -1326,7 +1414,9 @@ export const translations = {
 			delete: "Excluir",
 			terms: "Termos & Legal",
 			videoLanguage: "Idioma do vídeo",
-			international: "Internacional"
+			international: "Internacional",
+			startWithCaptions: "Iniciar com legendas",
+			searchCountries: "Pesquisar países..."
 		},
 		player: {
 			errorGeneric: "Ocorreu um erro ao reproduzir este vídeo.",
@@ -1397,7 +1487,9 @@ export const translations = {
 			leaveChannelConfirm: "Deseja voltar ao lobby?",
 			leave: "Sair",
 			copyUrl: "Copiar URL",
-			close: "Fechar"
+			close: "Fechar",
+			captionsTooltip: "Mostrar legendas por padrão para todos os usuários quando carregarem o player.",
+			changeLanguage: "Alterar idioma"
 		},
 		suggest: {
 			placeholder: "Digite um título...",
@@ -1405,7 +1497,10 @@ export const translations = {
 			submit: "Enviar",
 			adding: "Adicionando...",
 			added: "Adicionado",
-			error: "Insira link YouTube ou título."
+			error: "Insira link YouTube ou título.",
+			loginRequired: "Faça login para sugerir vídeos.",
+			loadSimilar: "Carregar vídeos similares",
+			similarTo: "Similar a"
 		},
 		app: {
 			noInternet: "Sem conexão com a internet",
@@ -1427,7 +1522,12 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Senha incorreta ou canal não encontrado.",
 			unlock: "Desbloquear",
 			listenMusic: "Ouvir vídeo",
-			unmuteAndPlay: "Ativar Som e Tocar"
+			unmuteAndPlay: "Ativar Som e Tocar",
+			reconnecting: "Reconectando",
+			attempt: "Tentativa",
+			networkThrottle: "O YouTube bloqueou o IP desta rede. Reprodução pausada. Tente mudar para um hotspot móvel.",
+			retryPlayback: "Tentar novamente",
+			tapToUnmute: "Toque para ativar o som"
 		},
 		track: {
 			playing: "Tocando",
@@ -1437,7 +1537,8 @@ export const translations = {
 			cancel: "Cancelar",
 			confirmDelete: "Confirmar",
 			delete: "Excluir",
-			watch: "No YouTube"
+			watch: "No YouTube",
+			recommend: "Obter sugestões"
 		},
 		library: {
 			searchPlaceholder: "Buscar na biblioteca...",
@@ -1460,7 +1561,8 @@ export const translations = {
 			preview: "Prévia",
 			ban: "Banir",
 			decline: "Recusar",
-			accept: "Aceitar"
+			accept: "Aceitar",
+			pendingCount: "{count} pendentes"
 		},
 		playlist: {
 			close: "Fechar playlist",
@@ -1474,7 +1576,8 @@ export const translations = {
 			skippedRestricted: "'{title}' ignorado (Indisponível)",
 			skippedIPBlocked: "'{title}' ignorado — YouTube limitando esta rede",
 			backToNow: "Voltar para atual",
-			addVideos: "Adicione vídeos para começar"
+			addVideos: "Adicione vídeos para começar",
+			channelSuffix: "Canal"
 		},
 		mobile: {
 			tagline: "O Jukebox Democrático",
@@ -1490,6 +1593,20 @@ export const translations = {
 			downloadFail: "Se o download falhar:",
 			installInstruction: "Configurações > Habilitar \"Instalar apps desconhecidos\"",
 			privacyLegal: "Privacidade e Legal"
+		},
+		suggestions: {
+			title: "Vídeos relacionados",
+			modalTitle: "Vídeos relacionados",
+			basedOn: "Baseado em:",
+			loading: "Buscando vídeos similares...",
+			empty: "Nenhuma sugestão encontrada."
+		},
+		banned: {
+			title: "Vídeos banidos",
+			empty: "Nenhum vídeo banido",
+			emptySubtitle: "Vídeos banidos das solicitações aparecerão aqui.",
+			bannedOn: "Banido em {date}",
+			unban: "Desbanir"
 		}
 	},
 	"zh-CN": {
@@ -1527,7 +1644,9 @@ export const translations = {
 			delete: "删除",
 			terms: "条款与法律",
 			videoLanguage: "视频语言",
-			international: "国际"
+			international: "国际",
+			startWithCaptions: "启用字幕开始",
+			searchCountries: "搜索国家..."
 		},
 		player: {
 			errorGeneric: "播放此视频时发生错误。",
@@ -1593,7 +1712,14 @@ export const translations = {
 			leaveChannelConfirm: "确定要返回大厅吗？",
 			leave: "离开",
 			copyUrl: "复制链接",
-			close: "关闭"
+			close: "关闭",
+			back: "返回",
+			suggestions: "推荐",
+			queuePlayback: "队列与播放",
+			features: "功能",
+			captionsTooltip: "加载播放器时默认为所有用户显示字幕。",
+			ownerTools: "所有者工具",
+			changeLanguage: "切换语言"
 		},
 		suggest: {
 			placeholder: "输入動画名...",
@@ -1601,7 +1727,10 @@ export const translations = {
 			submit: "提交",
 			adding: "添加中...",
 			added: "已添加",
-			error: "请输入 YouTube 链接或标题。"
+			error: "请输入 YouTube 链接或标题。",
+			loginRequired: "请登录以推荐视频。",
+			loadSimilar: "加载相似视频",
+			similarTo: "相似于"
 		},
 		app: {
 			noInternet: "无网络连接",
@@ -1623,7 +1752,12 @@ export const translations = {
 			incorrectPasswordOrNotFound: "密码错误或频道不存在。",
 			unlock: "解锁",
 			listenMusic: "听音乐",
-			unmuteAndPlay: "取消静音并播放"
+			unmuteAndPlay: "取消静音并播放",
+			reconnecting: "正在重新连接",
+			attempt: "尝试",
+			networkThrottle: "YouTube 已封锁此网络的 IP。播放已暂停。请尝试切换到移动热点。",
+			retryPlayback: "重试",
+			tapToUnmute: "点击取消静音"
 		},
 		track: {
 			playing: "正在播放",
@@ -1633,7 +1767,8 @@ export const translations = {
 			cancel: "取消",
 			confirmDelete: "确认删除",
 			delete: "删除",
-			watch: "在 YouTube 观看"
+			watch: "在 YouTube 观看",
+			recommend: "获取推荐"
 		},
 		library: {
 			searchPlaceholder: "搜索媒体库...",
@@ -1656,7 +1791,8 @@ export const translations = {
 			preview: "试听",
 			ban: "禁止",
 			decline: "拒绝",
-			accept: "接受"
+			accept: "接受",
+			pendingCount: "{count} 个待审"
 		},
 		playlist: {
 			close: "关闭列表",
@@ -1687,6 +1823,20 @@ export const translations = {
 			downloadFail: "如果下载失败：",
 			installInstruction: "设置 > 启用“安装未知应用”",
 			privacyLegal: "隐私政策与法律信息"
+		},
+		suggestions: {
+			title: "相关视频",
+			modalTitle: "相关视频",
+			basedOn: "基于:",
+			loading: "正在查找相似视频...",
+			empty: "未找到推荐。"
+		},
+		banned: {
+			title: "已禁用视频",
+			empty: "没有已禁用的视频",
+			emptySubtitle: "从请求中被禁用的视频将显示在这里。",
+			bannedOn: "禁用于 {date}",
+			unban: "解禁"
 		}
 	},
 	"zh-TW": {
@@ -1724,7 +1874,9 @@ export const translations = {
 			delete: "刪除",
 			terms: "條款與法律",
 			videoLanguage: "影片語言",
-			international: "國際"
+			international: "國際",
+			startWithCaptions: "啟用字幕開始",
+			searchCountries: "搜尋國家..."
 		},
 		player: {
 			errorGeneric: "播放此視頻時發生錯誤。",
@@ -1790,7 +1942,14 @@ export const translations = {
 			leaveChannelConfirm: "確定要返回大廳嗎？",
 			leave: "離開",
 			copyUrl: "複製連結",
-			close: "關閉"
+			close: "關閉",
+			back: "返回",
+			suggestions: "推薦",
+			queuePlayback: "佇列與播放",
+			features: "功能",
+			captionsTooltip: "載入播放器時預設為所有使用者顯示字幕。",
+			ownerTools: "擁有者工具",
+			changeLanguage: "切換語言"
 		},
 		suggest: {
 			placeholder: "輸入動画名...",
@@ -1798,7 +1957,10 @@ export const translations = {
 			submit: "送出",
 			adding: "添加中...",
 			added: "已添加",
-			error: "請輸入 YouTube 連結或標題。"
+			error: "請輸入 YouTube 連結或標題。",
+			loginRequired: "請登入以推薦影片。",
+			loadSimilar: "載入相似影片",
+			similarTo: "類似於"
 		},
 		app: {
 			noInternet: "無網際網路連線",
@@ -1820,7 +1982,12 @@ export const translations = {
 			incorrectPasswordOrNotFound: "密碼錯誤或頻道不存在。",
 			unlock: "解鎖",
 			listenMusic: "聽音樂",
-			unmuteAndPlay: "取消靜音並播放"
+			unmuteAndPlay: "取消靜音並播放",
+			reconnecting: "正在重新連線",
+			attempt: "嘗試",
+			networkThrottle: "YouTube 已封鎖此網路的 IP。播放已暫停。請嘗試切換到行動熱點。",
+			retryPlayback: "重試",
+			tapToUnmute: "點擊取消靜音"
 		},
 		track: {
 			playing: "正在播放",
@@ -1830,7 +1997,8 @@ export const translations = {
 			cancel: "取消",
 			confirmDelete: "確認刪除",
 			delete: "刪除",
-			watch: "在 YouTube 觀看"
+			watch: "在 YouTube 觀看",
+			recommend: "獲取推薦"
 		},
 		library: {
 			searchPlaceholder: "搜尋媒體庫...",
@@ -1853,7 +2021,8 @@ export const translations = {
 			preview: "試聽",
 			ban: "禁止",
 			decline: "拒絕",
-			accept: "接受"
+			accept: "接受",
+			pendingCount: "{count} 個待審"
 		},
 		playlist: {
 			close: "關閉列表",
@@ -1884,6 +2053,20 @@ export const translations = {
 			downloadFail: "如果下載失敗：",
 			installInstruction: "設定 > 啟用「安裝未知應用程式」",
 			privacyLegal: "隱私政策與法律資訊"
+		},
+		suggestions: {
+			title: "相關影片",
+			modalTitle: "相關影片",
+			basedOn: "基於:",
+			loading: "正在尋找相似影片...",
+			empty: "未找到推薦。"
+		},
+		banned: {
+			title: "已封鎖影片",
+			empty: "沒有已封鎖的影片",
+			emptySubtitle: "從請求中被封鎖的影片將顯示在此處。",
+			bannedOn: "封鎖於 {date}",
+			unban: "解除封鎖"
 		}
 	},
 	ja: {
@@ -1921,7 +2104,9 @@ export const translations = {
 			delete: "削除",
 			terms: "利用規約",
 			videoLanguage: "動画の言語",
-			international: "インターナショナル"
+			international: "インターナショナル",
+			startWithCaptions: "字幕付きで開始",
+			searchCountries: "国を検索..."
 		},
 		player: {
 			errorGeneric: "この動画の再生中にエラーが発生しました。",
@@ -1987,7 +2172,14 @@ export const translations = {
 			leaveChannelConfirm: "ロビーに戻りますか？",
 			leave: "退出",
 			copyUrl: "URLをコピー",
-			close: "閉じる"
+			close: "閉じる",
+			back: "戻る",
+			suggestions: "おすすめ",
+			queuePlayback: "キューと再生",
+			features: "機能",
+			captionsTooltip: "プレーヤーを読み込んだ際、すべてのユーザーに字幕をデフォルトで表示します。",
+			ownerTools: "オーナーツール",
+			changeLanguage: "言語を変更"
 		},
 		suggest: {
 			placeholder: "動画名を入力...",
@@ -1995,7 +2187,10 @@ export const translations = {
 			submit: "送信",
 			adding: "追加中...",
 			added: "追加完了",
-			error: "YouTubeリンクかタイトルを入力してください。"
+			error: "YouTubeリンクかタイトルを入力してください。",
+			loginRequired: "動画を提案するにはログインしてください。",
+			loadSimilar: "類似動画を読み込む",
+			similarTo: "類似:"
 		},
 		app: {
 			noInternet: "インターネット接続がありません",
@@ -2017,7 +2212,12 @@ export const translations = {
 			incorrectPasswordOrNotFound: "パスワードが正しくないか、チャンネルが見つかりません。",
 			unlock: "ロック解除",
 			listenMusic: "音楽を聴く",
-			unmuteAndPlay: "ミュート解除して再生"
+			unmuteAndPlay: "ミュート解除して再生",
+			reconnecting: "再接続中",
+			attempt: "試行",
+			networkThrottle: "YouTube がこのネットワークの IP をブロックしました。再生を一時停止しています。モバイルホットスポットに切り替えてみてください。",
+			retryPlayback: "再試行",
+			tapToUnmute: "タップしてミュート解除"
 		},
 		track: {
 			playing: "再生中",
@@ -2027,7 +2227,8 @@ export const translations = {
 			cancel: "キャンセル",
 			confirmDelete: "削除確認",
 			delete: "削除",
-			watch: "YouTubeで見る"
+			watch: "YouTubeで見る",
+			recommend: "おすすめを取得"
 		},
 		library: {
 			searchPlaceholder: "ライブラリを検索...",
@@ -2050,7 +2251,8 @@ export const translations = {
 			preview: "試聴",
 			ban: "禁止",
 			decline: "拒否",
-			accept: "承認"
+			accept: "承認",
+			pendingCount: "{count} 件保留中"
 		},
 		playlist: {
 			close: "閉じる",
@@ -2081,6 +2283,20 @@ export const translations = {
 			downloadFail: "ダウンロードに失敗した場合：",
 			installInstruction: "設定 > 「不明なアプリのインストール」を有効にする",
 			privacyLegal: "プライバシーポリシーと法的情報"
+		},
+		suggestions: {
+			title: "関連動画",
+			modalTitle: "関連動画",
+			basedOn: "基準:",
+			loading: "類似動画を検索中...",
+			empty: "おすすめが見つかりません。"
+		},
+		banned: {
+			title: "禁止された動画",
+			empty: "禁止された動画はありません",
+			emptySubtitle: "リクエストから禁止された動画がここに表示されます。",
+			bannedOn: "{date} に禁止",
+			unban: "禁止解除"
 		}
 	},
 	ko: {
@@ -2118,7 +2334,9 @@ export const translations = {
 			delete: "삭제",
 			terms: "이용약관",
 			videoLanguage: "영상 언어",
-			international: "국제"
+			international: "국제",
+			startWithCaptions: "자막과 함께 시작",
+			searchCountries: "국가 검색..."
 		},
 		player: {
 			errorGeneric: "이 동영상을 재생하는 중 오류가 발생했습니다.",
@@ -2184,7 +2402,14 @@ export const translations = {
 			leaveChannelConfirm: "로비로 돌아가시겠습니까?",
 			leave: "나가기",
 			copyUrl: "URL 복사",
-			close: "닫기"
+			close: "닫기",
+			back: "뒤로",
+			suggestions: "추천",
+			queuePlayback: "대기열 및 재생",
+			features: "기능",
+			captionsTooltip: "플레이어를 로드할 때 모든 사용자에게 자막을 기본적으로 표시합니다.",
+			ownerTools: "소유자 도구",
+			changeLanguage: "언어 변경"
 		},
 		suggest: {
 			placeholder: "제목 입력...",
@@ -2192,7 +2417,10 @@ export const translations = {
 			submit: "제출",
 			adding: "추가 중...",
 			added: "추가됨",
-			error: "YouTube 링크나 제목을 입력하세요."
+			error: "YouTube 링크나 제목을 입력하세요.",
+			loginRequired: "동영상을 추천하려면 로그인하세요.",
+			loadSimilar: "유사 동영상 불러오기",
+			similarTo: "유사:"
 		},
 		app: {
 			noInternet: "인터넷에 연결되지 않음",
@@ -2213,7 +2441,13 @@ export const translations = {
 			lockedMessage: "이 채널은 비밀번호로 보호되어 있습니다.",
 			incorrectPasswordOrNotFound: "비밀번호가 틀리거나 채널을 찾을 수 없습니다.",
 			unlock: "잠금 해제",
-			listenMusic: "음악 듣기"
+			listenMusic: "음악 듣기",
+			unmuteAndPlay: "음소거 해제 및 재생",
+			reconnecting: "재연결 중",
+			attempt: "시도",
+			networkThrottle: "YouTube가 이 네트워크의 IP를 차단했습니다. 재생이 일시정지되었습니다. 모바일 핫스팟으로 전환해 보세요.",
+			retryPlayback: "다시 시도",
+			tapToUnmute: "탭하여 음소거 해제"
 		},
 		track: {
 			playing: "재생 중",
@@ -2223,7 +2457,8 @@ export const translations = {
 			cancel: "취소",
 			confirmDelete: "확인",
 			delete: "삭제",
-			watch: "YouTube에서 보기"
+			watch: "YouTube에서 보기",
+			recommend: "추천 받기"
 		},
 		library: {
 			searchPlaceholder: "라이브러리 검색...",
@@ -2246,7 +2481,8 @@ export const translations = {
 			preview: "미리듣기",
 			ban: "차단",
 			decline: "거절",
-			accept: "속락"
+			accept: "속락",
+			pendingCount: "{count}개 대기 중"
 		},
 		playlist: {
 			close: "닫기",
@@ -2277,6 +2513,20 @@ export const translations = {
 			downloadFail: "다운로드 실패 시:",
 			installInstruction: "설정 > '알 수 없는 앱 설치' 허용",
 			privacyLegal: "개인정보 보호 및 법적 고지"
+		},
+		suggestions: {
+			title: "관련 동영상",
+			modalTitle: "관련 동영상",
+			basedOn: "기반:",
+			loading: "유사 동영상 검색 중...",
+			empty: "추천을 찾을 수 없습니다."
+		},
+		banned: {
+			title: "차단된 동영상",
+			empty: "차단된 동영상이 없습니다",
+			emptySubtitle: "요청에서 차단된 동영상이 여기에 표시됩니다.",
+			bannedOn: "{date}에 차단",
+			unban: "차단 해제"
 		}
 	},
 	hi: {
@@ -2314,7 +2564,9 @@ export const translations = {
 			delete: "हटाएं",
 			terms: "शर्तें और कानूनी",
 			videoLanguage: "वीडियो भाषा",
-			international: "अंतर्राष्ट्रीय"
+			international: "अंतर्राष्ट्रीय",
+			startWithCaptions: "कैप्शन के साथ शुरू करें",
+			searchCountries: "देश खोजें..."
 		},
 		player: {
 			errorGeneric: "इस वीडियो को चलाते समय एक त्रुटि हुई।",
@@ -2380,7 +2632,14 @@ export const translations = {
 			leaveChannelConfirm: "क्या आप लॉबी में लौटना चाहते हैं?",
 			leave: "छोड़ें",
 			copyUrl: "URL कॉपी करें",
-			close: "बंद करें"
+			close: "बंद करें",
+			back: "वापस",
+			suggestions: "सुझाव",
+			queuePlayback: "क्यू और प्लेबैक",
+			features: "विशेषताएं",
+			captionsTooltip: "जब उपयोगकर्ता प्लेयर लोड करें तो सभी के लिए डिफ़ॉल्ट रूप से उपशीर्षक दिखाएं।",
+			ownerTools: "मालिक के टूल",
+			changeLanguage: "भाषा बदलें"
 		},
 		suggest: {
 			placeholder: "वीडियो का नाम टाइप करें...",
@@ -2388,7 +2647,10 @@ export const translations = {
 			submit: "भेजें",
 			adding: "जोड़ा जा रहा है...",
 			added: "जोड़ा गया",
-			error: "कृपया YouTube लिंक या शीर्षक दर्ज करें।"
+			error: "कृपया YouTube लिंक या शीर्षक दर्ज करें।",
+			loginRequired: "वीडियो सुझाने के लिए कृपया लॉगिन करें।",
+			loadSimilar: "समान वीडियो लोड करें",
+			similarTo: "समान:"
 		},
 		app: {
 			noInternet: "कोई इंटरनेट कनेक्शन नहीं",
@@ -2410,7 +2672,12 @@ export const translations = {
 			incorrectPasswordOrNotFound: "गलत पासवर्ड या चैनल नहीं मिला।",
 			unlock: "अनलॉक करें",
 			listenMusic: "संवीडियो सुनें",
-			unmuteAndPlay: "अनम्यूट और बजाएं"
+			unmuteAndPlay: "अनम्यूट और बजाएं",
+			reconnecting: "पुनः कनेक्ट हो रहा है",
+			attempt: "प्रयास",
+			networkThrottle: "YouTube ने इस नेटवर्क का IP ब्लॉक कर दिया है। प्लेबैक रोका गया। मोबाइल हॉटस्पॉट पर स्विच करें।",
+			retryPlayback: "पुनः प्रयास करें",
+			tapToUnmute: "अनम्यूट करने के लिए टैप करें"
 		},
 		track: {
 			playing: "चल रहा है",
@@ -2420,7 +2687,8 @@ export const translations = {
 			cancel: "रद्द करें",
 			confirmDelete: "पुष्टि करें",
 			delete: "हटाएं",
-			watch: "YouTube पर देखें"
+			watch: "YouTube पर देखें",
+			recommend: "सुझाव प्राप्त करें"
 		},
 		library: {
 			searchPlaceholder: "लाइब्रेरी खोजें...",
@@ -2443,7 +2711,8 @@ export const translations = {
 			preview: "पूर्वावलोकन",
 			ban: "प्रतिबंध",
 			decline: "अस्वीकार",
-			accept: "स्वीकार"
+			accept: "स्वीकार",
+			pendingCount: "{count} लंबित"
 		},
 		playlist: {
 			close: "बंद करें",
@@ -2474,6 +2743,20 @@ export const translations = {
 			downloadFail: "यदि डाउनलोड विफल होता है:",
 			installInstruction: "सेटिंग्स > \"अज्ञात ऐप्स इंस्टॉल करें\" सक्षम करें",
 			privacyLegal: "गोपनीयता और कानूनी"
+		},
+		suggestions: {
+			title: "संबंधित वीडियो",
+			modalTitle: "संबंधित वीडियो",
+			basedOn: "आधार:",
+			loading: "समान वीडियो ढूंढ रहे हैं...",
+			empty: "कोई सुझाव नहीं मिला।"
+		},
+		banned: {
+			title: "प्रतिबंधित वीडियो",
+			empty: "कोई प्रतिबंधित वीडियो नहीं",
+			emptySubtitle: "अनुरोधों से प्रतिबंधित वीडियो यहां दिखाई देंगे।",
+			bannedOn: "{date} को प्रतिबंधित",
+			unban: "प्रतिबंध हटाएं"
 		}
 	},
 	th: {
@@ -2511,7 +2794,9 @@ export const translations = {
 			delete: "ลบ",
 			terms: "เงื่อนไขและกฎหมาย",
 			videoLanguage: "ภาษาวิดีโอ",
-			international: "สากล"
+			international: "สากล",
+			startWithCaptions: "เริ่มด้วยคำบรรยาย",
+			searchCountries: "ค้นหาประเทศ..."
 		},
 		player: {
 			errorGeneric: "เกิดข้อผิดพลาดขณะเล่นวิดีโอนี้",
@@ -2577,7 +2862,14 @@ export const translations = {
 			leaveChannelConfirm: "คุณต้องการกลับไปที่ล็อบบี้หรือไม่?",
 			leave: "ออก",
 			copyUrl: "คัดลอกลิงก์",
-			close: "ปิด"
+			close: "ปิด",
+			back: "ย้อนกลับ",
+			suggestions: "คำแนะนำ",
+			queuePlayback: "คิวและการเล่น",
+			features: "คุณสมบัติ",
+			captionsTooltip: "แสดงคำบรรยายเป็นค่าเริ่มต้นสำหรับผู้ใช้ทุกคนเมื่อโหลดเครื่องเล่น",
+			ownerTools: "เครื่องมือเจ้าของ",
+			changeLanguage: "เปลี่ยนภาษา"
 		},
 		suggest: {
 			placeholder: "พิมพ์ชื่อวิดีโอ...",
@@ -2585,7 +2877,10 @@ export const translations = {
 			submit: "ส่ง",
 			adding: "กำลังเพิ่ม...",
 			added: "เพิ่มแล้ว",
-			error: "โปรดใส่ลิงก์ YouTube หรือชื่อวิดีโอ"
+			error: "โปรดใส่ลิงก์ YouTube หรือชื่อวิดีโอ",
+			loginRequired: "กรุณาเข้าสู่ระบบเพื่อแนะนำวิดีโอ",
+			loadSimilar: "โหลดวิดีโอที่คล้ายกัน",
+			similarTo: "คล้ายกับ"
 		},
 		app: {
 			noInternet: "ไม่มีการเชื่อมต่ออินเทอร์เน็ต",
@@ -2602,7 +2897,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "รหัสผ่านไม่ถูกต้องหรือไม่พบช่อง",
 			unlock: "ปลดล็อค",
 			listenMusic: "ฟังวิดีโอ",
-			unmuteAndPlay: "เปิดเสียง & เล่น"
+			unmuteAndPlay: "เปิดเสียง & เล่น",
+			retrying: "กำลังลองใหม่...",
+			reconnecting: "กำลังเชื่อมต่อใหม่",
+			attempt: "ความพยายาม",
+			connecting: "กำลังเชื่อมต่อกับเซิร์ฟเวอร์...",
+			connectionIssue: "ปัญหาการเชื่อมต่อ",
+			takingTooLong: "ใช้เวลานานกว่าปกติ...",
+			checkConnection: "กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณ",
+			networkThrottle: "YouTube ได้บล็อก IP ของเครือข่ายนี้แล้ว การเล่นถูกหยุดชั่วคราว ลองสลับไปใช้ฮอตสปอตมือถือ",
+			retryPlayback: "ลองใหม่",
+			tapToUnmute: "แตะเพื่อยกเลิกการปิดเสียง"
 		},
 		track: {
 			playing: "กำลังเล่น",
@@ -2612,7 +2917,8 @@ export const translations = {
 			cancel: "ยกเลิก",
 			confirmDelete: "ยืนยัน",
 			delete: "ลบ",
-			watch: "ดูบน YouTube"
+			watch: "ดูบน YouTube",
+			recommend: "รับคำแนะนำ"
 		},
 		library: {
 			searchPlaceholder: "ค้นหาคลังวิดีโอ...",
@@ -2635,7 +2941,8 @@ export const translations = {
 			preview: "ตัวอย่าง",
 			ban: "แบน",
 			decline: "ปฏิเสธ",
-			accept: "ยอมรับ"
+			accept: "ยอมรับ",
+			pendingCount: "รออยู่ {count} รายการ"
 		},
 		playlist: {
 			close: "ปิด",
@@ -2666,6 +2973,20 @@ export const translations = {
 			downloadFail: "หากการดาวน์โหลดล้มเหลว:",
 			installInstruction: "การตั้งค่า > เปิดใช้งาน \"ติดตั้งแอปที่ไม่รู้จัก\"",
 			privacyLegal: "ความเป็นส่วนตัวและกฎหมาย"
+		},
+		suggestions: {
+			title: "วิดีโอที่เกี่ยวข้อง",
+			modalTitle: "วิดีโอที่เกี่ยวข้อง",
+			basedOn: "อ้างอิงจาก:",
+			loading: "กำลังค้นหาวิดีโอที่คล้ายกัน...",
+			empty: "ไม่พบคำแนะนำ"
+		},
+		banned: {
+			title: "วิดีโอที่ถูกแบน",
+			empty: "ไม่มีวิดีโอที่ถูกแบน",
+			emptySubtitle: "วิดีโอที่ถูกแบนจากคำขอจะปรากฏที่นี่",
+			bannedOn: "ถูกแบนเมื่อ {date}",
+			unban: "ยกเลิกการแบน"
 		}
 	},
 	vi: {
@@ -2703,7 +3024,9 @@ export const translations = {
 			delete: "Xóa",
 			terms: "Điều khoản & Pháp lý",
 			videoLanguage: "Ngôn ngữ video",
-			international: "Quốc tế"
+			international: "Quốc tế",
+			startWithCaptions: "Bắt đầu với phụ đề",
+			searchCountries: "Tìm quốc gia..."
 		},
 		player: {
 			errorGeneric: "Đã xảy ra lỗi khi phát video này.",
@@ -2769,7 +3092,14 @@ export const translations = {
 			leaveChannelConfirm: "Bạn có chắc muốn về sảnh chờ?",
 			leave: "Rời đi",
 			copyUrl: "Sao chép URL",
-			close: "Đóng"
+			close: "Đóng",
+			back: "Quay lại",
+			suggestions: "Gợi ý",
+			queuePlayback: "Hàng đợi & Phát",
+			features: "Tính năng",
+			captionsTooltip: "Hiển thị phụ đề mặc định cho tất cả người dùng khi họ tải trình phát.",
+			ownerTools: "Công cụ chủ sở hữu",
+			changeLanguage: "Đổi ngôn ngữ"
 		},
 		suggest: {
 			placeholder: "Nhập tên bài hát...",
@@ -2777,7 +3107,10 @@ export const translations = {
 			submit: "Gửi",
 			adding: "Đang thêm...",
 			added: "Đã thêm",
-			error: "Vui lòng nhập link YouTube hoặc tiêu đề."
+			error: "Vui lòng nhập link YouTube hoặc tiêu đề.",
+			loginRequired: "Vui lòng đăng nhập để gợi ý video.",
+			loadSimilar: "Tải video tương tự",
+			similarTo: "Tương tự với"
 		},
 		app: {
 			noInternet: "Không có kết nối internet",
@@ -2794,7 +3127,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Sai mật khẩu hoặc không tìm thấy kênh.",
 			unlock: "Mở khóa",
 			listenMusic: "Nghe nhạc",
-			unmuteAndPlay: "Bật tiếng & Phát"
+			unmuteAndPlay: "Bật tiếng & Phát",
+			retrying: "Đang thử lại...",
+			reconnecting: "Đang kết nối lại",
+			attempt: "Lần thử",
+			connecting: "Đang kết nối đến máy chủ...",
+			connectionIssue: "Sự cố kết nối",
+			takingTooLong: "Mất nhiều thời gian hơn bình thường...",
+			checkConnection: "Vui lòng kiểm tra kết nối internet của bạn.",
+			networkThrottle: "YouTube đã chặn IP của mạng này. Phát đã tạm dừng. Hãy thử chuyển sang điểm phát di động.",
+			retryPlayback: "Thử lại",
+			tapToUnmute: "Chạm để bật âm thanh"
 		},
 		track: {
 			playing: "Đang phát",
@@ -2804,7 +3147,8 @@ export const translations = {
 			cancel: "Hủy",
 			confirmDelete: "Xác nhận",
 			delete: "Xóa",
-			watch: "Xem trên YouTube"
+			watch: "Xem trên YouTube",
+			recommend: "Nhận gợi ý"
 		},
 		library: {
 			searchPlaceholder: "Tìm kiếm thư viện...",
@@ -2827,7 +3171,8 @@ export const translations = {
 			preview: "Nghe thử",
 			ban: "Cấm",
 			decline: "Từ chối",
-			accept: "Chấp nhận"
+			accept: "Chấp nhận",
+			pendingCount: "{count} đang chờ"
 		},
 		playlist: {
 			close: "Đóng",
@@ -2858,6 +3203,20 @@ export const translations = {
 			downloadFail: "Nếu tải xuống thất bại:",
 			installInstruction: "Cài đặt > Bật \"Cài đặt ứng dụng không rõ nguồn gốc\"",
 			privacyLegal: "Quyền riêng tư & Pháp lý"
+		},
+		suggestions: {
+			title: "Video liên quan",
+			modalTitle: "Video liên quan",
+			basedOn: "Dựa trên:",
+			loading: "Đang tìm video tương tự...",
+			empty: "Không tìm thấy gợi ý."
+		},
+		banned: {
+			title: "Video bị cấm",
+			empty: "Không có video bị cấm",
+			emptySubtitle: "Các video bị cấm khỏi yêu cầu sẽ xuất hiện ở đây.",
+			bannedOn: "Bị cấm vào {date}",
+			unban: "Bỏ cấm"
 		}
 	},
 	id: {
@@ -2895,7 +3254,9 @@ export const translations = {
 			delete: "Hapus",
 			terms: "Syarat & Hukum",
 			videoLanguage: "Bahasa Video",
-			international: "Internasional"
+			international: "Internasional",
+			startWithCaptions: "Mulai dengan teks",
+			searchCountries: "Cari negara..."
 		},
 		player: {
 			errorGeneric: "Terjadi kesalahan saat memutar video ini.",
@@ -2961,7 +3322,14 @@ export const translations = {
 			leaveChannelConfirm: "Yakin ingin kembali ke lobi?",
 			leave: "Keluar",
 			copyUrl: "Salin URL",
-			close: "Tutup"
+			close: "Tutup",
+			back: "Kembali",
+			suggestions: "Saran",
+			queuePlayback: "Antrian & Pemutaran",
+			features: "Fitur",
+			captionsTooltip: "Tampilkan subjudul secara default untuk semua pengguna saat memuat pemutar.",
+			ownerTools: "Alat Pemilik",
+			changeLanguage: "Ubah bahasa"
 		},
 		suggest: {
 			placeholder: "Ketik judul video...",
@@ -2969,7 +3337,10 @@ export const translations = {
 			submit: "Kirim",
 			adding: "Menambahkan...",
 			added: "Ditambahkan",
-			error: "Masukkan link YouTube atau judul."
+			error: "Masukkan link YouTube atau judul.",
+			loginRequired: "Silakan login untuk menyarankan video.",
+			loadSimilar: "Muat video serupa",
+			similarTo: "Serupa dengan"
 		},
 		app: {
 			noInternet: "Tidak ada koneksi internet",
@@ -2986,7 +3357,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Password salah atau kanal tidak ditemukan.",
 			unlock: "Buka Kunci",
 			listenMusic: "Dengarkan Musik",
-			unmuteAndPlay: "Bunyikan & Putar"
+			unmuteAndPlay: "Bunyikan & Putar",
+			retrying: "Mencoba lagi...",
+			reconnecting: "Menghubungkan kembali",
+			attempt: "Percobaan",
+			connecting: "Menghubungkan ke server...",
+			connectionIssue: "Masalah koneksi",
+			takingTooLong: "Memakan waktu lebih lama dari biasanya...",
+			checkConnection: "Silakan periksa koneksi internet Anda.",
+			networkThrottle: "YouTube telah memblokir IP jaringan ini. Pemutaran dijeda. Coba beralih ke hotspot seluler.",
+			retryPlayback: "Coba lagi",
+			tapToUnmute: "Ketuk untuk membunyikan"
 		},
 		track: {
 			playing: "Memutar",
@@ -2996,7 +3377,8 @@ export const translations = {
 			cancel: "Batal",
 			confirmDelete: "Konfirmasi",
 			delete: "Hapus",
-			watch: "Tonton di YouTube"
+			watch: "Tonton di YouTube",
+			recommend: "Dapatkan saran"
 		},
 		library: {
 			searchPlaceholder: "Cari pustaka...",
@@ -3019,7 +3401,8 @@ export const translations = {
 			preview: "Pratinjau",
 			ban: "Larang",
 			decline: "Tolak",
-			accept: "Terima"
+			accept: "Terima",
+			pendingCount: "{count} tertunda"
 		},
 		playlist: {
 			close: "Tutup",
@@ -3050,6 +3433,20 @@ export const translations = {
 			downloadFail: "Jika unduhan gagal:",
 			installInstruction: "Pengaturan > Aktifkan \"Instal aplikasi yang tidak dikenal\"",
 			privacyLegal: "Privasi & Hukum"
+		},
+		suggestions: {
+			title: "Video terkait",
+			modalTitle: "Video terkait",
+			basedOn: "Berdasarkan:",
+			loading: "Mencari video serupa...",
+			empty: "Tidak ada saran ditemukan."
+		},
+		banned: {
+			title: "Video diblokir",
+			empty: "Tidak ada video yang diblokir",
+			emptySubtitle: "Video yang diblokir dari permintaan akan muncul di sini.",
+			bannedOn: "Diblokir pada {date}",
+			unban: "Buka blokir"
 		}
 	},
 	ms: {
@@ -3087,7 +3484,9 @@ export const translations = {
 			delete: "Padam",
 			terms: "Terma & Undang-undang",
 			videoLanguage: "Bahasa Video",
-			international: "Antarabangsa"
+			international: "Antarabangsa",
+			startWithCaptions: "Mula dengan sari kata",
+			searchCountries: "Cari negara..."
 		},
 		player: {
 			errorGeneric: "Ralat berlaku semasa memainkan video ini.",
@@ -3153,7 +3552,14 @@ export const translations = {
 			leaveChannelConfirm: "Pasti ingin kembali ke lobi?",
 			leave: "Keluar",
 			copyUrl: "Salin URL",
-			close: "Tutup"
+			close: "Tutup",
+			back: "Kembali",
+			suggestions: "Cadangan",
+			queuePlayback: "Baris Gilir & Main",
+			features: "Ciri",
+			captionsTooltip: "Tunjukkan sari kata secara lalai untuk semua pengguna apabila mereka memuatkan pemain.",
+			ownerTools: "Alat Pemilik",
+			changeLanguage: "Tukar bahasa"
 		},
 		suggest: {
 			placeholder: "Taip tajuk video...",
@@ -3161,7 +3567,10 @@ export const translations = {
 			submit: "Hantar",
 			adding: "Menambah...",
 			added: "Ditambah",
-			error: "Sila masukkan pautan YouTube atau tajuk."
+			error: "Sila masukkan pautan YouTube atau tajuk.",
+			loginRequired: "Sila log masuk untuk mencadangkan video.",
+			loadSimilar: "Muat video serupa",
+			similarTo: "Serupa dengan"
 		},
 		app: {
 			noInternet: "Tiada sambungan internet",
@@ -3178,7 +3587,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Kata laluan salah atau saluran tidak ditemui.",
 			unlock: "Buka Kunci",
 			listenMusic: "Dengar Muzik",
-			unmuteAndPlay: "Nyahbisu & Main"
+			unmuteAndPlay: "Nyahbisu & Main",
+			retrying: "Mencuba semula...",
+			reconnecting: "Menyambung semula",
+			attempt: "Cubaan",
+			connecting: "Menyambung ke pelayan...",
+			connectionIssue: "Masalah sambungan",
+			takingTooLong: "Mengambil masa lebih lama daripada biasa...",
+			checkConnection: "Sila semak sambungan internet anda.",
+			networkThrottle: "YouTube telah menyekat IP rangkaian ini. Main balik dijeda. Cuba bertukar ke hotspot mudah alih.",
+			retryPlayback: "Cuba lagi",
+			tapToUnmute: "Ketik untuk hidupkan bunyi"
 		},
 		track: {
 			playing: "Sedang Main",
@@ -3188,7 +3607,8 @@ export const translations = {
 			cancel: "Batal",
 			confirmDelete: "Sahkan",
 			delete: "Padam",
-			watch: "Tonton di YouTube"
+			watch: "Tonton di YouTube",
+			recommend: "Dapatkan cadangan"
 		},
 		library: {
 			searchPlaceholder: "Cari pustaka...",
@@ -3211,7 +3631,8 @@ export const translations = {
 			preview: "Pratonton",
 			ban: "Larang",
 			decline: "Tolak",
-			accept: "Terima"
+			accept: "Terima",
+			pendingCount: "{count} menunggu"
 		},
 		playlist: {
 			close: "Tutup",
@@ -3225,7 +3646,8 @@ export const translations = {
 			skippedRestricted: "'{title}' dilangkau (Tidak tersedia)",
 			skippedIPBlocked: "'{title}' dilangkau — YouTube mengehadkan rangkaian ini",
 			backToNow: "Kembali ke Sekarang",
-			addVideos: "Tambah video untuk mulakan main balik"
+			addVideos: "Tambah video untuk mulakan main balik",
+			channelSuffix: "Saluran"
 		},
 		mobile: {
 			tagline: "Jukebox Demokratik",
@@ -3241,6 +3663,20 @@ export const translations = {
 			downloadFail: "Jika muat turun gagal:",
 			installInstruction: "Tetapan > Dayakan \"Pasang apl yang tidak diketahui\"",
 			privacyLegal: "Privasi & Undang-undang"
+		},
+		suggestions: {
+			title: "Video berkaitan",
+			modalTitle: "Video berkaitan",
+			basedOn: "Berdasarkan:",
+			loading: "Mencari video serupa...",
+			empty: "Tiada cadangan ditemui."
+		},
+		banned: {
+			title: "Video diharamkan",
+			empty: "Tiada video diharamkan",
+			emptySubtitle: "Video yang diharamkan daripada permintaan akan muncul di sini.",
+			bannedOn: "Diharamkan pada {date}",
+			unban: "Buka haram"
 		}
 	},
 	tl: {
@@ -3278,7 +3714,9 @@ export const translations = {
 			delete: "Tanggalin",
 			terms: "Mga Tuntunin at Legal",
 			videoLanguage: "Wika ng Video",
-			international: "Internasyonal"
+			international: "Internasyonal",
+			startWithCaptions: "Magsimula nang may Caption",
+			searchCountries: "Maghanap ng bansa..."
 		},
 		player: {
 			errorGeneric: "May naganap na error habang sine-play ang video na ito.",
@@ -3344,7 +3782,14 @@ export const translations = {
 			leaveChannelConfirm: "Gusto mo bang bumalik sa lobby?",
 			leave: "Umalis",
 			copyUrl: "Kopyahin ang URL",
-			close: "Isara"
+			close: "Isara",
+			back: "Bumalik",
+			suggestions: "Mga mungkahi",
+			queuePlayback: "Pila at Pagpapatugtog",
+			features: "Mga tampok",
+			captionsTooltip: "Ipakita ang mga subtitle bilang default para sa lahat ng user kapag in-load ang player.",
+			ownerTools: "Mga kasangkapan ng may-ari",
+			changeLanguage: "Baguhin ang wika"
 		},
 		suggest: {
 			placeholder: "Mag-type ng pamagat...",
@@ -3352,7 +3797,10 @@ export const translations = {
 			submit: "Ipadala",
 			adding: "Nagdadagdag...",
 			added: "Naidagdag",
-			error: "Mangyaring maglagay ng link sa YouTube o pamagat."
+			error: "Mangyaring maglagay ng link sa YouTube o pamagat.",
+			loginRequired: "Mangyaring mag-log in upang magmungkahi ng mga video.",
+			loadSimilar: "I-load ang mga katulad na video",
+			similarTo: "Katulad ng"
 		},
 		app: {
 			noInternet: "Walang Koneksyon sa Internet",
@@ -3369,7 +3817,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Maling password o hindi nahanap ang channel.",
 			unlock: "I-unlock",
 			listenMusic: "Makinig ng Musika",
-			unmuteAndPlay: "I-unmute at Mag-play"
+			unmuteAndPlay: "I-unmute at Mag-play",
+			retrying: "Sinusubukan muli...",
+			reconnecting: "Muling kumokonekta",
+			attempt: "Pagtatangka",
+			connecting: "Kumokonekta sa server...",
+			connectionIssue: "Problema sa koneksyon",
+			takingTooLong: "Mas matagal kaysa karaniwan...",
+			checkConnection: "Mangyaring suriin ang iyong koneksyon sa internet.",
+			networkThrottle: "Hinarang ng YouTube ang IP ng network na ito. Naka-pause ang pagpapatugtog. Subukang lumipat sa mobile hotspot.",
+			retryPlayback: "Subukang muli",
+			tapToUnmute: "I-tap upang i-unmute"
 		},
 		track: {
 			playing: "Tumutugtog",
@@ -3379,7 +3837,8 @@ export const translations = {
 			cancel: "Kanselahin",
 			confirmDelete: "Kumpirmahin",
 			delete: "Tanggalin",
-			watch: "Panoorin sa YouTube"
+			watch: "Panoorin sa YouTube",
+			recommend: "Kumuha ng mga mungkahi"
 		},
 		library: {
 			searchPlaceholder: "Maghanap sa library...",
@@ -3402,7 +3861,8 @@ export const translations = {
 			preview: "Preview",
 			ban: "I-ban",
 			decline: "Tanggihan",
-			accept: "Tanggapin"
+			accept: "Tanggapin",
+			pendingCount: "{count} nakabinbin"
 		},
 		playlist: {
 			close: "Isara",
@@ -3415,10 +3875,41 @@ export const translations = {
 			errorRestricted: "Hindi available sa iyong bansa",
 			skippedRestricted: "'{title}' nilaktawan (Hindi available)",
 			skippedIPBlocked: "'{title}' nilaktawan — Nililimitahan ng YouTube ang network na ito",
-			backToNow: "Bumalik sa Ngayon"
+			backToNow: "Bumalik sa Ngayon",
+			channelSuffix: "Channel",
+			addVideos: "Magdagdag ng mga video upang magsimula"
+		},
+		suggestions: {
+			title: "Mga kaugnay na video",
+			modalTitle: "Mga kaugnay na video",
+			basedOn: "Batay sa:",
+			loading: "Naghahanap ng mga katulad na video...",
+			empty: "Walang nakitang mungkahi."
+		},
+		banned: {
+			title: "Mga ipinagbabawal na video",
+			empty: "Walang ipinagbabawal na video",
+			emptySubtitle: "Lalabas dito ang mga video na ipinagbawal sa mga kahilingan.",
+			bannedOn: "Ipinagbawal noong {date}",
+			unban: "Alisin sa ban"
+		},
+		mobile: {
+			tagline: "Ang Demokratikong Jukebox",
+			tvDescription: "Gawing pinakamahusay na Jukebox ang screen na ito. Hayaan ang iyong mga bisita na bumoto sa musika.",
+			mobileDescription: "Bumoto sa mga video, buuin ang playlist nang sama-sama, at hayaang manalo ang pinakamagandang musika.",
+			tvFeatureTitle: "Cinema Mode",
+			mobileFeatureTitle: "I-host ang Party",
+			tvFeatureBody: "I-install ang TV App para sa perpektong shared player experience na may Always-On screen.",
+			mobileFeatureBody: "Gamitin ang aming Android App upang patakbuhin ang music player na may seamless na background playback at \"Always On\" screen.",
+			downloadTv: "I-download ang TV App",
+			downloadMobile: "I-download ang Android App",
+			requirement: "Kailangan ng Android 7.0+",
+			downloadFail: "Kung nabigo ang download:",
+			installInstruction: "Settings > I-enable ang \"Install Unknown Apps\"",
+			privacyLegal: "Privacy Policy at Legal"
 		}
 	},
-	"pl": {
+	pl: {
 		lobby: {
 			browseChannels: "Przeglądaj kanały",
 			public: "Publiczne",
@@ -3453,7 +3944,9 @@ export const translations = {
 			delete: "Usuń",
 			terms: "Warunki i informacje prawne",
 			videoLanguage: "Język wideo",
-			international: "Międzynarodowy"
+			international: "Międzynarodowy",
+			startWithCaptions: "Rozpocznij z napisami",
+			searchCountries: "Szukaj krajów..."
 		},
 		player: {
 			errorGeneric: "Wystąpił błąd podczas odtwarzania tego wideo.",
@@ -3519,7 +4012,14 @@ export const translations = {
 			leaveChannelConfirm: "Czy na pewno chcesz wrócić do lobby?",
 			leave: "Opuść",
 			copyUrl: "Kopiuj URL",
-			close: "Zamknij"
+			close: "Zamknij",
+			back: "Wstecz",
+			suggestions: "Propozycje",
+			queuePlayback: "Kolejka i odtwarzanie",
+			features: "Funkcje",
+			captionsTooltip: "Wyświetlaj napisy domyślnie dla wszystkich użytkowników, gdy ładują odtwarzacz.",
+			ownerTools: "Narzędzia właściciela",
+			changeLanguage: "Zmień język"
 		},
 		suggest: {
 			placeholder: "Wpisz tytuł...",
@@ -3527,7 +4027,10 @@ export const translations = {
 			submit: "Wyślij",
 			adding: "Dodawanie...",
 			added: "Dodano",
-			error: "Wprowadź link do YouTube lub tytuł."
+			error: "Wprowadź link do YouTube lub tytuł.",
+			loginRequired: "Zaloguj się, aby proponować filmy.",
+			loadSimilar: "Załaduj podobne filmy",
+			similarTo: "Podobne do"
 		},
 		app: {
 			noInternet: "Brak połączenia z internetem",
@@ -3544,7 +4047,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Nieprawidłowe hasło lub kanał nie istnieje.",
 			unlock: "Odblokuj",
 			listenMusic: "Słuchaj muzyki",
-			unmuteAndPlay: "Włącz dźwięk i graj"
+			unmuteAndPlay: "Włącz dźwięk i graj",
+			retrying: "Ponawianie...",
+			reconnecting: "Ponowne łączenie",
+			attempt: "Próba",
+			connecting: "Łączenie z serwerem...",
+			connectionIssue: "Problem z połączeniem",
+			takingTooLong: "Trwa dłużej niż zwykle...",
+			checkConnection: "Sprawdź swoje połączenie internetowe.",
+			networkThrottle: "YouTube zablokował IP tej sieci. Odtwarzanie wstrzymane. Spróbuj przełączyć się na mobilny hotspot.",
+			retryPlayback: "Spróbuj ponownie",
+			tapToUnmute: "Dotknij, aby włączyć dźwięk"
 		},
 		track: {
 			playing: "Odtwarzanie",
@@ -3554,7 +4067,8 @@ export const translations = {
 			cancel: "Anuluj",
 			confirmDelete: "Potwierdź",
 			delete: "Usuń",
-			watch: "Oglądaj na YouTube"
+			watch: "Oglądaj na YouTube",
+			recommend: "Pobierz propozycje"
 		},
 		library: {
 			searchPlaceholder: "Szukaj w bibliotece...",
@@ -3577,7 +4091,8 @@ export const translations = {
 			preview: "Podgląd",
 			ban: "Zbanuj",
 			decline: "Odrzuć",
-			accept: "Akceptuj"
+			accept: "Akceptuj",
+			pendingCount: "{count} oczekuje"
 		},
 		playlist: {
 			close: "Zamknij",
@@ -3608,9 +4123,23 @@ export const translations = {
 			downloadFail: "Jeśli pobieranie nie powiedzie się:",
 			installInstruction: "Ustawienia > Włącz „Zainstaluj nieznane aplikacje”",
 			privacyLegal: "Prywatność i informacje prawne"
+		},
+		suggestions: {
+			title: "Powiązane filmy",
+			modalTitle: "Powiązane filmy",
+			basedOn: "Na podstawie:",
+			loading: "Wyszukiwanie podobnych filmów...",
+			empty: "Nie znaleziono propozycji."
+		},
+		banned: {
+			title: "Zablokowane filmy",
+			empty: "Brak zablokowanych filmów",
+			emptySubtitle: "Filmy zablokowane z żądań pojawią się tutaj.",
+			bannedOn: "Zablokowany {date}",
+			unban: "Odblokuj"
 		}
 	},
-	"sv": {
+	sv: {
 		lobby: {
 			browseChannels: "Bläddra kanaler",
 			public: "Offentlig",
@@ -3645,7 +4174,9 @@ export const translations = {
 			delete: "Ta bort",
 			terms: "Villkor & Lagligt",
 			videoLanguage: "Videospråk",
-			international: "Internationellt"
+			international: "Internationellt",
+			startWithCaptions: "Starta med undertexter",
+			searchCountries: "Sök länder..."
 		},
 		player: {
 			errorGeneric: "Ett fel uppstod när videon spelades upp.",
@@ -3711,7 +4242,14 @@ export const translations = {
 			leaveChannelConfirm: "Är du säker på att du vill återvända till lobbyn?",
 			leave: "Lämna",
 			copyUrl: "Kopiera URL",
-			close: "Stäng"
+			close: "Stäng",
+			back: "Tillbaka",
+			suggestions: "Förslag",
+			queuePlayback: "Kö och uppspelning",
+			features: "Funktioner",
+			captionsTooltip: "Visa undertexter som standard för alla användare när de laddar spelaren.",
+			ownerTools: "Ägarverktyg",
+			changeLanguage: "Byt språk"
 		},
 		suggest: {
 			placeholder: "Skriv en titel...",
@@ -3719,7 +4257,10 @@ export const translations = {
 			submit: "Skicka",
 			adding: "Lägger till...",
 			added: "Tillagd",
-			error: "Ange en YouTube-länk eller titel."
+			error: "Ange en YouTube-länk eller titel.",
+			loginRequired: "Logga in för att föreslå videor.",
+			loadSimilar: "Ladda liknande videor",
+			similarTo: "Liknande"
 		},
 		app: {
 			noInternet: "Ingen internetanslutning",
@@ -3736,7 +4277,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Felaktigt lösenord eller kanalen hittades inte.",
 			unlock: "Lås upp",
 			listenMusic: "Lyssna på musik",
-			unmuteAndPlay: "Ljud på & Spela"
+			unmuteAndPlay: "Ljud på & Spela",
+			retrying: "Försöker igen...",
+			reconnecting: "Återansluter",
+			attempt: "Försök",
+			connecting: "Ansluter till server...",
+			connectionIssue: "Anslutningsproblem",
+			takingTooLong: "Tar längre tid än vanligt...",
+			checkConnection: "Kontrollera din internetanslutning.",
+			networkThrottle: "YouTube har blockerat detta nätverks IP. Uppspelning pausad. Försök byta till en mobil hotspot.",
+			retryPlayback: "Försök igen",
+			tapToUnmute: "Tryck för att slå på ljudet"
 		},
 		track: {
 			playing: "Spelar",
@@ -3746,7 +4297,8 @@ export const translations = {
 			cancel: "Avbryt",
 			confirmDelete: "Bekräfta",
 			delete: "Ta bort",
-			watch: "Titta på YouTube"
+			watch: "Titta på YouTube",
+			recommend: "Hämta förslag"
 		},
 		library: {
 			searchPlaceholder: "Sök i biblioteket...",
@@ -3769,7 +4321,8 @@ export const translations = {
 			preview: "Förhandsgranska",
 			ban: "Bannlys",
 			decline: "Avböj",
-			accept: "Acceptera"
+			accept: "Acceptera",
+			pendingCount: "{count} väntande"
 		},
 		playlist: {
 			close: "Stäng",
@@ -3783,7 +4336,8 @@ export const translations = {
 			skippedRestricted: "Hoppade över '{title}' (Ej tillgänglig)",
 			skippedIPBlocked: "Hoppade över '{title}' — YouTube begränsar det här nätverket",
 			backToNow: "Tillbaka till nu",
-			addVideos: "Lägg till videor för att börja"
+			addVideos: "Lägg till videor för att börja",
+			channelSuffix: "Kanal"
 		},
 		mobile: {
 			tagline: "Den Demokratiska Jukeboxen",
@@ -3799,9 +4353,23 @@ export const translations = {
 			downloadFail: "Om nedladdningen misslyckas:",
 			installInstruction: "Inställningar > Aktivera \"Installera okända appar\"",
 			privacyLegal: "Integritet & Juridik"
+		},
+		suggestions: {
+			title: "Relaterade videor",
+			modalTitle: "Relaterade videor",
+			basedOn: "Baserat på:",
+			loading: "Söker liknande videor...",
+			empty: "Inga förslag hittades."
+		},
+		banned: {
+			title: "Bannade videor",
+			empty: "Inga bannade videor",
+			emptySubtitle: "Videor som bannats från förfrågningar visas här.",
+			bannedOn: "Bannad {date}",
+			unban: "Avbanna"
 		}
 	},
-	"da": {
+	da: {
 		lobby: {
 			browseChannels: "Gennemse kanaler",
 			public: "Offentlig",
@@ -3836,7 +4404,9 @@ export const translations = {
 			delete: "Slet",
 			terms: "Vilkår & Juridisk",
 			videoLanguage: "Videosprog",
-			international: "Internationalt"
+			international: "Internationalt",
+			startWithCaptions: "Start med undertekster",
+			searchCountries: "Søg lande..."
 		},
 		player: {
 			errorGeneric: "Der opstod en fejl under afspilning af denne video.",
@@ -3902,7 +4472,14 @@ export const translations = {
 			leaveChannelConfirm: "Er du sikker på, at du vil vende tilbage til lobbyen?",
 			leave: "Forlad",
 			copyUrl: "Kopier URL",
-			close: "Luk"
+			close: "Luk",
+			back: "Tilbage",
+			suggestions: "Forslag",
+			queuePlayback: "Kø og afspilning",
+			features: "Funktioner",
+			captionsTooltip: "Vis undertekster som standard for alle brugere, når de indlæser afspilleren.",
+			ownerTools: "Ejerværktøjer",
+			changeLanguage: "Skift sprog"
 		},
 		suggest: {
 			placeholder: "Skriv en titel...",
@@ -3910,7 +4487,10 @@ export const translations = {
 			submit: "Indsend",
 			adding: "Tilføjer...",
 			added: "Tilføjet",
-			error: "Indtast venligst et YouTube-link eller titel."
+			error: "Indtast venligst et YouTube-link eller titel.",
+			loginRequired: "Log ind for at foreslå videoer.",
+			loadSimilar: "Indlæs lignende videoer",
+			similarTo: "Lignende"
 		},
 		app: {
 			noInternet: "Ingen internetforbindelse",
@@ -3927,7 +4507,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Forkert adgangskode eller kanalen blev ikke fundet.",
 			unlock: "Lås op",
 			listenMusic: "Lyt til musik",
-			unmuteAndPlay: "Lyd til & Afspil"
+			unmuteAndPlay: "Lyd til & Afspil",
+			retrying: "Prøver igen...",
+			reconnecting: "Genopretter forbindelse",
+			attempt: "Forsøg",
+			connecting: "Forbinder til server...",
+			connectionIssue: "Forbindelsesproblem",
+			takingTooLong: "Tager længere tid end normalt...",
+			checkConnection: "Tjek din internetforbindelse.",
+			networkThrottle: "YouTube har blokeret dette netværks IP. Afspilning pauset. Prøv at skifte til et mobilt hotspot.",
+			retryPlayback: "Prøv igen",
+			tapToUnmute: "Tryk for at slå lyd til"
 		},
 		track: {
 			playing: "Spiller",
@@ -3937,7 +4527,8 @@ export const translations = {
 			cancel: "Annuller",
 			confirmDelete: "Bekræft",
 			delete: "Slet",
-			watch: "Se på YouTube"
+			watch: "Se på YouTube",
+			recommend: "Hent forslag"
 		},
 		library: {
 			searchPlaceholder: "Søg i bibliotek...",
@@ -3960,7 +4551,8 @@ export const translations = {
 			preview: "Forhåndsvisning",
 			ban: "Forbyd",
 			decline: "Afvis",
-			accept: "Accepter"
+			accept: "Accepter",
+			pendingCount: "{count} afventer"
 		},
 		playlist: {
 			close: "Luk",
@@ -3974,7 +4566,8 @@ export const translations = {
 			skippedRestricted: "'{title}' sprunget over (Ikke tilgængelig)",
 			skippedIPBlocked: "'{title}' sprunget over — YouTube begrænser dette netværk",
 			backToNow: "Tilbage til nu",
-			addVideos: "Tilføj videoer for at starte afspilning"
+			addVideos: "Tilføj videoer for at starte afspilning",
+			channelSuffix: "Kanal"
 		},
 		mobile: {
 			tagline: "Den Demokratiske Jukebox",
@@ -3990,9 +4583,23 @@ export const translations = {
 			downloadFail: "Hvis overførslen mislykkes:",
 			installInstruction: "Indstillinger > Aktiver \"Installer ukendte apps\"",
 			privacyLegal: "Privatliv & Juridisk"
+		},
+		suggestions: {
+			title: "Relaterede videoer",
+			modalTitle: "Relaterede videoer",
+			basedOn: "Baseret på:",
+			loading: "Søger efter lignende videoer...",
+			empty: "Ingen forslag fundet."
+		},
+		banned: {
+			title: "Bannede videoer",
+			empty: "Ingen bannede videoer",
+			emptySubtitle: "Videoer, der er bannet fra forespørgsler, vises her.",
+			bannedOn: "Bannet {date}",
+			unban: "Ophæv ban"
 		}
 	},
-	"no": {
+	no: {
 		lobby: {
 			browseChannels: "Bla gjennom kanaler",
 			public: "Offentlig",
@@ -4027,7 +4634,9 @@ export const translations = {
 			delete: "Slett",
 			terms: "Vilkår og juridisk",
 			videoLanguage: "Videospråk",
-			international: "Internasjonalt"
+			international: "Internasjonalt",
+			startWithCaptions: "Start med teksting",
+			searchCountries: "Søk land..."
 		},
 		player: {
 			errorGeneric: "Det oppstod en feil under avspilling av denne videoen.",
@@ -4093,7 +4702,14 @@ export const translations = {
 			leaveChannelConfirm: "Er du sikker på at du vil gå tilbake til lobbyen?",
 			leave: "Forlat",
 			copyUrl: "Kopier URL",
-			close: "Lukk"
+			close: "Lukk",
+			back: "Tilbake",
+			suggestions: "Forslag",
+			queuePlayback: "Kø og avspilling",
+			features: "Funksjoner",
+			captionsTooltip: "Vis undertekster som standard for alle brukere når de laster spilleren.",
+			ownerTools: "Eierverktøy",
+			changeLanguage: "Bytt språk"
 		},
 		suggest: {
 			placeholder: "Skriv en tittel...",
@@ -4101,7 +4717,10 @@ export const translations = {
 			submit: "Send inn",
 			adding: "Legger til...",
 			added: "Lagt til",
-			error: "Vennligst skriv inn en YouTube-lenke eller tittel."
+			error: "Vennligst skriv inn en YouTube-lenke eller tittel.",
+			loginRequired: "Logg inn for å foreslå videoer.",
+			loadSimilar: "Last lignende videoer",
+			similarTo: "Lignende"
 		},
 		app: {
 			noInternet: "Ingen internettforbindelse",
@@ -4118,7 +4737,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Feil passord eller kanalen ble ikke funnet.",
 			unlock: "Lås opp",
 			listenMusic: "Hør på musikk",
-			unmuteAndPlay: "Lyd på & Spill"
+			unmuteAndPlay: "Lyd på & Spill",
+			retrying: "Prøver igjen...",
+			reconnecting: "Kobler til på nytt",
+			attempt: "Forsøk",
+			connecting: "Kobler til server...",
+			connectionIssue: "Tilkoblingsproblem",
+			takingTooLong: "Tar lengre tid enn vanlig...",
+			checkConnection: "Sjekk internettforbindelsen din.",
+			networkThrottle: "YouTube har blokkert IP-en til dette nettverket. Avspilling stoppet. Prøv å bytte til en mobil hotspot.",
+			retryPlayback: "Prøv igjen",
+			tapToUnmute: "Trykk for å slå på lyd"
 		},
 		track: {
 			playing: "Spiller",
@@ -4128,7 +4757,8 @@ export const translations = {
 			cancel: "Avbryt",
 			confirmDelete: "Bekreft",
 			delete: "Slett",
-			watch: "Se på YouTube"
+			watch: "Se på YouTube",
+			recommend: "Hent forslag"
 		},
 		library: {
 			searchPlaceholder: "Søk i bibliotek...",
@@ -4151,7 +4781,8 @@ export const translations = {
 			preview: "Forhåndsvisning",
 			ban: "Bannlys",
 			decline: "Avslå",
-			accept: "Godta"
+			accept: "Godta",
+			pendingCount: "{count} venter"
 		},
 		playlist: {
 			close: "Lukk",
@@ -4165,7 +4796,8 @@ export const translations = {
 			skippedRestricted: "'{title}' hoppet over (Ikke tilgjengelig)",
 			skippedIPBlocked: "'{title}' hoppet over — YouTube begrenser dette nettverket",
 			backToNow: "Tilbake til nå",
-			addVideos: "Legg til videoer for å starte"
+			addVideos: "Legg til videoer for å starte",
+			channelSuffix: "Kanal"
 		},
 		mobile: {
 			tagline: "Den Demokratiske Jukeboksen",
@@ -4181,9 +4813,23 @@ export const translations = {
 			downloadFail: "Hvis nedlastingen mislykkes:",
 			installInstruction: "Innstillinger > Aktiver \"Installer ukjente apper\"",
 			privacyLegal: "Personvern og juridisk"
+		},
+		suggestions: {
+			title: "Relaterte videoer",
+			modalTitle: "Relaterte videoer",
+			basedOn: "Basert på:",
+			loading: "Søker etter lignende videoer...",
+			empty: "Ingen forslag funnet."
+		},
+		banned: {
+			title: "Bannlyste videoer",
+			empty: "Ingen bannlyste videoer",
+			emptySubtitle: "Videoer som er bannlyst fra forespørsler vises her.",
+			bannedOn: "Bannlyst {date}",
+			unban: "Opphev bann"
 		}
 	},
-	"fi": {
+	fi: {
 		lobby: {
 			browseChannels: "Selaa kanavia",
 			public: "Julkinen",
@@ -4218,7 +4864,9 @@ export const translations = {
 			delete: "Poista",
 			terms: "Ehdot & Lait",
 			videoLanguage: "Videon kieli",
-			international: "Kansainvälinen"
+			international: "Kansainvälinen",
+			startWithCaptions: "Aloita tekstityksellä",
+			searchCountries: "Hae maita..."
 		},
 		player: {
 			errorGeneric: "Tässä videossa tapahtui virhe toistossa.",
@@ -4284,7 +4932,14 @@ export const translations = {
 			leaveChannelConfirm: "Haluatko varmasti palata aulaan?",
 			leave: "Poistu",
 			copyUrl: "Kopioi URL",
-			close: "Sulje"
+			close: "Sulje",
+			back: "Takaisin",
+			suggestions: "Ehdotukset",
+			queuePlayback: "Jono ja toisto",
+			features: "Ominaisuudet",
+			captionsTooltip: "Näytä tekstitykset oletuksena kaikille käyttäjille, kun he lataavat soittimen.",
+			ownerTools: "Omistajan työkalut",
+			changeLanguage: "Vaihda kieli"
 		},
 		suggest: {
 			placeholder: "Kirjoita nimi...",
@@ -4292,7 +4947,10 @@ export const translations = {
 			submit: "Lähetä",
 			adding: "Lisätään...",
 			added: "Lisätty",
-			error: "Syötä YouTube-linkki tai otsikko."
+			error: "Syötä YouTube-linkki tai otsikko.",
+			loginRequired: "Kirjaudu sisään ehdottaaksesi videoita.",
+			loadSimilar: "Lataa samankaltaisia videoita",
+			similarTo: "Samankaltainen kuin"
 		},
 		app: {
 			noInternet: "Ei internetyhteyttä",
@@ -4309,7 +4967,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Väärä salasana tai kanavaa ei löytynyt.",
 			unlock: "Avaa",
 			listenMusic: "Kuuntele musiikkia",
-			unmuteAndPlay: "Poista mykistys & Soita"
+			unmuteAndPlay: "Poista mykistys & Soita",
+			retrying: "Yritetään uudelleen...",
+			reconnecting: "Yhdistetään uudelleen",
+			attempt: "Yritys",
+			connecting: "Yhdistetään palvelimeen...",
+			connectionIssue: "Yhteysongelma",
+			takingTooLong: "Kestää tavallista pidempään...",
+			checkConnection: "Tarkista internet-yhteytesi.",
+			networkThrottle: "YouTube on estänyt tämän verkon IP:n. Toisto keskeytetty. Yritä vaihtaa mobiilihotspotiin.",
+			retryPlayback: "Yritä uudelleen",
+			tapToUnmute: "Napauta vaimennuksen poistamiseksi"
 		},
 		track: {
 			playing: "Soittaa",
@@ -4319,7 +4987,8 @@ export const translations = {
 			cancel: "Peruuta",
 			confirmDelete: "Vahvista",
 			delete: "Poista",
-			watch: "Katso YouTubessa"
+			watch: "Katso YouTubessa",
+			recommend: "Hae ehdotuksia"
 		},
 		library: {
 			searchPlaceholder: "Etsi kirjastosta...",
@@ -4342,7 +5011,8 @@ export const translations = {
 			preview: "Esikatselu",
 			ban: "Estä",
 			decline: "Hylkää",
-			accept: "Hyväksy"
+			accept: "Hyväksy",
+			pendingCount: "{count} odottaa"
 		},
 		playlist: {
 			close: "Sulje",
@@ -4356,7 +5026,8 @@ export const translations = {
 			skippedRestricted: "'{title}' ohitettu (Ei saatavilla)",
 			skippedIPBlocked: "'{title}' ohitettu — YouTube rajoittaa tätä verkkoa",
 			backToNow: "Takaisin nykyiseen",
-			addVideos: "Lisää videoita aloittaaksesi"
+			addVideos: "Lisää videoita aloittaaksesi",
+			channelSuffix: "Kanava"
 		},
 		mobile: {
 			tagline: "Demokraattinen Jukebox",
@@ -4372,9 +5043,23 @@ export const translations = {
 			downloadFail: "Jos lataus epäonnistuu:",
 			installInstruction: "Asetukset > Ota käyttöön \"Asenna tuntemattomat sovellukset\"",
 			privacyLegal: "Yksityisyys ja oikeudelliset tiedot"
+		},
+		suggestions: {
+			title: "Liittyvät videot",
+			modalTitle: "Liittyvät videot",
+			basedOn: "Perustuu:",
+			loading: "Etsitään samankaltaisia videoita...",
+			empty: "Ehdotuksia ei löytynyt."
+		},
+		banned: {
+			title: "Estetyt videot",
+			empty: "Ei estettyjä videoita",
+			emptySubtitle: "Pyynnöistä estetyt videot näkyvät tässä.",
+			bannedOn: "Estetty {date}",
+			unban: "Poista esto"
 		}
 	},
-	"tr": {
+	tr: {
 		lobby: {
 			browseChannels: "Kanallara Göz At",
 			public: "Halka Açık",
@@ -4409,7 +5094,9 @@ export const translations = {
 			delete: "Sil",
 			terms: "Şartlar & Yasal",
 			videoLanguage: "Video Dili",
-			international: "Uluslararası"
+			international: "Uluslararası",
+			startWithCaptions: "Altyazıyla başlat",
+			searchCountries: "Ülke ara..."
 		},
 		player: {
 			errorGeneric: "Bu video oynatılırken bir hata oluştu.",
@@ -4475,7 +5162,14 @@ export const translations = {
 			leaveChannelConfirm: "Lobiye dönmek istediğinizden emin misiniz?",
 			leave: "Ayrıl",
 			copyUrl: "URL Kopyala",
-			close: "Kapat"
+			close: "Kapat",
+			back: "Geri",
+			suggestions: "Öneriler",
+			queuePlayback: "Sıra ve Oynatma",
+			features: "Özellikler",
+			captionsTooltip: "Oynatıcıyı yüklediklerinde tüm kullanıcılar için altyazıları varsayılan olarak göster.",
+			ownerTools: "Sahip Araçları",
+			changeLanguage: "Dili değiştir"
 		},
 		suggest: {
 			placeholder: "Bir başlık yazın...",
@@ -4483,7 +5177,10 @@ export const translations = {
 			submit: "Gönder",
 			adding: "Ekleniyor...",
 			added: "Eklendi",
-			error: "Lütfen bir YouTube bağlantısı veya başlık girin."
+			error: "Lütfen bir YouTube bağlantısı veya başlık girin.",
+			loginRequired: "Video önermek için lütfen giriş yapın.",
+			loadSimilar: "Benzer videoları yükle",
+			similarTo: "Benzer:"
 		},
 		app: {
 			noInternet: "İnternet bağlantısı yok",
@@ -4500,7 +5197,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Yanlış şifre veya kanal bulunamadı.",
 			unlock: "Kilidi Aç",
 			listenMusic: "Müzik Dinle",
-			unmuteAndPlay: "Sesi Aç & Oynat"
+			unmuteAndPlay: "Sesi Aç & Oynat",
+			retrying: "Yeniden deneniyor...",
+			reconnecting: "Yeniden bağlanılıyor",
+			attempt: "Deneme",
+			connecting: "Sunucuya bağlanılıyor...",
+			connectionIssue: "Bağlantı sorunu",
+			takingTooLong: "Normalden uzun sürüyor...",
+			checkConnection: "Lütfen internet bağlantınızı kontrol edin.",
+			networkThrottle: "YouTube bu ağın IP'sini engelledi. Oynatma duraklatıldı. Mobil etkin noktaya geçmeyi deneyin.",
+			retryPlayback: "Tekrar dene",
+			tapToUnmute: "Sesi açmak için dokunun"
 		},
 		track: {
 			playing: "Çalıyor",
@@ -4510,7 +5217,8 @@ export const translations = {
 			cancel: "İptal",
 			confirmDelete: "Onayla",
 			delete: "Sil",
-			watch: "YouTube'da İzle"
+			watch: "YouTube'da İzle",
+			recommend: "Önerileri al"
 		},
 		library: {
 			searchPlaceholder: "Kütüphanede ara...",
@@ -4533,7 +5241,8 @@ export const translations = {
 			preview: "Önizleme",
 			ban: "Yasakla",
 			decline: "Reddet",
-			accept: "Kabul Et"
+			accept: "Kabul Et",
+			pendingCount: "{count} bekliyor"
 		},
 		playlist: {
 			close: "Kapat",
@@ -4547,7 +5256,8 @@ export const translations = {
 			skippedRestricted: "'{title}' atlandı (Mevcut değil)",
 			skippedIPBlocked: "'{title}' atlandı — YouTube bu ağı kısıtlıyor",
 			backToNow: "Şimdiye Dön",
-			addVideos: "Başlamak için video ekle"
+			addVideos: "Başlamak için video ekle",
+			channelSuffix: "Kanal"
 		},
 		mobile: {
 			tagline: "Demokratik Müzik Kutusu",
@@ -4563,9 +5273,23 @@ export const translations = {
 			downloadFail: "İndirme başarısız olursa:",
 			installInstruction: "Ayarlar > \"Bilinmeyen uygulamaları yükle\" seçeneğini etkinleştirin",
 			privacyLegal: "Gizlilik ve Yasal"
+		},
+		suggestions: {
+			title: "İlgili videolar",
+			modalTitle: "İlgili videolar",
+			basedOn: "Şuna dayanarak:",
+			loading: "Benzer videolar aranıyor...",
+			empty: "Öneri bulunamadı."
+		},
+		banned: {
+			title: "Yasaklı videolar",
+			empty: "Yasaklı video yok",
+			emptySubtitle: "İsteklerden yasaklanan videolar burada görünecek.",
+			bannedOn: "{date} tarihinde yasaklandı",
+			unban: "Yasağı kaldır"
 		}
 	},
-	"el": {
+	el: {
 		lobby: {
 			browseChannels: "Περιήγηση Καναλιών",
 			public: "Δημόσιο",
@@ -4600,7 +5324,9 @@ export const translations = {
 			delete: "Διαγραφή",
 			terms: "Όροι & Νομικά",
 			videoLanguage: "Γλώσσα βίντεο",
-			international: "Διεθνές"
+			international: "Διεθνές",
+			startWithCaptions: "Έναρξη με υπότιτλους",
+			searchCountries: "Αναζήτηση χωρών..."
 		},
 		player: {
 			errorGeneric: "Παρουσιάστηκε σφάλμα κατά την αναπαραγωγή αυτού του βίντεο.",
@@ -4666,7 +5392,14 @@ export const translations = {
 			leaveChannelConfirm: "Σίγουρα θέλετε να επιστρέψετε στο λόμπι;",
 			leave: "Αποχώρηση",
 			copyUrl: "Αντιγραφή URL",
-			close: "Κλείσιμο"
+			close: "Κλείσιμο",
+			back: "Πίσω",
+			suggestions: "Προτάσεις",
+			queuePlayback: "Ουρά και Αναπαραγωγή",
+			features: "Λειτουργίες",
+			captionsTooltip: "Εμφάνιση υπότιτλων από προεπιλογή για όλους τους χρήστες όταν φορτώνουν τον αναπαραγωγέα.",
+			ownerTools: "Εργαλεία ιδιοκτήτη",
+			changeLanguage: "Αλλαγή γλώσσας"
 		},
 		suggest: {
 			placeholder: "Πληκτρολογήστε τίτλο...",
@@ -4674,7 +5407,10 @@ export const translations = {
 			submit: "Υποβολή",
 			adding: "Προσθήκη...",
 			added: "Προστέθηκε",
-			error: "Παρακαλώ εισάγετε σύνδεσμο YouTube ή τίτλο."
+			error: "Παρακαλώ εισάγετε σύνδεσμο YouTube ή τίτλο.",
+			loginRequired: "Παρακαλώ συνδεθείτε για να προτείνετε βίντεο.",
+			loadSimilar: "Φόρτωση παρόμοιων βίντεο",
+			similarTo: "Παρόμοιο με"
 		},
 		app: {
 			noInternet: "Χωρίς σύνδεση στο διαδίκτυο",
@@ -4691,7 +5427,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Λάθος κωδικός ή το κανάλι δεν βρέθηκε.",
 			unlock: "Ξεκλείδωμα",
 			listenMusic: "Ακούστε μουσική",
-			unmuteAndPlay: "Ήχος & Αναπαραγωγή"
+			unmuteAndPlay: "Ήχος & Αναπαραγωγή",
+			retrying: "Επανάληψη...",
+			reconnecting: "Επανασύνδεση",
+			attempt: "Προσπάθεια",
+			connecting: "Σύνδεση με τον διακομιστή...",
+			connectionIssue: "Πρόβλημα σύνδεσης",
+			takingTooLong: "Διαρκεί περισσότερο από συνήθως...",
+			checkConnection: "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο.",
+			networkThrottle: "Το YouTube έχει αποκλείσει την IP αυτού του δικτύου. Η αναπαραγωγή έχει διακοπεί. Δοκιμάστε να μεταβείτε σε φορητό hotspot.",
+			retryPlayback: "Επανάληψη",
+			tapToUnmute: "Πατήστε για ενεργοποίηση ήχου"
 		},
 		track: {
 			playing: "Παίζει",
@@ -4701,7 +5447,8 @@ export const translations = {
 			cancel: "Ακύρωση",
 			confirmDelete: "Επιβεβαίωση",
 			delete: "Διαγραφή",
-			watch: "Δείτε στο YouTube"
+			watch: "Δείτε στο YouTube",
+			recommend: "Λήψη προτάσεων"
 		},
 		library: {
 			searchPlaceholder: "Αναζήτηση βιβλιοθήκης...",
@@ -4724,7 +5471,8 @@ export const translations = {
 			preview: "Προεπισκόπηση",
 			ban: "Αποκλεισμός",
 			decline: "Απόρριψη",
-			accept: "Αποδοχή"
+			accept: "Αποδοχή",
+			pendingCount: "{count} σε αναμονή"
 		},
 		playlist: {
 			close: "Κλείσιμο",
@@ -4738,7 +5486,8 @@ export const translations = {
 			skippedRestricted: "'{title}' παραλείφθηκε (Μη διαθέσιμο)",
 			skippedIPBlocked: "'{title}' παραλείφθηκε — Το YouTube περιορίζει αυτό το δίκτυο",
 			backToNow: "Επιστροφή στο Τώρα",
-			addVideos: "Προσθέστε βίντεο για έναρξη"
+			addVideos: "Προσθέστε βίντεο για έναρξη",
+			channelSuffix: "Κανάλι"
 		},
 		mobile: {
 			tagline: "Το Δημοκρατικό Jukebox",
@@ -4754,9 +5503,23 @@ export const translations = {
 			downloadFail: "Εάν η λήψη αποτύχει:",
 			installInstruction: "Ρυθμίσεις > Ενεργοποίηση \"Εγκατάσταση άγνωστων εφαρμογών\"",
 			privacyLegal: "Απόρρητο & Νομικά"
+		},
+		suggestions: {
+			title: "Σχετικά βίντεο",
+			modalTitle: "Σχετικά βίντεο",
+			basedOn: "Βάσει:",
+			loading: "Αναζήτηση παρόμοιων βίντεο...",
+			empty: "Δεν βρέθηκαν προτάσεις."
+		},
+		banned: {
+			title: "Αποκλεισμένα βίντεο",
+			empty: "Δεν υπάρχουν αποκλεισμένα βίντεο",
+			emptySubtitle: "Τα βίντεο που έχουν αποκλειστεί από τα αιτήματα θα εμφανιστούν εδώ.",
+			bannedOn: "Αποκλεισμένο στις {date}",
+			unban: "Άρση αποκλεισμού"
 		}
 	},
-	"ru": {
+	ru: {
 		lobby: {
 			browseChannels: "Обзор каналов",
 			public: "Публичные",
@@ -4791,7 +5554,9 @@ export const translations = {
 			delete: "Удалить",
 			terms: "Условия и юр. инфо",
 			videoLanguage: "Язык видео",
-			international: "Международный"
+			international: "Международный",
+			startWithCaptions: "Начать с субтитрами",
+			searchCountries: "Поиск стран..."
 		},
 		player: {
 			errorGeneric: "При воспроизведении этого видео произошла ошибка.",
@@ -4857,7 +5622,14 @@ export const translations = {
 			leaveChannelConfirm: "Вы уверены, что хотите вернуться в лобби?",
 			leave: "Покинуть",
 			copyUrl: "Копировать URL",
-			close: "Закрыть"
+			close: "Закрыть",
+			back: "Назад",
+			suggestions: "Рекомендации",
+			queuePlayback: "Очередь и воспроизведение",
+			features: "Функции",
+			captionsTooltip: "Показывать субтитры по умолчанию для всех пользователей при загрузке плеера.",
+			ownerTools: "Инструменты владельца",
+			changeLanguage: "Сменить язык"
 		},
 		suggest: {
 			placeholder: "Введите название...",
@@ -4865,7 +5637,10 @@ export const translations = {
 			submit: "Отправить",
 			adding: "Добавление...",
 			added: "Добавлено",
-			error: "Введите ссылку YouTube или название."
+			error: "Введите ссылку YouTube или название.",
+			loginRequired: "Пожалуйста, войдите, чтобы предлагать видео.",
+			loadSimilar: "Загрузить похожие видео",
+			similarTo: "Похоже на"
 		},
 		app: {
 			noInternet: "Нет подключения к интернету",
@@ -4882,7 +5657,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Неверный пароль или канал не найден.",
 			unlock: "Разблокировать",
 			listenMusic: "Слушать музыку",
-			unmuteAndPlay: "Включить звук & Играть"
+			unmuteAndPlay: "Включить звук & Играть",
+			retrying: "Повтор...",
+			reconnecting: "Переподключение",
+			attempt: "Попытка",
+			connecting: "Подключение к серверу...",
+			connectionIssue: "Проблема с подключением",
+			takingTooLong: "Занимает больше времени, чем обычно...",
+			checkConnection: "Пожалуйста, проверьте подключение к интернету.",
+			networkThrottle: "YouTube заблокировал IP-адрес этой сети. Воспроизведение приостановлено. Попробуйте переключиться на мобильную точку доступа.",
+			retryPlayback: "Повторить",
+			tapToUnmute: "Нажмите, чтобы включить звук"
 		},
 		track: {
 			playing: "Играет",
@@ -4892,7 +5677,8 @@ export const translations = {
 			cancel: "Отмена",
 			confirmDelete: "Подтвердить",
 			delete: "Удалить",
-			watch: "Смотреть на YouTube"
+			watch: "Смотреть на YouTube",
+			recommend: "Получить рекомендации"
 		},
 		library: {
 			searchPlaceholder: "Поиск в библиотеке...",
@@ -4915,7 +5701,8 @@ export const translations = {
 			preview: "Превью",
 			ban: "Забанить",
 			decline: "Отклонить",
-			accept: "Принять"
+			accept: "Принять",
+			pendingCount: "{count} в ожидании"
 		},
 		playlist: {
 			close: "Закрыть",
@@ -4929,7 +5716,8 @@ export const translations = {
 			skippedRestricted: "'{title}' пропущено (Недоступно)",
 			skippedIPBlocked: "'{title}' пропущено — YouTube ограничивает эту сеть",
 			backToNow: "Вернуться к текущему",
-			addVideos: "Добавьте видео, чтобы начать"
+			addVideos: "Добавьте видео, чтобы начать",
+			channelSuffix: "Канал"
 		},
 		mobile: {
 			tagline: "Демократичный Джукбокс",
@@ -4945,9 +5733,23 @@ export const translations = {
 			downloadFail: "Если скачивание не удалось:",
 			installInstruction: "Настройки > Включить \"Установка неизвестных приложений\"",
 			privacyLegal: "Конфиденциальность и правовая информация"
+		},
+		suggestions: {
+			title: "Похожие видео",
+			modalTitle: "Похожие видео",
+			basedOn: "На основе:",
+			loading: "Поиск похожих видео...",
+			empty: "Рекомендации не найдены."
+		},
+		banned: {
+			title: "Заблокированные видео",
+			empty: "Нет заблокированных видео",
+			emptySubtitle: "Видео, заблокированные из запросов, появятся здесь.",
+			bannedOn: "Заблокировано {date}",
+			unban: "Разблокировать"
 		}
 	},
-	"uk": {
+	uk: {
 		lobby: {
 			browseChannels: "Перегляд каналів",
 			public: "Публічні",
@@ -4982,7 +5784,9 @@ export const translations = {
 			delete: "Видалити",
 			terms: "Умови та юр. інфо",
 			videoLanguage: "Мова відео",
-			international: "Міжнародний"
+			international: "Міжнародний",
+			startWithCaptions: "Почати з субтитрами",
+			searchCountries: "Пошук країн..."
 		},
 		player: {
 			errorGeneric: "Під час відтворення цього відео сталася помилка.",
@@ -5048,7 +5852,14 @@ export const translations = {
 			leaveChannelConfirm: "Ви впевнені, що хочете повернутися до лобі?",
 			leave: "Покинути",
 			copyUrl: "Копіювати URL",
-			close: "Закрити"
+			close: "Закрити",
+			back: "Назад",
+			suggestions: "Рекомендації",
+			queuePlayback: "Черга та відтворення",
+			features: "Функції",
+			captionsTooltip: "Показувати субтитри за замовчуванням для всіх користувачів при завантаженні плеєра.",
+			ownerTools: "Інструменти власника",
+			changeLanguage: "Змінити мову"
 		},
 		suggest: {
 			placeholder: "Введіть назву...",
@@ -5056,7 +5867,10 @@ export const translations = {
 			submit: "Надіслати",
 			adding: "Додавання...",
 			added: "Додано",
-			error: "Будь ласка, введіть посилання на YouTube або назву."
+			error: "Будь ласка, введіть посилання на YouTube або назву.",
+			loginRequired: "Будь ласка, увійдіть, щоб пропонувати відео.",
+			loadSimilar: "Завантажити схожі відео",
+			similarTo: "Схоже на"
 		},
 		app: {
 			noInternet: "Немає підключення до інтернету",
@@ -5073,7 +5887,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Невірний пароль або канал не знайдено.",
 			unlock: "Розблокувати",
 			listenMusic: "Слухати музику",
-			unmuteAndPlay: "Увімкнути звук & Грати"
+			unmuteAndPlay: "Увімкнути звук & Грати",
+			retrying: "Повторюємо...",
+			reconnecting: "Перепідключення",
+			attempt: "Спроба",
+			connecting: "Підключення до сервера...",
+			connectionIssue: "Проблема з підключенням",
+			takingTooLong: "Триває довше, ніж зазвичай...",
+			checkConnection: "Будь ласка, перевірте підключення до інтернету.",
+			networkThrottle: "YouTube заблокував IP цієї мережі. Відтворення призупинено. Спробуйте переключитися на мобільну точку доступу.",
+			retryPlayback: "Повторити",
+			tapToUnmute: "Натисніть, щоб увімкнути звук"
 		},
 		track: {
 			playing: "Грає",
@@ -5083,7 +5907,8 @@ export const translations = {
 			cancel: "Скасувати",
 			confirmDelete: "Підтвердити",
 			delete: "Видалити",
-			watch: "Дивитися на YouTube"
+			watch: "Дивитися на YouTube",
+			recommend: "Отримати рекомендації"
 		},
 		library: {
 			searchPlaceholder: "Пошук у бібліотеці...",
@@ -5106,7 +5931,8 @@ export const translations = {
 			preview: "Прев'ю",
 			ban: "Забанити",
 			decline: "Відхилити",
-			accept: "Прийняти"
+			accept: "Прийняти",
+			pendingCount: "{count} в очікуванні"
 		},
 		playlist: {
 			close: "Закрити",
@@ -5137,9 +5963,23 @@ export const translations = {
 			downloadFail: "Якщо завантаження не вдалося:",
 			installInstruction: "Налаштування > Увімкнути \"Встановлення невідомих додатків\"",
 			privacyLegal: "Конфіденційність та правова інформація"
+		},
+		suggestions: {
+			title: "Пов'язані відео",
+			modalTitle: "Пов'язані відео",
+			basedOn: "На основі:",
+			loading: "Пошук схожих відео...",
+			empty: "Рекомендацій не знайдено."
+		},
+		banned: {
+			title: "Заблоковані відео",
+			empty: "Немає заблокованих відео",
+			emptySubtitle: "Відео, заблоковані із запитів, з'являться тут.",
+			bannedOn: "Заблоковано {date}",
+			unban: "Розблокувати"
 		}
 	},
-	"cs": {
+	cs: {
 		lobby: {
 			browseChannels: "Procházet Kanály",
 			public: "Veřejné",
@@ -5174,7 +6014,9 @@ export const translations = {
 			delete: "Smazat",
 			terms: "Podmínky a Právní",
 			videoLanguage: "Jazyk videa",
-			international: "Mezinárodní"
+			international: "Mezinárodní",
+			startWithCaptions: "Spustit s titulky",
+			searchCountries: "Hledat země..."
 		},
 		player: {
 			errorGeneric: "Při přehrávání tohoto videa došlo k chybě.",
@@ -5240,7 +6082,14 @@ export const translations = {
 			leaveChannelConfirm: "Jste si jisti, že se chcete vrátit do lobby?",
 			leave: "Opustit",
 			copyUrl: "Kopírovat URL",
-			close: "Zavřít"
+			close: "Zavřít",
+			back: "Zpět",
+			suggestions: "Návrhy",
+			queuePlayback: "Fronta a přehrávání",
+			features: "Funkce",
+			captionsTooltip: "Zobrazit titulky ve výchozím nastavení všem uživatelům při načtení přehrávače.",
+			ownerTools: "Nástroje vlastníka",
+			changeLanguage: "Změnit jazyk"
 		},
 		suggest: {
 			placeholder: "Zadejte název...",
@@ -5248,7 +6097,10 @@ export const translations = {
 			submit: "Odeslat",
 			adding: "Přidávání...",
 			added: "Přidáno",
-			error: "Zadejte odkaz na YouTube nebo název."
+			error: "Zadejte odkaz na YouTube nebo název.",
+			loginRequired: "Pro navrhování videí se prosím přihlaste.",
+			loadSimilar: "Načíst podobná videa",
+			similarTo: "Podobné jako"
 		},
 		app: {
 			noInternet: "Žádné připojení k internetu",
@@ -5265,7 +6117,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Nesprávné heslo nebo kanál neexistuje.",
 			unlock: "Odemknout",
 			listenMusic: "Poslouchat hudbu",
-			unmuteAndPlay: "Zapnout zvuk & Hrát"
+			unmuteAndPlay: "Zapnout zvuk & Hrát",
+			retrying: "Opakování...",
+			reconnecting: "Opětovné připojování",
+			attempt: "Pokus",
+			connecting: "Připojování k serveru...",
+			connectionIssue: "Problém s připojením",
+			takingTooLong: "Trvá déle než obvykle...",
+			checkConnection: "Zkontrolujte své připojení k internetu.",
+			networkThrottle: "YouTube zablokoval IP této sítě. Přehrávání pozastaveno. Zkuste přepnout na mobilní hotspot.",
+			retryPlayback: "Zkusit znovu",
+			tapToUnmute: "Klepnutím zapnete zvuk"
 		},
 		track: {
 			playing: "Hraje",
@@ -5275,7 +6137,8 @@ export const translations = {
 			cancel: "Zrušit",
 			confirmDelete: "Potvrdit",
 			delete: "Smazat",
-			watch: "Sledovat na YouTube"
+			watch: "Sledovat na YouTube",
+			recommend: "Získat návrhy"
 		},
 		library: {
 			searchPlaceholder: "Hledat v knihovně...",
@@ -5298,7 +6161,8 @@ export const translations = {
 			preview: "Náhled",
 			ban: "Zakázat",
 			decline: "Odmítnout",
-			accept: "Přijmout"
+			accept: "Přijmout",
+			pendingCount: "{count} čeká"
 		},
 		playlist: {
 			close: "Zavřít",
@@ -5312,7 +6176,8 @@ export const translations = {
 			skippedRestricted: "'{title}' přeskočeno (Nedostupné)",
 			skippedIPBlocked: "'{title}' přeskočeno — YouTube omezuje tuto síť",
 			backToNow: "Zpět na aktuální",
-			addVideos: "Přidejte videa pro zahájení"
+			addVideos: "Přidejte videa pro zahájení",
+			channelSuffix: "Kanál"
 		},
 		mobile: {
 			tagline: "Demokratický Jukebox",
@@ -5328,9 +6193,23 @@ export const translations = {
 			downloadFail: "Pokud stahování selže:",
 			installInstruction: "Nastavení > Povolit „Instalovat neznámé aplikace“",
 			privacyLegal: "Ochrana soukromí a právní informace"
+		},
+		suggestions: {
+			title: "Související videa",
+			modalTitle: "Související videa",
+			basedOn: "Na základě:",
+			loading: "Hledání podobných videí...",
+			empty: "Nebyly nalezeny žádné návrhy."
+		},
+		banned: {
+			title: "Zakázaná videa",
+			empty: "Žádná zakázaná videa",
+			emptySubtitle: "Videa zakázaná z požadavků se zobrazí zde.",
+			bannedOn: "Zakázáno {date}",
+			unban: "Povolit"
 		}
 	},
-	"hu": {
+	hu: {
 		lobby: {
 			browseChannels: "Csatornák Böngészése",
 			public: "Nyilvános",
@@ -5365,7 +6244,9 @@ export const translations = {
 			delete: "Törlés",
 			terms: "Feltételek és Jogi",
 			videoLanguage: "Videó nyelve",
-			international: "Nemzetközi"
+			international: "Nemzetközi",
+			startWithCaptions: "Indítás felirattal",
+			searchCountries: "Országok keresése..."
 		},
 		player: {
 			errorGeneric: "Hiba történt a videó lejátszása közben.",
@@ -5431,7 +6312,14 @@ export const translations = {
 			leaveChannelConfirm: "Biztosan vissza akarsz térni a lobbyba?",
 			leave: "Elhagyás",
 			copyUrl: "URL Másolása",
-			close: "Bezárás"
+			close: "Bezárás",
+			back: "Vissza",
+			suggestions: "Javaslatok",
+			queuePlayback: "Sor és lejátszás",
+			features: "Funkciók",
+			captionsTooltip: "Feliratok alapértelmezett megjelenítése minden felhasználó számára a lejátszó betöltésekor.",
+			ownerTools: "Tulajdonosi eszközök",
+			changeLanguage: "Nyelv módosítása"
 		},
 		suggest: {
 			placeholder: "Írj be egy címet...",
@@ -5439,7 +6327,10 @@ export const translations = {
 			submit: "Küldés",
 			adding: "Hozzáadás...",
 			added: "Hozzáadva",
-			error: "Kérlek adj meg egy YouTube linket vagy címet."
+			error: "Kérlek adj meg egy YouTube linket vagy címet.",
+			loginRequired: "Videók javasolásához kérjük, jelentkezz be.",
+			loadSimilar: "Hasonló videók betöltése",
+			similarTo: "Hasonló:"
 		},
 		app: {
 			noInternet: "Nincs internetkapcsolat",
@@ -5456,7 +6347,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Hibás jelszó vagy a csatorna nem található.",
 			unlock: "Feloldás",
 			listenMusic: "Zenehallgatás",
-			unmuteAndPlay: "Hang & Lejátszás"
+			unmuteAndPlay: "Hang & Lejátszás",
+			retrying: "Újrapróbálkozás...",
+			reconnecting: "Újracsatlakozás",
+			attempt: "Próbálkozás",
+			connecting: "Csatlakozás a kiszolgálóhoz...",
+			connectionIssue: "Kapcsolódási probléma",
+			takingTooLong: "A szokásosnál tovább tart...",
+			checkConnection: "Kérjük, ellenőrizd az internetkapcsolatot.",
+			networkThrottle: "A YouTube blokkolta ennek a hálózatnak az IP-jét. A lejátszás szünetel. Próbálj meg mobil hotspotra váltani.",
+			retryPlayback: "Újrapróbálkozás",
+			tapToUnmute: "Koppints a némítás feloldásához"
 		},
 		track: {
 			playing: "Lejátszás",
@@ -5466,7 +6367,8 @@ export const translations = {
 			cancel: "Mégse",
 			confirmDelete: "Megerősítés",
 			delete: "Törlés",
-			watch: "Megtekintés YouTube-on"
+			watch: "Megtekintés YouTube-on",
+			recommend: "Javaslatok kérése"
 		},
 		library: {
 			searchPlaceholder: "Keresés a könyvtárban...",
@@ -5489,7 +6391,8 @@ export const translations = {
 			preview: "Előnézet",
 			ban: "Tiltás",
 			decline: "Elutasítás",
-			accept: "Elfogadás"
+			accept: "Elfogadás",
+			pendingCount: "{count} függőben"
 		},
 		playlist: {
 			close: "Bezárás",
@@ -5503,7 +6406,8 @@ export const translations = {
 			skippedRestricted: "'{title}' kihagyva (Nem elérhető)",
 			skippedIPBlocked: "'{title}' kihagyva — A YouTube korlátozza ezt a hálózatot",
 			backToNow: "Vissza a jelenbe",
-			addVideos: "Adjon hozzá videókat a kezdéshez"
+			addVideos: "Adjon hozzá videókat a kezdéshez",
+			channelSuffix: "Csatorna"
 		},
 		mobile: {
 			tagline: "A Demokratikus Jukebox",
@@ -5519,9 +6423,23 @@ export const translations = {
 			downloadFail: "Ha a letöltés sikertelen:",
 			installInstruction: "Beállítások > Engedélyezze az \"Ismeretlen alkalmazások telepítése\" opciót",
 			privacyLegal: "Adatvédelem és Jogi"
+		},
+		suggestions: {
+			title: "Kapcsolódó videók",
+			modalTitle: "Kapcsolódó videók",
+			basedOn: "Alapja:",
+			loading: "Hasonló videók keresése...",
+			empty: "Nem találhatók javaslatok."
+		},
+		banned: {
+			title: "Tiltott videók",
+			empty: "Nincsenek tiltott videók",
+			emptySubtitle: "A kérésekből letiltott videók itt jelennek meg.",
+			bannedOn: "Letiltva: {date}",
+			unban: "Tiltás feloldása"
 		}
 	},
-	"ro": {
+	ro: {
 		lobby: {
 			browseChannels: "Răsfoiește Canale",
 			public: "Public",
@@ -5556,7 +6474,9 @@ export const translations = {
 			delete: "Șterge",
 			terms: "Termeni și Legal",
 			videoLanguage: "Limba video",
-			international: "Internațional"
+			international: "Internațional",
+			startWithCaptions: "Pornește cu subtitrări",
+			searchCountries: "Caută țări..."
 		},
 		player: {
 			errorGeneric: "A apărut o eroare la redarea acestui videoclip.",
@@ -5622,7 +6542,14 @@ export const translations = {
 			leaveChannelConfirm: "Ești sigur că vrei să te întorci în lobby?",
 			leave: "Părăsește",
 			copyUrl: "Copiază URL",
-			close: "Închide"
+			close: "Închide",
+			back: "Înapoi",
+			suggestions: "Sugestii",
+			queuePlayback: "Coadă și redare",
+			features: "Funcții",
+			captionsTooltip: "Afișează subtitrările în mod implicit pentru toți utilizatorii când încarcă playerul.",
+			ownerTools: "Instrumente proprietar",
+			changeLanguage: "Schimbă limba"
 		},
 		suggest: {
 			placeholder: "Scrie un titlu...",
@@ -5630,7 +6557,10 @@ export const translations = {
 			submit: "Trimite",
 			adding: "Se adaugă...",
 			added: "Adăugat",
-			error: "Te rog introdu un link YouTube sau titlu."
+			error: "Te rog introdu un link YouTube sau titlu.",
+			loginRequired: "Te rugăm să te conectezi pentru a sugera videoclipuri.",
+			loadSimilar: "Încarcă videoclipuri similare",
+			similarTo: "Similar cu"
 		},
 		app: {
 			noInternet: "Fără conexiune la internet",
@@ -5647,7 +6577,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Parolă incorectă sau canalul nu a fost găsit.",
 			unlock: "Deblochează",
 			listenMusic: "Ascultă muzică",
-			unmuteAndPlay: "Sunet & Redare"
+			unmuteAndPlay: "Sunet & Redare",
+			retrying: "Reîncercare...",
+			reconnecting: "Reconectare",
+			attempt: "Încercare",
+			connecting: "Conectare la server...",
+			connectionIssue: "Problemă de conexiune",
+			takingTooLong: "Durează mai mult decât de obicei...",
+			checkConnection: "Te rugăm să verifici conexiunea la internet.",
+			networkThrottle: "YouTube a blocat IP-ul acestei rețele. Redarea este în pauză. Încearcă să comuți la un hotspot mobil.",
+			retryPlayback: "Reîncearcă",
+			tapToUnmute: "Atinge pentru a activa sunetul"
 		},
 		track: {
 			playing: "Cântă acum",
@@ -5657,7 +6597,8 @@ export const translations = {
 			cancel: "Anulează",
 			confirmDelete: "Confirmă",
 			delete: "Șterge",
-			watch: "Vezi pe YouTube"
+			watch: "Vezi pe YouTube",
+			recommend: "Obține sugestii"
 		},
 		library: {
 			searchPlaceholder: "Caută în bibliotecă...",
@@ -5680,7 +6621,8 @@ export const translations = {
 			preview: "Previzualizare",
 			ban: "Interzice",
 			decline: "Refuză",
-			accept: "Acceptă"
+			accept: "Acceptă",
+			pendingCount: "{count} în așteptare"
 		},
 		playlist: {
 			close: "Închide",
@@ -5694,7 +6636,8 @@ export const translations = {
 			skippedRestricted: "'{title}' sărit (Indisponibil)",
 			skippedIPBlocked: "'{title}' sărit — YouTube restricționează această rețea",
 			backToNow: "Înapoi la Acum",
-			addVideos: "Adaugă videoclipuri pentru a începe"
+			addVideos: "Adaugă videoclipuri pentru a începe",
+			channelSuffix: "Canal"
 		},
 		mobile: {
 			tagline: "Jukebox-ul Democratic",
@@ -5710,9 +6653,23 @@ export const translations = {
 			downloadFail: "Dacă descărcarea eșuează:",
 			installInstruction: "Setări > Activați \"Instalare aplicații necunoscute\"",
 			privacyLegal: "Confidențialitate și Legal"
+		},
+		suggestions: {
+			title: "Videoclipuri asemănătoare",
+			modalTitle: "Videoclipuri asemănătoare",
+			basedOn: "Bazat pe:",
+			loading: "Caută videoclipuri similare...",
+			empty: "Nu au fost găsite sugestii."
+		},
+		banned: {
+			title: "Videoclipuri interzise",
+			empty: "Niciun videoclip interzis",
+			emptySubtitle: "Videoclipurile interzise din solicitări vor apărea aici.",
+			bannedOn: "Interzis pe {date}",
+			unban: "Anulează interdicția"
 		}
 	},
-	"bg": {
+	bg: {
 		lobby: {
 			browseChannels: "Разгледай канали",
 			public: "Публични",
@@ -5747,7 +6704,9 @@ export const translations = {
 			delete: "Изтрий",
 			terms: "Условия и Правни",
 			videoLanguage: "Език на видеото",
-			international: "Международен"
+			international: "Международен",
+			startWithCaptions: "Старт със субтитри",
+			searchCountries: "Търсене на държави..."
 		},
 		player: {
 			errorGeneric: "Възникна грешка при възпроизвеждането на това видео.",
@@ -5813,7 +6772,14 @@ export const translations = {
 			leaveChannelConfirm: "Сигурни ли сте, че искате да се върнете в лобито?",
 			leave: "Напусни",
 			copyUrl: "Копирай URL",
-			close: "Затвори"
+			close: "Затвори",
+			back: "Назад",
+			suggestions: "Препоръки",
+			queuePlayback: "Опашка и възпроизвеждане",
+			features: "Функции",
+			captionsTooltip: "Показвай субтитрите по подразбиране за всички потребители при зареждане на плейъра.",
+			ownerTools: "Инструменти на собственика",
+			changeLanguage: "Смяна на език"
 		},
 		suggest: {
 			placeholder: "Напишете заглавие...",
@@ -5821,7 +6787,10 @@ export const translations = {
 			submit: "Изпрати",
 			adding: "Добавяне...",
 			added: "Добавено",
-			error: "Моля, въведете YouTube връзка или заглавие."
+			error: "Моля, въведете YouTube връзка или заглавие.",
+			loginRequired: "Моля, влезте, за да предлагате видеа.",
+			loadSimilar: "Заредете подобни видеа",
+			similarTo: "Подобно на"
 		},
 		app: {
 			noInternet: "Няма интернет връзка",
@@ -5838,7 +6807,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Грешна парола или каналът не е намерен.",
 			unlock: "Отключи",
 			listenMusic: "Слушане на музика",
-			unmuteAndPlay: "Включи звук & Пусни"
+			unmuteAndPlay: "Включи звук & Пусни",
+			retrying: "Повторен опит...",
+			reconnecting: "Повторно свързване",
+			attempt: "Опит",
+			connecting: "Свързване със сървъра...",
+			connectionIssue: "Проблем с връзката",
+			takingTooLong: "Отнема повече време от обичайното...",
+			checkConnection: "Моля, проверете интернет връзката си.",
+			networkThrottle: "YouTube е блокирал IP адреса на тази мрежа. Възпроизвеждането е спряно. Опитайте да преминете на мобилна точка за достъп.",
+			retryPlayback: "Повтори",
+			tapToUnmute: "Натиснете за включване на звука"
 		},
 		track: {
 			playing: "Свири",
@@ -5848,7 +6827,8 @@ export const translations = {
 			cancel: "Отказ",
 			confirmDelete: "Потвърди",
 			delete: "Изтрий",
-			watch: "Гледай в YouTube"
+			watch: "Гледай в YouTube",
+			recommend: "Получи препоръки"
 		},
 		library: {
 			searchPlaceholder: "Търсене в библиотеката...",
@@ -5871,7 +6851,8 @@ export const translations = {
 			preview: "Преглед",
 			ban: "Забрани",
 			decline: "Отхвърли",
-			accept: "Приеми"
+			accept: "Приеми",
+			pendingCount: "{count} чакащи"
 		},
 		playlist: {
 			close: "Затвори",
@@ -5885,7 +6866,8 @@ export const translations = {
 			skippedRestricted: "'{title}' прескочено (Недостъпно)",
 			skippedIPBlocked: "'{title}' прескочено — YouTube ограничава тази мрежа",
 			backToNow: "Обратно към момента",
-			addVideos: "Добавете видео за начало"
+			addVideos: "Добавете видео за начало",
+			channelSuffix: "Канал"
 		},
 		mobile: {
 			tagline: "Демократичният Джубокс",
@@ -5901,9 +6883,23 @@ export const translations = {
 			downloadFail: "Ако изтеглянето е неуспешно:",
 			installInstruction: "Настройки > Разреши \"Инсталиране на неизвестни приложения\"",
 			privacyLegal: "Поверителност и Правни"
+		},
+		suggestions: {
+			title: "Свързани видеа",
+			modalTitle: "Свързани видеа",
+			basedOn: "Базирано на:",
+			loading: "Търсене на подобни видеа...",
+			empty: "Не са намерени препоръки."
+		},
+		banned: {
+			title: "Забранени видеа",
+			empty: "Няма забранени видеа",
+			emptySubtitle: "Видеа, забранени от заявки, ще се появят тук.",
+			bannedOn: "Забранено на {date}",
+			unban: "Отмени забраната"
 		}
 	},
-	"hr": {
+	hr: {
 		lobby: {
 			browseChannels: "Pregledaj Kanale",
 			public: "Javno",
@@ -5938,7 +6934,9 @@ export const translations = {
 			delete: "Izbriši",
 			terms: "Uvjeti i Pravno",
 			videoLanguage: "Jezik videa",
-			international: "Međunarodno"
+			international: "Međunarodno",
+			startWithCaptions: "Pokreni s titlovima",
+			searchCountries: "Pretraži zemlje..."
 		},
 		player: {
 			errorGeneric: "Došlo je do pogreške pri reproduciranju ovog videa.",
@@ -6004,7 +7002,14 @@ export const translations = {
 			leaveChannelConfirm: "Jeste li sigurni da se želite vratiti u predvorje?",
 			leave: "Napusti",
 			copyUrl: "Kopiraj URL",
-			close: "Zatvori"
+			close: "Zatvori",
+			back: "Natrag",
+			suggestions: "Prijedlozi",
+			queuePlayback: "Red i reprodukcija",
+			features: "Značajke",
+			captionsTooltip: "Prikaži titlove kao zadano svim korisnicima kada učitaju player.",
+			ownerTools: "Alati vlasnika",
+			changeLanguage: "Promijeni jezik"
 		},
 		suggest: {
 			placeholder: "Upišite naslov...",
@@ -6012,7 +7017,10 @@ export const translations = {
 			submit: "Pošalji",
 			adding: "Dodavanje...",
 			added: "Dodano",
-			error: "Molimo unesite YouTube poveznicu ili naslov."
+			error: "Molimo unesite YouTube poveznicu ili naslov.",
+			loginRequired: "Molimo prijavite se za predlaganje videa.",
+			loadSimilar: "Učitaj slične videe",
+			similarTo: "Slično kao"
 		},
 		app: {
 			noInternet: "Nema internetske veze",
@@ -6029,7 +7037,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Netočna lozinka ili kanal nije pronađen.",
 			unlock: "Otključaj",
 			listenMusic: "Slušaj glazbu",
-			unmuteAndPlay: "Zvuk & Sviraj"
+			unmuteAndPlay: "Zvuk & Sviraj",
+			retrying: "Pokušaj ponovno...",
+			reconnecting: "Ponovno povezivanje",
+			attempt: "Pokušaj",
+			connecting: "Povezivanje s poslužiteljem...",
+			connectionIssue: "Problem s vezom",
+			takingTooLong: "Traje duže nego inače...",
+			checkConnection: "Provjerite internetsku vezu.",
+			networkThrottle: "YouTube je blokirao IP ove mreže. Reprodukcija je pauzirana. Pokušajte se prebaciti na mobilnu žarišnu točku.",
+			retryPlayback: "Pokušaj ponovno",
+			tapToUnmute: "Dodirnite za uključivanje zvuka"
 		},
 		track: {
 			playing: "Svira",
@@ -6039,7 +7057,8 @@ export const translations = {
 			cancel: "Odustani",
 			confirmDelete: "Potvrdi",
 			delete: "Izbriši",
-			watch: "Gledaj na YouTubeu"
+			watch: "Gledaj na YouTubeu",
+			recommend: "Dobij prijedloge"
 		},
 		library: {
 			searchPlaceholder: "Traži u knjižnici...",
@@ -6062,7 +7081,8 @@ export const translations = {
 			preview: "Pregled",
 			ban: "Zabrani",
 			decline: "Odbij",
-			accept: "Prihvati"
+			accept: "Prihvati",
+			pendingCount: "{count} na čekanju"
 		},
 		playlist: {
 			close: "Zatvori",
@@ -6076,7 +7096,8 @@ export const translations = {
 			skippedRestricted: "'{title}' preskočeno (Nedostupno)",
 			skippedIPBlocked: "'{title}' preskočeno — YouTube ograničava ovu mrežu",
 			backToNow: "Natrag na Slušanje",
-			addVideos: "Dodaj videe za početak"
+			addVideos: "Dodaj videe za početak",
+			channelSuffix: "Kanal"
 		},
 		mobile: {
 			tagline: "Demokratski Jukebox",
@@ -6092,9 +7113,23 @@ export const translations = {
 			downloadFail: "Ako preuzimanje ne uspije:",
 			installInstruction: "Postavke > Omogući \"Instaliraj nepoznate aplikacije\"",
 			privacyLegal: "Privatnost i Pravno"
+		},
+		suggestions: {
+			title: "Povezani videi",
+			modalTitle: "Povezani videi",
+			basedOn: "Na temelju:",
+			loading: "Tražim slične videe...",
+			empty: "Nisu pronađeni prijedlozi."
+		},
+		banned: {
+			title: "Zabranjeni videi",
+			empty: "Nema zabranjenih videa",
+			emptySubtitle: "Videi zabranjeni iz zahtjeva pojavit će se ovdje.",
+			bannedOn: "Zabranjeno {date}",
+			unban: "Ukloni zabranu"
 		}
 	},
-	"sr": {
+	sr: {
 		lobby: {
 			browseChannels: "Pretraži Kanale",
 			public: "Javno",
@@ -6129,7 +7164,9 @@ export const translations = {
 			delete: "Obriši",
 			terms: "Uslovi i Pravno",
 			videoLanguage: "Језик видеа",
-			international: "Међународно"
+			international: "Међународно",
+			startWithCaptions: "Покрени са титловима",
+			searchCountries: "Претражи земље..."
 		},
 		player: {
 			errorGeneric: "Došlo je do greške pri reprodukovanju ovog videa.",
@@ -6195,7 +7232,14 @@ export const translations = {
 			leaveChannelConfirm: "Da li ste sigurni da želite da se vratite u lobi?",
 			leave: "Napusti",
 			copyUrl: "Kopiraj URL",
-			close: "Zatvori"
+			close: "Zatvori",
+			back: "Назад",
+			suggestions: "Предлози",
+			queuePlayback: "Ред и репродукција",
+			features: "Опције",
+			captionsTooltip: "Прикажи титлове подразумевано свим корисницима када учитају плејер.",
+			ownerTools: "Алати власника",
+			changeLanguage: "Промени језик"
 		},
 		suggest: {
 			placeholder: "Upišite naslov...",
@@ -6203,7 +7247,10 @@ export const translations = {
 			submit: "Pošalji",
 			adding: "Dodavanje...",
 			added: "Dodato",
-			error: "Molimo unesite YouTube link ili naslov."
+			error: "Molimo unesite YouTube link ili naslov.",
+			loginRequired: "Молимо пријавите се да предложите видео.",
+			loadSimilar: "Учитај сличне видео снимке",
+			similarTo: "Слично:"
 		},
 		app: {
 			noInternet: "Nema internet veze",
@@ -6220,7 +7267,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Pogrešna lozinka ili kanal nije pronađen.",
 			unlock: "Otključaj",
 			listenMusic: "Slušaj muziku",
-			unmuteAndPlay: "Zvuk & Pusti"
+			unmuteAndPlay: "Zvuk & Pusti",
+			retrying: "Покушавам поново...",
+			reconnecting: "Поновно повезивање",
+			attempt: "Покушај",
+			connecting: "Повезивање са сервером...",
+			connectionIssue: "Проблем са везом",
+			takingTooLong: "Траје дуже него обично...",
+			checkConnection: "Молимо проверите интернет везу.",
+			networkThrottle: "YouTube је блокирао IP ове мреже. Репродукција је паузирана. Покушајте да се пребаците на мобилну приступну тачку.",
+			retryPlayback: "Покушај поново",
+			tapToUnmute: "Додирните за укључивање звука"
 		},
 		track: {
 			playing: "Svira",
@@ -6230,7 +7287,8 @@ export const translations = {
 			cancel: "Otkaži",
 			confirmDelete: "Potvrdi",
 			delete: "Obriši",
-			watch: "Gledaj na YouTube-u"
+			watch: "Gledaj na YouTube-u",
+			recommend: "Преузми предлоге"
 		},
 		library: {
 			searchPlaceholder: "Traži u biblioteci...",
@@ -6253,7 +7311,8 @@ export const translations = {
 			preview: "Pregled",
 			ban: "Zabrani",
 			decline: "Odbij",
-			accept: "Prihvati"
+			accept: "Prihvati",
+			pendingCount: "{count} на чекању"
 		},
 		playlist: {
 			close: "Zatvori",
@@ -6267,7 +7326,8 @@ export const translations = {
 			skippedRestricted: "'{title}' preskočeno (Nedostupno)",
 			skippedIPBlocked: "'{title}' preskočeno — YouTube ograničava ovu mrežu",
 			backToNow: "Nazad na Trenutno",
-			addVideos: "Dodaj video za početak"
+			addVideos: "Dodaj video za početak",
+			channelSuffix: "Канал"
 		},
 		mobile: {
 			tagline: "Demokratski Džuboks",
@@ -6283,9 +7343,23 @@ export const translations = {
 			downloadFail: "Ako preuzimanje ne uspe:",
 			installInstruction: "Podešavanja > Omogući \"Instaliraj nepoznate aplikacije\"",
 			privacyLegal: "Privatnost i Pravno"
+		},
+		suggestions: {
+			title: "Повезани видео снимци",
+			modalTitle: "Повезани видео снимци",
+			basedOn: "На основу:",
+			loading: "Тражим сличне видео снимке...",
+			empty: "Нема пронађених предлога."
+		},
+		banned: {
+			title: "Забрањени видео снимци",
+			empty: "Нема забрањених видео снимака",
+			emptySubtitle: "Видео снимци забрањени из захтева појавиће се овде.",
+			bannedOn: "Забрањено {date}",
+			unban: "Уклони забрану"
 		}
 	},
-	"sk": {
+	sk: {
 		lobby: {
 			browseChannels: "Prehľadávať Kanály",
 			public: "Verejné",
@@ -6320,7 +7394,9 @@ export const translations = {
 			delete: "Zmazať",
 			terms: "Podmienky a Právne",
 			videoLanguage: "Jazyk videa",
-			international: "Medzinárodný"
+			international: "Medzinárodný",
+			startWithCaptions: "Spustiť s titulkami",
+			searchCountries: "Hľadať krajiny..."
 		},
 		player: {
 			errorGeneric: "Pri prehrávaní tohto videa sa vyskytla chyba.",
@@ -6386,7 +7462,14 @@ export const translations = {
 			leaveChannelConfirm: "Ste si istí, že sa chcete vrátiť do lobby?",
 			leave: "Opustiť",
 			copyUrl: "Kopírovať URL",
-			close: "Zavrieť"
+			close: "Zavrieť",
+			back: "Späť",
+			suggestions: "Návrhy",
+			queuePlayback: "Front a prehrávanie",
+			features: "Funkcie",
+			captionsTooltip: "Predvolene zobrazovať titulky všetkým používateľom pri načítaní prehrávača.",
+			ownerTools: "Nástroje vlastníka",
+			changeLanguage: "Zmeniť jazyk"
 		},
 		suggest: {
 			placeholder: "Zadajte názov...",
@@ -6394,7 +7477,10 @@ export const translations = {
 			submit: "Odoslať",
 			adding: "Pridávanie...",
 			added: "Pridané",
-			error: "Zadajte odkaz na YouTube alebo názov."
+			error: "Zadajte odkaz na YouTube alebo názov.",
+			loginRequired: "Pre navrhovanie videí sa prosím prihláste.",
+			loadSimilar: "Načítať podobné videá",
+			similarTo: "Podobné ako"
 		},
 		app: {
 			noInternet: "Žiadne pripojenie na internet",
@@ -6411,7 +7497,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "Nesprávne heslo alebo kanál nebol nájdený.",
 			unlock: "Odomknúť",
 			listenMusic: "Počúvať hudbu",
-			unmuteAndPlay: "Zvuk & Hrať"
+			unmuteAndPlay: "Zvuk & Hrať",
+			retrying: "Opakovanie...",
+			reconnecting: "Opätovné pripájanie",
+			attempt: "Pokus",
+			connecting: "Pripájanie k serveru...",
+			connectionIssue: "Problém s pripojením",
+			takingTooLong: "Trvá to dlhšie ako zvyčajne...",
+			checkConnection: "Skontrolujte pripojenie na internet.",
+			networkThrottle: "YouTube zablokoval IP tejto siete. Prehrávanie pozastavené. Skúste prepnúť na mobilný hotspot.",
+			retryPlayback: "Skúsiť znova",
+			tapToUnmute: "Klepnutím zapnite zvuk"
 		},
 		track: {
 			playing: "Hrá",
@@ -6421,7 +7517,8 @@ export const translations = {
 			cancel: "Zrušiť",
 			confirmDelete: "Potvrdiť",
 			delete: "Zmazať",
-			watch: "Sledovať na YouTube"
+			watch: "Sledovať na YouTube",
+			recommend: "Získať návrhy"
 		},
 		library: {
 			searchPlaceholder: "Hľadať v knižnici...",
@@ -6444,7 +7541,8 @@ export const translations = {
 			preview: "Náhľad",
 			ban: "Zakázať",
 			decline: "Odmietnuť",
-			accept: "Prijať"
+			accept: "Prijať",
+			pendingCount: "{count} čaká"
 		},
 		playlist: {
 			close: "Zavrieť",
@@ -6458,7 +7556,8 @@ export const translations = {
 			skippedRestricted: "'{title}' preskočené (Nedostupné)",
 			skippedIPBlocked: "'{title}' preskočené — YouTube obmedzuje túto sieť",
 			backToNow: "Späť na Teraz",
-			addVideos: "Pridajte videá pre začiatok"
+			addVideos: "Pridajte videá pre začiatok",
+			channelSuffix: "Kanál"
 		},
 		mobile: {
 			tagline: "Demokratický Jukebox",
@@ -6474,9 +7573,23 @@ export const translations = {
 			downloadFail: "Ak sťahovanie zlyhá:",
 			installInstruction: "Nastavenia > Povoliť „Inštalovať neznáme aplikácie“",
 			privacyLegal: "Súkromie a Právne"
+		},
+		suggestions: {
+			title: "Súvisiace videá",
+			modalTitle: "Súvisiace videá",
+			basedOn: "Na základe:",
+			loading: "Hľadanie podobných videí...",
+			empty: "Neboli nájdené žiadne návrhy."
+		},
+		banned: {
+			title: "Zakázané videá",
+			empty: "Žiadne zakázané videá",
+			emptySubtitle: "Videá zakázané z požiadaviek sa zobrazia tu.",
+			bannedOn: "Zakázané {date}",
+			unban: "Povoliť"
 		}
 	},
-	"ar": {
+	ar: {
 		lobby: {
 			browseChannels: "تصفح القنوات",
 			public: "عام",
@@ -6511,7 +7624,9 @@ export const translations = {
 			delete: "حذف",
 			terms: "الشروط والقانونية",
 			videoLanguage: "لغة الفيديو",
-			international: "دولي"
+			international: "دولي",
+			startWithCaptions: "ابدأ بالترجمة",
+			searchCountries: "البحث عن دول..."
 		},
 		player: {
 			errorGeneric: "حدث خطأ أثناء تشغيل هذا الفيديو.",
@@ -6577,7 +7692,14 @@ export const translations = {
 			leaveChannelConfirm: "هل أنت متأكد أنك تريد العودة إلى الردهة؟",
 			leave: "مغادرة",
 			copyUrl: "نسخ الرابط",
-			close: "إغلاق"
+			close: "إغلاق",
+			back: "رجوع",
+			suggestions: "الاقتراحات",
+			queuePlayback: "قائمة الانتظار والتشغيل",
+			features: "الميزات",
+			captionsTooltip: "إظهار الترجمة افتراضياً لجميع المستخدمين عند تحميل المشغل.",
+			ownerTools: "أدوات المالك",
+			changeLanguage: "تغيير اللغة"
 		},
 		suggest: {
 			placeholder: "اكتب عنوانًا...",
@@ -6585,7 +7707,10 @@ export const translations = {
 			submit: "إرسال",
 			adding: "جارٍ الإضافة...",
 			added: "تمت الإضافة",
-			error: "يرجى إدخال رابط YouTube أو عنوان."
+			error: "يرجى إدخال رابط YouTube أو عنوان.",
+			loginRequired: "يرجى تسجيل الدخول لاقتراح مقاطع الفيديو.",
+			loadSimilar: "تحميل فيديوهات مماثلة",
+			similarTo: "مشابه لـ"
 		},
 		app: {
 			noInternet: "لا يوجد اتصال بالإنترنت",
@@ -6602,7 +7727,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "كلمة المرور غير صحيحة أو القناة غير موجودة.",
 			unlock: "فتح",
 			listenMusic: "الاستماع إلى الموسيقى",
-			unmuteAndPlay: "صوت وتشغيل"
+			unmuteAndPlay: "صوت وتشغيل",
+			retrying: "إعادة المحاولة...",
+			reconnecting: "إعادة الاتصال",
+			attempt: "محاولة",
+			connecting: "الاتصال بالخادم...",
+			connectionIssue: "مشكلة في الاتصال",
+			takingTooLong: "يستغرق وقتاً أطول من المعتاد...",
+			checkConnection: "يرجى التحقق من اتصالك بالإنترنت.",
+			networkThrottle: "حجب YouTube عنوان IP لهذه الشبكة. تم إيقاف التشغيل مؤقتاً. حاول التبديل إلى نقطة اتصال للهاتف المحمول.",
+			retryPlayback: "إعادة المحاولة",
+			tapToUnmute: "اضغط لتشغيل الصوت"
 		},
 		track: {
 			playing: "تشغيل",
@@ -6612,7 +7747,8 @@ export const translations = {
 			cancel: "إلغاء",
 			confirmDelete: "تأكيد",
 			delete: "حذف",
-			watch: "مشاهدة على YouTube"
+			watch: "مشاهدة على YouTube",
+			recommend: "الحصول على اقتراحات"
 		},
 		library: {
 			searchPlaceholder: "بحث في المكتبة...",
@@ -6635,7 +7771,8 @@ export const translations = {
 			preview: "معاينة",
 			ban: "حظر",
 			decline: "رفض",
-			accept: "قبول"
+			accept: "قبول",
+			pendingCount: "{count} قيد الانتظار"
 		},
 		playlist: {
 			close: "إغلاق",
@@ -6649,7 +7786,8 @@ export const translations = {
 			skippedRestricted: "تخطي '{title}' (غير متاح)",
 			skippedIPBlocked: "تخطي '{title}' — YouTube يقيد هذه الشبكة",
 			backToNow: "العودة إلى الآن",
-			addVideos: "أضف مقاطع فيديو للبدء"
+			addVideos: "أضف مقاطع فيديو للبدء",
+			channelSuffix: "قناة"
 		},
 		mobile: {
 			tagline: "صندوق الموسيقى الديمقراطي",
@@ -6665,9 +7803,23 @@ export const translations = {
 			downloadFail: "إذا فشل التنزيل:",
 			installInstruction: "الإعدادات > تمكين \"تثبيت تطبيقات غير معروفة\"",
 			privacyLegal: "الخصوصية والقانونية"
+		},
+		suggestions: {
+			title: "فيديوهات ذات صلة",
+			modalTitle: "فيديوهات ذات صلة",
+			basedOn: "بناءً على:",
+			loading: "البحث عن فيديوهات مماثلة...",
+			empty: "لم يتم العثور على اقتراحات."
+		},
+		banned: {
+			title: "الفيديوهات المحظورة",
+			empty: "لا توجد فيديوهات محظورة",
+			emptySubtitle: "ستظهر هنا الفيديوهات المحظورة من الطلبات.",
+			bannedOn: "محظور في {date}",
+			unban: "إلغاء الحظر"
 		}
 	},
-	"he": {
+	he: {
 		lobby: {
 			browseChannels: "דפדף בערוצים",
 			public: "ציבורי",
@@ -6702,7 +7854,9 @@ export const translations = {
 			delete: "מחק",
 			terms: "תנאים ומשפטי",
 			videoLanguage: "שפת הסרטון",
-			international: "בינלאומי"
+			international: "בינלאומי",
+			startWithCaptions: "התחל עם כתוביות",
+			searchCountries: "חיפוש מדינות..."
 		},
 		player: {
 			errorGeneric: "אירעה שגיאה בעת הפעלת הסרטון הזה.",
@@ -6768,7 +7922,14 @@ export const translations = {
 			leaveChannelConfirm: "האם אתה בטוח שברצונך לחזור ללובי?",
 			leave: "עזוב",
 			copyUrl: "העתק URL",
-			close: "סגור"
+			close: "סגור",
+			back: "חזרה",
+			suggestions: "הצעות",
+			queuePlayback: "תור ונגינה",
+			features: "תכונות",
+			captionsTooltip: "הצג כתוביות כברירת מחדל לכל המשתמשים בעת טעינת הנגן.",
+			ownerTools: "כלי בעלים",
+			changeLanguage: "שנה שפה"
 		},
 		suggest: {
 			placeholder: "הקלד כותרת...",
@@ -6776,7 +7937,10 @@ export const translations = {
 			submit: "שלח",
 			adding: "מוסיף...",
 			added: "נוסף",
-			error: "אנא הכנס קישור YouTube או כותרת."
+			error: "אנא הכנס קישור YouTube או כותרת.",
+			loginRequired: "אנא התחבר כדי להציע סרטונים.",
+			loadSimilar: "טען סרטונים דומים",
+			similarTo: "דומה ל"
 		},
 		app: {
 			noInternet: "אין חיבור לאינטרנט",
@@ -6793,7 +7957,17 @@ export const translations = {
 			incorrectPasswordOrNotFound: "סיסמה שגויה או הערוץ לא נמצא.",
 			unlock: "פתח",
 			listenMusic: "האזנה למוזיקה",
-			unmuteAndPlay: "שמע ונגן"
+			unmuteAndPlay: "שמע ונגן",
+			retrying: "מנסה שוב...",
+			reconnecting: "מתחבר מחדש",
+			attempt: "ניסיון",
+			connecting: "מתחבר לשרת...",
+			connectionIssue: "בעיית חיבור",
+			takingTooLong: "לוקח יותר זמן מהרגיל...",
+			checkConnection: "אנא בדוק את חיבור האינטרנט שלך.",
+			networkThrottle: "YouTube חסם את ה-IP של הרשת הזו. הנגינה הושהתה. נסה לעבור לנקודת חמה ניידת.",
+			retryPlayback: "נסה שוב",
+			tapToUnmute: "הקש להפעלת קול"
 		},
 		track: {
 			playing: "מנגן",
@@ -6803,7 +7977,8 @@ export const translations = {
 			cancel: "ביטול",
 			confirmDelete: "אשר",
 			delete: "מחק",
-			watch: "צפה ב-YouTube"
+			watch: "צפה ב-YouTube",
+			recommend: "קבל הצעות"
 		},
 		library: {
 			searchPlaceholder: "חפש בספרייה...",
@@ -6826,7 +8001,8 @@ export const translations = {
 			preview: "תצוגה מקדימה",
 			ban: "אסור",
 			decline: "דחה",
-			accept: "קבל"
+			accept: "קבל",
+			pendingCount: "{count} ממתינים"
 		},
 		playlist: {
 			close: "סגור",
@@ -6840,7 +8016,8 @@ export const translations = {
 			skippedRestricted: "'{title}' דולג (לא זמין)",
 			skippedIPBlocked: "'{title}' דולג — YouTube מגביל רשת זו",
 			backToNow: "חזרה לעכשיו",
-			addVideos: "הוסף סרטונים להתחלה"
+			addVideos: "הוסף סרטונים להתחלה",
+			channelSuffix: "ערוץ"
 		},
 		mobile: {
 			tagline: "הג'וקבוקס הדמוקרטי",
@@ -6856,6 +8033,20 @@ export const translations = {
 			downloadFail: "אם ההורדה נכשלת:",
 			installInstruction: "הגדרות > אפשר \"התקן אפליקציות לא ידועות\"",
 			privacyLegal: "פרטיות ומשפטי"
+		},
+		suggestions: {
+			title: "סרטונים קשורים",
+			modalTitle: "סרטונים קשורים",
+			basedOn: "מבוסס על:",
+			loading: "מחפש סרטונים דומים...",
+			empty: "לא נמצאו הצעות."
+		},
+		banned: {
+			title: "סרטונים חסומים",
+			empty: "אין סרטונים חסומים",
+			emptySubtitle: "סרטונים שנחסמו מבקשות יופיעו כאן.",
+			bannedOn: "נחסם בתאריך {date}",
+			unban: "בטל חסימה"
 		}
 	}
 };
