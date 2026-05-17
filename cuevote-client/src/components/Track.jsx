@@ -240,7 +240,7 @@ export function Track({
           <a
             href={buildWatchUrl(track.videoId)}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             onClick={(event) => event.stopPropagation()}
             className="inline-flex items-center gap-2 text-orange-400 text-sm hover:text-orange-300 transition-colors"
           >
