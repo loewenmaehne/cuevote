@@ -3,10 +3,19 @@
 // strings actually used in the React source.
 //
 // Checks (all strict — non-zero exit on any failure):
-//   1. Undefined keys      — every t('section.key') in *.jsx/*.js resolves in en.
-//   2. Missing keys        — every other language has every key that en defines.
-//   3. Placeholder parity  — {placeholder} tokens in en match every translation
-//                            of the same key (no typos like {counts} vs {count}).
+//   1. Undefined keys       — every t('section.key') in *.jsx/*.js resolves in en.
+//   2. Missing keys         — every other language has every key that en defines.
+//   3. Placeholder parity   — {placeholder} tokens in en match every translation
+//                             of the same key (no typos like {counts} vs {count}).
+//   4. Plural-bag shape     — keys that are plural bags in en must also be plural
+//                             bags in every other language (no string/object mix).
+//   5. Plural completeness  — for every plural-bag key, each language must define
+//                             every CLDR category required by Intl.PluralRules.
+//
+// A "plural bag" is an object whose keys are all CLDR plural categories
+// (zero, one, two, few, many, other). Plural bags are treated as LEAF values,
+// not nested sections, so flatKeys('library.videos') yields 'library.videos'
+// rather than 'library.videos.one', 'library.videos.other', ...
 //
 // HTML tag parity is intentionally NOT enforced: existing entries vary slightly
 // (e.g. <strong> wrapping different words) and a strict check would create
@@ -25,12 +34,21 @@ const { translations } = await import(pathToFileURL(TRANSLATIONS_PATH).href);
 const errors = [];
 function fail(msg) { errors.push(msg); }
 
+const PLURAL_CATEGORIES = new Set(['zero', 'one', 'two', 'few', 'many', 'other']);
+
+function isPluralBag(v) {
+	if (v === null || typeof v !== 'object' || Array.isArray(v)) return false;
+	const keys = Object.keys(v);
+	if (keys.length === 0) return false;
+	return keys.every((k) => PLURAL_CATEGORIES.has(k));
+}
+
 function flatKeys(obj, prefix = '') {
 	const out = new Set();
 	for (const k of Object.keys(obj)) {
 		const v = obj[k];
 		const path = prefix ? `${prefix}.${k}` : k;
-		if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
+		if (v !== null && typeof v === 'object' && !Array.isArray(v) && !isPluralBag(v)) {
 			for (const k2 of flatKeys(v, path)) out.add(k2);
 		} else {
 			out.add(path);
@@ -100,15 +118,28 @@ function placeholdersOf(str) {
 	return [...set].sort();
 }
 
+function pluralBagPlaceholders(bag) {
+	const set = new Set();
+	for (const v of Object.values(bag)) {
+		if (typeof v !== 'string') continue;
+		for (const m of v.matchAll(PLACEHOLDER_RE)) set.add(m[1]);
+	}
+	return [...set].sort();
+}
+
 for (const key of enKeys) {
 	const enVal = getByPath(translations.en, key);
-	const enPh = placeholdersOf(enVal);
+	const enIsBag = isPluralBag(enVal);
+	const enPh = enIsBag ? pluralBagPlaceholders(enVal) : placeholdersOf(enVal);
 	if (!enPh || enPh.length === 0) continue;
 	for (const lang of Object.keys(translations)) {
 		if (lang === 'en') continue;
 		const val = getByPath(translations[lang], key);
-		if (typeof val !== 'string') continue; // missing-key error already raised
-		const ph = placeholdersOf(val);
+		if (val == null) continue; // missing-key error already raised
+		const langIsBag = isPluralBag(val);
+		if (enIsBag !== langIsBag) continue; // shape-mismatch error raised in check 4
+		const ph = langIsBag ? pluralBagPlaceholders(val) : placeholdersOf(val);
+		if (ph == null) continue;
 		const sameSet =
 			ph.length === enPh.length && ph.every((p) => enPh.includes(p));
 		if (!sameSet) {
@@ -119,11 +150,67 @@ for (const key of enKeys) {
 	}
 }
 
+// --- Check 4: plural-bag shape consistency ---
+// If en marks a key as a plural bag, every language must also use a plural bag
+// (and vice versa — no language may sneak in a plural bag without en doing so).
+const enPluralKeys = new Set();
+for (const key of enKeys) {
+	if (isPluralBag(getByPath(translations.en, key))) enPluralKeys.add(key);
+}
+for (const lang of Object.keys(translations)) {
+	if (lang === 'en') continue;
+	for (const key of enPluralKeys) {
+		const val = getByPath(translations[lang], key);
+		if (val == null) continue; // missing-key error already raised
+		if (!isPluralBag(val)) {
+			fail(
+				`plural shape mismatch: translations.${lang}.${key} is a ${typeof val}, but en defines it as a plural object`,
+			);
+		}
+	}
+	const langKeys = flatKeys(translations[lang]);
+	for (const key of langKeys) {
+		const val = getByPath(translations[lang], key);
+		if (isPluralBag(val) && !enPluralKeys.has(key)) {
+			fail(
+				`plural shape mismatch: translations.${lang}.${key} is a plural object, but en defines it as ${typeof getByPath(translations.en, key)}`,
+			);
+		}
+	}
+}
+
+// --- Check 5: plural category completeness ---
+// For every plural-bag key, each language must provide a string for every
+// CLDR category that Intl.PluralRules requires for that locale.
+const pluralRulesCache = new Map();
+function getRequiredCategories(lang) {
+	let cats = pluralRulesCache.get(lang);
+	if (!cats) {
+		cats = new Intl.PluralRules(lang).resolvedOptions().pluralCategories;
+		pluralRulesCache.set(lang, cats);
+	}
+	return cats;
+}
+for (const key of enPluralKeys) {
+	for (const lang of Object.keys(translations)) {
+		const val = getByPath(translations[lang], key);
+		if (!isPluralBag(val)) continue; // shape-mismatch error raised separately
+		const required = getRequiredCategories(lang);
+		for (const cat of required) {
+			if (typeof val[cat] !== 'string') {
+				fail(
+					`plural form missing: translations.${lang}.${key}.${cat} is required for ${lang} (${required.join(', ')})`,
+				);
+			}
+		}
+	}
+}
+
 // --- Report ---
 const langCount = Object.keys(translations).length;
 if (errors.length === 0) {
 	console.log(
-		`i18n OK — ${enKeys.size} keys × ${langCount} languages, ${usage.size} keys referenced from source.`,
+		`i18n OK — ${enKeys.size} keys × ${langCount} languages, ${usage.size} keys referenced from source, ${enPluralKeys.size} plural-bag keys.`,
 	);
 	process.exit(0);
 }

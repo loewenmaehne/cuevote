@@ -110,9 +110,7 @@ export function ChannelLibrary({
 				</div>
 				<p className="text-xs text-neutral-500 text-center mt-3 font-medium">
 					<span className="text-orange-500">
-						{t(filteredVideos.length === 1 ? 'library.videosCount' : 'library.videosCountPlural', {
-							count: filteredVideos.length,
-						})}
+						{t('library.videos', { count: filteredVideos.length })}
 					</span>{' '}
 					{t('library.inLibrary')}
 				</p>

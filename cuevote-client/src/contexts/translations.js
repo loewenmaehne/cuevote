@@ -169,8 +169,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Search library...",
-			videosCount: "{count} video",
-			videosCountPlural: "{count} videos",
+			videos: {
+				one: "{count} video",
+				other: "{count} videos"
+			},
 			inLibrary: "in library",
 			info1: "This library displays unique videos played in the last <strong>28 days</strong>.",
 			info2: "Older videos are hidden to ensure metadata freshness, but they are <strong>never deleted</strong>. The <strong>Auto Refill</strong> feature still remembers your entire history and will automatically bring older videos back into the queue (and this list) when needed!",
@@ -189,7 +191,10 @@ export const translations = {
 			ban: "Ban",
 			decline: "Decline",
 			accept: "Accept",
-			pendingCount: "{count} pending"
+			pendingCount: {
+				one: "{count} pending",
+				other: "{count} pending"
+			}
 		},
 		banned: {
 			title: "Banned Videos",
@@ -399,8 +404,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Zoek in bibliotheek...",
-			videosCount: "{count} video",
-			videosCountPlural: "{count} videos",
+			videos: {
+				one: "{count} video",
+				other: "{count} videos"
+			},
 			inLibrary: "in bibliotheek",
 			info1: "Deze bibliotheek toont unieke videos gespeeld in de laatste <strong>28 dagen</strong>.",
 			info2: "Oudere videos worden verborgen voor metadata-versheid, maar worden <strong>nooit verwijderd</strong>. De <strong>Automatisch Aanvullen</strong> functie onthoudt je volledige geschiedenis en zet oudere videos automatisch terug in de wachtrij (en deze lijst) wanneer nodig!",
@@ -419,7 +426,10 @@ export const translations = {
 			ban: "Verban",
 			decline: "Afwijzen",
 			accept: "Accepteren",
-			pendingCount: "{count} in afwachting"
+			pendingCount: {
+				one: "{count} in afwachting",
+				other: "{count} in afwachting"
+			}
 		},
 		playlist: {
 			close: "Sluit Afspeellijst",
@@ -629,8 +639,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Bibliothek durchsuchen...",
-			videosCount: "{count} Video",
-			videosCountPlural: "{count} Videos",
+			videos: {
+				one: "{count} Video",
+				other: "{count} Videos"
+			},
 			inLibrary: "in der Bibliothek",
 			info1: "Diese Bibliothek zeigt einzigartige Videos, die in den letzten <strong>28 Tagen</strong> gespielt wurden.",
 			info2: "Ältere Videos werden ausgeblendet, um die Aktualität der Metadaten zu gewährleisten, aber sie werden <strong>niemals gelöscht</strong>. Die <strong>Auto-Fill</strong>-Funktion merkt sich weiterhin deinen gesamten Verlauf und bringt ältere Videos bei Bedarf automatisch zurück in die Warteschlange (und diese Liste) wenn nötig!",
@@ -649,7 +661,10 @@ export const translations = {
 			ban: "Sperren",
 			decline: "Ablehnen",
 			accept: "Akzeptieren",
-			pendingCount: "{count} ausstehend"
+			pendingCount: {
+				one: "{count} ausstehend",
+				other: "{count} ausstehend"
+			}
 		},
 		playlist: {
 			close: "Playlist schließen",
@@ -859,8 +874,11 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Chercher dans la bibliothèque...",
-			videosCount: "{count} vidéo",
-			videosCountPlural: "{count} vidéos",
+			videos: {
+				one: "{count} vidéo",
+				many: "{count} vidéos",
+				other: "{count} vidéos"
+			},
 			inLibrary: "dans la bibliothèque",
 			info1: "Cette bibliothèque affiche les vidéos uniques jouées au cours des <strong>28 derniers jours</strong>.",
 			info2: "Les anciennes vidéos sont masquées pour garantir la fraîcheur des métadonnées, mais elles ne sont <strong>jamais supprimées</strong>. La fonction <strong>Remplissage Auto</strong> se souvient de tout votre historique et ramènera automatiquement les anciennes vidéos dans la file d'attente (et cette liste) si nécessaire !",
@@ -879,7 +897,11 @@ export const translations = {
 			ban: "Bannir",
 			decline: "Refuser",
 			accept: "Accepter",
-			pendingCount: "{count} en attente"
+			pendingCount: {
+				one: "{count} en attente",
+				many: "{count} en attente",
+				other: "{count} en attente"
+			}
 		},
 		playlist: {
 			close: "Fermer la playlist",
@@ -1089,8 +1111,11 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Buscar en biblioteca...",
-			videosCount: "{count} video",
-			videosCountPlural: "{count} videos",
+			videos: {
+				one: "{count} video",
+				many: "{count} videos",
+				other: "{count} videos"
+			},
 			inLibrary: "en biblioteca",
 			info1: "Esta biblioteca muestra videos únicas reproducidas en los últimos <strong>28 días</strong>.",
 			info2: "Las videos más antiguas se ocultan para garantizar la frescura de los metadatos, pero <strong>nunca se eliminan</strong>. ¡La función de <strong>Relleno Automático</strong> recuerda todo tu historial y traerá automáticamente las videos antiguas a la cola (y a esta lista) cuando sea necesario!",
@@ -1109,7 +1134,11 @@ export const translations = {
 			ban: "Prohibir",
 			decline: "Rechazar",
 			accept: "Aceptar",
-			pendingCount: "{count} pendientes"
+			pendingCount: {
+				one: "{count} pendientes",
+				many: "{count} pendientes",
+				other: "{count} pendientes"
+			}
 		},
 		playlist: {
 			close: "Cerrar lista",
@@ -1312,8 +1341,11 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Cerca nella libreria...",
-			videosCount: "{count} video",
-			videosCountPlural: "{count} video",
+			videos: {
+				one: "{count} video",
+				many: "{count} video",
+				other: "{count} video"
+			},
 			inLibrary: "nella libreria",
 			info1: "Questa libreria mostra brani unici riprodotti negli ultimi <strong>28 giorni</strong>.",
 			info2: "I brani più vecchi sono nascosti per garantire la freschezza dei metadati, ma non vengono <strong>mai eliminati</strong>. La funzione <strong>Riempimento Automatico</strong> ricorda l'intera cronologia e riporterà automaticamente i vecchi brani nella coda (e in questo elenco) quando necessario!",
@@ -1332,7 +1364,11 @@ export const translations = {
 			ban: "Banna",
 			decline: "Rifiuta",
 			accept: "Accetta",
-			pendingCount: "{count} in attesa"
+			pendingCount: {
+				one: "{count} in attesa",
+				many: "{count} in attesa",
+				other: "{count} in attesa"
+			}
 		},
 		playlist: {
 			close: "Chiudi playlist",
@@ -1542,8 +1578,11 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Buscar na biblioteca...",
-			videosCount: "{count} vídeo",
-			videosCountPlural: "{count} vídeos",
+			videos: {
+				one: "{count} vídeo",
+				many: "{count} vídeos",
+				other: "{count} vídeos"
+			},
 			inLibrary: "na biblioteca",
 			info1: "Esta biblioteca exibe vídeos únicas tocadas nos últimos <strong>28 dias</strong>.",
 			info2: "Vídeos mais antigas são ocultadas para garantir a atualização dos metadados, mas <strong>nunca são excluídas</strong>. O recurso de <strong>Preenchimento Automático</strong> lembra de todo o seu histórico e trará automaticamente vídeos antigas de volta para a fila (e para esta lista) quando necessário!",
@@ -1562,7 +1601,11 @@ export const translations = {
 			ban: "Banir",
 			decline: "Recusar",
 			accept: "Aceitar",
-			pendingCount: "{count} pendentes"
+			pendingCount: {
+				one: "{count} pendentes",
+				many: "{count} pendentes",
+				other: "{count} pendentes"
+			}
 		},
 		playlist: {
 			close: "Fechar playlist",
@@ -1772,8 +1815,9 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "搜索媒体库...",
-			videosCount: "{count} 个视频",
-			videosCountPlural: "{count} 个视频",
+			videos: {
+				other: "{count} 个视频"
+			},
 			inLibrary: "在库中",
 			info1: "此库显示过去 <strong>28 天</strong> 内播放的唯一视频。",
 			info2: "为了保持元数据新鲜度，较旧的视频会被隐藏，但<strong>绝不会被删除</strong>。<strong>自动填充</strong>功能仍会记住您的完整历史记录，并在需要时自动将旧视频带回队列（及此列表）！",
@@ -1792,7 +1836,9 @@ export const translations = {
 			ban: "禁止",
 			decline: "拒绝",
 			accept: "接受",
-			pendingCount: "{count} 个待审"
+			pendingCount: {
+				other: "{count} 个待审"
+			}
 		},
 		playlist: {
 			close: "关闭列表",
@@ -2002,8 +2048,9 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "搜尋媒體庫...",
-			videosCount: "{count} 个视频",
-			videosCountPlural: "{count} 个视频",
+			videos: {
+				other: "{count} 個視訊"
+			},
 			inLibrary: "在庫中",
 			info1: "此庫顯示過去 <strong>28 天</strong> 內播放的唯一视频。",
 			info2: "為了保持元數據新鮮度，較舊的视频會被隱藏，但<strong>絕不會被刪除</strong>。<strong>自動填補</strong>功能仍會記住您的完整歷史記錄，並在需要時自動將舊视频帶回佇列（及此列表）！",
@@ -2022,7 +2069,9 @@ export const translations = {
 			ban: "禁止",
 			decline: "拒絕",
 			accept: "接受",
-			pendingCount: "{count} 個待審"
+			pendingCount: {
+				other: "{count} 個待審"
+			}
 		},
 		playlist: {
 			close: "關閉列表",
@@ -2232,8 +2281,9 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "ライブラリを検索...",
-			videosCount: "{count} 動画",
-			videosCountPlural: "{count} 動画",
+			videos: {
+				other: "{count} 動画"
+			},
 			inLibrary: "ライブラリ内",
 			info1: "このライブラリは過去 <strong>28日間</strong> に再生されたユニークな動画を表示します。",
 			info2: "メタデータを最新に保つため古い動画は非表示になりますが、<strong>削除されることはありません</strong>。<strong>自動補充</strong>機能は全履歴を記憶しており、必要な時に自動的に古い動画をキュー（およびこのリスト）に戻します！",
@@ -2252,7 +2302,9 @@ export const translations = {
 			ban: "禁止",
 			decline: "拒否",
 			accept: "承認",
-			pendingCount: "{count} 件保留中"
+			pendingCount: {
+				other: "{count} 件保留中"
+			}
 		},
 		playlist: {
 			close: "閉じる",
@@ -2462,8 +2514,9 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "라이브러리 검색...",
-			videosCount: "{count} 동영상",
-			videosCountPlural: "{count} 동영상",
+			videos: {
+				other: "{count} 동영상"
+			},
 			inLibrary: "라이브러리에",
 			info1: "이 라이브러리는 최근 <strong>28일</strong> 동안 재생된 고유한 동영상을 표시합니다.",
 			info2: "메타데이터 최신화를 위해 오래된 동영상은 숨겨지지만, <strong>절대 삭제되지 않습니다</strong>. <strong>자동 리필</strong> 기능은 전체 기록을 기억하며 필요할 때 오래된 동영상을 대기열(및 이 목록)로 다시 가져옵니다!",
@@ -2482,7 +2535,9 @@ export const translations = {
 			ban: "차단",
 			decline: "거절",
 			accept: "속락",
-			pendingCount: "{count}개 대기 중"
+			pendingCount: {
+				other: "{count}개 대기 중"
+			}
 		},
 		playlist: {
 			close: "닫기",
@@ -2692,8 +2747,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "लाइब्रेरी खोजें...",
-			videosCount: "{count} वीडियो",
-			videosCountPlural: "{count} वीडियो",
+			videos: {
+				one: "{count} वीडियो",
+				other: "{count} वीडियो"
+			},
 			inLibrary: "लाइब्रेरी में",
 			info1: "यह लाइब्रेरी पिछले <strong>28 दिनों</strong> में बजाए गए अद्वितीय वीडियोों को प्रदर्शित करती है।",
 			info2: "मेटाडेटा ताजगी के लिए पुराने वीडियो छिपाए जाते हैं, लेकिन वे <strong>कभी नहीं हटाए जाते</strong>। <strong>स्वतः भरें</strong> सुविधा आपके पूरे इतिहास को याद रखती है और आवश्यकता पड़ने पर स्वचालित रूप से पुराने वीडियोों को वापस लाती है!",
@@ -2712,7 +2769,10 @@ export const translations = {
 			ban: "प्रतिबंध",
 			decline: "अस्वीकार",
 			accept: "स्वीकार",
-			pendingCount: "{count} लंबित"
+			pendingCount: {
+				one: "{count} लंबित",
+				other: "{count} लंबित"
+			}
 		},
 		playlist: {
 			close: "बंद करें",
@@ -2922,8 +2982,9 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "ค้นหาคลังวิดีโอ...",
-			videosCount: "{count} วิดีโอ",
-			videosCountPlural: "{count} วิดีโอ",
+			videos: {
+				other: "{count} วิดีโอ"
+			},
 			inLibrary: "ในคลัง",
 			info1: "คลังนี้แสดงวิดีโอที่ไม่ซ้ำที่เล่นใน <strong>28 วัน</strong> ที่ผ่านมา",
 			info2: "วิดีโอเก่าจะถูกซ่อนเพื่อความสดใหม่ของข้อมูล แต่<strong>จะไม่ถูกลบ</strong> ฟีเจอร์ <strong>เติมอัตโนมัติ</strong> ยังคงจำประวัติทั้งหมดของคุณและจะนำวิดีโอเก่ากลับมาเมื่อจำเป็น!",
@@ -2942,7 +3003,9 @@ export const translations = {
 			ban: "แบน",
 			decline: "ปฏิเสธ",
 			accept: "ยอมรับ",
-			pendingCount: "รออยู่ {count} รายการ"
+			pendingCount: {
+				other: "รออยู่ {count} รายการ"
+			}
 		},
 		playlist: {
 			close: "ปิด",
@@ -3152,8 +3215,9 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Tìm kiếm thư viện...",
-			videosCount: "{count} bài",
-			videosCountPlural: "{count} bài",
+			videos: {
+				other: "{count} bài"
+			},
 			inLibrary: "trong thư viện",
 			info1: "Thư viện hiển thị các bài hát duy nhất đã phát trong <strong>28 ngày</strong> qua.",
 			info2: "Các bài cũ được ẩn để giữ dữ liệu mới, nhưng <strong>không bao giờ bị xóa</strong>. Tính năng <strong>Tự động điền</strong> vẫn nhớ toàn bộ lịch sử và sẽ tự động đưa bài cũ trở lại khi cần!",
@@ -3172,7 +3236,9 @@ export const translations = {
 			ban: "Cấm",
 			decline: "Từ chối",
 			accept: "Chấp nhận",
-			pendingCount: "{count} đang chờ"
+			pendingCount: {
+				other: "{count} đang chờ"
+			}
 		},
 		playlist: {
 			close: "Đóng",
@@ -3382,8 +3448,9 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Cari pustaka...",
-			videosCount: "{count} video",
-			videosCountPlural: "{count} video",
+			videos: {
+				other: "{count} video"
+			},
 			inLibrary: "di pustaka",
 			info1: "Pustaka ini menampilkan video unik yang diputar dalam <strong>28 hari</strong> terakhir.",
 			info2: "Video lama disembunyikan agar data tetap segar, tapi <strong>tidak pernah dihapus</strong>. Fitur <strong>Isi Otomatis</strong> tetap mengingat seluruh riwayat Anda dan akan otomatis mengembalikan video lama saat dibutuhkan!",
@@ -3402,7 +3469,9 @@ export const translations = {
 			ban: "Larang",
 			decline: "Tolak",
 			accept: "Terima",
-			pendingCount: "{count} tertunda"
+			pendingCount: {
+				other: "{count} tertunda"
+			}
 		},
 		playlist: {
 			close: "Tutup",
@@ -3612,8 +3681,9 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Cari pustaka...",
-			videosCount: "{count} video",
-			videosCountPlural: "{count} video",
+			videos: {
+				other: "{count} video"
+			},
 			inLibrary: "dalam pustaka",
 			info1: "Pustaka ini memaparkan video unik yang dimainkan dalam <strong>28 hari</strong> lepas.",
 			info2: "Video lama disembunyikan untuk kesegaran data, tetapi <strong>tidak pernah dipadam</strong>. Ciri <strong>Isi Semula Auto</strong> masih mengingati sejarah penuh anda dan akan mengembalikan video lama apabila diperlukan!",
@@ -3632,7 +3702,9 @@ export const translations = {
 			ban: "Larang",
 			decline: "Tolak",
 			accept: "Terima",
-			pendingCount: "{count} menunggu"
+			pendingCount: {
+				other: "{count} menunggu"
+			}
 		},
 		playlist: {
 			close: "Tutup",
@@ -3842,8 +3914,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Maghanap sa library...",
-			videosCount: "{count} kanta",
-			videosCountPlural: "{count} kanta",
+			videos: {
+				one: "{count} kanta",
+				other: "{count} kanta"
+			},
 			inLibrary: "nasa library",
 			info1: "Ipinapakita ng library na ito ang mga natatanging kanta na pinatugtog sa nakaraang <strong>28 araw</strong>.",
 			info2: "Ang mga lumang kanta ay nakatago para sa pagiging bago ng metadata, ngunit <strong>hindi kailanman tatanggalin</strong>. Ang tampok na <strong>Auto Refill</strong> ay naaalala pa rin ang iyong buong kasaysayan at awtomatikong ibabalik ang mga lumang kanta sa pila (at sa listahang ito) kapag kailangan!",
@@ -3862,7 +3936,10 @@ export const translations = {
 			ban: "I-ban",
 			decline: "Tanggihan",
 			accept: "Tanggapin",
-			pendingCount: "{count} nakabinbin"
+			pendingCount: {
+				one: "{count} nakabinbin",
+				other: "{count} nakabinbin"
+			}
 		},
 		playlist: {
 			close: "Isara",
@@ -4072,8 +4149,12 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Szukaj w bibliotece...",
-			videosCount: "{count} utwór",
-			videosCountPlural: "{count} utworów",
+			videos: {
+				one: "{count} utwór",
+				few: "{count} utwory",
+				many: "{count} utworów",
+				other: "{count} utworu"
+			},
 			inLibrary: "w bibliotece",
 			info1: "Ta biblioteka wyświetla unikalne utwory odtwarzane w ciągu ostatnich <strong>28 dni</strong>.",
 			info2: "Starsze utwory są ukrywane dla świeżości metadanych, ale <strong>nigdy nie są usuwane</strong>. Funkcja <strong>automatycznego uzupełniania</strong> wciąż pamięta całą historię i automatycznie przywróci starsze utwory do kolejki (i tej listy) w razie potrzeby!",
@@ -4092,7 +4173,12 @@ export const translations = {
 			ban: "Zbanuj",
 			decline: "Odrzuć",
 			accept: "Akceptuj",
-			pendingCount: "{count} oczekuje"
+			pendingCount: {
+				one: "{count} oczekuje",
+				few: "{count} oczekuje",
+				many: "{count} oczekuje",
+				other: "{count} oczekuje"
+			}
 		},
 		playlist: {
 			close: "Zamknij",
@@ -4302,8 +4388,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Sök i biblioteket...",
-			videosCount: "{count} låt",
-			videosCountPlural: "{count} låtar",
+			videos: {
+				one: "{count} låt",
+				other: "{count} låtar"
+			},
 			inLibrary: "i biblioteket",
 			info1: "Detta bibliotek visar unika låtar som spelats de senaste <strong>28 dagarna</strong>.",
 			info2: "Äldre låtar döljs för metadata-färskhet, men de <strong>raderas aldrig</strong>. Funktionen <strong>Autopåfyllning</strong> kommer ihåg hela din historik och hämtar automatiskt tillbaka äldre låtar till kön (och denna lista) vid behov!",
@@ -4322,7 +4410,10 @@ export const translations = {
 			ban: "Bannlys",
 			decline: "Avböj",
 			accept: "Acceptera",
-			pendingCount: "{count} väntande"
+			pendingCount: {
+				one: "{count} väntande",
+				other: "{count} väntande"
+			}
 		},
 		playlist: {
 			close: "Stäng",
@@ -4532,8 +4623,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Søg i bibliotek...",
-			videosCount: "{count} sang",
-			videosCountPlural: "{count} sange",
+			videos: {
+				one: "{count} sang",
+				other: "{count} sange"
+			},
 			inLibrary: "i bibliotek",
 			info1: "Dette bibliotek viser unikke sange spillet i de sidste <strong>28 dage</strong>.",
 			info2: "Ældre sange skjules for at holde metadata friske, men de <strong>slettes aldrig</strong>. Funktionen <strong>Autooppfyldning</strong> husker stadig hele din historik og vil automatisk bringe ældre sange tilbage i køen (og denne liste) når det er nødvendigt!",
@@ -4552,7 +4645,10 @@ export const translations = {
 			ban: "Forbyd",
 			decline: "Afvis",
 			accept: "Accepter",
-			pendingCount: "{count} afventer"
+			pendingCount: {
+				one: "{count} afventer",
+				other: "{count} afventer"
+			}
 		},
 		playlist: {
 			close: "Luk",
@@ -4762,8 +4858,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Søk i bibliotek...",
-			videosCount: "{count} sang",
-			videosCountPlural: "{count} sanger",
+			videos: {
+				one: "{count} sang",
+				other: "{count} sanger"
+			},
 			inLibrary: "i bibliotek",
 			info1: "Dette biblioteket viser unike sanger spilt i de siste <strong>28 dagene</strong>.",
 			info2: "Eldre sanger skjules for å holde metadata friske, men de <strong>slettes aldri</strong>. Funksjonen <strong>Autorefill</strong> husker fortsatt hele historikken din og vil automatisk hente eldre sanger tilbake i køen (og denne listen) når det trengs!",
@@ -4782,7 +4880,10 @@ export const translations = {
 			ban: "Bannlys",
 			decline: "Avslå",
 			accept: "Godta",
-			pendingCount: "{count} venter"
+			pendingCount: {
+				one: "{count} venter",
+				other: "{count} venter"
+			}
 		},
 		playlist: {
 			close: "Lukk",
@@ -4992,8 +5093,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Etsi kirjastosta...",
-			videosCount: "{count} kappale",
-			videosCountPlural: "{count} kappaletta",
+			videos: {
+				one: "{count} kappale",
+				other: "{count} kappaletta"
+			},
 			inLibrary: "kirjastossa",
 			info1: "Tämä kirjasto näyttää viimeisen <strong>28 päivän</strong> aikana soitetut ainutlaatuiset kappaleet.",
 			info2: "Vanhemmat kappaleet piilotetaan tietojen tuoreuden vuoksi, mutta niitä <strong>ei koskaan poisteta</strong>. <strong>Automaattitäyttö</strong> muistaa koko historiasi ja palauttaa vanhemmat kappaleet automaattisesti jonoon (ja tähän listaan) tarvittaessa!",
@@ -5012,7 +5115,10 @@ export const translations = {
 			ban: "Estä",
 			decline: "Hylkää",
 			accept: "Hyväksy",
-			pendingCount: "{count} odottaa"
+			pendingCount: {
+				one: "{count} odottaa",
+				other: "{count} odottaa"
+			}
 		},
 		playlist: {
 			close: "Sulje",
@@ -5222,8 +5328,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Kütüphanede ara...",
-			videosCount: "{count} video",
-			videosCountPlural: "{count} video",
+			videos: {
+				one: "{count} video",
+				other: "{count} video"
+			},
 			inLibrary: "kütüphanede",
 			info1: "Bu kütüphane son <strong>28 gün</strong> içinde çalınan benzersiz videoları görüntüler.",
 			info2: "Eski videolar meta veri tazeliği için gizlenir, ancak <strong>asla silinmezler</strong>. <strong>Otomatik Doldurma</strong> özelliği tüm geçmişinizi hatırlar ve gerektiğinde eski videoları kuyruğa (ve bu listeye) otomatik olarak geri getirir!",
@@ -5242,7 +5350,10 @@ export const translations = {
 			ban: "Yasakla",
 			decline: "Reddet",
 			accept: "Kabul Et",
-			pendingCount: "{count} bekliyor"
+			pendingCount: {
+				one: "{count} bekliyor",
+				other: "{count} bekliyor"
+			}
 		},
 		playlist: {
 			close: "Kapat",
@@ -5452,8 +5563,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Αναζήτηση βιβλιοθήκης...",
-			videosCount: "{count} κομμάτι",
-			videosCountPlural: "{count} κομμάτια",
+			videos: {
+				one: "{count} κομμάτι",
+				other: "{count} κομμάτια"
+			},
 			inLibrary: "στη βιβλιοθήκη",
 			info1: "Αυτή η βιβλιοθήκη εμφανίζει μοναδικά κομμάτια που παίχτηκαν τις τελευταίες <strong>28 ημέρες</strong>.",
 			info2: "Τα παλαιότερα κομμάτια κρύβονται για φρεσκάδα δεδομένων, αλλά <strong>δεν διαγράφονται ποτέ</strong>. Η λειτουργία <strong>Αυτόματο Γέμισμα</strong> θυμάται ολόκληρο το ιστορικό σας και θα επαναφέρει αυτόματα παλιά κομμάτια στην ουρά (και σε αυτή τη λίστα) όταν χρειαστεί!",
@@ -5472,7 +5585,10 @@ export const translations = {
 			ban: "Αποκλεισμός",
 			decline: "Απόρριψη",
 			accept: "Αποδοχή",
-			pendingCount: "{count} σε αναμονή"
+			pendingCount: {
+				one: "{count} σε αναμονή",
+				other: "{count} σε αναμονή"
+			}
 		},
 		playlist: {
 			close: "Κλείσιμο",
@@ -5682,8 +5798,12 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Поиск в библиотеке...",
-			videosCount: "{count} видео",
-			videosCountPlural: "{count} песен",
+			videos: {
+				one: "{count} видео",
+				few: "{count} видео",
+				many: "{count} видео",
+				other: "{count} видео"
+			},
 			inLibrary: "в библиотеке",
 			info1: "Эта библиотека отображает уникальные видео, проигранные за последние <strong>28 дней</strong>.",
 			info2: "Старые видео скрываются для свежести метаданных, но <strong>никогда не удаляются</strong>. Функция <strong>Автозаполнения</strong> помнит всю вашу историю и автоматически вернет старые видео в очередь (и этот список) при необходимости!",
@@ -5702,7 +5822,12 @@ export const translations = {
 			ban: "Забанить",
 			decline: "Отклонить",
 			accept: "Принять",
-			pendingCount: "{count} в ожидании"
+			pendingCount: {
+				one: "{count} в ожидании",
+				few: "{count} в ожидании",
+				many: "{count} в ожидании",
+				other: "{count} в ожидании"
+			}
 		},
 		playlist: {
 			close: "Закрыть",
@@ -5912,8 +6037,12 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Пошук у бібліотеці...",
-			videosCount: "{count} пісня",
-			videosCountPlural: "{count} пісень",
+			videos: {
+				one: "{count} пісня",
+				few: "{count} пісні",
+				many: "{count} пісень",
+				other: "{count} пісень"
+			},
 			inLibrary: "у бібліотеці",
 			info1: "Ця бібліотека відображає унікальні пісні, відтворені за останні <strong>28 днів</strong>.",
 			info2: "Старі пісні приховуються для свіжості метаданих, але <strong>ніколи не видаляються</strong>. Функція <strong>Автозаповнення</strong> пам'ятає всю вашу історію і автоматично поверне старі пісні до черги (і цього списку) за потреби!",
@@ -5932,7 +6061,12 @@ export const translations = {
 			ban: "Забанити",
 			decline: "Відхилити",
 			accept: "Прийняти",
-			pendingCount: "{count} в очікуванні"
+			pendingCount: {
+				one: "{count} в очікуванні",
+				few: "{count} в очікуванні",
+				many: "{count} в очікуванні",
+				other: "{count} в очікуванні"
+			}
 		},
 		playlist: {
 			close: "Закрити",
@@ -6142,8 +6276,12 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Hledat v knihovně...",
-			videosCount: "{count} skladba",
-			videosCountPlural: "{count} skladby",
+			videos: {
+				one: "{count} skladba",
+				few: "{count} skladby",
+				many: "{count} skladby",
+				other: "{count} skladeb"
+			},
 			inLibrary: "v knihovně",
 			info1: "Tato knihovna zobrazuje unikátní skladby přehrané za posledních <strong>28 dní</strong>.",
 			info2: "Starší skladby jsou skryty pro čerstvost metadat, ale <strong>nikdy nejsou smazány</strong>. Funkce <strong>Automatické Doplnění</strong> si pamatuje celou vaši historii a automaticky vrátí starší skladby do fronty (a tohoto seznamu), když je potřeba!",
@@ -6162,7 +6300,12 @@ export const translations = {
 			ban: "Zakázat",
 			decline: "Odmítnout",
 			accept: "Přijmout",
-			pendingCount: "{count} čeká"
+			pendingCount: {
+				one: "{count} čeká",
+				few: "{count} čeká",
+				many: "{count} čeká",
+				other: "{count} čeká"
+			}
 		},
 		playlist: {
 			close: "Zavřít",
@@ -6372,8 +6515,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Keresés a könyvtárban...",
-			videosCount: "{count} dal",
-			videosCountPlural: "{count} dal",
+			videos: {
+				one: "{count} dal",
+				other: "{count} dal"
+			},
 			inLibrary: "a könyvtárban",
 			info1: "Ez a könyvtár az elmúlt <strong>28 napban</strong> lejátszott egyedi dalokat jeleníti meg.",
 			info2: "A régebbi dalok el vannak rejtve az adatok frissessége érdekében, de <strong>soha nem törlődnek</strong>. Az <strong>Automatikus Újratöltés</strong> funkció emlékszik a teljes előzményekre, és szükség esetén automatikusan visszahozza a régebbi dalokat a sorba (és ebbe a listába)!",
@@ -6392,7 +6537,10 @@ export const translations = {
 			ban: "Tiltás",
 			decline: "Elutasítás",
 			accept: "Elfogadás",
-			pendingCount: "{count} függőben"
+			pendingCount: {
+				one: "{count} függőben",
+				other: "{count} függőben"
+			}
 		},
 		playlist: {
 			close: "Bezárás",
@@ -6602,8 +6750,11 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Caută în bibliotecă...",
-			videosCount: "{count} videoclip",
-			videosCountPlural: "{count} videoclipuri",
+			videos: {
+				one: "{count} videoclip",
+				few: "{count} videoclipuri",
+				other: "{count} videoclipuri"
+			},
 			inLibrary: "în bibliotecă",
 			info1: "Această bibliotecă afișează videoclipurile unice redate în ultimele <strong>28 de zile</strong>.",
 			info2: "Videoclipurile mai vechi sunt ascunse pentru prospețimea datelor, dar <strong>nu sunt șterse niciodată</strong>. Funcția <strong>Reumplere Automată</strong> ține minte întregul istoric și va aduce automat videoclipurile vechi înapoi în coadă (și în această listă) când este nevoie!",
@@ -6622,7 +6773,11 @@ export const translations = {
 			ban: "Interzice",
 			decline: "Refuză",
 			accept: "Acceptă",
-			pendingCount: "{count} în așteptare"
+			pendingCount: {
+				one: "{count} în așteptare",
+				few: "{count} în așteptare",
+				other: "{count} în așteptare"
+			}
 		},
 		playlist: {
 			close: "Închide",
@@ -6832,8 +6987,10 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Търсене в библиотеката...",
-			videosCount: "{count} песен",
-			videosCountPlural: "{count} видео",
+			videos: {
+				one: "{count} песен",
+				other: "{count} песни"
+			},
 			inLibrary: "в библиотеката",
 			info1: "Тази библиотека показва уникални видео, пускани през последните <strong>28 дни</strong>.",
 			info2: "По-старите видео се скриват за актуалност на данните, но <strong>никога не се изтриват</strong>. Функцията <strong>Автоматично попълване</strong> помни цялата ви история и автоматично ще върне стари видео в опашката (и в този списък), когато е необходимо!",
@@ -6852,7 +7009,10 @@ export const translations = {
 			ban: "Забрани",
 			decline: "Отхвърли",
 			accept: "Приеми",
-			pendingCount: "{count} чакащи"
+			pendingCount: {
+				one: "{count} чакащи",
+				other: "{count} чакащи"
+			}
 		},
 		playlist: {
 			close: "Затвори",
@@ -7062,8 +7222,11 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Traži u knjižnici...",
-			videosCount: "{count} pjesma",
-			videosCountPlural: "{count} pjesama",
+			videos: {
+				one: "{count} pjesma",
+				few: "{count} pjesme",
+				other: "{count} pjesama"
+			},
 			inLibrary: "u knjižnici",
 			info1: "Ova knjižnica prikazuje jedinstvene pjesme svirane u zadnjih <strong>28 dana</strong>.",
 			info2: "Starije pjesme su skrivene radi svježine podataka, ali <strong>nikada nisu izbrisane</strong>. Značajka <strong>Automatsko Punjenje</strong> pamti cijelu vašu povijest i automatski će vratiti starije pjesme u red (i ovaj popis) kada je potrebno!",
@@ -7082,7 +7245,11 @@ export const translations = {
 			ban: "Zabrani",
 			decline: "Odbij",
 			accept: "Prihvati",
-			pendingCount: "{count} na čekanju"
+			pendingCount: {
+				one: "{count} na čekanju",
+				few: "{count} na čekanju",
+				other: "{count} na čekanju"
+			}
 		},
 		playlist: {
 			close: "Zatvori",
@@ -7292,8 +7459,11 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Traži u biblioteci...",
-			videosCount: "{count} pesma",
-			videosCountPlural: "{count} pesama",
+			videos: {
+				one: "{count} pesma",
+				few: "{count} pesme",
+				other: "{count} pesama"
+			},
 			inLibrary: "u biblioteci",
 			info1: "Ova biblioteka prikazuje jedinstvene pesme svirane u zadnjih <strong>28 dana</strong>.",
 			info2: "Starije pesme su skrivene radi svežine podataka, ali <strong>nikada nisu obrisane</strong>. Funkcija <strong>Automatsko Punjenje</strong> pamti celu vašu istoriju i automatski će vratiti starije pesme u red (i ovu listu) kada je potrebno!",
@@ -7312,7 +7482,11 @@ export const translations = {
 			ban: "Zabrani",
 			decline: "Odbij",
 			accept: "Prihvati",
-			pendingCount: "{count} на чекању"
+			pendingCount: {
+				one: "{count} на чекању",
+				few: "{count} на чекању",
+				other: "{count} на чекању"
+			}
 		},
 		playlist: {
 			close: "Zatvori",
@@ -7522,8 +7696,12 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "Hľadať v knižnici...",
-			videosCount: "{count} skladba",
-			videosCountPlural: "{count} skladby",
+			videos: {
+				one: "{count} skladba",
+				few: "{count} skladby",
+				many: "{count} skladby",
+				other: "{count} skladieb"
+			},
 			inLibrary: "v knižnici",
 			info1: "Táto knižnica zobrazuje unikátne skladby prehrané za posledných <strong>28 dní</strong>.",
 			info2: "Staršie skladby sú skryté pre čerstvosť metadát, ale <strong>nikdy nie sú zmazané</strong>. Funkcia <strong>Automatické Doplnenie</strong> si pamätá celú vašu históriu a automaticky vráti staršie skladby do fronty (a tohto zoznamu), keď je potrebné!",
@@ -7542,7 +7720,12 @@ export const translations = {
 			ban: "Zakázať",
 			decline: "Odmietnuť",
 			accept: "Prijať",
-			pendingCount: "{count} čaká"
+			pendingCount: {
+				one: "{count} čaká",
+				few: "{count} čaká",
+				many: "{count} čaká",
+				other: "{count} čaká"
+			}
 		},
 		playlist: {
 			close: "Zavrieť",
@@ -7752,8 +7935,14 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "بحث في المكتبة...",
-			videosCount: "{count} مقطع فيديو",
-			videosCountPlural: "{count} مقاطع فيديو",
+			videos: {
+				zero: "{count} مقطع فيديو",
+				one: "{count} مقطع فيديو",
+				two: "{count} مقطعا فيديو",
+				few: "{count} مقاطع فيديو",
+				many: "{count} مقطع فيديو",
+				other: "{count} مقاطع فيديو"
+			},
 			inLibrary: "في المكتبة",
 			info1: "تعرض هذه المكتبة مقاطع الفيديو الفريدة التي تم تشغيلها في آخر <strong>28 يومًا</strong>.",
 			info2: "يتم إخفاء مقاطع الفيديو القديمة لتحديث البيانات الوصفية، ولكن <strong>لا يتم حذفها أبدًا</strong>. ميزة <strong>إعادة التعبئة التلقائية</strong> تتذكر سجلك بالكامل وستعيد مقاطع الفيديو القديمة تلقائيًا إلى القائمة (وهذه القائمة) عند الحاجة!",
@@ -7772,7 +7961,14 @@ export const translations = {
 			ban: "حظر",
 			decline: "رفض",
 			accept: "قبول",
-			pendingCount: "{count} قيد الانتظار"
+			pendingCount: {
+				zero: "{count} قيد الانتظار",
+				one: "{count} قيد الانتظار",
+				two: "{count} قيد الانتظار",
+				few: "{count} قيد الانتظار",
+				many: "{count} قيد الانتظار",
+				other: "{count} قيد الانتظار"
+			}
 		},
 		playlist: {
 			close: "إغلاق",
@@ -7982,8 +8178,11 @@ export const translations = {
 		},
 		library: {
 			searchPlaceholder: "חפש בספרייה...",
-			videosCount: "{count} סרטון",
-			videosCountPlural: "{count} סרטונים",
+			videos: {
+				one: "{count} סרטון",
+				two: "{count} סרטונים",
+				other: "{count} סרטונים"
+			},
 			inLibrary: "בספרייה",
 			info1: "ספרייה זו מציגה סרטונים ייחודיים שנוגנו ב-<strong>28 הימים</strong> האחרונים.",
 			info2: "סרטונים ישנים יותר מוסתרים לרעננות מטא-נתונים, אך הם <strong>לעולם לא נמחקים</strong>. תכונת <strong>מילוי אוטומטי</strong> זוכרת את כל ההיסטוריה שלך ותחזיר אוטומטית סרטונים ישנים לתור (ולרשימה זו) בעת הצורך!",
@@ -8002,7 +8201,11 @@ export const translations = {
 			ban: "אסור",
 			decline: "דחה",
 			accept: "קבל",
-			pendingCount: "{count} ממתינים"
+			pendingCount: {
+				one: "{count} ממתינים",
+				two: "{count} ממתינים",
+				other: "{count} ממתינים"
+			}
 		},
 		playlist: {
 			close: "סגור",
