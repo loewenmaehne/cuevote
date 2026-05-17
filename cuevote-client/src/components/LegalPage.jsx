@@ -214,13 +214,13 @@ export function LegalPage() {
                                                 <ul className="space-y-3 text-sm">
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Mail size={16} />
-                                                        <a href={`mailto:${import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}`} className="text-orange-500 hover:text-white transition-colors">
-                                                            {import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}
+                                                        <a href={`mailto:${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}`} className="text-orange-500 hover:text-white transition-colors">
+                                                            {import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}
                                                         </a>
                                                     </li>
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Flag size={16} className="shrink-0" />
-                                                        <a href={`mailto:${import.meta.env.VITE_LEGAL_EMAIL || "hello@cuevote.com"}?subject=Abuse%20Report`} className="text-neutral-300 hover:text-white transition-colors">
+                                                        <a href={`mailto:${import.meta.env.VITE_ABUSE_EMAIL || "abuse@cuevote.com"}?subject=Abuse%20Report`} className="text-neutral-300 hover:text-white transition-colors">
                                                             {content.imprint.abuse}
                                                         </a>
                                                     </li>
