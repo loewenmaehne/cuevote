@@ -1,4 +1,5 @@
-// Copyright (c) 2026 Julian Zienert. Licensed under the PolyForm Noncommercial License 1.0.0.
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
