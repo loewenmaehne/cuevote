@@ -1,0 +1,39 @@
+name: licenses
+
+on:
+  pull_request:
+    paths:
+      - 'cuevote-client/package.json'
+      - 'cuevote-client/package-lock.json'
+      - 'cuevote-server/package.json'
+      - 'cuevote-server/package-lock.json'
+      - 'scripts/check-licenses.mjs'
+      - 'scripts/build-notices.mjs'
+      - 'NOTICES.md'
+      - '.github/workflows/licenses.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'cuevote-client/package.json'
+      - 'cuevote-client/package-lock.json'
+      - 'cuevote-server/package.json'
+      - 'cuevote-server/package-lock.json'
+      - 'scripts/check-licenses.mjs'
+
+jobs:
+  check:
+    name: third-party license allowlist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install client deps
+        working-directory: cuevote-client
+        run: npm ci
+      - name: Install server deps
+        working-directory: cuevote-server
+        run: npm ci
+      - name: Verify allow-list
+        run: node scripts/check-licenses.mjs

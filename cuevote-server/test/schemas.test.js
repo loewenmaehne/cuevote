@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const schemas = require('../schemas');

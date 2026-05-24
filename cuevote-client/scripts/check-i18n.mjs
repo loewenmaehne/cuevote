@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 // i18n guardrail: fails CI when translations.js drifts out of sync with the
 // strings actually used in the React source.
 //

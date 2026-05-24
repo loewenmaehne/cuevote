@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useContext, useState, useEffect } from 'react';
 import { ConsentContext } from './ConsentContextValue.js';
 

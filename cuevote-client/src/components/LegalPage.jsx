@@ -1,12 +1,18 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useState, useLayoutEffect, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, Mail, Phone, Globe, Flag, Loader2 } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, Mail, Phone, Globe, Flag, Loader2, Package, ExternalLink } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
+
+const VALID_TABS = ['terms', 'privacy', 'imprint', 'attributions'];
 
 export function LegalPage() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { language } = Language.useLanguage();
-    const [activeTab, setActiveTab] = useState('terms');
+    const initialTab = VALID_TABS.includes(searchParams.get('tab')) ? searchParams.get('tab') : 'terms';
+    const [activeTab, setActiveTab] = useState(initialTab);
     const [scrolled, setScrolled] = useState(false);
     const [legalContent, setLegalContent] = useState(null);
 
@@ -41,12 +47,14 @@ export function LegalPage() {
         { id: 'terms', label: content.tabs.terms.label, icon: Scale, desc: content.tabs.terms.desc },
         { id: 'privacy', label: content.tabs.privacy.label, icon: Shield, desc: content.tabs.privacy.desc },
         { id: 'imprint', label: content.tabs.imprint.label, icon: FileText, desc: content.tabs.imprint.desc },
+        { id: 'attributions', label: content.tabs.attributions.label, icon: Package, desc: content.tabs.attributions.desc },
     ];
 
     const dates = {
         terms: "April 1, 2026",
         privacy: "May 17, 2026",
-        imprint: "May 17, 2026"
+        imprint: "May 17, 2026",
+        attributions: "May 24, 2026"
     };
     const LastUpdated = dates[activeTab];
 
@@ -266,6 +274,57 @@ export function LegalPage() {
                                             </p>
                                         </div>
                                     </div>
+                                )}
+
+                                {activeTab === 'attributions' && (
+                                    <>
+                                        <p className="lead text-lg text-neutral-300">
+                                            {content.attributions.intro}
+                                        </p>
+
+                                        <p className="not-prose mb-8">
+                                            <a
+                                                href={content.attributions.noticesUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500/10 border border-orange-500/30 text-orange-400 hover:bg-orange-500/20 hover:text-orange-300 transition-colors text-sm font-medium"
+                                            >
+                                                {content.attributions.noticesLinkLabel}
+                                                <ExternalLink size={14} />
+                                            </a>
+                                        </p>
+
+                                        <h3>{content.attributions.highlights.title}</h3>
+
+                                        <div className="not-prose grid md:grid-cols-2 gap-6 mb-8">
+                                            <div className="p-5 rounded-2xl bg-neutral-900/60 border border-white/5">
+                                                <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">{content.attributions.highlights.frontend.title}</h4>
+                                                <ul className="space-y-1.5 text-sm text-neutral-400 list-disc list-inside marker:text-neutral-600">
+                                                    {content.attributions.highlights.frontend.items.map((item, i) => (
+                                                        <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                            <div className="p-5 rounded-2xl bg-neutral-900/60 border border-white/5">
+                                                <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">{content.attributions.highlights.backend.title}</h4>
+                                                <ul className="space-y-1.5 text-sm text-neutral-400 list-disc list-inside marker:text-neutral-600">
+                                                    {content.attributions.highlights.backend.items.map((item, i) => (
+                                                        <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                            <div className="md:col-span-2 p-5 rounded-2xl bg-neutral-900/60 border border-white/5">
+                                                <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">{content.attributions.highlights.services.title}</h4>
+                                                <ul className="space-y-1.5 text-sm text-neutral-400 list-disc list-inside marker:text-neutral-600">
+                                                    {content.attributions.highlights.services.items.map((item, i) => (
+                                                        <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <p dangerouslySetInnerHTML={{ __html: content.attributions.ownLicense }} />
+                                    </>
                                 )}
                             </article>
                         </div>

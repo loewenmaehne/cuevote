@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useState, useEffect } from "react";
 import { WifiOff, RefreshCw, Loader2, ServerCrash } from "lucide-react";
 import { Language } from "../contexts/LanguageContext";

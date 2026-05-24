@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 // Async DB wrapper — offloads heavy/periodic write operations to a worker thread.
 // All methods are fire-and-forget; the worker handles errors internally.
 // The main thread's synchronous db.js is still used for reads and critical writes.

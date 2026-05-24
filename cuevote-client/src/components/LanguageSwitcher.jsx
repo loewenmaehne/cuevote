@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useState, useRef, useEffect } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';

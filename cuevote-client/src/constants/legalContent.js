@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 
 // Helper takes en reference as argument so we never close over LEGAL_CONTENT (avoids "Cannot access before initialization" with bundlers).
 const withEnglishContent = (enRef, overrides) => ({
@@ -19,8 +21,9 @@ const enContent = {
 			terms: { label: 'Terms of Service', desc: "Agreements & Usage" },
 			privacy: { label: 'Privacy Policy', desc: "GDPR & Data" },
 			imprint: { label: 'Colophon', desc: "Company Info" },
+			attributions: { label: 'Attributions', desc: "Third-Party Software" },
 		},
-		// Removed "Note on Language:" prefix to avoid duplication if we want to include it in the string, 
+		// Removed "Note on Language:" prefix to avoid duplication if we want to include it in the string,
 		// or we will just use this string as the full alert content.
 		disclaimer: "Note on Language: Those terms are legally binding in their English version. Any translations provided are for convenience only. In the event of a discrepancy, the English original prevails.",
 		terms: {
@@ -142,6 +145,46 @@ const enContent = {
 				title: "Online Dispute Resolution:",
 				text: `The European Commission provides a platform for ODR at <a href="https://ec.europa.eu/consumers/odr" class="text-neutral-400 underline hover:text-white">ec.europa.eu/consumers/odr</a>. We are not obliged to participate in dispute settlement proceedings.`
 			}
+		},
+		attributions: {
+			intro: "CueVote runs on components from the wider open-source ecosystem. Every component is used under a permissive license (MIT, ISC, BSD-2-Clause, BSD-3-Clause, or Apache-2.0). The complete, machine-generated list — with versions, license texts, copyright holders, and upstream sources — is maintained in the NOTICES file in our repository.",
+			noticesLinkLabel: "View full third-party notices",
+			noticesUrl: "https://github.com/loewenmaehne/cuevote/blob/main/NOTICES.md",
+			highlights: {
+				title: "Notable components",
+				frontend: {
+					title: "Frontend",
+					items: [
+						"React & React DOM (MIT) — Meta Platforms, Inc.",
+						"react-router-dom (MIT) — Remix Software",
+						"@react-oauth/google (MIT) — Mo'men Sherif",
+						"lucide-react (ISC) — Eric Fennis et al.",
+						"qrcode.react (ISC) — Paul O'Shannessy",
+						"jwt-decode (MIT) — Auth0"
+					]
+				},
+				backend: {
+					title: "Backend",
+					items: [
+						"pino (MIT) — Matteo Collina",
+						"ws (MIT) — Einar Otto Stangvik",
+						"better-sqlite3 (MIT) — Joshua Wise",
+						"bcryptjs (BSD-3-Clause) — Daniel Wirtz",
+						"zod (MIT) — Colin McDonnell",
+						"transliteration (MIT)",
+						"dotenv (BSD-2-Clause) — motdotla"
+					]
+				},
+				services: {
+					title: "External services",
+					items: [
+						`YouTube Data API + IFrame Player — Google LLC (subject to the <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Terms of Service</a>)`,
+						`Google OAuth 2.0 — Google LLC (subject to the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>)`,
+						`Cloudflare CDN, Email Routing & Bot Mitigation — Cloudflare, Inc. (subject to the <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare Privacy Policy</a>)`
+					]
+				}
+			},
+			ownLicense: `CueVote's own source code is licensed under the <a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" rel="noopener noreferrer">PolyForm Noncommercial License 1.0.0</a>.`
 		}
 };
 
@@ -155,6 +198,7 @@ const nlContent = {
 			terms: { label: 'Algemene Voorwaarden', desc: "Overeenkomsten & Gebruik" },
 			privacy: { label: 'Privacybeleid', desc: "AVG & Gegevens" },
 			imprint: { label: 'Colofon', desc: "Bedrijfsinformatie" },
+			attributions: { label: 'Attributies', desc: "Software van Derden" },
 		},
 		disclaimer: "Taalclausule: Deze voorwaarden zijn juridisch bindend in hun Engelse versie. Eventuele vertalingen zijn uitsluitend voor het gemak. In geval van een discrepantie is het Engelse origineel leidend.",
 		terms: {
@@ -276,6 +320,46 @@ const nlContent = {
 				title: "Online Geschillenbeslechting:",
 				text: `De Europese Commissie biedt een platform voor ODR op <a href="https://ec.europa.eu/consumers/odr" class="text-neutral-400 underline hover:text-white">ec.europa.eu/consumers/odr</a>. Wij zijn niet verplicht deel te nemen aan geschillenbeslechtingsprocedures.`
 			}
+		},
+		attributions: {
+			intro: "CueVote draait op componenten uit het bredere open-source-ecosysteem. Elke component wordt gebruikt onder een permissieve licentie (MIT, ISC, BSD-2-Clause, BSD-3-Clause of Apache-2.0). De volledige, automatisch gegenereerde lijst — met versies, licentieteksten, auteursrechthouders en bron-URLs — wordt bijgehouden in het NOTICES-bestand in onze repository.",
+			noticesLinkLabel: "Volledige attributies bekijken",
+			noticesUrl: "https://github.com/loewenmaehne/cuevote/blob/main/NOTICES.md",
+			highlights: {
+				title: "Belangrijke componenten",
+				frontend: {
+					title: "Frontend",
+					items: [
+						"React & React DOM (MIT) — Meta Platforms, Inc.",
+						"react-router-dom (MIT) — Remix Software",
+						"@react-oauth/google (MIT) — Mo'men Sherif",
+						"lucide-react (ISC) — Eric Fennis e.a.",
+						"qrcode.react (ISC) — Paul O'Shannessy",
+						"jwt-decode (MIT) — Auth0"
+					]
+				},
+				backend: {
+					title: "Backend",
+					items: [
+						"pino (MIT) — Matteo Collina",
+						"ws (MIT) — Einar Otto Stangvik",
+						"better-sqlite3 (MIT) — Joshua Wise",
+						"bcryptjs (BSD-3-Clause) — Daniel Wirtz",
+						"zod (MIT) — Colin McDonnell",
+						"transliteration (MIT)",
+						"dotenv (BSD-2-Clause) — motdotla"
+					]
+				},
+				services: {
+					title: "Externe diensten",
+					items: [
+						`YouTube Data API + IFrame Player — Google LLC (valt onder de <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Servicevoorwaarden</a>)`,
+						`Google OAuth 2.0 — Google LLC (valt onder het <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacybeleid</a>)`,
+						`Cloudflare CDN, Email Routing & Bot Mitigation — Cloudflare, Inc. (valt onder het <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare Privacybeleid</a>)`
+					]
+				}
+			},
+			ownLicense: `De broncode van CueVote zelf is gelicentieerd onder de <a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" rel="noopener noreferrer">PolyForm Noncommercial License 1.0.0</a>.`
 		}
 };
 

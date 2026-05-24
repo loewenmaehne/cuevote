@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
 import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2, ChevronUp, ChevronDown, ListMusic } from "lucide-react";

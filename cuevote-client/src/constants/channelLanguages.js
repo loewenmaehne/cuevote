@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 function countryCodeToEmoji(code) {
 	return [...code.toUpperCase()].map(c =>
 		String.fromCodePoint(0x1F1E5 + c.charCodeAt(0) - 64)

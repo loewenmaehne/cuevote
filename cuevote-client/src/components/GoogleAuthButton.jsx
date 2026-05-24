@@ -1,6 +1,9 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { Consent } from '../contexts/ConsentContext';
+import { GoogleGIcon } from './GoogleGIcon';
 
 // Logic-only component that uses the hook (must be inside GoogleOAuthProvider)
 function RealAuthButton({ onLoginSuccess, className, render }) {
@@ -32,8 +35,11 @@ function RealAuthButton({ onLoginSuccess, className, render }) {
 		return render(login, false); // disabled = false
 	}
 
+	// Fallback button for callers that do not supply `render`. Multi-colour G icon
+	// + "Sign in with Google" text per Google Branding Guidelines.
 	return (
 		<button onClick={() => login()} className={className}>
+			<GoogleGIcon className="w-5 h-5" />
 			Sign in with Google
 		</button>
 	);
@@ -56,7 +62,8 @@ export function GoogleAuthButton({ onLoginSuccess, className, render }) {
 		}
 
 		return (
-			<button onClick={noOp} className={`${className} opacity-50 grayscale cursor-not-allowed`} title="Accept cookies to sign in">
+			<button onClick={noOp} className={`${className} opacity-50 cursor-not-allowed`} title="Accept cookies to sign in">
+				<GoogleGIcon className="w-5 h-5" />
 				Sign in with Google
 			</button>
 		);

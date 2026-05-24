@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 export const translations = {
 	en: {
 		lobby: {
@@ -232,6 +234,9 @@ export const translations = {
 			downloadFail: "If download fails:",
 			installInstruction: "Settings > Enable \"Install Unknown Apps\"",
 			privacyLegal: "Privacy Policy & Legal"
+		},
+		attribution: {
+			youtube: "Powered by YouTube"
 		}
 	},
 	nl: {
@@ -467,6 +472,9 @@ export const translations = {
 			emptySubtitle: "Video's die geblokkeerd zijn voor aanvragen verschijnen hier.",
 			bannedOn: "Geblokkeerd op {date}",
 			unban: "Deblokkeren"
+		},
+		attribution: {
+			youtube: "Mogelijk gemaakt door YouTube"
 		}
 	},
 	de: {
@@ -702,6 +710,9 @@ export const translations = {
 			emptySubtitle: "Videos, die von Anfragen ausgeschlossen wurden, erscheinen hier.",
 			bannedOn: "Gesperrt am {date}",
 			unban: "Entsperren"
+		},
+		attribution: {
+			youtube: "Bereitgestellt von YouTube"
 		}
 	},
 	fr: {
@@ -939,6 +950,9 @@ export const translations = {
 			emptySubtitle: "Les vidéos bannies des requêtes apparaîtront ici.",
 			bannedOn: "Bannie le {date}",
 			unban: "Débannir"
+		},
+		attribution: {
+			youtube: "Propulsé par YouTube"
 		}
 	},
 	es: {
@@ -1176,6 +1190,9 @@ export const translations = {
 			emptySubtitle: "Los videos bloqueados de las solicitudes aparecerán aquí.",
 			bannedOn: "Bloqueado el {date}",
 			unban: "Desbloquear"
+		},
+		attribution: {
+			youtube: "Con tecnología de YouTube"
 		}
 	},
 	it: {
@@ -1413,6 +1430,9 @@ export const translations = {
 			emptySubtitle: "I video bloccati dalle richieste appariranno qui.",
 			bannedOn: "Bloccato il {date}",
 			unban: "Sblocca"
+		},
+		attribution: {
+			youtube: "Offerto da YouTube"
 		}
 	},
 	pt: {
@@ -1650,6 +1670,9 @@ export const translations = {
 			emptySubtitle: "Vídeos banidos das solicitações aparecerão aqui.",
 			bannedOn: "Banido em {date}",
 			unban: "Desbanir"
+		},
+		attribution: {
+			youtube: "Com tecnologia do YouTube"
 		}
 	},
 	"zh-CN": {
@@ -1883,6 +1906,9 @@ export const translations = {
 			emptySubtitle: "从请求中被禁用的视频将显示在这里。",
 			bannedOn: "禁用于 {date}",
 			unban: "解禁"
+		},
+		attribution: {
+			youtube: "由 YouTube 提供支持"
 		}
 	},
 	"zh-TW": {
@@ -2116,6 +2142,9 @@ export const translations = {
 			emptySubtitle: "從請求中被封鎖的影片將顯示在此處。",
 			bannedOn: "封鎖於 {date}",
 			unban: "解除封鎖"
+		},
+		attribution: {
+			youtube: "由 YouTube 提供"
 		}
 	},
 	ja: {
@@ -2349,6 +2378,9 @@ export const translations = {
 			emptySubtitle: "リクエストから禁止された動画がここに表示されます。",
 			bannedOn: "{date} に禁止",
 			unban: "禁止解除"
+		},
+		attribution: {
+			youtube: "YouTube による提供"
 		}
 	},
 	ko: {
@@ -2582,6 +2614,9 @@ export const translations = {
 			emptySubtitle: "요청에서 차단된 동영상이 여기에 표시됩니다.",
 			bannedOn: "{date}에 차단",
 			unban: "차단 해제"
+		},
+		attribution: {
+			youtube: "YouTube 제공"
 		}
 	},
 	hi: {
@@ -2817,6 +2852,9 @@ export const translations = {
 			emptySubtitle: "अनुरोधों से प्रतिबंधित वीडियो यहां दिखाई देंगे।",
 			bannedOn: "{date} को प्रतिबंधित",
 			unban: "प्रतिबंध हटाएं"
+		},
+		attribution: {
+			youtube: "YouTube द्वारा संचालित"
 		}
 	},
 	th: {
@@ -3050,6 +3088,9 @@ export const translations = {
 			emptySubtitle: "วิดีโอที่ถูกแบนจากคำขอจะปรากฏที่นี่",
 			bannedOn: "ถูกแบนเมื่อ {date}",
 			unban: "ยกเลิกการแบน"
+		},
+		attribution: {
+			youtube: "ขับเคลื่อนโดย YouTube"
 		}
 	},
 	vi: {
@@ -3283,6 +3324,9 @@ export const translations = {
 			emptySubtitle: "Các video bị cấm khỏi yêu cầu sẽ xuất hiện ở đây.",
 			bannedOn: "Bị cấm vào {date}",
 			unban: "Bỏ cấm"
+		},
+		attribution: {
+			youtube: "Được cung cấp bởi YouTube"
 		}
 	},
 	id: {
@@ -3516,6 +3560,9 @@ export const translations = {
 			emptySubtitle: "Video yang diblokir dari permintaan akan muncul di sini.",
 			bannedOn: "Diblokir pada {date}",
 			unban: "Buka blokir"
+		},
+		attribution: {
+			youtube: "Didukung oleh YouTube"
 		}
 	},
 	ms: {
@@ -3749,6 +3796,9 @@ export const translations = {
 			emptySubtitle: "Video yang diharamkan daripada permintaan akan muncul di sini.",
 			bannedOn: "Diharamkan pada {date}",
 			unban: "Buka haram"
+		},
+		attribution: {
+			youtube: "Dikuasakan oleh YouTube"
 		}
 	},
 	tl: {
@@ -3984,6 +4034,9 @@ export const translations = {
 			downloadFail: "Kung nabigo ang download:",
 			installInstruction: "Settings > I-enable ang \"Install Unknown Apps\"",
 			privacyLegal: "Privacy Policy at Legal"
+		},
+		attribution: {
+			youtube: "Pinapagana ng YouTube"
 		}
 	},
 	pl: {
@@ -4223,6 +4276,9 @@ export const translations = {
 			emptySubtitle: "Filmy zablokowane z żądań pojawią się tutaj.",
 			bannedOn: "Zablokowany {date}",
 			unban: "Odblokuj"
+		},
+		attribution: {
+			youtube: "Obsługiwane przez YouTube"
 		}
 	},
 	sv: {
@@ -4458,6 +4514,9 @@ export const translations = {
 			emptySubtitle: "Videor som bannats från förfrågningar visas här.",
 			bannedOn: "Bannad {date}",
 			unban: "Avbanna"
+		},
+		attribution: {
+			youtube: "Drivs av YouTube"
 		}
 	},
 	da: {
@@ -4693,6 +4752,9 @@ export const translations = {
 			emptySubtitle: "Videoer, der er bannet fra forespørgsler, vises her.",
 			bannedOn: "Bannet {date}",
 			unban: "Ophæv ban"
+		},
+		attribution: {
+			youtube: "Drevet af YouTube"
 		}
 	},
 	no: {
@@ -4928,6 +4990,9 @@ export const translations = {
 			emptySubtitle: "Videoer som er bannlyst fra forespørsler vises her.",
 			bannedOn: "Bannlyst {date}",
 			unban: "Opphev bann"
+		},
+		attribution: {
+			youtube: "Drevet av YouTube"
 		}
 	},
 	fi: {
@@ -5163,6 +5228,9 @@ export const translations = {
 			emptySubtitle: "Pyynnöistä estetyt videot näkyvät tässä.",
 			bannedOn: "Estetty {date}",
 			unban: "Poista esto"
+		},
+		attribution: {
+			youtube: "Tarjoaa YouTube"
 		}
 	},
 	tr: {
@@ -5398,6 +5466,9 @@ export const translations = {
 			emptySubtitle: "İsteklerden yasaklanan videolar burada görünecek.",
 			bannedOn: "{date} tarihinde yasaklandı",
 			unban: "Yasağı kaldır"
+		},
+		attribution: {
+			youtube: "YouTube tarafından sağlanıyor"
 		}
 	},
 	el: {
@@ -5633,6 +5704,9 @@ export const translations = {
 			emptySubtitle: "Τα βίντεο που έχουν αποκλειστεί από τα αιτήματα θα εμφανιστούν εδώ.",
 			bannedOn: "Αποκλεισμένο στις {date}",
 			unban: "Άρση αποκλεισμού"
+		},
+		attribution: {
+			youtube: "Με την υποστήριξη του YouTube"
 		}
 	},
 	ru: {
@@ -5872,6 +5946,9 @@ export const translations = {
 			emptySubtitle: "Видео, заблокированные из запросов, появятся здесь.",
 			bannedOn: "Заблокировано {date}",
 			unban: "Разблокировать"
+		},
+		attribution: {
+			youtube: "При поддержке YouTube"
 		}
 	},
 	uk: {
@@ -6111,6 +6188,9 @@ export const translations = {
 			emptySubtitle: "Відео, заблоковані із запитів, з'являться тут.",
 			bannedOn: "Заблоковано {date}",
 			unban: "Розблокувати"
+		},
+		attribution: {
+			youtube: "За підтримки YouTube"
 		}
 	},
 	cs: {
@@ -6350,6 +6430,9 @@ export const translations = {
 			emptySubtitle: "Videa zakázaná z požadavků se zobrazí zde.",
 			bannedOn: "Zakázáno {date}",
 			unban: "Povolit"
+		},
+		attribution: {
+			youtube: "Provozováno službou YouTube"
 		}
 	},
 	hu: {
@@ -6585,6 +6668,9 @@ export const translations = {
 			emptySubtitle: "A kérésekből letiltott videók itt jelennek meg.",
 			bannedOn: "Letiltva: {date}",
 			unban: "Tiltás feloldása"
+		},
+		attribution: {
+			youtube: "A YouTube biztosítja"
 		}
 	},
 	ro: {
@@ -6822,6 +6908,9 @@ export const translations = {
 			emptySubtitle: "Videoclipurile interzise din solicitări vor apărea aici.",
 			bannedOn: "Interzis pe {date}",
 			unban: "Anulează interdicția"
+		},
+		attribution: {
+			youtube: "Susținut de YouTube"
 		}
 	},
 	bg: {
@@ -7057,6 +7146,9 @@ export const translations = {
 			emptySubtitle: "Видеа, забранени от заявки, ще се появят тук.",
 			bannedOn: "Забранено на {date}",
 			unban: "Отмени забраната"
+		},
+		attribution: {
+			youtube: "Поддържано от YouTube"
 		}
 	},
 	hr: {
@@ -7294,6 +7386,9 @@ export const translations = {
 			emptySubtitle: "Videi zabranjeni iz zahtjeva pojavit će se ovdje.",
 			bannedOn: "Zabranjeno {date}",
 			unban: "Ukloni zabranu"
+		},
+		attribution: {
+			youtube: "Pokreće YouTube"
 		}
 	},
 	sr: {
@@ -7531,6 +7626,9 @@ export const translations = {
 			emptySubtitle: "Видео снимци забрањени из захтева појавиће се овде.",
 			bannedOn: "Забрањено {date}",
 			unban: "Уклони забрану"
+		},
+		attribution: {
+			youtube: "Покреће YouTube"
 		}
 	},
 	sk: {
@@ -7770,6 +7868,9 @@ export const translations = {
 			emptySubtitle: "Videá zakázané z požiadaviek sa zobrazia tu.",
 			bannedOn: "Zakázané {date}",
 			unban: "Povoliť"
+		},
+		attribution: {
+			youtube: "Poskytuje YouTube"
 		}
 	},
 	ar: {
@@ -8013,6 +8114,9 @@ export const translations = {
 			emptySubtitle: "ستظهر هنا الفيديوهات المحظورة من الطلبات.",
 			bannedOn: "محظور في {date}",
 			unban: "إلغاء الحظر"
+		},
+		attribution: {
+			youtube: "مدعوم من YouTube"
 		}
 	},
 	he: {
@@ -8250,6 +8354,9 @@ export const translations = {
 			emptySubtitle: "סרטונים שנחסמו מבקשות יופיעו כאן.",
 			bannedOn: "נחסם בתאריך {date}",
 			unban: "בטל חסימה"
+		},
+		attribution: {
+			youtube: "מופעל על ידי YouTube"
 		}
 	}
 };

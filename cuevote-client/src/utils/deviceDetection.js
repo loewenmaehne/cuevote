@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 // Single export object so bundler cannot reorder and cause "Cannot access 'ie' before initialization".
 // All helpers are defined first, then one export at the end.
 

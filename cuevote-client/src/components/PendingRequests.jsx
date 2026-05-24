@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 
 import React from 'react';
 import { Check, X, Clock, ArrowLeft, Ban, Headphones } from 'lucide-react';

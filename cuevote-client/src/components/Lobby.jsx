@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale, ChevronLeft, ChevronRight } from "lucide-react";
@@ -7,6 +9,7 @@ import { Language } from '../contexts/LanguageContext';
 import { LanguageSwitcherExports } from './LanguageSwitcher';
 const { LanguageSwitcher, languages } = LanguageSwitcherExports;
 import { GoogleAuthButton } from './GoogleAuthButton';
+import { GoogleGIcon } from './GoogleGIcon';
 import { channelLanguages, getFlagEmoji } from '../constants/channelLanguages';
 
 import { LoadingScreen } from './LoadingScreen';
@@ -643,9 +646,7 @@ export function Lobby() {
                                         className={`p-3 rounded-full border border-neutral-700 bg-neutral-800 text-white transition-transform active:scale-90 ${disabled && focusedIndex !== INDEX_PROFILE ? 'opacity-50' : 'hover:bg-neutral-700'} ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 scale-105' : ''}`}
                                         aria-label={t('lobby.signInGoogle')}
                                     >
-                                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
-                                        </svg>
+                                        <GoogleGIcon className="w-5 h-5" />
                                     </button>
                                 )}
                             />
@@ -683,9 +684,7 @@ export function Lobby() {
                                     className={`flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-700 font-medium transition-all ${disabled ? (focusedIndex === INDEX_PROFILE ? 'bg-neutral-900 text-neutral-500 border-neutral-700' : 'bg-neutral-900/50 text-neutral-600 border-neutral-800 opacity-50 grayscale') : 'bg-neutral-800 hover:bg-neutral-700 text-white active:scale-95'} ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 scale-105' : ''}`}
                                     title={disabled ? t('lobby.acceptCookies') : ""}
                                 >
-                                    <svg className={`w-5 h-5 ${disabled ? 'text-neutral-600' : ''}`} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
-                                    </svg>
+                                    <GoogleGIcon className={`w-5 h-5 ${disabled ? 'opacity-50' : ''}`} />
                                     {t('lobby.signInGoogle')}
                                 </button>
                             )}

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 
 if (process.env.NODE_ENV === 'production') {
 	console.error('Refusing to run dev script in production.');
