@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useState, useEffect, useRef } from 'react';
 import { AlertTriangle, Maximize2 } from 'lucide-react';
 import { Player } from './Player';

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { X, Search, Library, Music2 } from "lucide-react";

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 // Worker thread for non-blocking DB write operations.
 // Owns a separate SQLite connection (WAL mode supports concurrent readers/writers).
 // Receives fire-and-forget messages from the main thread for heavy or periodic writes.

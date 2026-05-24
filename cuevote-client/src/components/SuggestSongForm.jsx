@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { CheckCircle, Send, Clock } from "lucide-react";

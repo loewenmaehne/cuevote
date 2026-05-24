@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, Globe, Scale, ChevronLeft, ChevronRight } from "lucide-react";

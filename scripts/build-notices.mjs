@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 // Generate NOTICES.md in the repo root from `license-checker` output for both
 // cuevote-client and cuevote-server. Runs license-checker via npx so no
 // pre-installation is required.

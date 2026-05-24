@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";

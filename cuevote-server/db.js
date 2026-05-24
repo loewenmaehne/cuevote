@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 const Database = require('better-sqlite3');
 const logger = require('./logger');
 const db = new Database('cuevote.db'); // Creates the file if missing

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 
 // Helper takes en reference as argument so we never close over LEGAL_CONTENT (avoids "Cannot access before initialization" with bundlers).
 const withEnglishContent = (enRef, overrides) => ({

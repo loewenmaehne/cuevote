@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+// Copyright (c) 2026 Julian Zienert
 // License guardrail: fails CI when a production dependency uses a license
 // outside the allow-list. Mirrors the spirit of cuevote-client/scripts/check-i18n.mjs
 // (strict, non-zero exit on any failure) but for legal/SPDX compliance.
