@@ -26,6 +26,7 @@ export function Suggestions({ suggestions, onAdd, onPreview, queueVideoIds }) {
 	};
 
 	return (
+		<>
 		<div className="flex gap-4 overflow-x-auto pb-4 px-1 scroll-smooth snap-x snap-mandatory custom-scrollbar">
 			{suggestions.map((video) => {
 				const isAdded = queueVideoIds?.has(video.videoId);
@@ -96,6 +97,9 @@ export function Suggestions({ suggestions, onAdd, onPreview, queueVideoIds }) {
 				);
 			})}
 		</div>
-
+		<div className="text-[10px] text-neutral-600 text-right px-2 pb-1 italic select-none">
+			{t('attribution.youtube')}
+		</div>
+		</>
 	);
 }
