@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "prop-types";
 import { GoogleAuthButton } from "./GoogleAuthButton";
+import { GoogleGIcon } from "./GoogleGIcon";
 import { LogOut, Settings, List, Send, QrCode, Library, Copy, Check, Scale, ChevronLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
@@ -278,9 +279,7 @@ export function Header({
                 className={`flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full border border-neutral-700 bg-neutral-800/50 transition-all ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:ring-2 hover:ring-orange-500/30 active:scale-95'}`}
                 title={disabled ? t('header.acceptCookies') : t('header.signIn')}
               >
-                <svg className="w-3.5 h-3.5 text-orange-500/70" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12.48 10.92V13.48H16.66C16.47 14.39 15.48 16.03 12.48 16.03C9.82 16.03 7.65 13.84 7.65 11.13C7.65 8.43 9.82 6.23 12.48 6.23C13.99 6.23 15.02 6.88 15.6 7.43L17.47 5.62C16.18 4.42 14.47 3.69 12.48 3.69C8.45 3.69 5.19 7.03 5.19 11.13C5.19 15.23 8.45 18.57 12.48 18.57C16.68 18.57 19.47 15.61 19.47 11.51C19.47 11.14 19.43 10.91 19.37 10.54L12.48 10.92Z" />
-                </svg>
+                <GoogleGIcon className="w-4 h-4" />
               </button>
             )}
           />
