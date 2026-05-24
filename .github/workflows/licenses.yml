@@ -7,8 +7,10 @@ on:
       - 'cuevote-client/package-lock.json'
       - 'cuevote-server/package.json'
       - 'cuevote-server/package-lock.json'
-      - 'scripts/check-licenses.mjs'
-      - 'scripts/build-notices.mjs'
+      - 'cuevote-client/src/**'
+      - 'cuevote-client/scripts/**'
+      - 'cuevote-server/**'
+      - 'scripts/**'
       - 'NOTICES.md'
       - '.github/workflows/licenses.yml'
   push:
@@ -18,11 +20,14 @@ on:
       - 'cuevote-client/package-lock.json'
       - 'cuevote-server/package.json'
       - 'cuevote-server/package-lock.json'
-      - 'scripts/check-licenses.mjs'
+      - 'cuevote-client/src/**'
+      - 'cuevote-client/scripts/**'
+      - 'cuevote-server/**'
+      - 'scripts/**'
 
 jobs:
   check:
-    name: third-party license allowlist
+    name: third-party license & SPDX guardrails
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,3 +42,5 @@ jobs:
         run: npm ci
       - name: Verify allow-list
         run: node scripts/check-licenses.mjs
+      - name: Verify SPDX headers
+        run: node scripts/check-spdx-headers.mjs
