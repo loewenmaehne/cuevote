@@ -236,7 +236,7 @@ export const translations = {
 			privacyLegal: "Privacy Policy & Legal"
 		},
 		attribution: {
-			youtube: "Provided by YouTube"
+			youtube: "Developed with YouTube"
 		}
 	},
 	nl: {
@@ -474,7 +474,7 @@ export const translations = {
 			unban: "Deblokkeren"
 		},
 		attribution: {
-			youtube: "Aangeboden door YouTube"
+			youtube: "Ontwikkeld met YouTube"
 		}
 	},
 	de: {
@@ -712,7 +712,7 @@ export const translations = {
 			unban: "Entsperren"
 		},
 		attribution: {
-			youtube: "Bereitgestellt von YouTube"
+			youtube: "Entwickelt mit YouTube"
 		}
 	},
 	fr: {
@@ -952,7 +952,7 @@ export const translations = {
 			unban: "Débannir"
 		},
 		attribution: {
-			youtube: "Fourni par YouTube"
+			youtube: "Développé avec YouTube"
 		}
 	},
 	es: {
@@ -1192,7 +1192,7 @@ export const translations = {
 			unban: "Desbloquear"
 		},
 		attribution: {
-			youtube: "Proporcionado por YouTube"
+			youtube: "Desarrollado con YouTube"
 		}
 	},
 	it: {
@@ -1432,7 +1432,7 @@ export const translations = {
 			unban: "Sblocca"
 		},
 		attribution: {
-			youtube: "Fornito da YouTube"
+			youtube: "Sviluppato con YouTube"
 		}
 	},
 	pt: {
@@ -1672,7 +1672,7 @@ export const translations = {
 			unban: "Desbanir"
 		},
 		attribution: {
-			youtube: "Fornecido pelo YouTube"
+			youtube: "Desenvolvido com YouTube"
 		}
 	},
 	"zh-CN": {
@@ -1908,7 +1908,7 @@ export const translations = {
 			unban: "解禁"
 		},
 		attribution: {
-			youtube: "由 YouTube 提供"
+			youtube: "基于 YouTube 开发"
 		}
 	},
 	"zh-TW": {
@@ -2144,7 +2144,7 @@ export const translations = {
 			unban: "解除封鎖"
 		},
 		attribution: {
-			youtube: "由 YouTube 提供"
+			youtube: "基於 YouTube 開發"
 		}
 	},
 	ja: {
@@ -2380,7 +2380,7 @@ export const translations = {
 			unban: "禁止解除"
 		},
 		attribution: {
-			youtube: "YouTube による提供"
+			youtube: "YouTube と共に開発"
 		}
 	},
 	ko: {
@@ -2616,7 +2616,7 @@ export const translations = {
 			unban: "차단 해제"
 		},
 		attribution: {
-			youtube: "YouTube 제공"
+			youtube: "YouTube로 개발됨"
 		}
 	},
 	hi: {
@@ -2854,7 +2854,7 @@ export const translations = {
 			unban: "प्रतिबंध हटाएं"
 		},
 		attribution: {
-			youtube: "YouTube द्वारा प्रदान किया गया"
+			youtube: "YouTube के साथ विकसित"
 		}
 	},
 	th: {
@@ -3090,7 +3090,7 @@ export const translations = {
 			unban: "ยกเลิกการแบน"
 		},
 		attribution: {
-			youtube: "ให้บริการโดย YouTube"
+			youtube: "พัฒนาด้วย YouTube"
 		}
 	},
 	vi: {
@@ -3326,7 +3326,7 @@ export const translations = {
 			unban: "Bỏ cấm"
 		},
 		attribution: {
-			youtube: "Được cung cấp bởi YouTube"
+			youtube: "Phát triển với YouTube"
 		}
 	},
 	id: {
@@ -3562,7 +3562,7 @@ export const translations = {
 			unban: "Buka blokir"
 		},
 		attribution: {
-			youtube: "Disediakan oleh YouTube"
+			youtube: "Dikembangkan dengan YouTube"
 		}
 	},
 	ms: {
@@ -3798,7 +3798,7 @@ export const translations = {
 			unban: "Buka haram"
 		},
 		attribution: {
-			youtube: "Disediakan oleh YouTube"
+			youtube: "Dibangunkan dengan YouTube"
 		}
 	},
 	tl: {
@@ -4036,7 +4036,7 @@ export const translations = {
 			privacyLegal: "Privacy Policy at Legal"
 		},
 		attribution: {
-			youtube: "Inihahatid ng YouTube"
+			youtube: "Binuo gamit ang YouTube"
 		}
 	},
 	pl: {
@@ -4278,7 +4278,7 @@ export const translations = {
 			unban: "Odblokuj"
 		},
 		attribution: {
-			youtube: "Udostępniane przez YouTube"
+			youtube: "Stworzone z YouTube"
 		}
 	},
 	sv: {
@@ -4516,7 +4516,7 @@ export const translations = {
 			unban: "Avbanna"
 		},
 		attribution: {
-			youtube: "Tillhandahålls av YouTube"
+			youtube: "Utvecklad med YouTube"
 		}
 	},
 	da: {
@@ -4754,7 +4754,7 @@ export const translations = {
 			unban: "Ophæv ban"
 		},
 		attribution: {
-			youtube: "Leveret af YouTube"
+			youtube: "Udviklet med YouTube"
 		}
 	},
 	no: {
@@ -4992,7 +4992,7 @@ export const translations = {
 			unban: "Opphev bann"
 		},
 		attribution: {
-			youtube: "Levert av YouTube"
+			youtube: "Utviklet med YouTube"
 		}
 	},
 	fi: {
@@ -5230,7 +5230,7 @@ export const translations = {
 			unban: "Poista esto"
 		},
 		attribution: {
-			youtube: "Tarjoaa YouTube"
+			youtube: "Kehitetty YouTuben kanssa"
 		}
 	},
 	tr: {
@@ -5468,7 +5468,7 @@ export const translations = {
 			unban: "Yasağı kaldır"
 		},
 		attribution: {
-			youtube: "YouTube tarafından sağlanıyor"
+			youtube: "YouTube ile geliştirildi"
 		}
 	},
 	el: {
@@ -5706,7 +5706,7 @@ export const translations = {
 			unban: "Άρση αποκλεισμού"
 		},
 		attribution: {
-			youtube: "Παρέχεται από το YouTube"
+			youtube: "Αναπτύχθηκε με το YouTube"
 		}
 	},
 	ru: {
@@ -5948,7 +5948,7 @@ export const translations = {
 			unban: "Разблокировать"
 		},
 		attribution: {
-			youtube: "Предоставлено YouTube"
+			youtube: "Разработано с YouTube"
 		}
 	},
 	uk: {
@@ -6190,7 +6190,7 @@ export const translations = {
 			unban: "Розблокувати"
 		},
 		attribution: {
-			youtube: "Надано YouTube"
+			youtube: "Розроблено з YouTube"
 		}
 	},
 	cs: {
@@ -6432,7 +6432,7 @@ export const translations = {
 			unban: "Povolit"
 		},
 		attribution: {
-			youtube: "Poskytováno službou YouTube"
+			youtube: "Vyvinuto s YouTube"
 		}
 	},
 	hu: {
@@ -6670,7 +6670,7 @@ export const translations = {
 			unban: "Tiltás feloldása"
 		},
 		attribution: {
-			youtube: "A YouTube biztosítja"
+			youtube: "YouTube-val fejlesztve"
 		}
 	},
 	ro: {
@@ -6910,7 +6910,7 @@ export const translations = {
 			unban: "Anulează interdicția"
 		},
 		attribution: {
-			youtube: "Furnizat de YouTube"
+			youtube: "Dezvoltat cu YouTube"
 		}
 	},
 	bg: {
@@ -7148,7 +7148,7 @@ export const translations = {
 			unban: "Отмени забраната"
 		},
 		attribution: {
-			youtube: "Предоставено от YouTube"
+			youtube: "Създадено с YouTube"
 		}
 	},
 	hr: {
@@ -7388,7 +7388,7 @@ export const translations = {
 			unban: "Ukloni zabranu"
 		},
 		attribution: {
-			youtube: "Pruža YouTube"
+			youtube: "Razvijeno uz YouTube"
 		}
 	},
 	sr: {
@@ -7628,7 +7628,7 @@ export const translations = {
 			unban: "Уклони забрану"
 		},
 		attribution: {
-			youtube: "Пружа YouTube"
+			youtube: "Развијено уз YouTube"
 		}
 	},
 	sk: {
@@ -7870,7 +7870,7 @@ export const translations = {
 			unban: "Povoliť"
 		},
 		attribution: {
-			youtube: "Poskytuje YouTube"
+			youtube: "Vyvinuté s YouTube"
 		}
 	},
 	ar: {
@@ -8116,7 +8116,7 @@ export const translations = {
 			unban: "إلغاء الحظر"
 		},
 		attribution: {
-			youtube: "مقدم من YouTube"
+			youtube: "تم التطوير مع YouTube"
 		}
 	},
 	he: {
@@ -8356,7 +8356,7 @@ export const translations = {
 			unban: "בטל חסימה"
 		},
 		attribution: {
-			youtube: "מסופק על ידי YouTube"
+			youtube: "פותח עם YouTube"
 		}
 	}
 };
