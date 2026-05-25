@@ -7,6 +7,7 @@ import { WebSocketProvider } from './contexts/WebSocketProvider.jsx';
 import './index.css'
 import { Lobby } from './components/Lobby.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
+import { YouTubeAttribution } from './components/YouTubeAttribution.jsx'
 
 const App = lazy(() => import('./App.jsx'))
 const LegalPage = lazy(() => import('./components/LegalPage.jsx').then(m => ({ default: m.LegalPage })))
@@ -31,6 +32,7 @@ createRoot(document.getElementById('root')).render(
                   <Route path="/legal" element={<Suspense fallback={<div className="min-h-screen bg-[#050505]" />}><LegalPage /></Suspense>} />
                   <Route path="/" element={<Lobby />} />
                 </Routes>
+                <YouTubeAttribution />
               </WebSocketProvider>
             </ConditionalGoogleOAuthProvider>
           </MobileRedirectGuard>

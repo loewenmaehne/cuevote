@@ -99,9 +99,6 @@ export function Suggestions({ suggestions, onAdd, onPreview, queueVideoIds }) {
 				);
 			})}
 		</div>
-		<div className="text-[10px] text-neutral-600 text-right px-2 pb-1 italic select-none">
-			{t('attribution.youtube')}
-		</div>
 		</>
 	);
 }

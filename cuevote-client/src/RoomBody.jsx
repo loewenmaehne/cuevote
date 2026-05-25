@@ -85,6 +85,7 @@ function RoomBody() {
     return () => {
       window.removeEventListener('online', handleStatusChange);
       window.removeEventListener('offline', handleStatusChange);
+      document.body.classList.remove('is-cinema-mode');
     };
   }, []);
 
@@ -217,6 +218,14 @@ function RoomBody() {
       setIsCinemaMode(false);
     }
   }, [isVenueMode]);
+
+  // Mirror cinema mode into a body class so the global YouTubeAttribution
+  // can hide itself during fullscreen playback (the IFrame's own logo
+  // satisfies the attribution requirement there).
+  useEffect(() => {
+    if (isCinemaMode) document.body.classList.add('is-cinema-mode');
+    else document.body.classList.remove('is-cinema-mode');
+  }, [isCinemaMode]);
 
   // Pending Suggestions Handlers
   const handleApproveSuggestion = (trackId) => {
