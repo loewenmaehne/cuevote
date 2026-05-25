@@ -4,23 +4,32 @@ import React from 'react';
 import { Language } from '../contexts/LanguageContext';
 import { YouTubeBrandmark } from './YouTubeBrandmark';
 
-// Right-aligned "powered by YouTube" stamp, used inside an active
-// channel/room as a thin row above the main header. Required wherever
-// YouTube thumbnails, titles, channel names, or video metadata are
-// rendered (YouTube API Services Terms — Required Minimum Functionality
-// and Attribution sections).
+// "Powered by YouTube" badge with the official brandmark, designed to sit
+// as the last flex item inside the channel/room header bar. Required
+// wherever YouTube thumbnails, titles, channel names, or video metadata
+// are rendered (YouTube API Services Terms — Required Minimum
+// Functionality and Attribution sections).
 //
-// Rendered inline (not fixed-positioned) so it gets its own row in the
-// layout — the header sits cleanly below it without any overlap with
-// settings/share/logout buttons. Scrolls/sticks with the parent sticky
-// header. Hidden in Cinema Mode because the parent header is itself
-// already hidden during fullscreen playback.
+// Inline by design — the room header has free space on the right edge
+// (the action buttons all live on the left), so an integrated badge fits
+// naturally without any layout-push, fixed positioning, or z-index
+// gymnastics. Cinema Mode hides itself automatically because the parent
+// header is already hidden during fullscreen playback (the IFrame player
+// surfaces its own YouTube logo there).
+//
+// On smaller viewports the localised text is hidden to keep the badge
+// from competing with the scrollable channel pills next to it; the
+// brandmark alone is permitted attribution under YouTube's Brand
+// Guidelines.
 export function YouTubeBrandStamp() {
 	const { t } = Language.useLanguage();
 	return (
-		<div className="flex justify-end items-center gap-1.5 px-3 py-1 text-[10px] text-neutral-400 select-none border-b border-neutral-900/50 bg-black/40">
+		<div
+			className="flex-shrink-0 flex items-center gap-1.5 px-2 text-[10px] text-neutral-500 select-none"
+			aria-label="Powered by YouTube"
+		>
 			<YouTubeBrandmark className="h-3 w-auto" />
-			<span>{t('attribution.youtube')}</span>
+			<span className="hidden md:inline">{t('attribution.youtube')}</span>
 		</div>
 	);
 }

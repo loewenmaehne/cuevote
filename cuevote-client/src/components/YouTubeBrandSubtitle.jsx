@@ -3,28 +3,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Language } from '../contexts/LanguageContext';
-import { YouTubeBrandmark } from './YouTubeBrandmark';
 
-// Inline "powered by YouTube" credit, designed to live underneath the
-// CueVote wordmark on the Lobby and beside fullscreen-page titles
-// (PendingRequestsPage, BannedVideosPage). Required wherever YouTube
-// thumbnails, titles, channel names, or video metadata are rendered
-// (YouTube API Services Terms — Required Minimum Functionality and
-// Attribution sections).
+// Text-only "Powered by YouTube" tagline, used under the CueVote wordmark
+// on the Lobby and beside fullscreen-page titles (PendingRequestsPage,
+// BannedVideosPage). Required wherever YouTube thumbnails, titles, channel
+// names, or video metadata are rendered (YouTube API Services Terms —
+// Required Minimum Functionality and Attribution sections).
 //
-// Rendered inline as a flex item so it integrates with the surrounding
-// layout — never a floating overlay. Inside an active channel the
-// attribution is handled by YouTubeBrandStamp (fixed top-right) instead;
-// that surface is busier and a tagline below the small CueVote header
-// would compete with the action buttons.
+// No brandmark by design here — the localised string already names the
+// service and a red icon under the orange CueVote wordmark felt visually
+// heavy. Inside an active channel the attribution is handled by
+// YouTubeBrandStamp (with brandmark) — that header has space to spare on
+// the right edge, so the visual indicator fits naturally there.
 export function YouTubeBrandSubtitle({ className = '' }) {
 	const { t } = Language.useLanguage();
 	return (
 		<div
-			className={`flex items-center gap-1 text-[10px] text-neutral-500 select-none ${className}`}
+			className={`text-[10px] text-neutral-500 select-none ${className}`}
 		>
-			<YouTubeBrandmark className="h-2.5 w-auto" />
-			<span>{t('attribution.youtube')}</span>
+			{t('attribution.youtube')}
 		</div>
 	);
 }

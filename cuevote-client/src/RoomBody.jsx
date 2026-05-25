@@ -7,7 +7,6 @@ import { Volume2, VolumeX, ArrowLeft, Lock, X, Maximize2, WifiOff, RefreshCw, Al
 import { Consent } from './contexts/ConsentContext';
 import { Language } from './contexts/LanguageContext';
 import { Header } from "./components/Header";
-import { YouTubeBrandStamp } from "./components/YouTubeBrandStamp";
 import { SuggestSongForm } from "./components/SuggestSongForm";
 import { Player } from "./components/Player";
 import { Queue } from "./components/Queue";
@@ -1483,7 +1482,6 @@ function RoomBody() {
       )}
       {!isCinemaMode && (
         <div className="sticky top-0 z-[55] bg-[#050505]/95 backdrop-blur-md border-b border-neutral-900 transition-all duration-700 ease-in-out">
-          <YouTubeBrandStamp />
           <Header
             onGoHome={() => navigate("/")}
             onShowSuggest={setShowSuggest}
