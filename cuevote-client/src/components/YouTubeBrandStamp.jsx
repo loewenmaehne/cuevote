@@ -24,12 +24,15 @@ import { YouTubeBrandmark } from './YouTubeBrandmark';
 export function YouTubeBrandStamp() {
 	const { t } = Language.useLanguage();
 	return (
-		<div
-			className="flex-shrink-0 flex items-center gap-1.5 px-2 text-[10px] text-neutral-500 select-none"
-			aria-label="Powered by YouTube"
+		<a
+			href="https://www.youtube.com"
+			target="_blank"
+			rel="noopener noreferrer"
+			className="flex-shrink-0 flex items-center gap-1.5 px-2 text-[10px] text-neutral-500 hover:text-neutral-300 no-underline transition-colors select-none"
+			aria-label={t('attribution.youtube')}
 		>
 			<YouTubeBrandmark className="h-3 w-auto" />
 			<span className="hidden md:inline">{t('attribution.youtube')}</span>
-		</div>
+		</a>
 	);
 }
