@@ -9,7 +9,6 @@ import { LogOut, Settings, List, Send, QrCode, Library, Copy, Check, Scale, Chev
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
 import { deviceDetection } from '../utils/deviceDetection';
-import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
 
 
 export function Header({
@@ -238,12 +237,9 @@ export function Header({
       className="px-2 py-1.5 md:px-3 md:py-2 w-full safe-pt"
     >
       <div className="flex items-center w-full gap-2">
-        <div className="flex flex-col flex-shrink-0">
-          <h1 className="text-lg font-bold text-orange-500 tracking-tight whitespace-nowrap">
-            CueVote
-          </h1>
-          <YouTubeBrandSubtitle />
-        </div>
+        <h1 className="text-lg font-bold text-orange-500 tracking-tight whitespace-nowrap flex-shrink-0">
+          CueVote
+        </h1>
 
         <button
           onClick={() => {

@@ -3,31 +3,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Language } from '../contexts/LanguageContext';
+import { YouTubeBrandmark } from './YouTubeBrandmark';
 
 // Inline "powered by YouTube" credit, designed to live underneath the
-// CueVote wordmark (or beside a fullscreen-page title). Required wherever
-// YouTube thumbnails, titles, channel names, or video metadata are rendered
+// CueVote wordmark on the Lobby and beside fullscreen-page titles
+// (PendingRequestsPage, BannedVideosPage). Required wherever YouTube
+// thumbnails, titles, channel names, or video metadata are rendered
 // (YouTube API Services Terms — Required Minimum Functionality and
 // Attribution sections).
 //
-// Text-only by design — the localised "Powered by YouTube" string already
-// names the service and reads as a clean tagline under the CueVote brand.
-// The official YouTube brandmark is available in YouTubeBrandmark.jsx if a
-// future surface wants to use it; YouTube's Terms accept text-only
-// attribution as visible credit.
-//
 // Rendered inline as a flex item so it integrates with the surrounding
-// layout — never a floating overlay. Cinema Mode auto-handles itself: the
-// header that hosts this subtitle is already hidden during fullscreen
-// playback, and the IFrame player surfaces its own YouTube logo
-// bottom-right.
+// layout — never a floating overlay. Inside an active channel the
+// attribution is handled by YouTubeBrandStamp (fixed top-right) instead;
+// that surface is busier and a tagline below the small CueVote header
+// would compete with the action buttons.
 export function YouTubeBrandSubtitle({ className = '' }) {
 	const { t } = Language.useLanguage();
 	return (
 		<div
-			className={`text-[10px] text-neutral-500 select-none ${className}`}
+			className={`flex items-center gap-1 text-[10px] text-neutral-500 select-none ${className}`}
 		>
-			{t('attribution.youtube')}
+			<YouTubeBrandmark className="h-2.5 w-auto" />
+			<span>{t('attribution.youtube')}</span>
 		</div>
 	);
 }
