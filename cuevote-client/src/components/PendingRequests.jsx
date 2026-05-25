@@ -4,6 +4,7 @@
 import React from 'react';
 import { Check, X, Clock, ArrowLeft, Ban, Headphones } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
+import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
 
 const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
@@ -96,13 +97,16 @@ export const PendingRequestsExports = {
 					>
 						<ArrowLeft size={24} />
 					</button>
-					<h1 className="text-2xl font-bold text-white flex items-center gap-3">
-						<Clock className="text-orange-500" />
-						{t('pending.title')}
-						<span className="text-lg font-normal text-neutral-500">
-							({t('pending.pendingCount', { count: requests.length })})
-						</span>
-					</h1>
+					<div className="flex flex-col">
+						<h1 className="text-2xl font-bold text-white flex items-center gap-3">
+							<Clock className="text-orange-500" />
+							{t('pending.title')}
+							<span className="text-lg font-normal text-neutral-500">
+								({t('pending.pendingCount', { count: requests.length })})
+							</span>
+						</h1>
+						<YouTubeBrandSubtitle className="ml-9" />
+					</div>
 				</div>
 				<button
 					onClick={onManageBanned}
