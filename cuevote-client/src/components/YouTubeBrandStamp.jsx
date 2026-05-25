@@ -28,7 +28,7 @@ export function YouTubeBrandStamp() {
 			href="https://www.youtube.com"
 			target="_blank"
 			rel="noopener noreferrer"
-			className="flex-shrink-0 flex items-center gap-1.5 px-2 text-[10px] text-neutral-500 hover:text-neutral-300 transition-colors select-none"
+			className="flex-shrink-0 flex items-center gap-1.5 px-2 text-[10px] text-neutral-500 hover:text-neutral-300 no-underline transition-colors select-none"
 			aria-label={t('attribution.youtube')}
 		>
 			<YouTubeBrandmark className="h-3 w-auto" />
