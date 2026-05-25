@@ -34,7 +34,7 @@ export function YouTubeAttribution() {
 
 	return (
 		<div
-			className="fixed top-2 right-2 z-[200] flex items-center gap-1.5 text-[10px] text-neutral-400 select-none pointer-events-none bg-black/50 backdrop-blur-sm rounded-md px-2 py-1 border border-white/5"
+			className="fixed top-3 right-3 z-[200] flex items-center gap-1.5 text-[10px] text-neutral-400 select-none pointer-events-none bg-black/50 backdrop-blur-sm rounded-md px-2 py-1 border border-white/5"
 			aria-label="Powered by YouTube"
 		>
 			<YouTubeBrandmark className="h-3 w-auto" />
