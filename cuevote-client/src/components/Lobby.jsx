@@ -10,6 +10,7 @@ import { LanguageSwitcherExports } from './LanguageSwitcher';
 const { LanguageSwitcher, languages } = LanguageSwitcherExports;
 import { GoogleAuthButton } from './GoogleAuthButton';
 import { GoogleGIcon } from './GoogleGIcon';
+import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
 import { channelLanguages, getFlagEmoji } from '../constants/channelLanguages';
 
 import { LoadingScreen } from './LoadingScreen';
@@ -597,11 +598,14 @@ export function Lobby() {
 
 
             <header className="w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 gap-4 relative z-50">
-                <div className="flex items-center justify-between w-full sm:w-auto gap-4">
-                    <div className="flex items-center gap-4">
-                        <h1 className="text-3xl font-bold text-orange-500 tracking-tight">
-                            CueVote
-                        </h1>
+                <div className="flex items-start justify-between w-full sm:w-auto gap-4">
+                    <div className="flex items-start gap-4">
+                        <div className="flex flex-col">
+                            <h1 className="text-3xl font-bold text-orange-500 tracking-tight">
+                                CueVote
+                            </h1>
+                            <YouTubeBrandSubtitle className="mt-0.5" />
+                        </div>
 
                         {/* Language Switcher */}
                         <LanguageSwitcher

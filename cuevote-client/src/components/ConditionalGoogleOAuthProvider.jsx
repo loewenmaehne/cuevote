@@ -13,10 +13,12 @@ export function ConditionalGoogleOAuthProvider({ children }) {
 	// Check if we are inside a room (URLs starting with /room/)
 	const isInRoom = location.pathname.startsWith('/room/');
 
+	const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 	return (
 		<>
-			{hasConsent ? (
-				<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+			{hasConsent && clientId ? (
+				<GoogleOAuthProvider clientId={clientId}>
 					{children}
 				</GoogleOAuthProvider>
 			) : (

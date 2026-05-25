@@ -48,8 +48,9 @@ function RealAuthButton({ onLoginSuccess, className, render }) {
 // Wrapper that handles "No Consent" state (can be used anywhere)
 export function GoogleAuthButton({ onLoginSuccess, className, render }) {
 	const { hasConsent, askForConsent } = Consent.useConsent();
+	const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-	if (!hasConsent) {
+	if (!hasConsent || !clientId) {
 		// Return a disabled button
 		const noOp = () => {
 			// Optional: Clicking disabled button might trigger banner shake or something? 

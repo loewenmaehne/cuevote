@@ -3,6 +3,7 @@
 import React from 'react';
 import { Ban, X, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
+import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
 
 export function BannedVideosPage({ bannedVideos, onUnban, onClose }) {
 	const { t } = Language.useLanguage();
@@ -15,13 +16,16 @@ export function BannedVideosPage({ bannedVideos, onUnban, onClose }) {
 				>
 					<ArrowLeft size={24} />
 				</button>
-				<h1 className="text-2xl font-bold text-white flex items-center gap-3">
-					<Ban className="text-red-500" />
-					{t('banned.title')}
-					<span className="text-lg font-normal text-neutral-500">
-						({bannedVideos.length})
-					</span>
-				</h1>
+				<div className="flex flex-col">
+					<h1 className="text-2xl font-bold text-white flex items-center gap-3">
+						<Ban className="text-red-500" />
+						{t('banned.title')}
+						<span className="text-lg font-normal text-neutral-500">
+							({bannedVideos.length})
+						</span>
+					</h1>
+					<YouTubeBrandSubtitle className="ml-9" />
+				</div>
 			</div>
 
 			<div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">

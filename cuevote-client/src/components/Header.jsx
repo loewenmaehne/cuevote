@@ -9,6 +9,7 @@ import { LogOut, Settings, List, Send, QrCode, Library, Copy, Check, Scale, Chev
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
 import { deviceDetection } from '../utils/deviceDetection';
+import { YouTubeBrandStamp } from './YouTubeBrandStamp';
 
 
 export function Header({
@@ -300,6 +301,7 @@ export function Header({
             {suggestButton}
           </div>
         )}
+        <YouTubeBrandStamp />
       </div>
 
       {
