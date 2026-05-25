@@ -18,11 +18,14 @@ import { Language } from '../contexts/LanguageContext';
 export function YouTubeBrandSubtitle({ className = '' }) {
 	const { t } = Language.useLanguage();
 	return (
-		<div
-			className={`text-[10px] text-neutral-500 select-none ${className}`}
+		<a
+			href="https://www.youtube.com"
+			target="_blank"
+			rel="noopener noreferrer"
+			className={`inline-block text-[10px] text-neutral-500 hover:text-neutral-300 transition-colors select-none ${className}`}
 		>
 			{t('attribution.youtube')}
-		</div>
+		</a>
 	);
 }
 
