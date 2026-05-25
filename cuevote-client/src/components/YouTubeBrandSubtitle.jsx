@@ -4,11 +4,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Language } from '../contexts/LanguageContext';
 
-// Text-only "Powered by YouTube" tagline, used under the CueVote wordmark
-// on the Lobby and beside fullscreen-page titles (PendingRequestsPage,
-// BannedVideosPage). Required wherever YouTube thumbnails, titles, channel
-// names, or video metadata are rendered (YouTube API Services Terms —
-// Required Minimum Functionality and Attribution sections).
+// Text-only "Developed with YouTube" tagline, used under the CueVote
+// wordmark on the Lobby and beside fullscreen-page titles
+// (PendingRequestsPage, BannedVideosPage). Required wherever YouTube
+// thumbnails, titles, channel names, or video metadata are rendered
+// (YouTube API Services Terms — Required Minimum Functionality and
+// Attribution sections). "Developed with YouTube" is YouTube's own
+// Branding-Guidelines phrase for apps that would be nonfunctional
+// without YouTube — CueVote's exact case.
 //
 // No brandmark by design here — the localised string already names the
 // service and a red icon under the orange CueVote wordmark felt visually

@@ -4,11 +4,13 @@ import React from 'react';
 import { Language } from '../contexts/LanguageContext';
 import { YouTubeBrandmark } from './YouTubeBrandmark';
 
-// "Powered by YouTube" badge with the official brandmark, designed to sit
-// as the last flex item inside the channel/room header bar. Required
-// wherever YouTube thumbnails, titles, channel names, or video metadata
-// are rendered (YouTube API Services Terms — Required Minimum
-// Functionality and Attribution sections).
+// "Developed with YouTube" badge with the official brandmark, designed
+// to sit as the last flex item inside the channel/room header bar.
+// Required wherever YouTube thumbnails, titles, channel names, or video
+// metadata are rendered (YouTube API Services Terms — Required Minimum
+// Functionality and Attribution sections). "Developed with YouTube" is
+// the Branding-Guidelines phrase for apps that would be nonfunctional
+// without YouTube — CueVote's exact case.
 //
 // Inline by design — the room header has free space on the right edge
 // (the action buttons all live on the left), so an integrated badge fits
