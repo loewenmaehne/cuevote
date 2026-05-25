@@ -647,10 +647,10 @@ export function Lobby() {
                                             performLogin();
                                         }}
                                         onClick={performLogin}
-                                        className={`p-3 rounded-full border border-neutral-700 bg-neutral-800 text-white transition-transform active:scale-90 ${disabled && focusedIndex !== INDEX_PROFILE ? 'opacity-50' : 'hover:bg-neutral-700'} ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 scale-105' : ''}`}
-                                        aria-label={t('lobby.signInGoogle')}
+                                        className={`flex items-center gap-1 px-2 py-1.5 rounded-full border border-neutral-700 bg-neutral-800 text-white text-[10px] font-medium whitespace-nowrap transition-transform active:scale-90 ${disabled && focusedIndex !== INDEX_PROFILE ? 'opacity-50' : 'hover:bg-neutral-700'} ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 scale-105' : ''}`}
                                     >
-                                        <GoogleGIcon className="w-5 h-5" />
+                                        <GoogleGIcon className="w-3.5 h-3.5" />
+                                        <span>{t('lobby.signInGoogle')}</span>
                                     </button>
                                 )}
                             />
