@@ -139,8 +139,6 @@ const clients = new Set();
 logger.info("WebSocket server started on port", process.env.PORT || 8080);
 
 wss.on("connection", (ws, req) => {
-    logger.info("Client connected");
-
     // Parse Client ID
     const urlParams = new URLSearchParams(req.url.split('?')[1]);
     const clientId = urlParams.get('clientId');
@@ -164,6 +162,8 @@ wss.on("connection", (ws, req) => {
     } else {
         ws.id = crypto.randomUUID();
     }
+
+    logger.info(`Client connected (id: ${ws.id})`);
 
     ws.isAlive = true;
     ws.on('pong', () => { ws.isAlive = true; });
@@ -632,8 +632,9 @@ wss.on("connection", (ws, req) => {
         }
     });
 
-    ws.on("close", () => {
-        logger.info("Client disconnected");
+    ws.on("close", (code, reason) => {
+        const reasonStr = reason ? reason.toString() : '';
+        logger.info(`Client disconnected (id: ${ws.id}, code: ${code}, reason: ${reasonStr || '[none]'})`);
         clients.delete(ws);
         if (ws.roomId && rooms.has(ws.roomId)) {
             rooms.get(ws.roomId).removeClient(ws);
