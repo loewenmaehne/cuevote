@@ -139,8 +139,6 @@ const clients = new Set();
 logger.info("WebSocket server started on port", process.env.PORT || 8080);
 
 wss.on("connection", (ws, req) => {
-    logger.info("Client connected");
-
     // Parse Client ID
     const urlParams = new URLSearchParams(req.url.split('?')[1]);
     const clientId = urlParams.get('clientId');
@@ -164,6 +162,8 @@ wss.on("connection", (ws, req) => {
     } else {
         ws.id = crypto.randomUUID();
     }
+
+    logger.info(`Client connected (id: ${ws.id})`);
 
     ws.isAlive = true;
     ws.on('pong', () => { ws.isAlive = true; });
@@ -262,10 +262,12 @@ wss.on("connection", (ws, req) => {
                 case "RESUME_SESSION": {
                     const resumeResult = schemas.ResumeSessionPayload.safeParse(parsedMessage.payload);
                     if (!resumeResult.success) {
+                        logger.warn(`[Resume Session] Invalid payload schema (clientId: ${ws.id})`);
                         ws.send(JSON.stringify({ type: "SESSION_INVALID" }));
                         return;
                     }
                     const { token } = resumeResult.data;
+                    logger.info(`[Resume Session] Received (clientId: ${ws.id})`);
                     const session = db.getSession(token);
                     if (session) {
                         const user = db.getUser(session.user_id);
@@ -273,6 +275,7 @@ wss.on("connection", (ws, req) => {
                             ws.user = user;
                             const resumePayload = { user: ws.user, sessionToken: token };
                             if (ws.lastRoomId) resumePayload.lastRoomId = ws.lastRoomId;
+                            logger.info(`[Resume Session] OK — user resumed (clientId: ${ws.id})`);
                             ws.send(JSON.stringify({
                                 type: "LOGIN_SUCCESS",
                                 payload: resumePayload
@@ -284,6 +287,7 @@ wss.on("connection", (ws, req) => {
                             ws.send(JSON.stringify({ type: "SESSION_INVALID" }));
                         }
                     } else {
+                        logger.info(`[Resume Session] Token not in DB → SESSION_INVALID (clientId: ${ws.id})`);
                         ws.send(JSON.stringify({ type: "SESSION_INVALID" }));
                     }
                     return;
@@ -628,8 +632,9 @@ wss.on("connection", (ws, req) => {
         }
     });
 
-    ws.on("close", () => {
-        logger.info("Client disconnected");
+    ws.on("close", (code, reason) => {
+        const reasonStr = reason ? reason.toString() : '';
+        logger.info(`Client disconnected (id: ${ws.id}, code: ${code}, reason: ${reasonStr || '[none]'})`);
         clients.delete(ws);
         if (ws.roomId && rooms.has(ws.roomId)) {
             rooms.get(ws.roomId).removeClient(ws);
