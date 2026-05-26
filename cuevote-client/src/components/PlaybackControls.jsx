@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { Pause, Play, Volume2, VolumeX, Maximize2, Minimize2, ChevronUp, ChevronDown, ListMusic } from "lucide-react";
 import { deviceDetection } from '../utils/deviceDetection';
 import { Language } from '../contexts/LanguageContext';
+import { MarqueeText } from './MarqueeText';
 
 export function PlaybackControls({
   isPlaying,
@@ -184,32 +185,32 @@ export function PlaybackControls({
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
             <button
               onClick={(event) => {
                 event.stopPropagation();
                 onPlayPause();
               }}
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white rounded-full p-3 transition-all shadow-lg"
+              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white rounded-full p-3 transition-all shadow-lg flex-shrink-0"
               disabled={!currentTrack}
             >
               {isPlaying ? <Pause /> : <Play />}
             </button>
 
-            <div>
-              <h3 className="text-base font-semibold leading-tight">
+            <div className="flex-1 min-w-0">
+              <MarqueeText as="h3" className="text-base font-semibold leading-tight">
                 {currentTrack ? `${t('playlist.nowPlaying')} · ${currentTrack.title}` : t('playlist.queueEmpty')}
-              </h3>
-              <p className="text-sm text-neutral-400">
+              </MarqueeText>
+              <MarqueeText as="p" className="text-sm text-neutral-400">
                 {currentTrack
                   ? `${currentTrack.artist} • ${activeChannel} ${t('playlist.channelSuffix')}`
                   : t('playlist.addVideos')}
-              </p>
+              </MarqueeText>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-neutral-400">
+          <div className="flex items-center gap-2 text-neutral-400 flex-shrink-0">
             <button
               onClick={(event) => {
                 event.stopPropagation();
