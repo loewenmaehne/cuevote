@@ -9,7 +9,7 @@ import { LogOut, Settings, List, Send, QrCode, Library, Copy, Check, Scale, Chev
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
 import { deviceDetection } from '../utils/deviceDetection';
-import { YouTubeBrandStamp } from './YouTubeBrandStamp';
+import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
 
 
 export function Header({
@@ -188,7 +188,7 @@ export function Header({
 
   const isPlaylistMode = mode === "playlist" || mode === "library";
 
-  const renderPills = () => {
+  const renderPills = ({ includeSuggest = !isTouchDevice } = {}) => {
     if (isPlaylistMode) {
       return (
         <>
@@ -217,7 +217,7 @@ export function Header({
             <Settings size={15} /><span>{t('header.settings')}</span>
           </button>
         )}
-        {!isTouchDevice && (
+        {includeSuggest && (
           <button onClick={onSuggest} disabled={suggestDisabled} className={`${pillClass(showSuggest)} ${suggestDisabled ? "opacity-40" : ""}`}>
             <Send size={15} /><span>{t('header.suggest')}</span>
           </button>
@@ -232,61 +232,88 @@ export function Header({
     </button>
   );
 
+  // Tall variant of the Suggest button — anchors the right edge of the
+  // mobile two-row header, spanning both rows via a CSS-grid row-span.
+  const suggestButtonTall = (
+    <button
+      onClick={onSuggest}
+      disabled={suggestDisabled}
+      className={`keep-open flex flex-col items-center justify-center gap-1 px-4 rounded-2xl font-semibold whitespace-nowrap transition-all active:scale-95 h-full border ${
+        showSuggest
+          ? "bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-500/30"
+          : "bg-orange-500/15 text-orange-500 border-orange-500/30 hover:bg-orange-500/25"
+      } ${suggestDisabled ? "opacity-40" : ""}`}
+      aria-label={t('header.suggest')}
+    >
+      <Send size={20} />
+      <span className="text-[11px] leading-none">{t('header.suggest')}</span>
+    </button>
+  );
+
+  const wordmark = (
+    <h1 className="text-lg font-bold text-orange-500 tracking-tight whitespace-nowrap flex-shrink-0">
+      CueVote
+    </h1>
+  );
+
+  const backButton = (
+    <button
+      onClick={() => {
+        if (isPlaylistMode && onClosePlaylist) {
+          onClosePlaylist();
+        } else {
+          setShowExitConfirm(true);
+          setExitConfirmIndex(0);
+          if (onCloseSettings) onCloseSettings();
+        }
+      }}
+      className="p-1.5 text-orange-500/70 hover:text-orange-400 transition-colors rounded-full hover:bg-orange-500/10 flex-shrink-0"
+      title={isPlaylistMode && onClosePlaylist ? t('playlist.close') : t('header.leave')}
+    >
+      <ChevronLeft size={20} />
+    </button>
+  );
+
+  const userIdentity = user ? (
+    <button
+      onClick={() => setShowProfileModal(true)}
+      className="flex-shrink-0 rounded-full hover:ring-2 hover:ring-orange-500/30 transition-all"
+      title={t('header.profileSettings')}
+    >
+      {user.picture ? (
+        <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-7 h-7 rounded-full border border-neutral-700" />
+      ) : (
+        <div className="w-7 h-7 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-orange-500 border border-neutral-700">
+          {user.name?.charAt(0)}
+        </div>
+      )}
+    </button>
+  ) : (
+    <GoogleAuthButton
+      onLoginSuccess={onLoginSuccess}
+      render={(performLogin, disabled) => (
+        <button
+          onClick={() => !disabled && performLogin()}
+          disabled={disabled}
+          className={`flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full border border-neutral-700 bg-neutral-800/50 transition-all ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:ring-2 hover:ring-orange-500/30 active:scale-95'}`}
+          title={disabled ? t('header.acceptCookies') : t('header.signIn')}
+        >
+          <GoogleGIcon className="w-4 h-4" />
+        </button>
+      )}
+    />
+  );
+
   return (
     <header
       ref={headerRef}
       className="px-2 py-1.5 md:px-3 md:py-2 w-full safe-pt"
     >
-      <div className="flex items-center w-full gap-2">
-        <h1 className="text-lg font-bold text-orange-500 tracking-tight whitespace-nowrap flex-shrink-0">
-          CueVote
-        </h1>
-
-        <button
-          onClick={() => {
-            if (isPlaylistMode && onClosePlaylist) {
-              onClosePlaylist();
-            } else {
-              setShowExitConfirm(true);
-              setExitConfirmIndex(0);
-              if (onCloseSettings) onCloseSettings();
-            }
-          }}
-          className="p-1.5 text-orange-500/70 hover:text-orange-400 transition-colors rounded-full hover:bg-orange-500/10 flex-shrink-0"
-          title={isPlaylistMode && onClosePlaylist ? t('playlist.close') : t('header.leave')}
-        >
-          <ChevronLeft size={20} />
-        </button>
-
-        {user ? (
-          <button
-            onClick={() => setShowProfileModal(true)}
-            className="flex-shrink-0 rounded-full hover:ring-2 hover:ring-orange-500/30 transition-all"
-            title={t('header.profileSettings')}
-          >
-            {user.picture ? (
-              <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-7 h-7 rounded-full border border-neutral-700" />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-orange-500 border border-neutral-700">
-                {user.name?.charAt(0)}
-              </div>
-            )}
-          </button>
-        ) : (
-          <GoogleAuthButton
-            onLoginSuccess={onLoginSuccess}
-            render={(performLogin, disabled) => (
-              <button
-                onClick={() => !disabled && performLogin()}
-                disabled={disabled}
-                className={`flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-full border border-neutral-700 bg-neutral-800/50 transition-all ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:ring-2 hover:ring-orange-500/30 active:scale-95'}`}
-                title={disabled ? t('header.acceptCookies') : t('header.signIn')}
-              >
-                <GoogleGIcon className="w-4 h-4" />
-              </button>
-            )}
-          />
-        )}
+      {/* Desktop / tablet-landscape (≥ md): single-row layout */}
+      <div className="hidden md:flex items-center w-full gap-2">
+        {wordmark}
+        {backButton}
+        {userIdentity}
 
         <div className="h-5 w-px bg-neutral-800 flex-shrink-0" />
 
@@ -301,7 +328,26 @@ export function Header({
             {suggestButton}
           </div>
         )}
-        <YouTubeBrandStamp />
+        <YouTubeBrandSubtitle className="flex-shrink-0 whitespace-nowrap" />
+      </div>
+
+      {/* Mobile (< md): grid layout with two left-column rows + a tall
+          right-column Suggest button spanning both rows. Top-left row
+          groups branding, identity and the YouTube text attribution;
+          bottom-left row is the scrollable pills strip with full width. */}
+      <div className="md:hidden grid grid-cols-[minmax(0,1fr)_auto] gap-x-2 gap-y-1.5 items-stretch">
+        <div className="flex items-center gap-2 min-w-0">
+          {wordmark}
+          {backButton}
+          {userIdentity}
+          <YouTubeBrandSubtitle className="leading-tight text-center" />
+        </div>
+        <div className="row-span-2 flex items-stretch">
+          {suggestButtonTall}
+        </div>
+        <div className="overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 py-0.5">
+          {renderPills({ includeSuggest: false })}
+        </div>
       </div>
 
       {
