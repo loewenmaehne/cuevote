@@ -89,27 +89,6 @@ export function WebSocketProvider({ children }) {
     setUser(null);
   }, [sendMessage]);
 
-  // Handle Messages (Auth)
-  useEffect(() => {
-    if (lastMessage) {
-      if (lastMessage.type === "LOGIN_SUCCESS") {
-        if (import.meta.env.DEV) {
-          console.log("Backend Login Success:", lastMessage.payload.user);
-        }
-        setUser(lastMessage.payload.user);
-        if (lastMessage.payload.sessionToken) {
-          sessionTokenRef.current = lastMessage.payload.sessionToken;
-          localStorage.setItem(SESSION_KEY, lastMessage.payload.sessionToken);
-        }
-      } else if (lastMessage.type === "SESSION_INVALID") {
-        console.warn("Session Invalid/Expired");
-        sessionTokenRef.current = null;
-        localStorage.removeItem(SESSION_KEY);
-        setUser(null);
-      }
-    }
-  }, [lastMessage]);
-
   useEffect(() => {
     let reconnectTimeout = null;
     let reconnectDelay = 1000;
@@ -199,6 +178,27 @@ export function WebSocketProvider({ children }) {
             }
           } else if (message.type === "progress") {
             progressRef.current = message.payload;
+          } else if (message.type === "LOGIN_SUCCESS") {
+            // Auth handled inline rather than via setLastMessage, because the
+            // shared `lastMessage` state can be overwritten by a subsequent
+            // message (e.g. ROOM_LIST arriving microseconds after LOGIN_SUCCESS)
+            // before its useEffect runs, silently dropping the auth update
+            // under React 18 auto-batching. Observed on Safari with multi-tab
+            // reconnect storms: server logged "Resume Session OK" every time,
+            // but the client never showed the user as logged in.
+            if (import.meta.env.DEV) {
+              console.log("Backend Login Success:", message.payload.user);
+            }
+            setUser(message.payload.user);
+            if (message.payload.sessionToken) {
+              sessionTokenRef.current = message.payload.sessionToken;
+              localStorage.setItem(SESSION_KEY, message.payload.sessionToken);
+            }
+          } else if (message.type === "SESSION_INVALID") {
+            console.warn("Session Invalid/Expired");
+            sessionTokenRef.current = null;
+            localStorage.removeItem(SESSION_KEY);
+            setUser(null);
           } else {
             setLastMessage(message);
             if (message.type === "error") {
