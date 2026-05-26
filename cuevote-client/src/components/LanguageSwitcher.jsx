@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // Copyright (c) 2026 Julian Zienert
+/* eslint-disable react-refresh/only-export-components --
+ * This module deliberately exports both a component (LanguageSwitcher)
+ * and a non-component object (LanguageSwitcherExports) so the bundler
+ * keeps the two together and TDZ ordering is preserved
+ * (see docs/TDZ-FIXES.md). Fast-refresh is given up for this file.
+ */
 import React, { useState, useRef, useEffect } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
@@ -116,5 +122,4 @@ function LanguageSwitcher({ minimized = false, className = "", isOpen: controlle
 	);
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const LanguageSwitcherExports = { languages, LanguageSwitcher };

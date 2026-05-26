@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+# Copyright (c) 2026 Julian Zienert
+name: build & lint
+
+on:
+  pull_request:
+    paths:
+      - 'cuevote-client/**'
+      - 'cuevote-server/**'
+      - '.github/workflows/build-lint.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'cuevote-client/**'
+      - 'cuevote-server/**'
+      - '.github/workflows/build-lint.yml'
+
+jobs:
+  client:
+    name: client — lint & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cuevote-client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: cuevote-client/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+  server:
+    name: server — build (tsc)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cuevote-server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: cuevote-server/package-lock.json
+      - run: npm ci
+      - run: npm run build
