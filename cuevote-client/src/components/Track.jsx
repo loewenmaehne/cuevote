@@ -6,6 +6,7 @@ import { ThumbsUp, ThumbsDown, Headphones, Trash2, Sparkles, Loader2, Check } fr
 import { Language } from '../contexts/LanguageContext';
 import { Consent } from '../contexts/ConsentContext';
 import { Suggestions } from "./Suggestions";
+import { MarqueeText } from "./MarqueeText";
 
 const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;
 const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
@@ -76,26 +77,26 @@ export function Track({
               <Headphones size={24} className="text-neutral-600" />
             </div>
           )}
-          <div className="min-w-0">
-            <h3 className="text-lg font-semibold tracking-tight truncate">
+          <div className="flex-1 min-w-0">
+            <MarqueeText as="h3" className="text-lg font-semibold tracking-tight">
               {track.title}
-            </h3>
-            <p className="text-sm text-neutral-400 truncate">
+            </MarqueeText>
+            <MarqueeText as="p" className="text-sm text-neutral-400">
               {track.artist}
               {isActive ? " • " + t('track.playing') : ""}
-            </p>
+            </MarqueeText>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-4 flex-shrink-0">
           {track.suggestedByUsername && (
-            <span className="text-xs text-neutral-500 font-medium mr-2 whitespace-nowrap">
+            <span className="text-xs text-neutral-500 font-medium whitespace-nowrap order-2 sm:order-1 sm:mr-2 max-w-[8rem] truncate">
               {track.suggestedByUsername}
             </span>
           )}
 
           {!readOnly && votesEnabled && !isActive && (
-            <>
+            <div className="flex items-center gap-1 sm:gap-4 order-1 sm:order-2">
               <button
                 onClick={(event) => {
                   event.stopPropagation();
@@ -109,7 +110,7 @@ export function Track({
                 <ThumbsUp size={20} />
               </button>
 
-              <span className={`text-sm font-bold w-6 text-center ${(track.score || 0) > 0 ? "text-orange-400" :
+              <span className={`text-sm font-bold w-5 sm:w-6 text-center ${(track.score || 0) > 0 ? "text-orange-400" :
                 (track.score || 0) < 0 ? "text-neutral-500" : "text-neutral-600"
                 }`}>
                 {track.score || 0}
@@ -127,11 +128,11 @@ export function Track({
               >
                 <ThumbsDown size={20} />
               </button>
-            </>
+            </div>
           )}
 
           {(isActive || (readOnly && isActive)) && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 order-1 sm:order-2">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               <span className="text-xs font-bold text-green-500 uppercase tracking-wider">{t('track.now')}</span>
             </div>
