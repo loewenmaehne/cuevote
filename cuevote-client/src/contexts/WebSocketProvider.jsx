@@ -258,7 +258,7 @@ export function WebSocketProvider({ children }) {
         if (socket.readyState === WebSocket.OPEN) {
           try {
             socket.send(JSON.stringify({ type: "PING" }));
-          } catch (e) { /* socket may be closing */ }
+          } catch { /* socket may be closing */ }
 
           setTimeout(() => {
             if (socket.readyState !== WebSocket.OPEN) return;
@@ -308,7 +308,7 @@ export function WebSocketProvider({ children }) {
       cleanupConnectionListeners();
       delete window.cuevoteReconnect;
       if (ws.current) {
-        try { ws.current.close(); } catch (e) { /* already closed */ }
+        try { ws.current.close(); } catch { /* already closed */ }
       }
     };
   }, [clientId]);

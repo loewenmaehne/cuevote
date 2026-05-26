@@ -27,6 +27,7 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     // For local development only; avoid exposing this dev server to the public internet.
+    // eslint-disable-next-line no-undef -- vite config runs in Node, `process` is fine here.
     headers: process.env.NODE_ENV === 'development'
       ? {
           'Access-Control-Allow-Origin': 'http://localhost:5173',

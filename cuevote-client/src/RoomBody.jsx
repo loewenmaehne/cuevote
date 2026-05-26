@@ -60,7 +60,7 @@ function RoomBody() {
   const [controlsHeight, setControlsHeight] = useState(96);
   const [showSettings, setShowSettings] = useState(false);
   // const [hasConsent, setHasConsent] = useState(() => !!localStorage.getItem("cuevote_cookie_consent"));
-  const { hasConsent, giveConsent } = Consent.useConsent();
+  const { hasConsent } = Consent.useConsent();
   const { t } = Language.useLanguage();
 
   // console.log("App Component MOUNTED, Room:", activeRoomId);
@@ -382,11 +382,11 @@ function RoomBody() {
   }, []);
   const [throttleDismissed, setThrottleDismissed] = useState(isThrottleDismissActive);
   const dismissThrottle = useCallback(() => {
-    try { localStorage.setItem(THROTTLE_DISMISS_KEY, String(Date.now() + 30 * 60 * 1000)); } catch {}
+    try { localStorage.setItem(THROTTLE_DISMISS_KEY, String(Date.now() + 30 * 60 * 1000)); } catch { /* localStorage may be unavailable (Safari private mode) */ }
     setThrottleDismissed(true);
   }, []);
   const clearThrottleDismiss = useCallback(() => {
-    try { localStorage.removeItem(THROTTLE_DISMISS_KEY); } catch {}
+    try { localStorage.removeItem(THROTTLE_DISMISS_KEY); } catch { /* localStorage may be unavailable */ }
     setThrottleDismissed(false);
   }, []);
 
@@ -689,7 +689,7 @@ function RoomBody() {
     loadYouTubeAPI().then((YT) => {
       if (initId !== playerInitIdRef.current) return;
       if (playerRef.current && typeof playerRef.current.destroy === 'function') {
-        try { playerRef.current.destroy(); } catch (e) { /* already gone */ }
+        try { playerRef.current.destroy(); } catch { /* already gone */ }
         playerRef.current = null;
       }
       playerRef.current = new YT.Player(container, {
