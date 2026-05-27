@@ -154,7 +154,11 @@ wss.on("connection", (ws, req) => {
                         rooms.get(existing.roomId).removeClient(existing);
                     }
                 }
-                if (existing.user) ws.user = existing.user;
+                // Do NOT inherit existing.user — clientId travels in URL params
+                // (referers, access logs, browser history) and is therefore not
+                // an auth factor. The client re-sends RESUME_SESSION with the
+                // session token on every reconnect (WebSocketProvider.jsx),
+                // which is the only path that should set ws.user.
                 clients.delete(existing);
                 existing.terminate();
             }
