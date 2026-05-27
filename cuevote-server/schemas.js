@@ -14,9 +14,16 @@ const LogoutPayload = z.object({
   token: z.string().min(1).max(256),
 });
 
+// bcrypt silently truncates the input at 72 bytes, so anything past
+// that is ignored when hashing. Enforce 72 chars (≈72 bytes for ASCII
+// pass-phrases, slightly less for multibyte UTF-8) in the schema so
+// the limit is visible at validation time instead of being a surprise
+// hidden inside bcrypt.compareSync.
+const PASSWORD_MAX = 72;
+
 const JoinRoomPayload = z.object({
   roomId: z.string().min(1).max(200),
-  password: z.string().max(200).optional(),
+  password: z.string().max(PASSWORD_MAX).optional(),
 });
 
 const CreateRoomPayload = z.object({
@@ -24,7 +31,7 @@ const CreateRoomPayload = z.object({
   description: z.string().max(500).optional(),
   color: z.string().max(100).optional(),
   isPrivate: z.boolean().optional(),
-  password: z.string().max(200).optional(),
+  password: z.string().max(PASSWORD_MAX).optional(),
   captionsEnabled: z.boolean().optional(),
   languageFlag: z.string().max(50).optional(),
 });
