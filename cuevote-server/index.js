@@ -221,6 +221,7 @@ wss.on("connection", (ws, req) => {
                         ws.send(JSON.stringify({ type: "error", message: "Invalid login payload." }));
                         return;
                     }
+                    sendAck();
                     const { token } = loginResult.data;
                         logger.info("[LOGIN TRACE] Processing login request...");
                         try {
@@ -266,6 +267,7 @@ wss.on("connection", (ws, req) => {
                         ws.send(JSON.stringify({ type: "SESSION_INVALID" }));
                         return;
                     }
+                    sendAck();
                     const { token } = resumeResult.data;
                     logger.info(`[Resume Session] Received (clientId: ${ws.id})`);
                     const session = db.getSession(token);
