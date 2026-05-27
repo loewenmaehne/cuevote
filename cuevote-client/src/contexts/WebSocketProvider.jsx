@@ -21,8 +21,8 @@ const getWebSocketUrl = () => {
 
 const WEBSOCKET_URL = getWebSocketUrl();
 const SESSION_KEY = "cuevote_session_token";
-const ACKABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM"];
-const QUEUEABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "PLAY_PAUSE", "NEXT_TRACK"];
+const ACKABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "LOGIN", "RESUME_SESSION"];
+const QUEUEABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "PLAY_PAUSE", "NEXT_TRACK", "LOGIN", "RESUME_SESSION"];
 
 export function WebSocketProvider({ children }) {
   const [state, setState] = useState(null);
