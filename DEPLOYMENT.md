@@ -184,6 +184,17 @@ server {
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
+    # HSTS: force HTTPS for the next 2 years incl. subdomains. preload is
+    # the strongest signal to browsers; only enable once HTTPS is stable.
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+    # CSP: lock script/connect/frame sources to first-party + the third
+    # parties CueVote actually uses (Google OAuth, YouTube IFrame Player,
+    # gstatic for the player JS). Tighten further once you can confirm
+    # nothing inline survives the build.
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://accounts.google.com https://apis.google.com https://www.youtube.com https://www.gstatic.com; frame-src https://www.youtube.com https://accounts.google.com; img-src 'self' data: https://*.ytimg.com https://*.googleusercontent.com; connect-src 'self' wss: https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; base-uri 'self'; form-action 'self'; frame-ancestors 'self'" always;
+    # Permissions-Policy: deny everything CueVote does not use. QR
+    # scanning runs in the native Android/iOS shells, not the web client.
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()" always;
 
     location / {
         try_files $uri $uri/ /index.html;
