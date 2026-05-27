@@ -9,6 +9,7 @@ import { LogOut, Settings, List, Send, QrCode, Library, Copy, Check, Scale, Chev
 import { QRCodeSVG } from "qrcode.react";
 import { Language } from '../contexts/LanguageContext';
 import { deviceDetection } from '../utils/deviceDetection';
+import { dangerousHtml } from '../utils/sanitizeHtml';
 import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
 
 
@@ -512,7 +513,7 @@ export function Header({
               ) : (
                 <div className="text-center animate-in fade-in slide-in-from-bottom-2">
                   <h4 className="text-lg font-bold text-red-500 mb-2">{t('lobby.deleteAccountConfirm')}</h4>
-                  <p className="text-sm text-neutral-400 mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: t('lobby.deleteAccountWarning') }} />
+                  <p className="text-sm text-neutral-400 mb-4 leading-relaxed" dangerouslySetInnerHTML={dangerousHtml(t('lobby.deleteAccountWarning'))} />
 
                   <div className="mb-6">
                     <label className="block text-xs text-neutral-500 mb-2 font-medium">

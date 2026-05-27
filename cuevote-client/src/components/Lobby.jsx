@@ -6,6 +6,7 @@ import { Radio, Users, Sparkles, AlertCircle, X, LogOut, Search, Lock, Unlock, G
 import { useWebSocketContext } from "../hooks/useWebSocketContext";
 import { Consent } from '../contexts/ConsentContext';
 import { Language } from '../contexts/LanguageContext';
+import { dangerousHtml } from '../utils/sanitizeHtml';
 import { LanguageSwitcherExports } from './LanguageSwitcher';
 const { LanguageSwitcher, languages } = LanguageSwitcherExports;
 import { GoogleAuthButton } from './GoogleAuthButton';
@@ -1186,7 +1187,7 @@ export function Lobby() {
                             ) : (
                                 <div className="text-center animate-in fade-in slide-in-from-bottom-2">
                                     <h4 className="text-lg font-bold text-red-500 mb-2">{t('lobby.deleteAccountConfirm')}</h4>
-                                    <p className="text-sm text-neutral-400 mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: t('lobby.deleteAccountWarning') }} />
+                                    <p className="text-sm text-neutral-400 mb-4 leading-relaxed" dangerouslySetInnerHTML={dangerousHtml(t('lobby.deleteAccountWarning'))} />
 
                                     <div className="mb-6">
                                         <label className="block text-xs text-neutral-500 mb-2 font-medium">

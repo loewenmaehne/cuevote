@@ -4,6 +4,7 @@ import React, { useState, useLayoutEffect, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, Mail, Phone, Globe, Flag, Loader2, Package, ExternalLink } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
+import { dangerousHtml } from '../utils/sanitizeHtml';
 
 const VALID_TABS = ['terms', 'privacy', 'imprint', 'attributions'];
 
@@ -156,7 +157,7 @@ export function LegalPage() {
                                         {content.terms.sections.map((section, idx) => (
                                             <div key={idx} className="mb-6">
                                                 <h3>{section.title}</h3>
-                                                {section.content && <p dangerouslySetInnerHTML={{ __html: section.content }} />}
+                                                {section.content && <p dangerouslySetInnerHTML={dangerousHtml(section.content)} />}
                                                 {section.list && (
                                                     <ul>
                                                         {section.list.map((item, i) => (
@@ -179,7 +180,7 @@ export function LegalPage() {
                                         {content.privacy.sections.map((section, idx) => (
                                             <div key={idx} className="mb-6">
                                                 <h3>{section.title}</h3>
-                                                {section.content && <p dangerouslySetInnerHTML={{ __html: section.content }} />}
+                                                {section.content && <p dangerouslySetInnerHTML={dangerousHtml(section.content)} />}
                                                 {section.intro && <p>{section.intro}</p>}
                                                 {section.list && (
                                                     <ul className="list-none pl-0 space-y-4">
@@ -194,7 +195,7 @@ export function LegalPage() {
                                                 {section.listSimple && (
                                                     <ul>
                                                         {section.listSimple.map((item, i) => (
-                                                            <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+                                                            <li key={i} dangerouslySetInnerHTML={dangerousHtml(item)} />
                                                         ))}
                                                     </ul>
                                                 )}
@@ -270,7 +271,7 @@ export function LegalPage() {
                                                 <strong>{content.imprint.liability.title}</strong> {content.imprint.liability.text}
                                             </p>
                                             <p>
-                                                <strong>{content.imprint.odr.title}</strong> <span dangerouslySetInnerHTML={{ __html: content.imprint.odr.text }} />
+                                                <strong>{content.imprint.odr.title}</strong> <span dangerouslySetInnerHTML={dangerousHtml(content.imprint.odr.text)} />
                                             </p>
                                         </div>
                                     </div>
@@ -301,7 +302,7 @@ export function LegalPage() {
                                                 <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">{content.attributions.highlights.frontend.title}</h4>
                                                 <ul className="space-y-1.5 text-sm text-neutral-400 list-disc list-inside marker:text-neutral-600">
                                                     {content.attributions.highlights.frontend.items.map((item, i) => (
-                                                        <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+                                                        <li key={i} dangerouslySetInnerHTML={dangerousHtml(item)} />
                                                     ))}
                                                 </ul>
                                             </div>
@@ -309,7 +310,7 @@ export function LegalPage() {
                                                 <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">{content.attributions.highlights.backend.title}</h4>
                                                 <ul className="space-y-1.5 text-sm text-neutral-400 list-disc list-inside marker:text-neutral-600">
                                                     {content.attributions.highlights.backend.items.map((item, i) => (
-                                                        <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+                                                        <li key={i} dangerouslySetInnerHTML={dangerousHtml(item)} />
                                                     ))}
                                                 </ul>
                                             </div>
@@ -317,13 +318,13 @@ export function LegalPage() {
                                                 <h4 className="text-white font-bold text-sm uppercase tracking-wider mb-3">{content.attributions.highlights.services.title}</h4>
                                                 <ul className="space-y-1.5 text-sm text-neutral-400 list-disc list-inside marker:text-neutral-600">
                                                     {content.attributions.highlights.services.items.map((item, i) => (
-                                                        <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
+                                                        <li key={i} dangerouslySetInnerHTML={dangerousHtml(item)} />
                                                     ))}
                                                 </ul>
                                             </div>
                                         </div>
 
-                                        <p dangerouslySetInnerHTML={{ __html: content.attributions.ownLicense }} />
+                                        <p dangerouslySetInnerHTML={dangerousHtml(content.attributions.ownLicense)} />
                                     </>
                                 )}
                             </article>

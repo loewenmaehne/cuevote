@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.2",
+    "dompurify": "^3.4.6",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.545.0",
     "prop-types": "^15.8.1",
