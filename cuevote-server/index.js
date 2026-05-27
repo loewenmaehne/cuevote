@@ -136,9 +136,38 @@ loadRooms();
 
 const clients = new Set();
 
+// Per-IP socket cap. The existing per-socket message rate limit
+// (60 msg / 10s) is trivially bypassed by opening many sockets;
+// this caps the concurrent footprint. Generous default (20) covers
+// a normal user with several tabs and the mobile app open at once,
+// while a single misbehaving client maxes out at 20× the per-socket
+// quota instead of unlimited.
+const MAX_SOCKETS_PER_IP = parseInt(process.env.MAX_SOCKETS_PER_IP || '20', 10);
+const ipSocketCount = new Map(); // ip -> active socket count
+
+function getClientIp(req) {
+    const xff = req.headers['x-forwarded-for'];
+    if (xff) return xff.split(',')[0].trim();
+    return req.socket.remoteAddress || 'unknown';
+}
+
 logger.info("WebSocket server started on port", process.env.PORT || 8080);
 
 wss.on("connection", (ws, req) => {
+    // Per-IP socket cap (before any other work — fail fast).
+    const ip = getClientIp(req);
+    const ipCount = ipSocketCount.get(ip) || 0;
+    if (ipCount >= MAX_SOCKETS_PER_IP) {
+        logger.warn(`[RateLimit] IP ${ip} exceeded socket cap (${ipCount}/${MAX_SOCKETS_PER_IP}). Rejecting connection.`);
+        try {
+            ws.send(JSON.stringify({ type: "error", code: "IP_RATE_LIMIT", message: "Too many connections from this network. Please try again later." }));
+            ws.close(1013, 'Too many connections from this IP');
+        } catch { /* socket already dead */ }
+        return;
+    }
+    ipSocketCount.set(ip, ipCount + 1);
+    ws.ip = ip; // marker that this socket is counted
+
     // Parse Client ID
     const urlParams = new URLSearchParams(req.url.split('?')[1]);
     const clientId = urlParams.get('clientId');
@@ -154,7 +183,11 @@ wss.on("connection", (ws, req) => {
                         rooms.get(existing.roomId).removeClient(existing);
                     }
                 }
-                if (existing.user) ws.user = existing.user;
+                // Do NOT inherit existing.user — clientId travels in URL params
+                // (referers, access logs, browser history) and is therefore not
+                // an auth factor. The client re-sends RESUME_SESSION with the
+                // session token on every reconnect (WebSocketProvider.jsx),
+                // which is the only path that should set ws.user.
                 clients.delete(existing);
                 existing.terminate();
             }
@@ -296,7 +329,16 @@ wss.on("connection", (ws, req) => {
                 }
                 case "LOGOUT": {
                     const logoutResult = schemas.LogoutPayload.safeParse(parsedMessage.payload);
-                    if (logoutResult.success) db.deleteSession(logoutResult.data.token);
+                    if (logoutResult.success) {
+                        db.deleteSession(logoutResult.data.token);
+                    } else {
+                        // A malformed LOGOUT used to silently no-op the DB
+                        // delete while still clearing ws.user, so the client
+                        // would think they were logged out but the session
+                        // stayed valid for its 24h lifetime. Log the schema
+                        // mismatch so we notice if a client regresses.
+                        logger.warn(`[Logout] Invalid payload (clientId: ${ws.id}). Session token not invalidated.`);
+                    }
                     ws.user = null;
                     return;
                 }
@@ -504,7 +546,7 @@ wss.on("connection", (ws, req) => {
                     const offset = (page - 1) * pageSize;
 
                     if (showMyChannels) {
-                        logger.info(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${redactForLog(ws.user?.id)}`);
+                        logger.debug(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${redactForLog(ws.user?.id)}`);
                     }
 
                     if (showMyChannels && !ws.user) {
@@ -535,7 +577,7 @@ wss.on("connection", (ws, req) => {
                     let dbRooms = [];
                     if (showMyChannels) {
                         dbRooms = db.listUserRooms(ws.user.id);
-                        logger.info(`[DEBUG_MARATHON] DB returned ${dbRooms.length} rooms for user ${redactForLog(ws.user?.id)}. IDs: ${dbRooms.map(r => r.id).join(', ')}`);
+                        logger.debug(`[DEBUG_MARATHON] DB returned ${dbRooms.length} rooms for user ${redactForLog(ws.user?.id)}. IDs: ${dbRooms.map(r => r.id).join(', ')}`);
                     } else {
                         dbRooms = showPrivate ? db.listPrivateRooms() : db.listPublicRooms();
                     }
@@ -626,12 +668,21 @@ wss.on("connection", (ws, req) => {
         }
     });
 
+    const releaseIpSlot = () => {
+        if (!ws.ip) return;
+        const count = ipSocketCount.get(ws.ip);
+        if (!count || count <= 1) ipSocketCount.delete(ws.ip);
+        else ipSocketCount.set(ws.ip, count - 1);
+        ws.ip = null; // idempotent: don't double-decrement on close+error
+    };
+
     ws.on("error", (err) => {
         logger.error(`[WS Error] Client ${ws.id}:`, err.message);
         clients.delete(ws);
         if (ws.roomId && rooms.has(ws.roomId)) {
             rooms.get(ws.roomId).removeClient(ws);
         }
+        releaseIpSlot();
     });
 
     ws.on("close", (code, reason) => {
@@ -641,6 +692,7 @@ wss.on("connection", (ws, req) => {
         if (ws.roomId && rooms.has(ws.roomId)) {
             rooms.get(ws.roomId).removeClient(ws);
         }
+        releaseIpSlot();
     });
 });
 

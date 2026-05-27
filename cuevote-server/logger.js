@@ -13,8 +13,22 @@ const logger = pino({
     },
   },
   timestamp: pino.stdTimeFunctions.isoTime,
+  // Redaction paths cover top-level fields AND one nested layer deep,
+  // because the previous top-level-only config would not catch the
+  // common pattern logger.info({ user: { email } }, "..."). Pino paths
+  // are exact-or-wildcard — there is no recursive catch-all, so the
+  // common containers (user.*, payload.*) are listed explicitly.
   redact: {
-    paths: ['token', 'password', 'sessionToken', 'email'],
+    paths: [
+      // top-level
+      'token', 'password', 'sessionToken', 'email',
+      // one level deep, any key
+      '*.token', '*.password', '*.sessionToken', '*.email',
+      // common containers used in ws.send / logger calls
+      'user.email', 'user.token',
+      'payload.token', 'payload.password', 'payload.sessionToken',
+      'payload.user.email', 'payload.user.token',
+    ],
     censor: '[REDACTED]',
   },
 });

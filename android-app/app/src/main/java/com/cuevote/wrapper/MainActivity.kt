@@ -132,32 +132,39 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         }
 
         // Web Chrome Client for Popups
+        //
+        // Popups are intercepted: cuevote.com targets stay in this WebView,
+        // everything else (legal links, YouTube, Google docs) is handed to
+        // the system browser. Previously every popup landed in a full-screen
+        // dialog WebView that would happily load any URL — a compromised
+        // first-party page could have used it to load an attacker-controlled
+        // origin with the CueVoteWrapper user-agent in front of the user.
         webView.webChromeClient = object : WebChromeClient() {
             override fun onCreateWindow(view: WebView?, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?): Boolean {
-                val newWebView = WebView(this@MainActivity)
-                newWebView.settings.javaScriptEnabled = true
-                newWebView.settings.domStorageEnabled = true
-                newWebView.settings.userAgentString = view?.settings?.userAgentString
-                
-                val dialog = Dialog(this@MainActivity)
-                dialog.setContentView(newWebView)
-                dialog.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
-                dialog.show()
-                
-                dialog.setOnDismissListener { 
-                    newWebView.destroy() 
+                // Throw-away WebView whose only purpose is to surface the
+                // popup's target URL via shouldOverrideUrlLoading, then route
+                // it. WebView is never attached to the view hierarchy and is
+                // destroyed once we've decided what to do with the URL.
+                val captureWebView = WebView(this@MainActivity)
+                captureWebView.webViewClient = object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                        val url = request?.url
+                        if (url != null) {
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, url)
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                this@MainActivity.startActivity(intent)
+                            } catch (_: Exception) {
+                                // No browser installed — silently drop.
+                            }
+                        }
+                        captureWebView.destroy()
+                        return true
+                    }
                 }
-                
-                newWebView.webChromeClient = object : WebChromeClient() {
-                    override fun onCloseWindow(window: WebView?) { dialog.dismiss() }
-                }
-                newWebView.webViewClient = object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean { return false }
-                }
-
-                val transport = resultMsg?.obj as WebView.WebViewTransport
-                transport.webView = newWebView
-                resultMsg.sendToTarget()
+                val transport = resultMsg?.obj as? WebView.WebViewTransport
+                transport?.webView = captureWebView
+                resultMsg?.sendToTarget()
                 return true
             }
         }

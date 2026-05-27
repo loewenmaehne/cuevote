@@ -11,9 +11,16 @@ const BACKUP_DIR = path.join(__dirname, 'backups');
 const BACKUP_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
 const KEEP_BACKUPS_DAYS = 7;
 
-// Ensure backup directory exists
+// Ensure backup directory exists and is owner-only (no world/group read).
+// Backups contain users, sessions (tokens in plaintext), and bcrypt hashes,
+// so any process running as a different user should not be able to slurp them.
 if (!fs.existsSync(BACKUP_DIR)) {
 	fs.mkdirSync(BACKUP_DIR, { recursive: true });
+}
+try {
+	fs.chmodSync(BACKUP_DIR, 0o700);
+} catch (e) {
+	logger.warn('[Backup] Could not chmod backup dir to 0700:', e.message);
 }
 
 async function runBackup() {
@@ -24,6 +31,14 @@ async function runBackup() {
 
 	try {
 		await db.backup(destination);
+		// Tighten permissions immediately. Default umask leaves backups
+		// world-readable on shared hosting, which would expose every
+		// active session token in the DB snapshot.
+		try {
+			fs.chmodSync(destination, 0o600);
+		} catch (e) {
+			logger.warn(`[Backup] Could not chmod ${filename} to 0600:`, e.message);
+		}
 		logger.info(`[Backup] detailed success: ${destination}`);
 
 		// Prune old backups

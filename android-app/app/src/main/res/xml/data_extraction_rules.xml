@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Data extraction rules for Android 12+ (API 31+).
+  Excludes WebView storage (cookies + localStorage) so the CueVote session
+  token is not carried over via Google-Cloud-Backup or device-to-device
+  transfer. WebView preferences for accent colors etc. are negligible UX
+  loss; the user re-detects language from browser locale on first launch.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="app_webview" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="app_webview" />
+    </device-transfer>
+</data-extraction-rules>

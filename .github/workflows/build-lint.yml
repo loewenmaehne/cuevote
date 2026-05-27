@@ -2,6 +2,12 @@
 # Copyright (c) 2026 Julian Zienert
 name: build & lint
 
+# Default GITHUB_TOKEN permissions on most repos are too broad
+# (contents:write, pull-requests:write, etc.). This workflow only
+# needs to clone and run scripts, so lock it down explicitly.
+permissions:
+  contents: read
+
 on:
   pull_request:
     paths:

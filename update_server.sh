@@ -60,7 +60,7 @@ do_update() {
     cd "$CLIENT_DIR"
 
     echo "  -> Installing client dependencies..."
-    npm install --silent
+    npm ci --silent
 
     echo "  -> Building client..."
     if ! npm run build; then
@@ -76,7 +76,7 @@ do_update() {
     cd "$SERVER_DIR"
 
     echo "  -> Installing server dependencies..."
-    npm install --silent
+    npm ci --silent
 
     # 4. Restart Server Process
     echo "[4/4] Restarting Server Process..."

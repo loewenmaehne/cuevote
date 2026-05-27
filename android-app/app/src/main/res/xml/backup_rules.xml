@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Auto-backup rules for Android 6-11 (API 23-30).
+  Same intent as data_extraction_rules.xml: keep WebView storage out of
+  Google-Cloud-Backup so the CueVote session token cannot be restored
+  on a different device.
+-->
+<full-backup-content>
+    <exclude domain="root" path="app_webview" />
+</full-backup-content>
