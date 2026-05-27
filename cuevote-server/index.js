@@ -544,7 +544,7 @@ wss.on("connection", (ws, req) => {
                     const offset = (page - 1) * pageSize;
 
                     if (showMyChannels) {
-                        logger.info(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${redactForLog(ws.user?.id)}`);
+                        logger.debug(`[DEBUG_MARATHON] LIST_ROOMS (My Channels) requested by: ${redactForLog(ws.user?.id)}`);
                     }
 
                     if (showMyChannels && !ws.user) {
@@ -575,7 +575,7 @@ wss.on("connection", (ws, req) => {
                     let dbRooms = [];
                     if (showMyChannels) {
                         dbRooms = db.listUserRooms(ws.user.id);
-                        logger.info(`[DEBUG_MARATHON] DB returned ${dbRooms.length} rooms for user ${redactForLog(ws.user?.id)}. IDs: ${dbRooms.map(r => r.id).join(', ')}`);
+                        logger.debug(`[DEBUG_MARATHON] DB returned ${dbRooms.length} rooms for user ${redactForLog(ws.user?.id)}. IDs: ${dbRooms.map(r => r.id).join(', ')}`);
                     } else {
                         dbRooms = showPrivate ? db.listPrivateRooms() : db.listPublicRooms();
                     }
