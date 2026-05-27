@@ -319,7 +319,7 @@ export function Header({
 
         <div
           ref={pillsRef}
-          className={`flex-1 overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
+          className={`flex-1 overflow-x-auto no-scrollbar overscroll-x-contain touch-pan-x touch-pan-y flex items-center gap-1.5 min-w-0 select-none ${isPillDragging ? "cursor-grabbing" : "cursor-grab"}`}
         >
           {renderPills()}
         </div>
@@ -345,7 +345,7 @@ export function Header({
         <div className="row-span-2 flex items-stretch">
           {suggestButtonTall}
         </div>
-        <div className="overflow-x-auto no-scrollbar flex items-center gap-1.5 min-w-0 py-0.5">
+        <div className="overflow-x-auto no-scrollbar overscroll-x-contain touch-pan-x touch-pan-y flex items-center gap-1.5 min-w-0 py-0.5">
           {renderPills({ includeSuggest: false })}
         </div>
       </div>
