@@ -136,9 +136,38 @@ loadRooms();
 
 const clients = new Set();
 
+// Per-IP socket cap. The existing per-socket message rate limit
+// (60 msg / 10s) is trivially bypassed by opening many sockets;
+// this caps the concurrent footprint. Generous default (20) covers
+// a normal user with several tabs and the mobile app open at once,
+// while a single misbehaving client maxes out at 20× the per-socket
+// quota instead of unlimited.
+const MAX_SOCKETS_PER_IP = parseInt(process.env.MAX_SOCKETS_PER_IP || '20', 10);
+const ipSocketCount = new Map(); // ip -> active socket count
+
+function getClientIp(req) {
+    const xff = req.headers['x-forwarded-for'];
+    if (xff) return xff.split(',')[0].trim();
+    return req.socket.remoteAddress || 'unknown';
+}
+
 logger.info("WebSocket server started on port", process.env.PORT || 8080);
 
 wss.on("connection", (ws, req) => {
+    // Per-IP socket cap (before any other work — fail fast).
+    const ip = getClientIp(req);
+    const ipCount = ipSocketCount.get(ip) || 0;
+    if (ipCount >= MAX_SOCKETS_PER_IP) {
+        logger.warn(`[RateLimit] IP ${ip} exceeded socket cap (${ipCount}/${MAX_SOCKETS_PER_IP}). Rejecting connection.`);
+        try {
+            ws.send(JSON.stringify({ type: "error", code: "IP_RATE_LIMIT", message: "Too many connections from this network. Please try again later." }));
+            ws.close(1013, 'Too many connections from this IP');
+        } catch { /* socket already dead */ }
+        return;
+    }
+    ipSocketCount.set(ip, ipCount + 1);
+    ws.ip = ip; // marker that this socket is counted
+
     // Parse Client ID
     const urlParams = new URLSearchParams(req.url.split('?')[1]);
     const clientId = urlParams.get('clientId');
@@ -628,12 +657,21 @@ wss.on("connection", (ws, req) => {
         }
     });
 
+    const releaseIpSlot = () => {
+        if (!ws.ip) return;
+        const count = ipSocketCount.get(ws.ip);
+        if (!count || count <= 1) ipSocketCount.delete(ws.ip);
+        else ipSocketCount.set(ws.ip, count - 1);
+        ws.ip = null; // idempotent: don't double-decrement on close+error
+    };
+
     ws.on("error", (err) => {
         logger.error(`[WS Error] Client ${ws.id}:`, err.message);
         clients.delete(ws);
         if (ws.roomId && rooms.has(ws.roomId)) {
             rooms.get(ws.roomId).removeClient(ws);
         }
+        releaseIpSlot();
     });
 
     ws.on("close", (code, reason) => {
@@ -643,6 +681,7 @@ wss.on("connection", (ws, req) => {
         if (ws.roomId && rooms.has(ws.roomId)) {
             rooms.get(ws.roomId).removeClient(ws);
         }
+        releaseIpSlot();
     });
 });
 
