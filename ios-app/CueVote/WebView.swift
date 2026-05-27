@@ -36,8 +36,14 @@ struct WebView: UIViewRepresentable {
         webView.scrollView.contentInsetAdjustmentBehavior = .never
         
         let tokenObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name("InjectGoogleToken"), object: nil, queue: .main) { note in
-            if let token = note.object as? String {
-                let js = "window.handleNativeGoogleLogin && window.handleNativeGoogleLogin('\(token)');"
+            // JSON-encode the token instead of raw string interpolation. Google
+            // OAuth tokens are alphanumeric in practice, but a single stray
+            // quote or backslash would break out of the JS string context and
+            // turn the bridge into an RCE primitive in the web layer.
+            if let token = note.object as? String,
+               let tokenData = try? JSONEncoder().encode(token),
+               let tokenJson = String(data: tokenData, encoding: .utf8) {
+                let js = "window.handleNativeGoogleLogin && window.handleNativeGoogleLogin(\(tokenJson));"
                 webView.evaluateJavaScript(js, completionHandler: nil)
             }
         }
