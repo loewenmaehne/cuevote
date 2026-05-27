@@ -327,7 +327,16 @@ wss.on("connection", (ws, req) => {
                 }
                 case "LOGOUT": {
                     const logoutResult = schemas.LogoutPayload.safeParse(parsedMessage.payload);
-                    if (logoutResult.success) db.deleteSession(logoutResult.data.token);
+                    if (logoutResult.success) {
+                        db.deleteSession(logoutResult.data.token);
+                    } else {
+                        // A malformed LOGOUT used to silently no-op the DB
+                        // delete while still clearing ws.user, so the client
+                        // would think they were logged out but the session
+                        // stayed valid for its 24h lifetime. Log the schema
+                        // mismatch so we notice if a client regresses.
+                        logger.warn(`[Logout] Invalid payload (clientId: ${ws.id}). Session token not invalidated.`);
+                    }
                     ws.user = null;
                     return;
                 }
