@@ -312,5 +312,111 @@ describe('Room', () => {
       assert.equal(called, false, 'should skip the API when nothing is missing');
       room.destroy();
     });
+
+    it('drops an upcoming track the API confirmed is gone (id absent from the result)', async () => {
+      const room = new Room('rehydrate-drop', 'Drop', null, { owner_id: 'owner-1' });
+
+      // currentTrack already has a title, so only the two title-less queue items get queried.
+      room.state.currentTrack = { id: 'c1', videoId: 'VID_CUR', title: 'Now Playing', artist: 'A', score: 0, voters: {} };
+      room.state.queue = [
+        { id: 'c1', videoId: 'VID_CUR', title: 'Now Playing', artist: 'A', score: 0, voters: {} },
+        { id: 'q2', videoId: 'VID_GONE', title: null, artist: null, score: 0, voters: {} },     // deleted/private → absent
+        { id: 'q3', videoId: 'VID_OK', title: null, artist: null, score: 2, voters: { u1: 'up' } }, // resolvable
+      ];
+
+      // Successful call: VID_OK resolves, VID_GONE is OMITTED (mirrors a deleted/private/
+      // non-embeddable video, which checkVideoAvailability leaves out of the Map).
+      const requested = [];
+      room.checkVideoAvailability = async (ids) => {
+        requested.push(...ids);
+        const map = new Map();
+        for (const id of ids) {
+          if (id === 'VID_OK') map.set(id, { title: 'OK Title', artist: 'OK Artist', thumbnail: 'http://thumb/ok', duration: 100 });
+          // VID_GONE intentionally omitted → absent → confirmed unavailable
+        }
+        return map;
+      };
+
+      const ws = mockWs({ id: 'guest-1', name: 'Guest' });
+      room.clients.add(ws);
+
+      await room.rehydrateVisibleMetadata();
+
+      assert.deepEqual(requested.sort(), ['VID_GONE', 'VID_OK']);
+      // Confirmed-gone track removed; current + resolvable track kept, in order.
+      assert.deepEqual(room.state.queue.map(t => t.videoId), ['VID_CUR', 'VID_OK']);
+      assert.equal(room.state.queue[1].title, 'OK Title', 'survivor got healed');
+      assert.equal(room.state.queue[1].score, 2, 'app data preserved on survivor');
+      // Now-playing untouched.
+      assert.equal(room.state.currentTrack.videoId, 'VID_CUR');
+      assert.equal(room.state.currentTrack.title, 'Now Playing');
+
+      // The shortened queue was broadcast.
+      const delta = ws._messages.find(m => m.type === 'state_delta' && m.payload && m.payload.queue);
+      assert.ok(delta, 'expected a state_delta with the cleaned queue');
+      assert.equal(delta.payload.queue.length, 2);
+
+      room.destroy();
+    });
+
+    it('keeps a track the API could not verify (present-but-null: no key / quota / error)', async () => {
+      const room = new Room('rehydrate-keep', 'Keep', null, { owner_id: 'owner-1' });
+      room.state.currentTrack = { id: 'c1', videoId: 'VID_CUR', title: 'Now', artist: 'A', score: 0, voters: {} };
+      room.state.queue = [
+        { id: 'c1', videoId: 'VID_CUR', title: 'Now', artist: 'A', score: 0, voters: {} },
+        { id: 'q2', videoId: 'VID_UNVERIFIED', title: null, artist: null, score: 3, voters: { u1: 'up' } },
+      ];
+
+      // "Couldn't verify": every id comes back present-with-null, exactly as
+      // checkVideoAvailability does with no API key or on an HTTP/fetch error.
+      room.checkVideoAvailability = async (ids) => new Map(ids.map(id => [id, null]));
+
+      const ws = mockWs({ id: 'guest-1', name: 'Guest' });
+      room.clients.add(ws);
+
+      await room.rehydrateVisibleMetadata();
+
+      // Unverifiable track is retained as a skeleton (retriable later), not dropped.
+      assert.equal(room.state.queue.length, 2);
+      assert.equal(room.state.queue[1].videoId, 'VID_UNVERIFIED');
+      assert.equal(room.state.queue[1].title, null);
+      assert.equal(room.state.queue[1].score, 3, 'app data preserved');
+
+      room.destroy();
+    });
+
+    it('never drops the now-playing track even when the API reports it gone', async () => {
+      const room = new Room('rehydrate-current-gone', 'CurGone', null, { owner_id: 'owner-1' });
+      // currentTrack itself is a cleared skeleton AND will come back absent.
+      room.state.currentTrack = { id: 'c1', videoId: 'VID_GONE', title: null, artist: null, score: 0, voters: {} };
+      room.state.queue = [
+        { id: 'c1', videoId: 'VID_GONE', title: null, artist: null, score: 0, voters: {} },
+        { id: 'q2', videoId: 'VID_OK', title: null, artist: null, score: 0, voters: {} },
+      ];
+
+      room.checkVideoAvailability = async (ids) => {
+        const map = new Map();
+        for (const id of ids) {
+          if (id === 'VID_OK') map.set(id, { title: 'OK', artist: 'A', thumbnail: 'http://thumb/ok', duration: 50 });
+          // VID_GONE omitted → absent
+        }
+        return map;
+      };
+
+      const ws = mockWs({ id: 'guest-1', name: 'Guest' });
+      room.clients.add(ws);
+
+      await room.rehydrateVisibleMetadata();
+
+      // queue[0] mirrors currentTrack, so it is preserved despite being confirmed gone —
+      // tick()/skip logic relies on queue[0] === current. It stays a skeleton; the playing
+      // copy is resolved through PLAYBACK_ERROR, not yanked mid-rehydrate.
+      assert.equal(room.state.queue.length, 2, 'current mirror retained, rest healed');
+      assert.equal(room.state.queue[0].videoId, 'VID_GONE');
+      assert.equal(room.state.currentTrack.videoId, 'VID_GONE');
+      assert.equal(room.state.queue[1].title, 'OK');
+
+      room.destroy();
+    });
   });
 });
