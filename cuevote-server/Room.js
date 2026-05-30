@@ -1097,14 +1097,18 @@ class Room {
         }
 
         // Duplicate Title Check (After we have track details)
-        if (track && this.state.duplicateCooldown > 0 && !canBypass) {
+        if (track && track.title && this.state.duplicateCooldown > 0 && !canBypass) {
             const cooldown = this.state.duplicateCooldown;
             const titleToCheck = track.title.toLowerCase().trim();
 
-            // Check Queue
-            const queueTitles = this.state.queue.map(t => t.title.toLowerCase().trim());
-            // Check History (limit to needed amount)
-            const historyToCheck = this.state.history.slice(-cooldown).map(t => t.title.toLowerCase().trim());
+            // Check Queue + recent History. Skip entries whose title was cleared by
+            // the 28-day metadata cleanup (null) — t.title.toLowerCase() would throw.
+            const queueTitles = this.state.queue
+                .filter(t => t.title)
+                .map(t => t.title.toLowerCase().trim());
+            const historyToCheck = this.state.history.slice(-cooldown)
+                .filter(t => t.title)
+                .map(t => t.title.toLowerCase().trim());
 
             // Logic: Check combined list of recent history + current queue
             const combinedList = [...historyToCheck, ...queueTitles];
