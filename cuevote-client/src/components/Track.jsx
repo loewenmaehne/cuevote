@@ -62,7 +62,11 @@ export function Track({
     >
       <div className="flex justify-between items-center gap-3">
         <div className="flex items-center gap-4 flex-1 min-w-0">
-          {hasConsent ? (
+          {!track.title ? (
+            // Metadata still loading — cleared by the 28-day cleanup, refilled on
+            // join. Don't show YouTube imagery until we have fresh metadata.
+            <div className="w-16 h-16 rounded-3xl bg-neutral-700/50 animate-pulse flex-shrink-0" aria-hidden="true" />
+          ) : hasConsent ? (
             <img
               src={track.thumbnail ?? buildThumbnailUrl(track.videoId)}
               alt={track.title}
