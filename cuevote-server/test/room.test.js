@@ -247,4 +247,70 @@ describe('Room', () => {
       room.destroy();
     });
   });
+
+  describe('Metadata Rehydration', () => {
+    it('fills cleared title/artist on the now-playing track + queue and broadcasts', async () => {
+      const room = new Room('rehydrate-room', 'Rehydrate', null, { owner_id: 'owner-1' });
+
+      // Simulate state restored from a dormant room: valid video IDs, but title/
+      // artist cleared by the 28-day cleanup. currentTrack mirrors queue[0] by id.
+      room.state.currentTrack = { id: 'c1', videoId: 'VID_CUR', title: null, artist: null, score: 0, voters: {} };
+      room.state.queue = [
+        { id: 'c1', videoId: 'VID_CUR', title: null, artist: null, score: 0, voters: {} },
+        { id: 'q2', videoId: 'VID_Q2', title: null, artist: null, score: 5, voters: { u1: 'up' } },
+        { id: 'q3', videoId: 'VID_Q3', title: 'Already Titled', artist: 'Known', score: 0, voters: {} },
+      ];
+
+      // Stub the YouTube layer so the test needs no API key / network.
+      const requested = [];
+      room.checkVideoAvailability = async (ids) => {
+        requested.push(...ids);
+        return new Map(ids.map(id => [id, {
+          title: 'Title ' + id, artist: 'Artist ' + id, thumbnail: 'http://thumb/' + id, duration: 123,
+        }]));
+      };
+
+      const ws = mockWs({ id: 'guest-1', name: 'Guest' });
+      room.clients.add(ws);
+
+      await room.rehydrateVisibleMetadata();
+
+      // Only the cleared tracks were fetched (already-titled q3 skipped; VID_CUR deduped).
+      assert.deepEqual(requested.sort(), ['VID_CUR', 'VID_Q2']);
+
+      // Title/artist filled in on now-playing + queue.
+      assert.equal(room.state.currentTrack.title, 'Title VID_CUR');
+      assert.equal(room.state.currentTrack.artist, 'Artist VID_CUR');
+      assert.equal(room.state.queue[0].title, 'Title VID_CUR');
+      assert.equal(room.state.queue[1].title, 'Title VID_Q2');
+
+      // App data preserved.
+      assert.equal(room.state.queue[1].score, 5);
+      assert.deepEqual(room.state.queue[1].voters, { u1: 'up' });
+      assert.equal(room.state.queue[1].videoId, 'VID_Q2');
+
+      // Already-titled track untouched.
+      assert.equal(room.state.queue[2].title, 'Already Titled');
+
+      // A state_delta carrying the refreshed queue was broadcast to the client.
+      const delta = ws._messages.find(m => m.type === 'state_delta' && m.payload && m.payload.queue);
+      assert.ok(delta, 'expected a state_delta broadcast with the refreshed queue');
+      assert.equal(delta.payload.queue[1].title, 'Title VID_Q2');
+
+      room.destroy();
+    });
+
+    it('does not hit the API when no visible title is missing', async () => {
+      const room = new Room('rehydrate-noop', 'NoOp', null, { owner_id: 'owner-1' });
+      room.state.currentTrack = { id: 'c1', videoId: 'V1', title: 'Has Title', artist: 'A', score: 0, voters: {} };
+      room.state.queue = [{ id: 'c1', videoId: 'V1', title: 'Has Title', artist: 'A', score: 0, voters: {} }];
+
+      let called = false;
+      room.checkVideoAvailability = async () => { called = true; return new Map(); };
+
+      await room.rehydrateVisibleMetadata();
+      assert.equal(called, false, 'should skip the API when nothing is missing');
+      room.destroy();
+    });
+  });
 });
