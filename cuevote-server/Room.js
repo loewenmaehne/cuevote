@@ -249,7 +249,9 @@ class Room {
             // and re-caches each hit via db.upsertVideo (refreshing fetched_at), so the
             // DB heals too. A null value means "couldn't verify" (no API key / quota /
             // error) — leave the track as a skeleton rather than guess.
+            logger.info(`[Rehydrate] Room ${this.id}: ${ids.length} visible track(s) missing metadata — fetching from YouTube.`);
             const fresh = await this.checkVideoAvailability(ids);
+            const resolved = ids.filter(id => fresh.get(id)).length;
 
             const apply = (track) => {
                 if (!track || !track.videoId || track.title) return track;
@@ -264,7 +266,12 @@ class Room {
                 || newQueue.some((track, i) => track !== this.state.queue[i]);
             if (changed) {
                 this.updateState({ currentTrack: newCurrent, queue: newQueue });
-                logger.info(`[Rehydrate] Room ${this.id}: refreshed metadata for ${ids.length} stale track(s).`);
+            }
+
+            if (resolved < ids.length) {
+                logger.warn(`[Rehydrate] Room ${this.id}: filled ${resolved}/${ids.length} — ${ids.length - resolved} unresolved (YOUTUBE_API_KEY missing/quota, or videos unavailable).`);
+            } else {
+                logger.info(`[Rehydrate] Room ${this.id}: filled ${resolved}/${ids.length} stale track(s).`);
             }
         } finally {
             this.isRehydrating = false;
