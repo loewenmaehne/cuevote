@@ -16,6 +16,7 @@ import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { SettingsView } from "./components/SettingsView";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
+import { Skeleton } from "./components/Skeleton";
 import { useWebSocketContext } from "./hooks/useWebSocketContext";
 
 import PlayerErrorBoundary from "./components/PlayerErrorBoundary.jsx";
@@ -1776,10 +1777,18 @@ function RoomBody() {
               </button>
               <div className="truncate min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-white text-sm sm:text-base leading-tight truncate">{previewTrack.title}</h3>
+                  {previewTrack.title ? (
+                    <h3 className="font-bold text-white text-sm sm:text-base leading-tight truncate">{previewTrack.title}</h3>
+                  ) : (
+                    <Skeleton className="h-4 w-32 max-w-full bg-green-700/60" />
+                  )}
                   <span className="bg-green-500 text-black px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-bold animate-pulse flex-shrink-0">PREVIEW</span>
                 </div>
-                <p className="text-green-200 text-xs sm:text-sm truncate">{previewTrack.artist}</p>
+                {previewTrack.artist ? (
+                  <p className="text-green-200 text-xs sm:text-sm truncate">{previewTrack.artist}</p>
+                ) : (
+                  <Skeleton className="h-3 w-20 max-w-full mt-1 bg-green-700/50" />
+                )}
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-2 text-green-200 pl-2 sm:pl-4 flex-shrink-0">

@@ -6,6 +6,7 @@
 const { parentPort } = require('worker_threads');
 const Database = require('better-sqlite3');
 const logger = require('./logger');
+const { stripStateMetadata } = require('./cleanup-helpers');
 
 const db = new Database('cuevote.db');
 db.pragma('journal_mode = WAL');
@@ -77,6 +78,22 @@ const runDailyCleanupTx = db.transaction(() => {
     WHERE fetched_at < ? AND title IS NOT NULL
   `).run(twentyEightDays);
   logger.info(`[DB Worker Cleanup] Cleared metadata from ${s2.changes} stale video entries.`);
+
+  // Strip cached YouTube metadata from dormant room-state snapshots (the videos
+  // cleanup above doesn't touch these). Keep video IDs + app data for rehydrate.
+  const staleStates = db.prepare('SELECT room_id, state_json FROM room_state WHERE saved_at < ?').all(twentyEightDays);
+  const updateRoomState = db.prepare('UPDATE room_state SET state_json = ? WHERE room_id = ?');
+  let clearedStates = 0;
+  for (const row of staleStates) {
+    const { json, changed } = stripStateMetadata(row.state_json);
+    if (changed) {
+      updateRoomState.run(json, row.room_id);
+      clearedStates++;
+    }
+  }
+  if (clearedStates > 0) {
+    logger.info(`[DB Worker Cleanup] Stripped stale metadata from ${clearedStates} room state(s).`);
+  }
 
   const s3 = db.prepare('DELETE FROM search_cache WHERE created_at < ?').run(twentyEightDays);
   logger.info(`[DB Worker Cleanup] Removed ${s3.changes} stale search cache entries.`);

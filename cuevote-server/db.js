@@ -2,6 +2,7 @@
 // Copyright (c) 2026 Julian Zienert
 const Database = require('better-sqlite3');
 const logger = require('./logger');
+const { stripStateMetadata } = require('./cleanup-helpers');
 const db = new Database('cuevote.db'); // Creates the file if missing
 
 // Enable WAL mode for better concurrency
@@ -473,6 +474,28 @@ module.exports = {
     return result.changes;
   },
 
+  // YouTube API TOS: the videos-table cleanup doesn't touch the persisted room
+  // state snapshot, which embeds title/artist/thumbnail. Strip those from states
+  // not saved in 28 days (dormant rooms), keeping video IDs + app data so the
+  // room rehydrates real metadata on the next join.
+  cleanupStaleRoomStateMetadata: () => {
+    const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
+    const rows = db.prepare('SELECT room_id, state_json FROM room_state WHERE saved_at < ?').all(threshold);
+    const update = db.prepare('UPDATE room_state SET state_json = ? WHERE room_id = ?');
+    let cleared = 0;
+    for (const row of rows) {
+      const { json, changed } = stripStateMetadata(row.state_json);
+      if (changed) {
+        update.run(json, row.room_id);
+        cleared++;
+      }
+    }
+    if (cleared > 0) {
+      logger.info(`[DB Cleanup] Stripped stale metadata from ${cleared} room state(s).`);
+    }
+    return cleared;
+  },
+
   cleanupSearchCache: () => {
     const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
     const result = db.prepare('DELETE FROM search_cache WHERE created_at < ?').run(threshold);
@@ -505,6 +528,7 @@ module.exports = {
     const transaction = db.transaction(() => {
       module.exports.cleanupExpiredSessions();
       module.exports.cleanupStaleVideoMetadata();
+      module.exports.cleanupStaleRoomStateMetadata();
       module.exports.cleanupSearchCache();
       module.exports.cleanupRelatedVideosCache();
       module.exports.cleanupEmptyRooms();

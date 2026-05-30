@@ -7,6 +7,7 @@ import { Language } from '../contexts/LanguageContext';
 import { Consent } from '../contexts/ConsentContext';
 import { Suggestions } from "./Suggestions";
 import { MarqueeText } from "./MarqueeText";
+import { Skeleton } from "./Skeleton";
 
 const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;
 const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
@@ -61,7 +62,11 @@ export function Track({
     >
       <div className="flex justify-between items-center gap-3">
         <div className="flex items-center gap-4 flex-1 min-w-0">
-          {hasConsent ? (
+          {!track.title ? (
+            // Metadata still loading — cleared by the 28-day cleanup, refilled on
+            // join. Don't show YouTube imagery until we have fresh metadata.
+            <div className="w-16 h-16 rounded-3xl bg-neutral-700/50 animate-pulse flex-shrink-0" aria-hidden="true" />
+          ) : hasConsent ? (
             <img
               src={track.thumbnail ?? buildThumbnailUrl(track.videoId)}
               alt={track.title}
@@ -78,13 +83,27 @@ export function Track({
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <MarqueeText as="h3" className="text-lg font-semibold tracking-tight">
-              {track.title}
-            </MarqueeText>
-            <MarqueeText as="p" className="text-sm text-neutral-400">
-              {track.artist}
-              {isActive ? " • " + t('track.playing') : ""}
-            </MarqueeText>
+            {track.title ? (
+              <MarqueeText as="h3" className="text-lg font-semibold tracking-tight">
+                {track.title}
+              </MarqueeText>
+            ) : (
+              // Title cleared after YouTube's 28-day metadata limit — re-fetched
+              // on join. Skeleton bridges the brief gap instead of showing "null".
+              <Skeleton className="h-5 w-40 max-w-full" />
+            )}
+            {track.artist ? (
+              <MarqueeText as="p" className="text-sm text-neutral-400">
+                {track.artist}
+                {isActive ? " • " + t('track.playing') : ""}
+              </MarqueeText>
+            ) : isActive ? (
+              <MarqueeText as="p" className="text-sm text-neutral-400">
+                {t('track.playing')}
+              </MarqueeText>
+            ) : (
+              <Skeleton className="h-3.5 w-24 max-w-full mt-1.5" />
+            )}
           </div>
         </div>
 
