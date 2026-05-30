@@ -200,11 +200,13 @@ export function PlaybackControls({
 
             <div className="flex-1 min-w-0">
               <MarqueeText as="h3" className="text-base font-semibold leading-tight">
-                {currentTrack ? `${t('playlist.nowPlaying')} · ${currentTrack.title}` : t('playlist.queueEmpty')}
+                {currentTrack
+                  ? `${t('playlist.nowPlaying')}${currentTrack.title ? ` · ${currentTrack.title}` : ''}`
+                  : t('playlist.queueEmpty')}
               </MarqueeText>
               <MarqueeText as="p" className="text-sm text-neutral-400">
                 {currentTrack
-                  ? `${currentTrack.artist} • ${activeChannel} ${t('playlist.channelSuffix')}`
+                  ? `${currentTrack.artist ? `${currentTrack.artist} • ` : ''}${activeChannel} ${t('playlist.channelSuffix')}`
                   : t('playlist.addVideos')}
               </MarqueeText>
             </div>
