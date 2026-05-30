@@ -259,13 +259,34 @@ class Room {
                 return meta ? { ...track, ...meta } : track;
             };
 
-            const newQueue = this.state.queue.map(apply);
+            // Drop upcoming-queue tracks the API CONFIRMED are gone — a successful
+            // call omits deleted/private/non-embeddable ids entirely, so an id that's
+            // still title-less AND absent from `fresh` is a dead skeleton that can
+            // never fill. We deliberately keep:
+            //   • present-but-null ids — "couldn't verify" (no key / quota / fetch
+            //     error); checkVideoAvailability returns those present, so they stay
+            //     as skeletons for a later retry. With no API key EVERY id comes back
+            //     present-with-null, so nothing is dropped (no accidental queue wipe).
+            //   • index 0 — it mirrors the now-playing currentTrack, and tick()/skip
+            //     logic assumes queue[0] is current; removing it would desync playback.
+            //     The playing copy is left in place too (PLAYBACK_ERROR handles that).
+            const isConfirmedGone = (track) =>
+                !!track && !!track.videoId && !track.title && !fresh.has(track.videoId);
+
+            const newQueue = this.state.queue
+                .filter((track, i) => i === 0 || !isConfirmedGone(track))
+                .map(apply);
             const newCurrent = apply(this.state.currentTrack);
 
+            const removed = this.state.queue.length - newQueue.length;
             const changed = newCurrent !== this.state.currentTrack
+                || removed > 0
                 || newQueue.some((track, i) => track !== this.state.queue[i]);
             if (changed) {
                 this.updateState({ currentTrack: newCurrent, queue: newQueue });
+            }
+            if (removed > 0) {
+                logger.info(`[Rehydrate] Room ${this.id}: dropped ${removed} confirmed-unavailable track(s) from the queue.`);
             }
 
             if (resolved < ids.length) {
