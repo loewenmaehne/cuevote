@@ -56,6 +56,7 @@ class Room {
         this.consecutiveIPErrors = 0;    // Consecutive confirmed IP-block events
         this.networkThrottleUntil = 0;   // Timestamp: suppress API calls and pause queue during throttle window
         this.videoStatusCache = new Map(); // videoId -> { reason, checkedAt } to avoid redundant API calls
+        this.isRehydrating = false;        // Guards the on-join metadata re-fetch from concurrent duplicate runs
 
         this.state = {
             roomId: id, // Send ID to client for validation
@@ -212,6 +213,61 @@ class Room {
         if (this.state.autoRefill && !this.state.isRefilling
             && this.state.queue.length === 0 && this.state.history.length > 0) {
             this.populateQueueFromHistory();
+        }
+
+        // Heal the now-playing track + queue items whose cached title/artist were
+        // cleared by the 28-day TOS cleanup, so this viewer sees real metadata
+        // instead of loading skeletons. No-op (no API call) when nothing is missing.
+        this.rehydrateVisibleMetadata().catch(err =>
+            logger.error(`[Rehydrate] Room ${this.id} failed:`, err));
+    }
+
+    // Re-fetch metadata for the currently-playing track and any queued tracks
+    // whose cached title was nulled by the 28-day cleanup. Keyed on "title is
+    // missing", not age, so it reliably fills gaps and skips work otherwise.
+    // Cheap: one batched YouTube call per 50 ids, and only the first viewer
+    // after a dormant gap pays for it — once healed, later joins find nothing
+    // missing and return immediately.
+    async rehydrateVisibleMetadata() {
+        if (this.isRehydrating) return;
+
+        const ids = [];
+        const seen = new Set();
+        const collect = (track) => {
+            if (track && track.videoId && !track.title && !seen.has(track.videoId)) {
+                seen.add(track.videoId);
+                ids.push(track.videoId);
+            }
+        };
+        collect(this.state.currentTrack);
+        for (const track of this.state.queue) collect(track);
+        if (ids.length === 0) return;
+
+        this.isRehydrating = true;
+        try {
+            // checkVideoAvailability returns Map<id, {title,artist,thumbnail,duration}|null>
+            // and re-caches each hit via db.upsertVideo (refreshing fetched_at), so the
+            // DB heals too. A null value means "couldn't verify" (no API key / quota /
+            // error) — leave the track as a skeleton rather than guess.
+            const fresh = await this.checkVideoAvailability(ids);
+
+            const apply = (track) => {
+                if (!track || !track.videoId || track.title) return track;
+                const meta = fresh.get(track.videoId);
+                return meta ? { ...track, ...meta } : track;
+            };
+
+            const newQueue = this.state.queue.map(apply);
+            const newCurrent = apply(this.state.currentTrack);
+
+            const changed = newCurrent !== this.state.currentTrack
+                || newQueue.some((track, i) => track !== this.state.queue[i]);
+            if (changed) {
+                this.updateState({ currentTrack: newCurrent, queue: newQueue });
+                logger.info(`[Rehydrate] Room ${this.id}: refreshed metadata for ${ids.length} stale track(s).`);
+            }
+        } finally {
+            this.isRehydrating = false;
         }
     }
 
@@ -441,8 +497,11 @@ class Room {
             }
 
             // 3. Check Video Availability
-            // Skip API validation when no viewers to save quota — DB 28-day history already filters stale entries.
-            // Full API validation runs when viewers are present (e.g. on first join).
+            // Skip API validation when no viewers to save quota. Note: the 28-day
+            // cleanup only NULLs the videos table (rows/IDs persist), so candidates
+            // here may carry null title/artist. That's fine — when no one is watching
+            // we don't re-fetch, and the next viewer's rehydrateVisibleMetadata() fills
+            // the gaps on join. Full API validation also runs here when viewers are present.
             const validVideos = this.hasViewers()
                 ? await this.checkVideoAvailability(videoIdsToCheck)
                 : new Map(videoIdsToCheck.map(id => [id, null]));
