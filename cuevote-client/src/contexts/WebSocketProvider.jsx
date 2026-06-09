@@ -144,6 +144,14 @@ export function WebSocketProvider({ children }) {
       const handleClose = (event) => {
         console.log("WebSocket disconnected", { code: event?.code, reason: event?.reason, wasClean: event?.wasClean });
         if (socket._stabilityTimer) clearTimeout(socket._stabilityTimer);
+        // Late close from a socket that connect() has already replaced — the
+        // resume/online handlers reconnect while a dead socket is still in
+        // CLOSING, so its close can arrive after the next socket went live.
+        // It must not tear down the live socket's shared listeners, flip
+        // isConnected, or schedule another connect: the server evicts
+        // same-clientId sockets, so that extra connect starts an endless
+        // evict/reconnect fight (sibling of the disposed guard below).
+        if (ws.current !== socket) return;
         cleanupConnectionListeners();
         if (disposed) return; // provider unmounted — don't resurrect the connection
         setIsConnected(false);

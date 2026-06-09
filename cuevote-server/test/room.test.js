@@ -221,6 +221,62 @@ describe('Room', () => {
     });
   });
 
+  describe('Playback Error Handling', () => {
+    const seedQueue = (room) => {
+      room.state.queue = [
+        { id: 'a', videoId: 'vidA', title: 'A', score: 0, voters: {}, duration: 200, artist: 'A', thumbnail: 'x' },
+        { id: 'b', videoId: 'vidB', title: 'B', score: 0, voters: {}, duration: 200, artist: 'B', thumbnail: 'y' },
+        { id: 'c', videoId: 'vidC', title: 'C', score: 0, voters: {}, duration: 200, artist: 'C', thumbnail: 'z' },
+      ];
+      room.state.currentTrack = room.state.queue[0];
+      room.state.isPlaying = true;
+    };
+    // YouTube API shape for a deleted/private video: no items returned
+    const goneResponse = { ok: true, json: async () => ({ items: [] }) };
+
+    it('should not double-skip on concurrent PLAYBACK_ERRORs for the same video', async () => {
+      const room = new Room('pberr-dupe', 'PB Dupe', 'test-key', { owner_id: 'owner-1' });
+      seedQueue(room);
+      const originalFetch = global.fetch;
+      const resolvers = [];
+      global.fetch = () => new Promise((resolve) => resolvers.push(resolve));
+      try {
+        const ws = mockWs({ id: 'owner-1' });
+        const p1 = room.handlePlaybackError(ws, { videoId: 'vidA', errorCode: 100 });
+        const p2 = room.handlePlaybackError(ws, { videoId: 'vidA', errorCode: 100 });
+        assert.equal(resolvers.length, 1, 'second concurrent check should be deduped');
+        resolvers.forEach((resolve) => resolve(goneResponse));
+        await Promise.all([p1, p2]);
+        assert.equal(room.state.currentTrack.videoId, 'vidB');
+        assert.equal(room.state.queue.length, 2);
+      } finally {
+        global.fetch = originalFetch;
+        room.destroy();
+      }
+    });
+
+    it('should not skip the successor when the queue advanced during the API check', async () => {
+      const room = new Room('pberr-advance', 'PB Advance', 'test-key', { owner_id: 'owner-1' });
+      seedQueue(room);
+      const originalFetch = global.fetch;
+      let resolveFetch;
+      global.fetch = () => new Promise((resolve) => { resolveFetch = resolve; });
+      try {
+        const ws = mockWs({ id: 'owner-1' });
+        const pending = room.handlePlaybackError(ws, { videoId: 'vidA', errorCode: 100 });
+        room.handleNextTrack(); // tick()-style auto-advance while the check is in flight
+        assert.equal(room.state.currentTrack.videoId, 'vidB');
+        resolveFetch(goneResponse);
+        await pending;
+        assert.equal(room.state.currentTrack.videoId, 'vidB', 'stale error must not skip the successor track');
+        assert.equal(room.state.queue.length, 2);
+      } finally {
+        global.fetch = originalFetch;
+        room.destroy();
+      }
+    });
+  });
+
   describe('Broadcast', () => {
     it('should broadcast delta state on updateState', () => {
       const room = new Room('broadcast-room', 'Broadcast', null, { owner_id: 'owner-1' });

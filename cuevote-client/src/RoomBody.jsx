@@ -247,7 +247,15 @@ function RoomBody() {
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const lastPasswordAttemptRef = useRef(null); // Track the last password we sent
+  const knownPasswordRef = useRef(null); // Password that successfully joined this room (reused on rejoin)
   const prevIsConnectedRef = useRef(false);
+
+  // Password retention is per-room: switching rooms must not leak the
+  // previous room's password into the next join attempt.
+  useEffect(() => {
+    lastPasswordAttemptRef.current = null;
+    knownPasswordRef.current = null;
+  }, [activeRoomId]);
 
   useEffect(() => {
     if (isConnected) {
@@ -275,7 +283,11 @@ function RoomBody() {
         }
       }
 
-      const password = location.state?.password;
+      // Prefer a password the user is currently trying or one that already
+      // worked. The server re-checks the password on every JOIN_ROOM (and
+      // removes the client from the room before doing so), so a rejoin with
+      // an undefined password would kick the user back to the modal.
+      const password = lastPasswordAttemptRef.current || knownPasswordRef.current || location.state?.password;
       lastPasswordAttemptRef.current = password;
       sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password } });
     } else {
@@ -304,6 +316,11 @@ function RoomBody() {
     if (serverState && serverRoomId && activeRoomId && serverRoomId.toLowerCase() === activeRoomId.toLowerCase()) {
       setShowPasswordModal(false);
       setPasswordError("");
+      if (lastPasswordAttemptRef.current) {
+        // Remember the password that worked so reconnect rejoins (which the
+        // server re-validates) don't bounce the user back to the modal.
+        knownPasswordRef.current = lastPasswordAttemptRef.current;
+      }
       lastPasswordAttemptRef.current = null; // Reset
 
       // Auto-open Share Modal if requested (e.g. new channel)
@@ -334,7 +351,7 @@ function RoomBody() {
       if (import.meta.env.DEV) {
         console.warn("[App] Connected but no state received in 5s. Resending JOIN_ROOM.");
       }
-      const password = lastPasswordAttemptRef.current || location.state?.password;
+      const password = lastPasswordAttemptRef.current || knownPasswordRef.current || location.state?.password;
       sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password } });
     }, 5000);
     return () => clearTimeout(timer);
@@ -353,7 +370,7 @@ function RoomBody() {
         if (import.meta.env.DEV) {
           console.warn(`[STALE DEBUG] Sending JOIN_ROOM for ${activeRoomId}`);
         }
-        const password = lastPasswordAttemptRef.current || location.state?.password;
+        const password = lastPasswordAttemptRef.current || knownPasswordRef.current || location.state?.password;
         sendMessage({ type: "JOIN_ROOM", payload: { roomId: activeRoomId, password } });
       }, 3000);
     }

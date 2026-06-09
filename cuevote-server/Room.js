@@ -56,6 +56,7 @@ class Room {
         this.consecutiveIPErrors = 0;    // Consecutive confirmed IP-block events
         this.networkThrottleUntil = 0;   // Timestamp: suppress API calls and pause queue during throttle window
         this.videoStatusCache = new Map(); // videoId -> { reason, checkedAt } to avoid redundant API calls
+        this.videoStatusChecksInFlight = new Set(); // videoIds mid-API-check; dedupes concurrent PLAYBACK_ERRORs
         this.isRehydrating = false;        // Guards the on-join metadata re-fetch from concurrent duplicate runs
 
         this.state = {
@@ -1354,6 +1355,11 @@ class Room {
             isGenuinelyUnavailable = (reason !== 'ip_blocked' && reason !== 'check_failed' && reason !== 'no_api_key');
             logger.info(`[PlaybackError] Using cached status for ${videoId}: ${reason}`);
         } else if (this.apiKey) {
+            // The cache above is only written after the fetch resolves, so a
+            // second PLAYBACK_ERROR for the same video arriving mid-check
+            // passes the entry guard again and would skip twice.
+            if (this.videoStatusChecksInFlight.has(videoId)) return;
+            this.videoStatusChecksInFlight.add(videoId);
             try {
                 const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=status,contentDetails&key=${this.apiKey}`;
                 const response = await fetch(apiUrl);
@@ -1386,12 +1392,19 @@ class Room {
                 logger.error("[PlaybackError] API check failed:", e);
                 isGenuinelyUnavailable = false;
                 reason = 'check_failed';
+            } finally {
+                this.videoStatusChecksInFlight.delete(videoId);
             }
             this.videoStatusCache.set(videoId, { reason, checkedAt: now });
         } else {
             isGenuinelyUnavailable = false;
             reason = 'no_api_key';
         }
+
+        // Re-validate after the awaits above: tick() or a manual skip may have
+        // advanced the queue during the API check — acting on the stale error
+        // now would skip a track that never failed.
+        if (!this.state.currentTrack || this.state.currentTrack.videoId !== videoId) return;
 
         this.broadcast({ type: "VIDEO_STATUS", payload: { videoId, status: reason } });
 
