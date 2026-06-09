@@ -276,5 +276,27 @@ describe('Database Module', () => {
             const count = db.cleanupEmptyRooms();
       assert.ok(count >= 0);
     });
+
+    it('should clear lobby previews of dormant rooms but keep active ones', () => {
+      db.upsertUser({ id: 'preview-owner', email: 'preview@example.com', name: 'Preview Owner', picture: '' });
+      const preview = { videoId: 'abc123', title: 'Cached Title', artist: 'Cached Artist', thumbnail: 'https://i.ytimg.com/x.jpg' };
+      for (const id of ['preview-room-active', 'preview-room-dormant']) {
+        db.createRoom({ id, name: id, description: '', owner_id: 'preview-owner', color: 'red', is_public: 1, password: null });
+        db.updateLobbyPreview(id, preview);
+      }
+
+      // Backdate the dormant room past the 28-day window via a second
+      // connection (the module doesn't expose raw SQL, deliberately).
+      const Database = require('better-sqlite3');
+      const raw = new Database(path.join(__dirname, 'cuevote.db'));
+      raw.prepare('UPDATE rooms SET last_active_at = ? WHERE id = ?')
+        .run(Math.floor(Date.now() / 1000) - (29 * 24 * 60 * 60), 'preview-room-dormant');
+      raw.close();
+
+      const count = db.cleanupStaleLobbyPreviews();
+      assert.ok(count >= 1);
+      assert.equal(db.getRoom('preview-room-dormant').lobby_preview, null);
+      assert.ok(db.getRoom('preview-room-active').lobby_preview);
+    });
   });
 });

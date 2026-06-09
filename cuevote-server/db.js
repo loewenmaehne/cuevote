@@ -510,6 +510,22 @@ module.exports = {
     return result.changes;
   },
 
+  // YouTube API TOS: lobby_preview embeds cached metadata (title/artist/
+  // thumbnail) for the lobby cards. LIST_ROOMS already stops *showing*
+  // previews of rooms dormant for 28+ days — delete them too, so the cached
+  // data doesn't outlive its display window in rooms that are never reloaded.
+  cleanupStaleLobbyPreviews: () => {
+    const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
+    const result = db.prepare(`
+      UPDATE rooms SET lobby_preview = NULL
+      WHERE lobby_preview IS NOT NULL AND COALESCE(last_active_at, 0) < ?
+    `).run(threshold);
+    if (result.changes > 0) {
+      logger.info(`[DB Cleanup] Cleared ${result.changes} stale lobby preview(s).`);
+    }
+    return result.changes;
+  },
+
   cleanupEmptyRooms: () => {
     const sevenDaysAgo = Math.floor(Date.now() / 1000) - (7 * 24 * 60 * 60);
     const result = db.prepare(`
@@ -531,6 +547,7 @@ module.exports = {
       module.exports.cleanupStaleRoomStateMetadata();
       module.exports.cleanupSearchCache();
       module.exports.cleanupRelatedVideosCache();
+      module.exports.cleanupStaleLobbyPreviews();
       module.exports.cleanupEmptyRooms();
     });
     transaction();
