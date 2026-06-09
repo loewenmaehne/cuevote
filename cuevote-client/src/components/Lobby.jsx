@@ -210,9 +210,12 @@ export function Lobby() {
     useEffect(() => {
         if (state && passwordRoomId && state.roomId === passwordRoomId && showPasswordModal) {
             setShowPasswordModal(false);
-            navigate(`/room/${passwordRoomId}`, { state: { alreadyJoined: true } });
+            // Carry the verified password along: RoomBody re-sends JOIN_ROOM on
+            // mount and on reconnects, and the server re-checks it every time —
+            // navigating without it bounced the user straight back to the modal.
+            navigate(`/room/${passwordRoomId}`, { state: { alreadyJoined: true, password: passwordInput } });
         }
-    }, [state, passwordRoomId, showPasswordModal, navigate]);
+    }, [state, passwordRoomId, showPasswordModal, passwordInput, navigate]);
 
 
     // Handle column resize
