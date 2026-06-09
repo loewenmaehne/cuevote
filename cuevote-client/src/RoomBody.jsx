@@ -640,10 +640,17 @@ function RoomBody() {
   }, [t]);
 
   const currentTrackRef = useRef(currentTrack);
+  // Clear a stale playback error only when the track actually changes.
+  // isPlayerReady must NOT be a dependency here: the error panel replaces
+  // <Player>, which destroys the player and flips isPlayerReady — clearing
+  // the error on that flip would remount the player, reload the same
+  // failing video and loop destroy/recreate forever.
   useEffect(() => {
     currentTrackRef.current = currentTrack;
     setPlaybackError(null);
+  }, [currentTrack]);
 
+  useEffect(() => {
     if (isPlayerReady && playerRef.current) {
       try {
         if (captionsEnabled && currentTrack?.language) {
