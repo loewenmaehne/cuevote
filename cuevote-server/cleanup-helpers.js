@@ -48,4 +48,46 @@ function stripStateMetadata(stateJson) {
   return changed ? { json: JSON.stringify(state), changed: true } : { json: stateJson, changed: false };
 }
 
-module.exports = { stripStateMetadata };
+/**
+ * GDPR: remove a deleted user's PII (voters entry, suggestedBy id,
+ * suggestedByUsername) from a persisted room_state JSON blob. DB-side twin of
+ * Room.scrubDeletedUser, which only reaches rooms currently loaded in memory —
+ * snapshots of unloaded rooms would otherwise re-broadcast the deleted user's
+ * id and display name on the next load.
+ *
+ * @returns {{ json: string, changed: boolean }} like stripStateMetadata.
+ */
+function scrubUserFromState(stateJson, userId) {
+  let state;
+  try {
+    state = JSON.parse(stateJson);
+  } catch {
+    return { json: stateJson, changed: false };
+  }
+
+  const id = String(userId).trim();
+  let changed = false;
+  const scrubTrack = (track) => {
+    if (!track || typeof track !== 'object') return;
+    if (track.voters && track.voters[id] !== undefined) {
+      delete track.voters[id];
+      changed = true;
+    }
+    if (track.suggestedBy === id) {
+      track.suggestedBy = null;
+      track.suggestedByUsername = '[deleted]';
+      changed = true;
+    }
+  };
+
+  scrubTrack(state.currentTrack);
+  if (Array.isArray(state.queue)) state.queue.forEach(scrubTrack);
+  // Current snapshots persist only queue + currentTrack, but older ones may
+  // still carry these collections — scrub them too if present.
+  if (Array.isArray(state.history)) state.history.forEach(scrubTrack);
+  if (Array.isArray(state.pendingSuggestions)) state.pendingSuggestions.forEach(scrubTrack);
+
+  return changed ? { json: JSON.stringify(state), changed: true } : { json: stateJson, changed: false };
+}
+
+module.exports = { stripStateMetadata, scrubUserFromState };

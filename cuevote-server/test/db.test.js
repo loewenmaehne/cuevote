@@ -254,6 +254,53 @@ describe('Database Module', () => {
       assert.equal(db.getRoom('gdpr-room'), undefined);
       assert.equal(db.getUserByEmail('gdpr@example.com'), undefined);
     });
+
+    it('should scrub the deleted user from room_state snapshots of rooms they do not own', () => {
+      db.upsertUser({ id: 'scrub-owner', email: 'scrub-owner@example.com', name: 'Owner', picture: '' });
+      db.upsertUser({ id: 'scrub-victim', email: 'scrub-victim@example.com', name: 'Victim', picture: '' });
+      db.createRoom({
+        id: 'scrub-room',
+        name: 'Scrub Room',
+        description: '',
+        owner_id: 'scrub-owner',
+        color: 'blue',
+        is_public: 1,
+        password: null,
+      });
+      db.saveRoomState('scrub-room', {
+        queue: [
+          {
+            videoId: 'vid-1',
+            title: 'Track 1',
+            score: 2,
+            voters: { 'scrub-victim': 1, 'scrub-owner': 1 },
+            suggestedBy: 'scrub-victim',
+            suggestedByUsername: 'Victim',
+          },
+        ],
+        currentTrack: {
+          videoId: 'vid-1',
+          title: 'Track 1',
+          score: 2,
+          voters: { 'scrub-victim': 1, 'scrub-owner': 1 },
+          suggestedBy: 'scrub-victim',
+          suggestedByUsername: 'Victim',
+        },
+        progress: 0,
+        isPlaying: false,
+      });
+
+      db.deleteUser('scrub-victim');
+
+      const state = db.loadRoomState('scrub-room');
+      assert.ok(state, 'snapshot of the non-owned room must survive');
+      for (const track of [state.queue[0], state.currentTrack]) {
+        assert.equal(track.voters['scrub-victim'], undefined);
+        assert.equal(track.voters['scrub-owner'], 1);
+        assert.equal(track.suggestedBy, null);
+        assert.equal(track.suggestedByUsername, '[deleted]');
+      }
+    });
   });
 
   describe('Cleanup Functions', () => {
