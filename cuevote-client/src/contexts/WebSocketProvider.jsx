@@ -94,6 +94,12 @@ export function WebSocketProvider({ children }) {
     let reconnectDelay = 1000;
     const MAX_RECONNECT_DELAY = 10000;
     let lastResumeTime = 0;
+    // Set on unmount. The close event of the socket we close in the cleanup
+    // arrives AFTER the cleanup ran, and handleClose would otherwise schedule
+    // a reconnect from this dead closure — a zombie connection that shares
+    // our persisted clientId and evicts the next provider instance's socket
+    // in an endless fight (e.g. after the consent flip remounts the tree).
+    let disposed = false;
 
     let activePingInterval = null;
     let activeVisibilityHandler = null;
@@ -106,6 +112,7 @@ export function WebSocketProvider({ children }) {
     };
 
     const connect = () => {
+      if (disposed) return;
       cleanupConnectionListeners();
 
       const wsUrl = new URL(WEBSOCKET_URL);
@@ -138,6 +145,7 @@ export function WebSocketProvider({ children }) {
         console.log("WebSocket disconnected", { code: event?.code, reason: event?.reason, wasClean: event?.wasClean });
         if (socket._stabilityTimer) clearTimeout(socket._stabilityTimer);
         cleanupConnectionListeners();
+        if (disposed) return; // provider unmounted — don't resurrect the connection
         setIsConnected(false);
         setReconnectAttempt(prev => prev + 1);
         if (reconnectTimeout) clearTimeout(reconnectTimeout);
@@ -304,6 +312,7 @@ export function WebSocketProvider({ children }) {
     connect();
 
     return () => {
+      disposed = true;
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
       cleanupConnectionListeners();
       delete window.cuevoteReconnect;
