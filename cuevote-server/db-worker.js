@@ -111,10 +111,14 @@ const runDailyCleanupTx = db.transaction(() => {
     logger.info(`[DB Worker Cleanup] Cleared ${s6.changes} stale lobby preview(s).`);
   }
 
+  // Dormancy guard mirrors db.js cleanupEmptyRooms: rooms in active use can
+  // legitimately have an empty room_history (nothing played through yet, or
+  // library cleared) — only delete when last_active_at is also stale.
   const s5 = db.prepare(`
     DELETE FROM rooms WHERE created_at < ?
+      AND COALESCE(last_active_at, 0) < ?
       AND id NOT IN (SELECT DISTINCT room_id FROM room_history)
-  `).run(sevenDays);
+  `).run(sevenDays, sevenDays);
   if (s5.changes > 0) {
     logger.info(`[DB Worker Cleanup] Deleted ${s5.changes} empty channels older than 7 days.`);
   }

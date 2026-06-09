@@ -324,6 +324,29 @@ describe('Database Module', () => {
       assert.ok(count >= 0);
     });
 
+    it('should keep recently active no-history rooms and delete dormant ones', () => {
+      db.upsertUser({ id: 'empty-owner', email: 'empty@example.com', name: 'Empty Owner', picture: '' });
+      for (const id of ['empty-room-active', 'empty-room-dormant']) {
+        db.createRoom({ id, name: id, description: '', owner_id: 'empty-owner', color: 'red', is_public: 1, password: null });
+      }
+
+      // Both rooms predate the 7-day creation window; neither has played a
+      // track to completion (no room_history). Only one is dormant.
+      const Database = require('better-sqlite3');
+      const raw = new Database(path.join(__dirname, 'cuevote.db'));
+      const eightDaysAgo = Math.floor(Date.now() / 1000) - (8 * 24 * 60 * 60);
+      raw.prepare('UPDATE rooms SET created_at = ? WHERE id IN (?, ?)')
+        .run(eightDaysAgo, 'empty-room-active', 'empty-room-dormant');
+      raw.prepare('UPDATE rooms SET last_active_at = ? WHERE id = ?')
+        .run(eightDaysAgo, 'empty-room-dormant');
+      raw.close();
+
+      db.cleanupEmptyRooms();
+
+      assert.ok(db.getRoom('empty-room-active'), 'active room without history must survive the cleanup');
+      assert.equal(db.getRoom('empty-room-dormant'), undefined, 'dormant empty room should be deleted');
+    });
+
     it('should clear lobby previews of dormant rooms but keep active ones', () => {
       db.upsertUser({ id: 'preview-owner', email: 'preview@example.com', name: 'Preview Owner', picture: '' });
       const preview = { videoId: 'abc123', title: 'Cached Title', artist: 'Cached Artist', thumbnail: 'https://i.ytimg.com/x.jpg' };

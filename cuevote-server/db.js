@@ -552,11 +552,17 @@ module.exports = {
 
   cleanupEmptyRooms: () => {
     const sevenDaysAgo = Math.floor(Date.now() / 1000) - (7 * 24 * 60 * 60);
+    // "Empty" requires dormancy, not just an empty room_history: history rows
+    // only appear when a track finishes or is skipped, so a room whose owner
+    // prepares a queue without playing it through (or who cleared the library
+    // via removeFromRoomHistory) has none — deleting on history alone would
+    // destroy an in-use room and its room_state snapshot via CASCADE.
     const result = db.prepare(`
       DELETE FROM rooms
       WHERE created_at < ?
+        AND COALESCE(last_active_at, 0) < ?
         AND id NOT IN (SELECT DISTINCT room_id FROM room_history)
-    `).run(sevenDaysAgo);
+    `).run(sevenDaysAgo, sevenDaysAgo);
     if (result.changes > 0) {
       logger.info(`[DB Cleanup] Deleted ${result.changes} empty channels older than 7 days.`);
     }
