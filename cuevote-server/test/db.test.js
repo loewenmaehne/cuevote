@@ -254,6 +254,53 @@ describe('Database Module', () => {
       assert.equal(db.getRoom('gdpr-room'), undefined);
       assert.equal(db.getUserByEmail('gdpr@example.com'), undefined);
     });
+
+    it('should scrub the deleted user from room_state snapshots of rooms they do not own', () => {
+      db.upsertUser({ id: 'scrub-owner', email: 'scrub-owner@example.com', name: 'Owner', picture: '' });
+      db.upsertUser({ id: 'scrub-victim', email: 'scrub-victim@example.com', name: 'Victim', picture: '' });
+      db.createRoom({
+        id: 'scrub-room',
+        name: 'Scrub Room',
+        description: '',
+        owner_id: 'scrub-owner',
+        color: 'blue',
+        is_public: 1,
+        password: null,
+      });
+      db.saveRoomState('scrub-room', {
+        queue: [
+          {
+            videoId: 'vid-1',
+            title: 'Track 1',
+            score: 2,
+            voters: { 'scrub-victim': 1, 'scrub-owner': 1 },
+            suggestedBy: 'scrub-victim',
+            suggestedByUsername: 'Victim',
+          },
+        ],
+        currentTrack: {
+          videoId: 'vid-1',
+          title: 'Track 1',
+          score: 2,
+          voters: { 'scrub-victim': 1, 'scrub-owner': 1 },
+          suggestedBy: 'scrub-victim',
+          suggestedByUsername: 'Victim',
+        },
+        progress: 0,
+        isPlaying: false,
+      });
+
+      db.deleteUser('scrub-victim');
+
+      const state = db.loadRoomState('scrub-room');
+      assert.ok(state, 'snapshot of the non-owned room must survive');
+      for (const track of [state.queue[0], state.currentTrack]) {
+        assert.equal(track.voters['scrub-victim'], undefined);
+        assert.equal(track.voters['scrub-owner'], 1);
+        assert.equal(track.suggestedBy, null);
+        assert.equal(track.suggestedByUsername, '[deleted]');
+      }
+    });
   });
 
   describe('Cleanup Functions', () => {
@@ -275,6 +322,28 @@ describe('Database Module', () => {
     it('should run cleanupEmptyRooms without error', () => {
             const count = db.cleanupEmptyRooms();
       assert.ok(count >= 0);
+    });
+
+    it('should clear lobby previews of dormant rooms but keep active ones', () => {
+      db.upsertUser({ id: 'preview-owner', email: 'preview@example.com', name: 'Preview Owner', picture: '' });
+      const preview = { videoId: 'abc123', title: 'Cached Title', artist: 'Cached Artist', thumbnail: 'https://i.ytimg.com/x.jpg' };
+      for (const id of ['preview-room-active', 'preview-room-dormant']) {
+        db.createRoom({ id, name: id, description: '', owner_id: 'preview-owner', color: 'red', is_public: 1, password: null });
+        db.updateLobbyPreview(id, preview);
+      }
+
+      // Backdate the dormant room past the 28-day window via a second
+      // connection (the module doesn't expose raw SQL, deliberately).
+      const Database = require('better-sqlite3');
+      const raw = new Database(path.join(__dirname, 'cuevote.db'));
+      raw.prepare('UPDATE rooms SET last_active_at = ? WHERE id = ?')
+        .run(Math.floor(Date.now() / 1000) - (29 * 24 * 60 * 60), 'preview-room-dormant');
+      raw.close();
+
+      const count = db.cleanupStaleLobbyPreviews();
+      assert.ok(count >= 1);
+      assert.equal(db.getRoom('preview-room-dormant').lobby_preview, null);
+      assert.ok(db.getRoom('preview-room-active').lobby_preview);
     });
   });
 });

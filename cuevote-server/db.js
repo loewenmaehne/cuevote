@@ -2,7 +2,7 @@
 // Copyright (c) 2026 Julian Zienert
 const Database = require('better-sqlite3');
 const logger = require('./logger');
-const { stripStateMetadata } = require('./cleanup-helpers');
+const { stripStateMetadata, scrubUserFromState } = require('./cleanup-helpers');
 const db = new Database('cuevote.db'); // Creates the file if missing
 
 // Enable WAL mode for better concurrency
@@ -337,7 +337,13 @@ module.exports = {
         u2 = db.prepare('DELETE FROM users WHERE email = ? AND id != ?').run(userEmail, userId);
       }
 
-      logger.info(`[DB DELETE] Result - Sessions: ${s1.changes}, Rooms: ${r1.changes}, Users(ID): ${u1.changes}, Users(Email cleanup): ${u2.changes}`);
+      // Snapshots of rooms the user participated in but doesn't own (owned
+      // rooms were just deleted above, CASCADE removes their snapshots)
+      // still embed their votes and suggestions — scrub those too, or the
+      // user's id and display name resurface when such a room is reloaded.
+      const st = module.exports.scrubUserFromRoomStates(userId);
+
+      logger.info(`[DB DELETE] Result - Sessions: ${s1.changes}, Rooms: ${r1.changes}, Users(ID): ${u1.changes}, Users(Email cleanup): ${u2.changes}, Room states scrubbed: ${st}`);
     });
 
     try {
@@ -349,6 +355,24 @@ module.exports = {
       logger.error("[DB] deleteUser Transaction Failed:", err);
       throw err;
     }
+  },
+
+  // GDPR: scrub a deleted user's voters/suggestedBy entries from ALL
+  // room_state snapshots. Room.scrubDeletedUser covers rooms loaded in
+  // memory; this covers the unloaded ones. Called inside deleteUser's
+  // transaction so erasure is atomic.
+  scrubUserFromRoomStates: (userId) => {
+    const rows = db.prepare('SELECT room_id, state_json FROM room_state').all();
+    const update = db.prepare('UPDATE room_state SET state_json = ? WHERE room_id = ?');
+    let scrubbed = 0;
+    for (const row of rows) {
+      const { json, changed } = scrubUserFromState(row.state_json, userId);
+      if (changed) {
+        update.run(json, row.room_id);
+        scrubbed++;
+      }
+    }
+    return scrubbed;
   },
 
   backup: (destination) => {
@@ -510,6 +534,22 @@ module.exports = {
     return result.changes;
   },
 
+  // YouTube API TOS: lobby_preview embeds cached metadata (title/artist/
+  // thumbnail) for the lobby cards. LIST_ROOMS already stops *showing*
+  // previews of rooms dormant for 28+ days — delete them too, so the cached
+  // data doesn't outlive its display window in rooms that are never reloaded.
+  cleanupStaleLobbyPreviews: () => {
+    const threshold = Math.floor(Date.now() / 1000) - (28 * 24 * 60 * 60);
+    const result = db.prepare(`
+      UPDATE rooms SET lobby_preview = NULL
+      WHERE lobby_preview IS NOT NULL AND COALESCE(last_active_at, 0) < ?
+    `).run(threshold);
+    if (result.changes > 0) {
+      logger.info(`[DB Cleanup] Cleared ${result.changes} stale lobby preview(s).`);
+    }
+    return result.changes;
+  },
+
   cleanupEmptyRooms: () => {
     const sevenDaysAgo = Math.floor(Date.now() / 1000) - (7 * 24 * 60 * 60);
     const result = db.prepare(`
@@ -531,6 +571,7 @@ module.exports = {
       module.exports.cleanupStaleRoomStateMetadata();
       module.exports.cleanupSearchCache();
       module.exports.cleanupRelatedVideosCache();
+      module.exports.cleanupStaleLobbyPreviews();
       module.exports.cleanupEmptyRooms();
     });
     transaction();

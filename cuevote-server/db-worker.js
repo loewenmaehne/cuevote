@@ -101,6 +101,16 @@ const runDailyCleanupTx = db.transaction(() => {
   const s4 = db.prepare('DELETE FROM related_videos_cache WHERE fetched_at < ?').run(twentyEightDays);
   logger.info(`[DB Worker Cleanup] Removed ${s4.changes} stale related videos cache entries.`);
 
+  // lobby_preview embeds cached YouTube metadata for the lobby cards; the
+  // lobby stops showing previews of rooms dormant 28+ days — delete them too.
+  const s6 = db.prepare(`
+    UPDATE rooms SET lobby_preview = NULL
+    WHERE lobby_preview IS NOT NULL AND COALESCE(last_active_at, 0) < ?
+  `).run(twentyEightDays);
+  if (s6.changes > 0) {
+    logger.info(`[DB Worker Cleanup] Cleared ${s6.changes} stale lobby preview(s).`);
+  }
+
   const s5 = db.prepare(`
     DELETE FROM rooms WHERE created_at < ?
       AND id NOT IN (SELECT DISTINCT room_id FROM room_history)

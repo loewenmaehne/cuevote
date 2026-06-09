@@ -640,10 +640,29 @@ function RoomBody() {
   }, [t]);
 
   const currentTrackRef = useRef(currentTrack);
+  // Clear a stale playback error only when the track actually changes.
+  // isPlayerReady must NOT be a dependency here: the error panel replaces
+  // <Player>, which destroys the player and flips isPlayerReady — clearing
+  // the error on that flip would remount the player, reload the same
+  // failing video and loop destroy/recreate forever.
   useEffect(() => {
     currentTrackRef.current = currentTrack;
     setPlaybackError(null);
+  }, [currentTrack]);
 
+  // The YT player is shared between room playback and prelisten, and its
+  // event handlers are bound once at construction — they need a ref to know
+  // whether the video they are reporting on is a preview. Clearing
+  // playbackError on preview start/end keeps a room-track error from
+  // blocking the preview player and a preview error from outliving the
+  // preview.
+  const previewTrackRef = useRef(previewTrack);
+  useEffect(() => {
+    previewTrackRef.current = previewTrack;
+    setPlaybackError(null);
+  }, [previewTrack]);
+
+  useEffect(() => {
     if (isPlayerReady && playerRef.current) {
       try {
         if (captionsEnabled && currentTrack?.language) {
@@ -754,8 +773,11 @@ function RoomBody() {
                 setIsLocallyPlaying(false);
               }
 
+              // Never report a preview's duration: the server writes the
+              // payload into currentTrack.duration and would cut the room's
+              // track short (or hold it open) for everyone.
               const duration = event.target.getDuration();
-              if (duration && duration > 0) {
+              if (duration && duration > 0 && !previewTrackRef.current) {
                 sendMessage({ type: "UPDATE_DURATION", payload: duration });
               }
             } else if (state === YouTubeState.PAUSED) {
@@ -787,6 +809,17 @@ function RoomBody() {
             // the server's API check disambiguates "video unavailable" from
             // "network can't authenticate the embed" and broadcasts
             // NETWORK_THROTTLE in the latter case.
+            //
+            // Errors while a prelisten is loaded belong to the preview video,
+            // not the room's current track. Reporting them as PLAYBACK_ERROR
+            // would make the server API-check the (perfectly fine) current
+            // track and conclude "IP block" — pausing the whole room under a
+            // 6h network throttle. Surface them locally in the preview
+            // overlay instead.
+            if (previewTrackRef.current) {
+              setPlaybackError(errorCode);
+              return;
+            }
             if ([100, 101, 150, 153].includes(errorCode)) {
               if (isOwnerRef.current) {
                 if (import.meta.env.DEV) {
@@ -945,6 +978,9 @@ function RoomBody() {
       // would falsely flag an IP block. Same for the slow first-load before any track has played.
       if (document.hidden) return;
       if (!hasEverPlayedRef.current) return;
+      // A buffering preview is not a stalled room track — don't force-load
+      // the room track over it or report a false stall to the server.
+      if (previewTrackRef.current) return;
       const state = playerRef.current.getPlayerState?.();
       if (state === YouTubeState.BUFFERING || state === YouTubeState.UNSTARTED) {
         stallRetriesRef.current += 1;
