@@ -3,9 +3,12 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { LanguageContext } from './LanguageContextValue.js';
 
-function getTranslations() {
-	return import('./translations').then((m) => m.translations);
-}
+// Kick off the translations download the moment this (eagerly-loaded) contexts
+// chunk evaluates, so it loads in parallel with the app code instead of waiting
+// for the first effect — this is what closes the window where raw i18n keys flash.
+// Still a dynamic import(), so translations.js is never evaluated during entry
+// init: the TDZ fix from 1b57d50 ("Cannot access 'Ta' before initialization") holds.
+const translationsPromise = import('./translations').then((m) => m.translations);
 
 const pluralRulesCache = new Map();
 function getPluralRules(lang) {
@@ -63,7 +66,7 @@ export const Language = {
 		useEffect(() => {
 			if (initDone.current) return;
 			initDone.current = true;
-			getTranslations().then((t) => {
+			translationsPromise.then((t) => {
 				setTranslations(t);
 				setLanguage((prev) => detectInitialLanguage(t) || prev);
 				langReady.current = true;
@@ -102,7 +105,14 @@ export const Language = {
 		};
 		return (
 			<LanguageContext.Provider value={{ language, setLanguage, t }}>
-				{children}
+				{translations ? children : (
+					// Language-neutral splash until translations resolve, so raw i18n
+					// keys never paint. Intentionally text-free — any copy here would
+					// itself be untranslated. Matches the app's dark + orange theme.
+					<div className="fixed inset-0 z-[100] bg-[#050505] flex items-center justify-center" role="status" aria-label="Loading">
+						<div className="w-10 h-10 rounded-full border-2 border-neutral-800 border-t-orange-500 animate-spin" />
+					</div>
+				)}
 			</LanguageContext.Provider>
 		);
 	},
