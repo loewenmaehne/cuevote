@@ -14,6 +14,7 @@ import android.webkit.JavascriptInterface
 import android.widget.FrameLayout
 import android.view.Gravity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.app.UiModeManager
@@ -37,6 +38,15 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
     private var wasOffline = false
     private var reconnectHandler: android.os.Handler? = null
     private var reconnectRunnable: Runnable? = null
+
+    // Whether this device has any camera (front, back, or external/USB). Since the TV
+    // change relaxed the camera uses-features to required="false", the app also installs
+    // on camera-less devices (Android TV, some Wi-Fi tablets). The QR scanner needs a live
+    // camera, so it must be suppressed on these devices rather than opening a dead preview.
+    // Evaluated once — camera hardware does not change at runtime.
+    private val hasCamera: Boolean by lazy {
+        packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -207,7 +217,7 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         setContentView(container)
         
         // Pass WebView and FAB reference to Interface
-        webView.addJavascriptInterface(WebAppInterface(this, webView, fab), "CueVoteAndroid")
+        webView.addJavascriptInterface(WebAppInterface(this, webView, fab, hasCamera), "CueVoteAndroid")
         // Handle Back Press properly
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -287,6 +297,15 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
     }
 
     private fun startQRScan() {
+        // Defensive: the FAB is already withheld from camera-less devices (see
+        // WebAppInterface.toggleQRButton), so this path should be unreachable there. If it
+        // is somehow reached, no-op instead of opening the scanner against hardware that
+        // does not exist. Deliberately no user-facing string — the wrapper has no native
+        // i18n, and all localized copy lives in the web layer's translation system.
+        if (!hasCamera) {
+            android.util.Log.w("CueVote", "QR scan requested on a device without a camera; ignoring")
+            return
+        }
         val scannerFragment = QRScannerBottomSheet()
         scannerFragment.show(supportFragmentManager, "QRScanner")
     }
@@ -330,7 +349,8 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
 class WebAppInterface(
     private val mContext: Context,
     private val webView: WebView,
-    private val fab: FloatingActionButton
+    private val fab: FloatingActionButton,
+    private val hasCamera: Boolean
 ) {
     @JavascriptInterface
     fun isNative(): Boolean {
@@ -352,7 +372,11 @@ class WebAppInterface(
                 return@runOnUiThread
             }
 
-            if (show) {
+            // Only surface the scan button where a camera exists. The web layer requests it
+            // without knowing the hardware; withholding it here keeps camera-less devices
+            // (Android TV, some tablets) from opening a scanner that cannot work — and adds
+            // no native string, so the wrapper's lack of i18n is not a concern.
+            if (show && hasCamera) {
                 fab.show()
             } else {
                 fab.hide()
