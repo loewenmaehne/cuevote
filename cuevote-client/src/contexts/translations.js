@@ -244,7 +244,10 @@ export const translations = {
 			featPrelisten: "Prelisten before voting",
 			featHost: "Host your own party",
 			continueBrowser: "Continue in browser anyway",
-			continueNote: "Limited features. You can get the app anytime for the full experience."
+			continueNote: "Limited features. You can get the app anytime for the full experience.",
+			footerCta: "Get the app",
+			modalTitle: "More with the app",
+			later: "Not now",
 		},
 		attribution: {
 			youtube: "Developed with YouTube"
@@ -486,7 +489,10 @@ export const translations = {
 			featPrelisten: "Voorbeluisteren voor het stemmen",
 			featHost: "Je eigen party hosten",
 			continueBrowser: "Toch doorgaan in browser",
-			continueNote: "Beperkte functies. Je kunt de app altijd downloaden voor de volledige ervaring."
+			continueNote: "Beperkte functies. Je kunt de app altijd downloaden voor de volledige ervaring.",
+			footerCta: "Haal de app",
+			modalTitle: "Meer met de app",
+			later: "Niet nu",
 		},
 		banned: {
 			title: "Geblokkeerde video's",
@@ -735,7 +741,10 @@ export const translations = {
 			featPrelisten: "Vorhören vor dem Voten",
 			featHost: "Eigene Party hosten",
 			continueBrowser: "Trotzdem im Browser fortfahren",
-			continueNote: "Eingeschränkte Funktionen. Hol dir jederzeit die App für das volle Erlebnis."
+			continueNote: "Eingeschränkte Funktionen. Hol dir jederzeit die App für das volle Erlebnis.",
+			footerCta: "Hol dir die App",
+			modalTitle: "Mehr mit der App",
+			later: "Jetzt nicht",
 		},
 		banned: {
 			title: "Gesperrte Videos",
@@ -986,7 +995,10 @@ export const translations = {
 			featPrelisten: "Pré-écouter avant de voter",
 			featHost: "Animer votre propre soirée",
 			continueBrowser: "Continuer quand même dans le navigateur",
-			continueNote: "Fonctions limitées. Vous pouvez installer l'app à tout moment pour l'expérience complète."
+			continueNote: "Fonctions limitées. Vous pouvez installer l'app à tout moment pour l'expérience complète.",
+			footerCta: "Télécharger l'app",
+			modalTitle: "Plus avec l'app",
+			later: "Plus tard",
 		},
 		banned: {
 			title: "Vidéos bannies",
@@ -1237,7 +1249,10 @@ export const translations = {
 			featPrelisten: "Preescuchar antes de votar",
 			featHost: "Organiza tu propia fiesta",
 			continueBrowser: "Continuar de todos modos en el navegador",
-			continueNote: "Funciones limitadas. Puedes descargar la app cuando quieras para la experiencia completa."
+			continueNote: "Funciones limitadas. Puedes descargar la app cuando quieras para la experiencia completa.",
+			footerCta: "Descarga la app",
+			modalTitle: "Más con la app",
+			later: "Ahora no",
 		},
 		banned: {
 			title: "Videos bloqueados",
@@ -1481,7 +1496,10 @@ export const translations = {
 			featPrelisten: "Ascolta in anteprima prima di votare",
 			featHost: "Ospita la tua festa",
 			continueBrowser: "Continua comunque nel browser",
-			continueNote: "Funzioni limitate. Puoi scaricare l'app quando vuoi per l'esperienza completa."
+			continueNote: "Funzioni limitate. Puoi scaricare l'app quando vuoi per l'esperienza completa.",
+			footerCta: "Scarica l'app",
+			modalTitle: "Di più con l'app",
+			later: "Non ora",
 		},
 		suggestions: {
 			title: "Video correlati",
@@ -1732,7 +1750,10 @@ export const translations = {
 			featPrelisten: "Ouvir antes de votar",
 			featHost: "Organize sua própria festa",
 			continueBrowser: "Continuar no navegador mesmo assim",
-			continueNote: "Recursos limitados. Você pode baixar o app a qualquer momento para a experiência completa."
+			continueNote: "Recursos limitados. Você pode baixar o app a qualquer momento para a experiência completa.",
+			footerCta: "Baixar o app",
+			modalTitle: "Mais com o app",
+			later: "Agora não",
 		},
 		suggestions: {
 			title: "Vídeos relacionados",
@@ -1979,7 +2000,10 @@ export const translations = {
 			featPrelisten: "投票前试听",
 			featHost: "举办自己的派对",
 			continueBrowser: "仍然在浏览器中继续",
-			continueNote: "功能受限。你可以随时下载应用获得完整体验。"
+			continueNote: "功能受限。你可以随时下载应用获得完整体验。",
+			footerCta: "下载 App",
+			modalTitle: "App 玩更多",
+			later: "暂不",
 		},
 		suggestions: {
 			title: "相关视频",
@@ -2226,7 +2250,10 @@ export const translations = {
 			featPrelisten: "投票前試聽",
 			featHost: "舉辦自己的派對",
 			continueBrowser: "仍然在瀏覽器中繼續",
-			continueNote: "功能受限。你可以隨時下載應用程式獲得完整體驗。"
+			continueNote: "功能受限。你可以隨時下載應用程式獲得完整體驗。",
+			footerCta: "下載 App",
+			modalTitle: "App 玩更多",
+			later: "暫不",
 		},
 		suggestions: {
 			title: "相關影片",
@@ -2473,7 +2500,10 @@ export const translations = {
 			featPrelisten: "投票前に試聴",
 			featHost: "自分のパーティーを主催",
 			continueBrowser: "このままブラウザで続ける",
-			continueNote: "機能は制限されます。フル体験はいつでもアプリで楽しめます。"
+			continueNote: "機能は制限されます。フル体験はいつでもアプリで楽しめます。",
+			footerCta: "アプリを入手",
+			modalTitle: "アプリでもっと",
+			later: "あとで",
 		},
 		suggestions: {
 			title: "関連動画",
@@ -2720,7 +2750,10 @@ export const translations = {
 			featPrelisten: "투표 전 미리 듣기",
 			featHost: "내 파티 직접 주최",
 			continueBrowser: "그래도 브라우저로 계속하기",
-			continueNote: "기능이 제한됩니다. 언제든지 앱을 받아 완전한 경험을 즐기세요."
+			continueNote: "기능이 제한됩니다. 언제든지 앱을 받아 완전한 경험을 즐기세요.",
+			footerCta: "앱 받기",
+			modalTitle: "앱으로 더 많이",
+			later: "나중에",
 		},
 		suggestions: {
 			title: "관련 동영상",
@@ -2969,7 +3002,10 @@ export const translations = {
 			featPrelisten: "वोट करने से पहले सुनें",
 			featHost: "अपनी पार्टी होस्ट करें",
 			continueBrowser: "फिर भी ब्राउज़र में जारी रखें",
-			continueNote: "सीमित सुविधाएं। पूरे अनुभव के लिए आप कभी भी ऐप डाउनलोड कर सकते हैं।"
+			continueNote: "सीमित सुविधाएं। पूरे अनुभव के लिए आप कभी भी ऐप डाउनलोड कर सकते हैं।",
+			footerCta: "ऐप पाएं",
+			modalTitle: "ऐप से और भी",
+			later: "अभी नहीं",
 		},
 		suggestions: {
 			title: "संबंधित वीडियो",
@@ -3216,7 +3252,10 @@ export const translations = {
 			featPrelisten: "ฟังก่อนโหวต",
 			featHost: "จัดปาร์ตี้ของคุณเอง",
 			continueBrowser: "ใช้เบราว์เซอร์ต่อไป",
-			continueNote: "ฟีเจอร์จำกัด คุณดาวน์โหลดแอปเมื่อไหร่ก็ได้เพื่อประสบการณ์เต็มรูปแบบ"
+			continueNote: "ฟีเจอร์จำกัด คุณดาวน์โหลดแอปเมื่อไหร่ก็ได้เพื่อประสบการณ์เต็มรูปแบบ",
+			footerCta: "โหลดแอป",
+			modalTitle: "แอปสนุกกว่า",
+			later: "ไว้ก่อน",
 		},
 		suggestions: {
 			title: "วิดีโอที่เกี่ยวข้อง",
@@ -3463,7 +3502,10 @@ export const translations = {
 			featPrelisten: "Nghe thử trước khi bình chọn",
 			featHost: "Tổ chức tiệc của riêng bạn",
 			continueBrowser: "Vẫn tiếp tục trên trình duyệt",
-			continueNote: "Tính năng hạn chế. Bạn có thể tải ứng dụng bất cứ lúc nào để có trải nghiệm đầy đủ."
+			continueNote: "Tính năng hạn chế. Bạn có thể tải ứng dụng bất cứ lúc nào để có trải nghiệm đầy đủ.",
+			footerCta: "Tải app",
+			modalTitle: "Vui hơn với app",
+			later: "Để sau",
 		},
 		suggestions: {
 			title: "Video liên quan",
@@ -3710,7 +3752,10 @@ export const translations = {
 			featPrelisten: "Dengar dulu sebelum memilih",
 			featHost: "Jadi tuan rumah pestamu sendiri",
 			continueBrowser: "Tetap lanjutkan di browser",
-			continueNote: "Fitur terbatas. Kamu bisa mengunduh aplikasi kapan saja untuk pengalaman penuh."
+			continueNote: "Fitur terbatas. Kamu bisa mengunduh aplikasi kapan saja untuk pengalaman penuh.",
+			footerCta: "Unduh app",
+			modalTitle: "Lebih seru di app",
+			later: "Nanti saja",
 		},
 		suggestions: {
 			title: "Video terkait",
@@ -3957,7 +4002,10 @@ export const translations = {
 			featPrelisten: "Dengar dahulu sebelum mengundi",
 			featHost: "Jadi hos parti sendiri",
 			continueBrowser: "Teruskan dalam pelayar juga",
-			continueNote: "Ciri terhad. Anda boleh dapatkan apl bila-bila masa untuk pengalaman penuh."
+			continueNote: "Ciri terhad. Anda boleh dapatkan apl bila-bila masa untuk pengalaman penuh.",
+			footerCta: "Dapatkan app",
+			modalTitle: "Lebih seronok di app",
+			later: "Nanti dulu",
 		},
 		suggestions: {
 			title: "Video berkaitan",
@@ -4220,7 +4268,10 @@ export const translations = {
 			featPrelisten: "Pakinggan muna bago bumoto",
 			featHost: "I-host ang sarili mong party",
 			continueBrowser: "Magpatuloy pa rin sa browser",
-			continueNote: "Limitadong feature. Pwede mong i-download ang app anumang oras para sa buong karanasan."
+			continueNote: "Limitadong feature. Pwede mong i-download ang app anumang oras para sa buong karanasan.",
+			footerCta: "Kunin ang app",
+			modalTitle: "Mas marami sa app",
+			later: "Sa susunod",
 		},
 		attribution: {
 			youtube: "Binuo gamit ang YouTube"
@@ -4459,7 +4510,10 @@ export const translations = {
 			featPrelisten: "Przesłuchaj przed głosowaniem",
 			featHost: "Bądź gospodarzem własnej imprezy",
 			continueBrowser: "Mimo to kontynuuj w przeglądarce",
-			continueNote: "Ograniczone funkcje. Aplikację możesz pobrać w każdej chwili, by mieć pełne wrażenia."
+			continueNote: "Ograniczone funkcje. Aplikację możesz pobrać w każdej chwili, by mieć pełne wrażenia.",
+			footerCta: "Pobierz apkę",
+			modalTitle: "Więcej w apce",
+			later: "Nie teraz",
 		},
 		suggestions: {
 			title: "Powiązane filmy",
@@ -4708,7 +4762,10 @@ export const translations = {
 			featPrelisten: "Förlyssna innan du röstar",
 			featHost: "Var värd för din egen fest",
 			continueBrowser: "Fortsätt ändå i webbläsaren",
-			continueNote: "Begränsade funktioner. Du kan hämta appen när som helst för hela upplevelsen."
+			continueNote: "Begränsade funktioner. Du kan hämta appen när som helst för hela upplevelsen.",
+			footerCta: "Hämta appen",
+			modalTitle: "Mer med appen",
+			later: "Inte nu",
 		},
 		suggestions: {
 			title: "Relaterade videor",
@@ -4957,7 +5014,10 @@ export const translations = {
 			featPrelisten: "Lyt før du stemmer",
 			featHost: "Vær vært for din egen fest",
 			continueBrowser: "Fortsæt alligevel i browseren",
-			continueNote: "Begrænsede funktioner. Du kan hente appen når som helst for den fulde oplevelse."
+			continueNote: "Begrænsede funktioner. Du kan hente appen når som helst for den fulde oplevelse.",
+			footerCta: "Hent appen",
+			modalTitle: "Mere med appen",
+			later: "Ikke nu",
 		},
 		suggestions: {
 			title: "Relaterede videoer",
@@ -5206,7 +5266,10 @@ export const translations = {
 			featPrelisten: "Lytt før du stemmer",
 			featHost: "Vær vert for din egen fest",
 			continueBrowser: "Fortsett likevel i nettleseren",
-			continueNote: "Begrensede funksjoner. Du kan laste ned appen når som helst for hele opplevelsen."
+			continueNote: "Begrensede funksjoner. Du kan laste ned appen når som helst for hele opplevelsen.",
+			footerCta: "Hent appen",
+			modalTitle: "Mer med appen",
+			later: "Ikke nå",
 		},
 		suggestions: {
 			title: "Relaterte videoer",
@@ -5455,7 +5518,10 @@ export const translations = {
 			featPrelisten: "Esikuuntele ennen äänestystä",
 			featHost: "Isännöi omia juhliasi",
 			continueBrowser: "Jatka silti selaimessa",
-			continueNote: "Rajoitetut ominaisuudet. Voit ladata sovelluksen milloin tahansa täyttä kokemusta varten."
+			continueNote: "Rajoitetut ominaisuudet. Voit ladata sovelluksen milloin tahansa täyttä kokemusta varten.",
+			footerCta: "Hae sovellus",
+			modalTitle: "Enemmän sovelluksella",
+			later: "Ei nyt",
 		},
 		suggestions: {
 			title: "Liittyvät videot",
@@ -5704,7 +5770,10 @@ export const translations = {
 			featPrelisten: "Oy vermeden önce dinle",
 			featHost: "Kendi partine ev sahipliği yap",
 			continueBrowser: "Yine de tarayıcıda devam et",
-			continueNote: "Sınırlı özellikler. Tam deneyim için uygulamayı istediğin zaman edinebilirsin."
+			continueNote: "Sınırlı özellikler. Tam deneyim için uygulamayı istediğin zaman edinebilirsin.",
+			footerCta: "Uygulamayı al",
+			modalTitle: "Uygulamada daha fazlası",
+			later: "Şimdi değil",
 		},
 		suggestions: {
 			title: "İlgili videolar",
@@ -5953,7 +6022,10 @@ export const translations = {
 			featPrelisten: "Άκουσε πριν ψηφίσεις",
 			featHost: "Φιλοξένησε το δικό σου πάρτι",
 			continueBrowser: "Συνέχισε ούτως ή άλλως στο browser",
-			continueNote: "Περιορισμένες λειτουργίες. Μπορείς να κατεβάσεις την εφαρμογή όποτε θες για την πλήρη εμπειρία."
+			continueNote: "Περιορισμένες λειτουργίες. Μπορείς να κατεβάσεις την εφαρμογή όποτε θες για την πλήρη εμπειρία.",
+			footerCta: "Κατέβασε την εφαρμογή",
+			modalTitle: "Περισσότερα με την εφαρμογή",
+			later: "Όχι τώρα",
 		},
 		suggestions: {
 			title: "Σχετικά βίντεο",
@@ -6206,7 +6278,10 @@ export const translations = {
 			featPrelisten: "Прослушать перед голосованием",
 			featHost: "Организуй свою вечеринку",
 			continueBrowser: "Всё равно продолжить в браузере",
-			continueNote: "Ограниченные функции. Приложение можно скачать в любой момент для полного опыта."
+			continueNote: "Ограниченные функции. Приложение можно скачать в любой момент для полного опыта.",
+			footerCta: "Скачать приложение",
+			modalTitle: "Больше в приложении",
+			later: "Не сейчас",
 		},
 		suggestions: {
 			title: "Похожие видео",
@@ -6459,7 +6534,10 @@ export const translations = {
 			featPrelisten: "Прослухати перед голосуванням",
 			featHost: "Організуй свою вечірку",
 			continueBrowser: "Все одно продовжити в браузері",
-			continueNote: "Обмежені функції. Додаток можна завантажити будь-коли для повного досвіду."
+			continueNote: "Обмежені функції. Додаток можна завантажити будь-коли для повного досвіду.",
+			footerCta: "Завантажити застосунок",
+			modalTitle: "Більше в застосунку",
+			later: "Не зараз",
 		},
 		suggestions: {
 			title: "Пов'язані відео",
@@ -6712,7 +6790,10 @@ export const translations = {
 			featPrelisten: "Poslechni si před hlasováním",
 			featHost: "Pořádej vlastní párty",
 			continueBrowser: "Přesto pokračovat v prohlížeči",
-			continueNote: "Omezené funkce. Aplikaci si můžeš stáhnout kdykoli pro plný zážitek."
+			continueNote: "Omezené funkce. Aplikaci si můžeš stáhnout kdykoli pro plný zážitek.",
+			footerCta: "Stáhnout appku",
+			modalTitle: "Více v appce",
+			later: "Teď ne",
 		},
 		suggestions: {
 			title: "Související videa",
@@ -6961,7 +7042,10 @@ export const translations = {
 			featPrelisten: "Hallgasd meg szavazás előtt",
 			featHost: "Légy a saját bulid házigazdája",
 			continueBrowser: "Folytatás mégis a böngészőben",
-			continueNote: "Korlátozott funkciók. Az alkalmazást bármikor letöltheted a teljes élményért."
+			continueNote: "Korlátozott funkciók. Az alkalmazást bármikor letöltheted a teljes élményért.",
+			footerCta: "Töltsd le",
+			modalTitle: "Több az appal",
+			later: "Most nem",
 		},
 		suggestions: {
 			title: "Kapcsolódó videók",
@@ -7212,7 +7296,10 @@ export const translations = {
 			featPrelisten: "Ascultă înainte de a vota",
 			featHost: "Găzduiește-ți propria petrecere",
 			continueBrowser: "Continuă oricum în browser",
-			continueNote: "Funcții limitate. Poți descărca aplicația oricând pentru experiența completă."
+			continueNote: "Funcții limitate. Poți descărca aplicația oricând pentru experiența completă.",
+			footerCta: "Descarcă aplicația",
+			modalTitle: "Mai mult cu aplicația",
+			later: "Nu acum",
 		},
 		suggestions: {
 			title: "Videoclipuri asemănătoare",
@@ -7461,7 +7548,10 @@ export const translations = {
 			featPrelisten: "Чуй преди да гласуваш",
 			featHost: "Бъди домакин на своето парти",
 			continueBrowser: "Продължи въпреки това в браузъра",
-			continueNote: "Ограничени функции. Можеш да изтеглиш приложението по всяко време за пълното изживяване."
+			continueNote: "Ограничени функции. Можеш да изтеглиш приложението по всяко време за пълното изживяване.",
+			footerCta: "Свали приложението",
+			modalTitle: "Повече с приложението",
+			later: "Не сега",
 		},
 		suggestions: {
 			title: "Свързани видеа",
@@ -7712,7 +7802,10 @@ export const translations = {
 			featPrelisten: "Poslušaj prije glasanja",
 			featHost: "Budi domaćin vlastite zabave",
 			continueBrowser: "Ipak nastavi u pregledniku",
-			continueNote: "Ograničene značajke. Aplikaciju možeš preuzeti bilo kada za potpuno iskustvo."
+			continueNote: "Ograničene značajke. Aplikaciju možeš preuzeti bilo kada za potpuno iskustvo.",
+			footerCta: "Preuzmi aplikaciju",
+			modalTitle: "Više s aplikacijom",
+			later: "Ne sada",
 		},
 		suggestions: {
 			title: "Povezani videi",
@@ -7963,7 +8056,10 @@ export const translations = {
 			featPrelisten: "Poslušaj pre glasanja",
 			featHost: "Budi domaćin sopstvene zabave",
 			continueBrowser: "Ipak nastavi u pregledaču",
-			continueNote: "Ograničene funkcije. Aplikaciju možeš preuzeti bilo kada za potpuno iskustvo."
+			continueNote: "Ograničene funkcije. Aplikaciju možeš preuzeti bilo kada za potpuno iskustvo.",
+			footerCta: "Преузми апликацију",
+			modalTitle: "Више уз апликацију",
+			later: "Не сада",
 		},
 		suggestions: {
 			title: "Повезани видео снимци",
@@ -8216,7 +8312,10 @@ export const translations = {
 			featPrelisten: "Vypočuj si pred hlasovaním",
 			featHost: "Usporiadaj vlastnú párty",
 			continueBrowser: "Napriek tomu pokračovať v prehliadači",
-			continueNote: "Obmedzené funkcie. Aplikáciu si môžeš stiahnuť kedykoľvek pre plný zážitok."
+			continueNote: "Obmedzené funkcie. Aplikáciu si môžeš stiahnuť kedykoľvek pre plný zážitok.",
+			footerCta: "Stiahnuť appku",
+			modalTitle: "Viac v appke",
+			later: "Teraz nie",
 		},
 		suggestions: {
 			title: "Súvisiace videá",
@@ -8473,7 +8572,10 @@ export const translations = {
 			featPrelisten: "استمع قبل التصويت",
 			featHost: "استضف حفلتك الخاصة",
 			continueBrowser: "المتابعة في المتصفح على أي حال",
-			continueNote: "ميزات محدودة. يمكنك تنزيل التطبيق في أي وقت للحصول على التجربة الكاملة."
+			continueNote: "ميزات محدودة. يمكنك تنزيل التطبيق في أي وقت للحصول على التجربة الكاملة.",
+			footerCta: "حمّل التطبيق",
+			modalTitle: "المزيد مع التطبيق",
+			later: "ليس الآن",
 		},
 		suggestions: {
 			title: "فيديوهات ذات صلة",
@@ -8724,7 +8826,10 @@ export const translations = {
 			featPrelisten: "האזן לפני ההצבעה",
 			featHost: "ארח מסיבה משלך",
 			continueBrowser: "המשך בכל זאת בדפדפן",
-			continueNote: "תכונות מוגבלות. תוכל להוריד את האפליקציה בכל עת לחוויה המלאה."
+			continueNote: "תכונות מוגבלות. תוכל להוריד את האפליקציה בכל עת לחוויה המלאה.",
+			footerCta: "הורד את האפליקציה",
+			modalTitle: "יותר עם האפליקציה",
+			later: "לא עכשיו",
 		},
 		suggestions: {
 			title: "סרטונים קשורים",
