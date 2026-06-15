@@ -1,31 +1,19 @@
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // Copyright (c) 2026 Julian Zienert
 import React from 'react';
-import { Download, Check, X, Video, Headphones, Crown, ThumbsUp, Globe, Smartphone } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { deviceDetection } from '../utils/deviceDetection';
 import { Language } from '../contexts/LanguageContext';
 
-// Single source of truth for the comparison grid so the header and every row
-// share an identical template — guarantees the ✓/✗ columns line up exactly.
-// The two mark columns scale fluidly so labels keep room on tiny screens.
-const COMPARE_COLS = "grid-cols-[1fr_clamp(1.9rem,9vw,2.9rem)_clamp(1.9rem,9vw,2.9rem)]";
-
-export const MobileBlockPage = ({ onContinue }) => {
+// Shown only to devices that genuinely cannot run the web player — currently
+// TVs (leanback), which need the native CueVote TV app. Phones are NOT blocked:
+// iOS/Android browsers run the web app in Venue Mode, and Android is offered the
+// app via AppPromoFooter. (?forceBlock=1 in DEV also lands here for preview.)
+export const MobileBlockPage = () => {
 	const isTvDevice = deviceDetection.isTV();
 	const { t } = Language.useLanguage();
 
 	const apkUrl = "https://github.com/loewenmaehne/cuevote/releases/latest/download/app-release.apk";
-
-	// browser:true → works in the mobile browser; all rows work in the native app.
-	const features = [
-		{ icon: ThumbsUp, label: t('mobile.featVote'), browser: true },
-		{ icon: Video, label: t('mobile.featVideo'), browser: false },
-		{ icon: Headphones, label: t('mobile.featPrelisten'), browser: false },
-		{ icon: Crown, label: t('mobile.featHost'), browser: false },
-	];
-
-	const markBox = "flex items-center justify-center";
-	const markIcon = "w-[clamp(0.95rem,4.1vw,1.15rem)] h-[clamp(0.95rem,4.1vw,1.15rem)]";
 
 	return (
 		<div className="flex flex-col min-h-[100dvh] bg-[#050505] items-center justify-center p-[clamp(0.9rem,4.5vw,1.5rem)] text-center relative overflow-hidden select-none font-sans">
@@ -46,34 +34,7 @@ export const MobileBlockPage = ({ onContinue }) => {
 					</p>
 				</div>
 
-				{/* Browser vs App comparison (mobile only) */}
-				{!isTvDevice && (
-					<div className="w-full rounded-2xl bg-neutral-900/50 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden">
-						<div className={`grid ${COMPARE_COLS} items-center gap-[clamp(0.4rem,2vw,0.6rem)] px-[clamp(0.7rem,3.5vw,1rem)] py-[clamp(0.5rem,2.4vw,0.7rem)] border-b border-white/10 text-[clamp(0.58rem,2.5vw,0.7rem)] font-bold uppercase tracking-wider`}>
-							<span className="text-left text-neutral-500 truncate">{t('mobile.compareTitle')}</span>
-							<span className={`${markBox} text-neutral-400`} title={t('mobile.colBrowser')}><Globe className="w-[clamp(0.85rem,3.7vw,1rem)] h-[clamp(0.85rem,3.7vw,1rem)]" aria-label={t('mobile.colBrowser')} /></span>
-							<span className={`${markBox} text-orange-400`} title={t('mobile.colApp')}><Smartphone className="w-[clamp(0.85rem,3.7vw,1rem)] h-[clamp(0.85rem,3.7vw,1rem)]" aria-label={t('mobile.colApp')} /></span>
-						</div>
-						{features.map((f, i) => (
-							<div key={i} className={`grid ${COMPARE_COLS} items-center gap-[clamp(0.4rem,2vw,0.6rem)] px-[clamp(0.7rem,3.5vw,1rem)] py-[clamp(0.55rem,2.6vw,0.8rem)] border-b border-white/5 last:border-0`}>
-								<span className="flex items-center gap-[clamp(0.45rem,2.2vw,0.65rem)] text-left text-[clamp(0.8rem,3.3vw,0.95rem)] font-medium text-neutral-200 leading-tight">
-									<f.icon className="w-[clamp(0.85rem,3.7vw,1rem)] h-[clamp(0.85rem,3.7vw,1rem)] text-neutral-400 shrink-0" />
-									<span>{f.label}</span>
-								</span>
-								<span className={markBox}>
-									{f.browser
-										? <Check className={`${markIcon} text-emerald-400`} strokeWidth={3} />
-										: <X className={`${markIcon} text-neutral-600`} strokeWidth={3} />}
-								</span>
-								<span className={markBox}>
-									<Check className={`${markIcon} text-orange-400`} strokeWidth={3} />
-								</span>
-							</div>
-						))}
-					</div>
-				)}
-
-				{/* Actions */}
+				{/* Download */}
 				<div className="w-full space-y-[clamp(0.6rem,2.6vw,0.85rem)]">
 					<div className="relative pt-2">
 						<span className="absolute top-0 left-1/2 -translate-x-1/2 z-20 px-2.5 py-0.5 rounded-full bg-orange-500 text-[clamp(0.55rem,2.4vw,0.625rem)] font-bold uppercase tracking-wider text-white shadow-lg whitespace-nowrap">
@@ -93,20 +54,6 @@ export const MobileBlockPage = ({ onContinue }) => {
 					<p className="text-[clamp(0.62rem,2.7vw,0.75rem)] text-neutral-500 leading-snug">
 						{t('mobile.requirement')} · <span className="opacity-70">{t('mobile.downloadFail')}</span> {t('mobile.installInstruction')}
 					</p>
-
-					{/* Continue in browser (mobile only) */}
-					{!isTvDevice && (
-						<div className="pt-1">
-							<button
-								type="button"
-								onClick={() => onContinue?.()}
-								className="w-full py-[clamp(0.65rem,3vw,0.9rem)] px-3 rounded-xl bg-white/5 border border-white/10 text-neutral-300 font-semibold text-[clamp(0.85rem,3.5vw,1rem)] hover:bg-white/10 hover:text-white active:scale-95 transition-all duration-200 leading-tight"
-							>
-								{t('mobile.continueBrowser')}
-							</button>
-							<p className="text-[clamp(0.62rem,2.7vw,0.75rem)] text-neutral-500 mt-2 leading-snug max-w-xs mx-auto">{t('mobile.continueNote')}</p>
-						</div>
-					)}
 				</div>
 
 				<a href="/legal" className="text-[clamp(0.62rem,2.7vw,0.75rem)] text-neutral-500 hover:text-orange-400 underline underline-offset-4 transition-colors">
