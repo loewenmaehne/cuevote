@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="0%" r="90%">
+      <stop offset="0%" stop-color="#7c2d12" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#050505" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="orange" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fb923c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#050505"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Eyebrow -->
+  <text x="100" y="170" font-family="Arial, Helvetica, sans-serif" font-weight="700"
+        font-size="26" letter-spacing="6" fill="#f97316" opacity="0.9">THE SOCIAL JUKEBOX</text>
+
+  <!-- Wordmark -->
+  <text x="96" y="300" font-family="Arial, Helvetica, sans-serif" font-weight="800"
+        font-size="148" letter-spacing="-4" fill="#ffffff">CueVote</text>
+
+  <!-- Tagline -->
+  <text x="100" y="385" font-family="Arial, Helvetica, sans-serif" font-weight="500"
+        font-size="40" fill="#d4d4d4">Everyone suggests. The crowd votes.</text>
+  <text x="100" y="440" font-family="Arial, Helvetica, sans-serif" font-weight="700"
+        font-size="40" fill="url(#orange)">The best song plays next.</text>
+
+  <!-- Vote-arrow motif (right side) -->
+  <g transform="translate(880,150)" opacity="0.95">
+    <rect x="0" y="0" width="220" height="330" rx="28" fill="#0f0f0f" stroke="#262626" stroke-width="2"/>
+    <!-- up arrow -->
+    <circle cx="56" cy="70" r="34" fill="#f97316" opacity="0.15"/>
+    <path d="M56 52 l20 24 h-13 v22 h-14 v-22 h-13 z" fill="#f97316"/>
+    <!-- bars (queue) -->
+    <rect x="104" y="56" width="92" height="12" rx="6" fill="#3f3f46"/>
+    <rect x="104" y="78" width="64" height="12" rx="6" fill="#27272a"/>
+    <!-- row 2 -->
+    <circle cx="56" cy="165" r="34" fill="#f97316"/>
+    <path d="M56 147 l20 24 h-13 v22 h-14 v-22 h-13 z" fill="#0f0f0f"/>
+    <rect x="104" y="151" width="92" height="12" rx="6" fill="#52525b"/>
+    <rect x="104" y="173" width="76" height="12" rx="6" fill="#3f3f46"/>
+    <!-- row 3 -->
+    <circle cx="56" cy="260" r="34" fill="#f97316" opacity="0.15"/>
+    <path d="M56 242 l20 24 h-13 v22 h-14 v-22 h-13 z" fill="#f97316"/>
+    <rect x="104" y="246" width="92" height="12" rx="6" fill="#3f3f46"/>
+    <rect x="104" y="268" width="58" height="12" rx="6" fill="#27272a"/>
+  </g>
+
+  <!-- Footer URL -->
+  <text x="100" y="545" font-family="Arial, Helvetica, sans-serif" font-weight="700"
+        font-size="30" fill="#a3a3a3">cuevote.com</text>
+</svg>

@@ -4,14 +4,55 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/logo-square.svg" />
+  <link rel="manifest" href="/site.webmanifest" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>CueVote</title>
+  <meta name="theme-color" content="#050505" />
+
+  <!-- Primary SEO -->
+  <title>CueVote — The Social Jukebox. The crowd picks the music.</title>
+  <meta name="description"
+    content="CueVote is the social jukebox for parties, bars and hangouts. Everyone suggests YouTube videos, the crowd votes in real time, and the top track plays next. No app required for guests — just scan and join." />
+  <meta name="keywords"
+    content="social jukebox, party playlist, collaborative playlist, queue voting, youtube jukebox, party music app, group playlist, jam, bar music" />
+  <link rel="canonical" href="https://cuevote.com/" />
+
+  <!-- Open Graph (WhatsApp, Discord, Facebook, Slack, LinkedIn) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="CueVote" />
+  <meta property="og:title" content="CueVote — The Social Jukebox" />
+  <meta property="og:description"
+    content="Everyone suggests. The crowd votes. The best song plays next. The democratic jukebox for your party, bar or hangout." />
+  <meta property="og:url" content="https://cuevote.com/" />
+  <meta property="og:image" content="https://cuevote.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="CueVote — the social jukebox where the crowd votes the playlist." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="de_DE" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CueVote — The Social Jukebox" />
+  <meta name="twitter:description"
+    content="Everyone suggests. The crowd votes. The best song plays next. The democratic jukebox for your party." />
+  <meta name="twitter:image" content="https://cuevote.com/og-image.png" />
 </head>
 
 <body>
   <div id="root"></div>
+
+  <noscript>
+    <div style="max-width:640px;margin:48px auto;padding:0 24px;font-family:system-ui,sans-serif;color:#e5e5e5;background:#050505;text-align:center">
+      <h1 style="color:#f97316">CueVote — The Social Jukebox</h1>
+      <p>Everyone suggests YouTube videos, the crowd votes in real time, and the highest-rated track plays next.
+         Perfect for parties, bars and hangouts.</p>
+      <p>CueVote needs JavaScript to run. Please enable it, or visit
+         <a href="https://cuevote.com" style="color:#f97316">cuevote.com</a>.</p>
+    </div>
+  </noscript>
 
   <script type="module" src="/src/main.jsx"></script>
 </body>

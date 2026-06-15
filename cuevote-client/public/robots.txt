@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /$
+Allow: /legal
+Allow: /og-image.png
+Allow: /icon-192.png
+Allow: /icon-512.png
+Allow: /favicon.svg
+Allow: /logo-square.svg
+
+# Room URLs are private/ephemeral session links — keep them out of the index.
+Disallow: /room/
+
+Sitemap: https://cuevote.com/sitemap.xml
