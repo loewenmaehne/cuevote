@@ -1,0 +1,27 @@
+{
+  "name": "CueVote — The Social Jukebox",
+  "short_name": "CueVote",
+  "description": "Everyone suggests. The crowd votes. The best song plays next. The democratic jukebox for your party, bar or hangout.",
+  "lang": "en",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "categories": ["music", "entertainment", "social"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
