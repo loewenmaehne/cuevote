@@ -53,31 +53,22 @@ export const AppPromoFooter = () => {
 					onClick={() => setOpen(false)}
 				>
 					<div
-						className="relative w-full max-w-sm rounded-2xl bg-neutral-900 border border-white/10 shadow-2xl p-[clamp(1.1rem,5vw,1.6rem)] space-y-[clamp(0.9rem,4vw,1.3rem)] max-h-[90dvh] overflow-y-auto animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300"
+						className="relative w-full max-w-sm rounded-2xl bg-neutral-900 border border-white/10 shadow-2xl px-[clamp(1rem,4vw,1.5rem)] py-[clamp(0.8rem,2.4vh,1.35rem)] space-y-[clamp(0.5rem,1.8vh,1.1rem)] max-h-[100dvh] overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300"
 						onClick={(e) => e.stopPropagation()}
 					>
-						<button
-							type="button"
-							onClick={() => setOpen(false)}
-							aria-label={t('mobile.later')}
-							className="absolute top-3 right-3 text-neutral-500 hover:text-white transition-colors"
-						>
-							<X className="w-5 h-5" />
-						</button>
-
-						<div className="text-center pt-1 pr-6">
-							<h2 className="text-white font-black text-[clamp(1.15rem,5vw,1.5rem)] tracking-tight leading-tight">{t('mobile.modalTitle')}</h2>
+						<div className="text-center">
+							<h2 className="text-white font-black text-[clamp(1.05rem,4.6vw,1.4rem)] tracking-tight leading-tight">{t('mobile.modalTitle')}</h2>
 						</div>
 
 						{/* Browser vs App comparison */}
 						<div className="rounded-2xl bg-neutral-950/60 border border-white/10 overflow-hidden">
-							<div className={`grid ${COMPARE_COLS} items-center gap-[clamp(0.4rem,2vw,0.6rem)] px-[clamp(0.7rem,3.5vw,1rem)] py-[clamp(0.5rem,2.4vw,0.7rem)] border-b border-white/10 text-[clamp(0.58rem,2.5vw,0.7rem)] font-bold uppercase tracking-wider`}>
+							<div className={`grid ${COMPARE_COLS} items-center gap-[clamp(0.4rem,2vw,0.6rem)] px-[clamp(0.7rem,3.5vw,1rem)] py-[clamp(0.3rem,1.1vh,0.6rem)] border-b border-white/10 text-[clamp(0.56rem,2.4vw,0.7rem)] font-bold uppercase tracking-wider`}>
 								<span className="text-left text-neutral-500 truncate">{t('mobile.compareTitle')}</span>
 								<span className={`${markBox} text-neutral-400`} title={t('mobile.colBrowser')}><Globe className="w-[clamp(0.85rem,3.7vw,1rem)] h-[clamp(0.85rem,3.7vw,1rem)]" aria-label={t('mobile.colBrowser')} /></span>
 								<span className={`${markBox} text-orange-400`} title={t('mobile.colApp')}><Smartphone className="w-[clamp(0.85rem,3.7vw,1rem)] h-[clamp(0.85rem,3.7vw,1rem)]" aria-label={t('mobile.colApp')} /></span>
 							</div>
 							{features.map((f, i) => (
-								<div key={i} className={`grid ${COMPARE_COLS} items-center gap-[clamp(0.4rem,2vw,0.6rem)] px-[clamp(0.7rem,3.5vw,1rem)] py-[clamp(0.55rem,2.6vw,0.8rem)] border-b border-white/5 last:border-0`}>
+								<div key={i} className={`grid ${COMPARE_COLS} items-center gap-[clamp(0.4rem,2vw,0.6rem)] px-[clamp(0.7rem,3.5vw,1rem)] py-[clamp(0.38rem,1.45vh,0.72rem)] border-b border-white/5 last:border-0`}>
 									<span className="flex items-center gap-[clamp(0.45rem,2.2vw,0.65rem)] text-left text-[clamp(0.8rem,3.3vw,0.95rem)] font-medium text-neutral-200 leading-tight">
 										<f.icon className="w-[clamp(0.85rem,3.7vw,1rem)] h-[clamp(0.85rem,3.7vw,1rem)] text-neutral-400 shrink-0" />
 										<span>{f.label}</span>
@@ -95,14 +86,14 @@ export const AppPromoFooter = () => {
 						</div>
 
 						{/* Download */}
-						<div className="space-y-[clamp(0.5rem,2.4vw,0.75rem)]">
+						<div className="space-y-[clamp(0.3rem,1.2vh,0.6rem)]">
 							<a
 								href={APK_URL}
 								download="CueVote-App.apk"
 								target="_blank"
 								rel="noopener noreferrer"
 								onClick={() => setOpen(false)}
-								className="relative w-full py-[clamp(0.8rem,3.6vw,1rem)] px-[clamp(2.6rem,12vw,3.25rem)] rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-[clamp(0.95rem,3.9vw,1.125rem)] shadow-xl hover:shadow-orange-500/30 active:scale-95 transition-all duration-200 flex items-center justify-center text-center leading-tight"
+								className="relative w-full py-[clamp(0.5rem,1.9vh,0.95rem)] px-[clamp(2.6rem,12vw,3.25rem)] rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-[clamp(0.95rem,3.9vw,1.125rem)] shadow-xl hover:shadow-orange-500/30 active:scale-95 transition-all duration-200 flex items-center justify-center text-center leading-tight"
 							>
 								<Download className="absolute left-[clamp(0.85rem,4.5vw,1.25rem)] top-1/2 -translate-y-1/2 w-[clamp(1.05rem,4.6vw,1.4rem)] h-[clamp(1.05rem,4.6vw,1.4rem)] fill-current" />
 								<span>{t('mobile.downloadMobile')}</span>
@@ -115,7 +106,7 @@ export const AppPromoFooter = () => {
 						<button
 							type="button"
 							onClick={() => setOpen(false)}
-							className="w-full py-[clamp(0.6rem,2.8vw,0.85rem)] text-neutral-400 hover:text-white font-semibold text-[clamp(0.85rem,3.5vw,1rem)] transition-colors"
+							className="w-full py-[clamp(0.3rem,1.3vh,0.7rem)] text-neutral-400 hover:text-white font-semibold text-[clamp(0.85rem,3.5vw,1rem)] transition-colors"
 						>
 							{t('mobile.later')}
 						</button>
