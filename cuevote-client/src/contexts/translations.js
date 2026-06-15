@@ -233,7 +233,18 @@ export const translations = {
 			requirement: "Requires Android 7.0+",
 			downloadFail: "If download fails:",
 			installInstruction: "Settings > Enable \"Install Unknown Apps\"",
-			privacyLegal: "Privacy Policy & Legal"
+			privacyLegal: "Privacy Policy & Legal",
+			appBest: "Best experience",
+			recommended: "Recommended",
+			compareTitle: "Browser vs. App",
+			colBrowser: "Browser",
+			colApp: "App",
+			featVote: "Vote & suggest songs",
+			featVideo: "Watch the video",
+			featPrelisten: "Prelisten before voting",
+			featHost: "Host your own party",
+			continueBrowser: "Continue in browser anyway",
+			continueNote: "Limited features. You can get the app anytime for the full experience."
 		},
 		attribution: {
 			youtube: "Developed with YouTube"
@@ -464,7 +475,18 @@ export const translations = {
 			requirement: "Vereist Android 7.0+",
 			downloadFail: "Als download mislukt:",
 			installInstruction: "Instellingen > Activeer \"Onbekende apps installeren\"",
-			privacyLegal: "Privacybeleid & Juridisch"
+			privacyLegal: "Privacybeleid & Juridisch",
+			appBest: "Beste ervaring",
+			recommended: "Aanbevolen",
+			compareTitle: "Browser vs. App",
+			colBrowser: "Browser",
+			colApp: "App",
+			featVote: "Songs stemmen & voorstellen",
+			featVideo: "De video bekijken",
+			featPrelisten: "Voorbeluisteren voor het stemmen",
+			featHost: "Je eigen party hosten",
+			continueBrowser: "Toch doorgaan in browser",
+			continueNote: "Beperkte functies. Je kunt de app altijd downloaden voor de volledige ervaring."
 		},
 		banned: {
 			title: "Geblokkeerde video's",
@@ -702,7 +724,18 @@ export const translations = {
 			requirement: "Erfordert Android 7.0+",
 			downloadFail: "Falls der Download fehlschlägt:",
 			installInstruction: "Einstellungen > \"Unbekannte Apps installieren\" aktivieren",
-			privacyLegal: "Datenschutz & Rechtliches"
+			privacyLegal: "Datenschutz & Rechtliches",
+			appBest: "Beste Erfahrung",
+			recommended: "Empfohlen",
+			compareTitle: "Browser vs. App",
+			colBrowser: "Browser",
+			colApp: "App",
+			featVote: "Songs voten & vorschlagen",
+			featVideo: "Video ansehen",
+			featPrelisten: "Vorhören vor dem Voten",
+			featHost: "Eigene Party hosten",
+			continueBrowser: "Trotzdem im Browser fortfahren",
+			continueNote: "Eingeschränkte Funktionen. Hol dir jederzeit die App für das volle Erlebnis."
 		},
 		banned: {
 			title: "Gesperrte Videos",
@@ -942,7 +975,18 @@ export const translations = {
 			requirement: "Nécessite Android 7.0+",
 			downloadFail: "Si le téléchargement échoue :",
 			installInstruction: "Paramètres > Activer \"Installation d'applis inconnues\"",
-			privacyLegal: "Confidentialité & Mentions Légales"
+			privacyLegal: "Confidentialité & Mentions Légales",
+			appBest: "Meilleure expérience",
+			recommended: "Recommandé",
+			compareTitle: "Navigateur vs. App",
+			colBrowser: "Navigateur",
+			colApp: "App",
+			featVote: "Voter & proposer des titres",
+			featVideo: "Regarder la vidéo",
+			featPrelisten: "Pré-écouter avant de voter",
+			featHost: "Animer votre propre soirée",
+			continueBrowser: "Continuer quand même dans le navigateur",
+			continueNote: "Fonctions limitées. Vous pouvez installer l'app à tout moment pour l'expérience complète."
 		},
 		banned: {
 			title: "Vidéos bannies",
@@ -1182,7 +1226,18 @@ export const translations = {
 			requirement: "Requiere Android 7.0+",
 			downloadFail: "Si falla la descarga:",
 			installInstruction: "Ajustes > Activar \"Instalar aplicaciones desconocidas\"",
-			privacyLegal: "Privacidad y Legal"
+			privacyLegal: "Privacidad y Legal",
+			appBest: "Mejor experiencia",
+			recommended: "Recomendado",
+			compareTitle: "Navegador vs. App",
+			colBrowser: "Navegador",
+			colApp: "App",
+			featVote: "Votar y sugerir canciones",
+			featVideo: "Ver el video",
+			featPrelisten: "Preescuchar antes de votar",
+			featHost: "Organiza tu propia fiesta",
+			continueBrowser: "Continuar de todos modos en el navegador",
+			continueNote: "Funciones limitadas. Puedes descargar la app cuando quieras para la experiencia completa."
 		},
 		banned: {
 			title: "Videos bloqueados",
@@ -1415,7 +1470,18 @@ export const translations = {
 			requirement: "Richiede Android 7.0+",
 			downloadFail: "Se il download fallisce:",
 			installInstruction: "Impostazioni > Abilita \"Installa app sconosciute\"",
-			privacyLegal: "Privacy e Legale"
+			privacyLegal: "Privacy e Legale",
+			appBest: "Esperienza migliore",
+			recommended: "Consigliato",
+			compareTitle: "Browser vs. App",
+			colBrowser: "Browser",
+			colApp: "App",
+			featVote: "Vota e proponi canzoni",
+			featVideo: "Guarda il video",
+			featPrelisten: "Ascolta in anteprima prima di votare",
+			featHost: "Ospita la tua festa",
+			continueBrowser: "Continua comunque nel browser",
+			continueNote: "Funzioni limitate. Puoi scaricare l'app quando vuoi per l'esperienza completa."
 		},
 		suggestions: {
 			title: "Video correlati",
@@ -1655,7 +1721,18 @@ export const translations = {
 			requirement: "Requer Android 7.0+",
 			downloadFail: "Se o download falhar:",
 			installInstruction: "Configurações > Habilitar \"Instalar apps desconhecidos\"",
-			privacyLegal: "Privacidade e Legal"
+			privacyLegal: "Privacidade e Legal",
+			appBest: "Melhor experiência",
+			recommended: "Recomendado",
+			compareTitle: "Navegador vs. App",
+			colBrowser: "Navegador",
+			colApp: "App",
+			featVote: "Votar e sugerir músicas",
+			featVideo: "Assistir ao vídeo",
+			featPrelisten: "Ouvir antes de votar",
+			featHost: "Organize sua própria festa",
+			continueBrowser: "Continuar no navegador mesmo assim",
+			continueNote: "Recursos limitados. Você pode baixar o app a qualquer momento para a experiência completa."
 		},
 		suggestions: {
 			title: "Vídeos relacionados",
@@ -1891,7 +1968,18 @@ export const translations = {
 			requirement: "需要 Android 7.0+",
 			downloadFail: "如果下载失败：",
 			installInstruction: "设置 > 启用“安装未知应用”",
-			privacyLegal: "隐私政策与法律信息"
+			privacyLegal: "隐私政策与法律信息",
+			appBest: "最佳体验",
+			recommended: "推荐",
+			compareTitle: "浏览器 vs. 应用",
+			colBrowser: "浏览器",
+			colApp: "应用",
+			featVote: "为歌曲投票和推荐",
+			featVideo: "观看视频",
+			featPrelisten: "投票前试听",
+			featHost: "举办自己的派对",
+			continueBrowser: "仍然在浏览器中继续",
+			continueNote: "功能受限。你可以随时下载应用获得完整体验。"
 		},
 		suggestions: {
 			title: "相关视频",
@@ -2127,7 +2215,18 @@ export const translations = {
 			requirement: "需要 Android 7.0+",
 			downloadFail: "如果下載失敗：",
 			installInstruction: "設定 > 啟用「安裝未知應用程式」",
-			privacyLegal: "隱私政策與法律資訊"
+			privacyLegal: "隱私政策與法律資訊",
+			appBest: "最佳體驗",
+			recommended: "推薦",
+			compareTitle: "瀏覽器 vs. 應用程式",
+			colBrowser: "瀏覽器",
+			colApp: "應用程式",
+			featVote: "為歌曲投票和推薦",
+			featVideo: "觀看視頻",
+			featPrelisten: "投票前試聽",
+			featHost: "舉辦自己的派對",
+			continueBrowser: "仍然在瀏覽器中繼續",
+			continueNote: "功能受限。你可以隨時下載應用程式獲得完整體驗。"
 		},
 		suggestions: {
 			title: "相關影片",
@@ -2363,7 +2462,18 @@ export const translations = {
 			requirement: "Android 7.0以降が必要",
 			downloadFail: "ダウンロードに失敗した場合：",
 			installInstruction: "設定 > 「不明なアプリのインストール」を有効にする",
-			privacyLegal: "プライバシーポリシーと法的情報"
+			privacyLegal: "プライバシーポリシーと法的情報",
+			appBest: "最高の体験",
+			recommended: "おすすめ",
+			compareTitle: "ブラウザ vs. アプリ",
+			colBrowser: "ブラウザ",
+			colApp: "アプリ",
+			featVote: "曲に投票・リクエスト",
+			featVideo: "動画を見る",
+			featPrelisten: "投票前に試聴",
+			featHost: "自分のパーティーを主催",
+			continueBrowser: "このままブラウザで続ける",
+			continueNote: "機能は制限されます。フル体験はいつでもアプリで楽しめます。"
 		},
 		suggestions: {
 			title: "関連動画",
@@ -2599,7 +2709,18 @@ export const translations = {
 			requirement: "Android 7.0+ 필요",
 			downloadFail: "다운로드 실패 시:",
 			installInstruction: "설정 > '알 수 없는 앱 설치' 허용",
-			privacyLegal: "개인정보 보호 및 법적 고지"
+			privacyLegal: "개인정보 보호 및 법적 고지",
+			appBest: "최고의 경험",
+			recommended: "추천",
+			compareTitle: "브라우저 vs. 앱",
+			colBrowser: "브라우저",
+			colApp: "앱",
+			featVote: "곡 투표 및 신청",
+			featVideo: "동영상 보기",
+			featPrelisten: "투표 전 미리 듣기",
+			featHost: "내 파티 직접 주최",
+			continueBrowser: "그래도 브라우저로 계속하기",
+			continueNote: "기능이 제한됩니다. 언제든지 앱을 받아 완전한 경험을 즐기세요."
 		},
 		suggestions: {
 			title: "관련 동영상",
@@ -2837,7 +2958,18 @@ export const translations = {
 			requirement: "Android 7.0+ आवश्यक है",
 			downloadFail: "यदि डाउनलोड विफल होता है:",
 			installInstruction: "सेटिंग्स > \"अज्ञात ऐप्स इंस्टॉल करें\" सक्षम करें",
-			privacyLegal: "गोपनीयता और कानूनी"
+			privacyLegal: "गोपनीयता और कानूनी",
+			appBest: "बेहतरीन अनुभव",
+			recommended: "अनुशंसित",
+			compareTitle: "ब्राउज़र बनाम ऐप",
+			colBrowser: "ब्राउज़र",
+			colApp: "ऐप",
+			featVote: "गानों पर वोट करें और सुझाएं",
+			featVideo: "वीडियो देखें",
+			featPrelisten: "वोट करने से पहले सुनें",
+			featHost: "अपनी पार्टी होस्ट करें",
+			continueBrowser: "फिर भी ब्राउज़र में जारी रखें",
+			continueNote: "सीमित सुविधाएं। पूरे अनुभव के लिए आप कभी भी ऐप डाउनलोड कर सकते हैं।"
 		},
 		suggestions: {
 			title: "संबंधित वीडियो",
@@ -3073,7 +3205,18 @@ export const translations = {
 			requirement: "ต้องการ Android 7.0+",
 			downloadFail: "หากการดาวน์โหลดล้มเหลว:",
 			installInstruction: "การตั้งค่า > เปิดใช้งาน \"ติดตั้งแอปที่ไม่รู้จัก\"",
-			privacyLegal: "ความเป็นส่วนตัวและกฎหมาย"
+			privacyLegal: "ความเป็นส่วนตัวและกฎหมาย",
+			appBest: "ประสบการณ์ที่ดีที่สุด",
+			recommended: "แนะนำ",
+			compareTitle: "เบราว์เซอร์ vs. แอป",
+			colBrowser: "เบราว์เซอร์",
+			colApp: "แอป",
+			featVote: "โหวตและแนะนำเพลง",
+			featVideo: "ดูวิดีโอ",
+			featPrelisten: "ฟังก่อนโหวต",
+			featHost: "จัดปาร์ตี้ของคุณเอง",
+			continueBrowser: "ใช้เบราว์เซอร์ต่อไป",
+			continueNote: "ฟีเจอร์จำกัด คุณดาวน์โหลดแอปเมื่อไหร่ก็ได้เพื่อประสบการณ์เต็มรูปแบบ"
 		},
 		suggestions: {
 			title: "วิดีโอที่เกี่ยวข้อง",
@@ -3309,7 +3452,18 @@ export const translations = {
 			requirement: "Yêu cầu Android 7.0+",
 			downloadFail: "Nếu tải xuống thất bại:",
 			installInstruction: "Cài đặt > Bật \"Cài đặt ứng dụng không rõ nguồn gốc\"",
-			privacyLegal: "Quyền riêng tư & Pháp lý"
+			privacyLegal: "Quyền riêng tư & Pháp lý",
+			appBest: "Trải nghiệm tốt nhất",
+			recommended: "Khuyên dùng",
+			compareTitle: "Trình duyệt vs. Ứng dụng",
+			colBrowser: "Trình duyệt",
+			colApp: "Ứng dụng",
+			featVote: "Bình chọn & đề xuất bài hát",
+			featVideo: "Xem video",
+			featPrelisten: "Nghe thử trước khi bình chọn",
+			featHost: "Tổ chức tiệc của riêng bạn",
+			continueBrowser: "Vẫn tiếp tục trên trình duyệt",
+			continueNote: "Tính năng hạn chế. Bạn có thể tải ứng dụng bất cứ lúc nào để có trải nghiệm đầy đủ."
 		},
 		suggestions: {
 			title: "Video liên quan",
@@ -3545,7 +3699,18 @@ export const translations = {
 			requirement: "Memerlukan Android 7.0+",
 			downloadFail: "Jika unduhan gagal:",
 			installInstruction: "Pengaturan > Aktifkan \"Instal aplikasi yang tidak dikenal\"",
-			privacyLegal: "Privasi & Hukum"
+			privacyLegal: "Privasi & Hukum",
+			appBest: "Pengalaman terbaik",
+			recommended: "Direkomendasikan",
+			compareTitle: "Browser vs. Aplikasi",
+			colBrowser: "Browser",
+			colApp: "Aplikasi",
+			featVote: "Pilih & sarankan lagu",
+			featVideo: "Tonton videonya",
+			featPrelisten: "Dengar dulu sebelum memilih",
+			featHost: "Jadi tuan rumah pestamu sendiri",
+			continueBrowser: "Tetap lanjutkan di browser",
+			continueNote: "Fitur terbatas. Kamu bisa mengunduh aplikasi kapan saja untuk pengalaman penuh."
 		},
 		suggestions: {
 			title: "Video terkait",
@@ -3781,7 +3946,18 @@ export const translations = {
 			requirement: "Memerlukan Android 7.0+",
 			downloadFail: "Jika muat turun gagal:",
 			installInstruction: "Tetapan > Dayakan \"Pasang apl yang tidak diketahui\"",
-			privacyLegal: "Privasi & Undang-undang"
+			privacyLegal: "Privasi & Undang-undang",
+			appBest: "Pengalaman terbaik",
+			recommended: "Disyorkan",
+			compareTitle: "Pelayar vs. Apl",
+			colBrowser: "Pelayar",
+			colApp: "Apl",
+			featVote: "Undi & cadangkan lagu",
+			featVideo: "Tonton video",
+			featPrelisten: "Dengar dahulu sebelum mengundi",
+			featHost: "Jadi hos parti sendiri",
+			continueBrowser: "Teruskan dalam pelayar juga",
+			continueNote: "Ciri terhad. Anda boleh dapatkan apl bila-bila masa untuk pengalaman penuh."
 		},
 		suggestions: {
 			title: "Video berkaitan",
@@ -4033,7 +4209,18 @@ export const translations = {
 			requirement: "Kailangan ng Android 7.0+",
 			downloadFail: "Kung nabigo ang download:",
 			installInstruction: "Settings > I-enable ang \"Install Unknown Apps\"",
-			privacyLegal: "Privacy Policy at Legal"
+			privacyLegal: "Privacy Policy at Legal",
+			appBest: "Pinakamahusay na karanasan",
+			recommended: "Inirerekomenda",
+			compareTitle: "Browser vs. App",
+			colBrowser: "Browser",
+			colApp: "App",
+			featVote: "Bumoto & magmungkahi ng kanta",
+			featVideo: "Panoorin ang video",
+			featPrelisten: "Pakinggan muna bago bumoto",
+			featHost: "I-host ang sarili mong party",
+			continueBrowser: "Magpatuloy pa rin sa browser",
+			continueNote: "Limitadong feature. Pwede mong i-download ang app anumang oras para sa buong karanasan."
 		},
 		attribution: {
 			youtube: "Binuo gamit ang YouTube"
@@ -4261,7 +4448,18 @@ export const translations = {
 			requirement: "Wymaga Androida 7.0+",
 			downloadFail: "Jeśli pobieranie nie powiedzie się:",
 			installInstruction: "Ustawienia > Włącz „Zainstaluj nieznane aplikacje”",
-			privacyLegal: "Prywatność i informacje prawne"
+			privacyLegal: "Prywatność i informacje prawne",
+			appBest: "Najlepsze wrażenia",
+			recommended: "Polecane",
+			compareTitle: "Przeglądarka vs. App",
+			colBrowser: "Przeglądarka",
+			colApp: "App",
+			featVote: "Głosuj i proponuj utwory",
+			featVideo: "Oglądaj wideo",
+			featPrelisten: "Przesłuchaj przed głosowaniem",
+			featHost: "Bądź gospodarzem własnej imprezy",
+			continueBrowser: "Mimo to kontynuuj w przeglądarce",
+			continueNote: "Ograniczone funkcje. Aplikację możesz pobrać w każdej chwili, by mieć pełne wrażenia."
 		},
 		suggestions: {
 			title: "Powiązane filmy",
@@ -4499,7 +4697,18 @@ export const translations = {
 			requirement: "Kräver Android 7.0+",
 			downloadFail: "Om nedladdningen misslyckas:",
 			installInstruction: "Inställningar > Aktivera \"Installera okända appar\"",
-			privacyLegal: "Integritet & Juridik"
+			privacyLegal: "Integritet & Juridik",
+			appBest: "Bästa upplevelsen",
+			recommended: "Rekommenderas",
+			compareTitle: "Webbläsare vs. App",
+			colBrowser: "Webbläsare",
+			colApp: "App",
+			featVote: "Rösta & föreslå låtar",
+			featVideo: "Titta på videon",
+			featPrelisten: "Förlyssna innan du röstar",
+			featHost: "Var värd för din egen fest",
+			continueBrowser: "Fortsätt ändå i webbläsaren",
+			continueNote: "Begränsade funktioner. Du kan hämta appen när som helst för hela upplevelsen."
 		},
 		suggestions: {
 			title: "Relaterade videor",
@@ -4737,7 +4946,18 @@ export const translations = {
 			requirement: "Kræver Android 7.0+",
 			downloadFail: "Hvis overførslen mislykkes:",
 			installInstruction: "Indstillinger > Aktiver \"Installer ukendte apps\"",
-			privacyLegal: "Privatliv & Juridisk"
+			privacyLegal: "Privatliv & Juridisk",
+			appBest: "Bedste oplevelse",
+			recommended: "Anbefales",
+			compareTitle: "Browser vs. App",
+			colBrowser: "Browser",
+			colApp: "App",
+			featVote: "Stem & foreslå sange",
+			featVideo: "Se videoen",
+			featPrelisten: "Lyt før du stemmer",
+			featHost: "Vær vært for din egen fest",
+			continueBrowser: "Fortsæt alligevel i browseren",
+			continueNote: "Begrænsede funktioner. Du kan hente appen når som helst for den fulde oplevelse."
 		},
 		suggestions: {
 			title: "Relaterede videoer",
@@ -4975,7 +5195,18 @@ export const translations = {
 			requirement: "Krever Android 7.0+",
 			downloadFail: "Hvis nedlastingen mislykkes:",
 			installInstruction: "Innstillinger > Aktiver \"Installer ukjente apper\"",
-			privacyLegal: "Personvern og juridisk"
+			privacyLegal: "Personvern og juridisk",
+			appBest: "Beste opplevelse",
+			recommended: "Anbefalt",
+			compareTitle: "Nettleser vs. App",
+			colBrowser: "Nettleser",
+			colApp: "App",
+			featVote: "Stem & foreslå sanger",
+			featVideo: "Se videoen",
+			featPrelisten: "Lytt før du stemmer",
+			featHost: "Vær vert for din egen fest",
+			continueBrowser: "Fortsett likevel i nettleseren",
+			continueNote: "Begrensede funksjoner. Du kan laste ned appen når som helst for hele opplevelsen."
 		},
 		suggestions: {
 			title: "Relaterte videoer",
@@ -5213,7 +5444,18 @@ export const translations = {
 			requirement: "Vaatii Android 7.0+",
 			downloadFail: "Jos lataus epäonnistuu:",
 			installInstruction: "Asetukset > Ota käyttöön \"Asenna tuntemattomat sovellukset\"",
-			privacyLegal: "Yksityisyys ja oikeudelliset tiedot"
+			privacyLegal: "Yksityisyys ja oikeudelliset tiedot",
+			appBest: "Paras kokemus",
+			recommended: "Suositeltu",
+			compareTitle: "Selain vs. Sovellus",
+			colBrowser: "Selain",
+			colApp: "Sovellus",
+			featVote: "Äänestä & ehdota kappaleita",
+			featVideo: "Katso video",
+			featPrelisten: "Esikuuntele ennen äänestystä",
+			featHost: "Isännöi omia juhliasi",
+			continueBrowser: "Jatka silti selaimessa",
+			continueNote: "Rajoitetut ominaisuudet. Voit ladata sovelluksen milloin tahansa täyttä kokemusta varten."
 		},
 		suggestions: {
 			title: "Liittyvät videot",
@@ -5451,7 +5693,18 @@ export const translations = {
 			requirement: "Android 7.0+ gerekir",
 			downloadFail: "İndirme başarısız olursa:",
 			installInstruction: "Ayarlar > \"Bilinmeyen uygulamaları yükle\" seçeneğini etkinleştirin",
-			privacyLegal: "Gizlilik ve Yasal"
+			privacyLegal: "Gizlilik ve Yasal",
+			appBest: "En iyi deneyim",
+			recommended: "Önerilen",
+			compareTitle: "Tarayıcı vs. Uygulama",
+			colBrowser: "Tarayıcı",
+			colApp: "Uygulama",
+			featVote: "Şarkıları oyla ve öner",
+			featVideo: "Videoyu izle",
+			featPrelisten: "Oy vermeden önce dinle",
+			featHost: "Kendi partine ev sahipliği yap",
+			continueBrowser: "Yine de tarayıcıda devam et",
+			continueNote: "Sınırlı özellikler. Tam deneyim için uygulamayı istediğin zaman edinebilirsin."
 		},
 		suggestions: {
 			title: "İlgili videolar",
@@ -5689,7 +5942,18 @@ export const translations = {
 			requirement: "Απαιτεί Android 7.0+",
 			downloadFail: "Εάν η λήψη αποτύχει:",
 			installInstruction: "Ρυθμίσεις > Ενεργοποίηση \"Εγκατάσταση άγνωστων εφαρμογών\"",
-			privacyLegal: "Απόρρητο & Νομικά"
+			privacyLegal: "Απόρρητο & Νομικά",
+			appBest: "Καλύτερη εμπειρία",
+			recommended: "Προτείνεται",
+			compareTitle: "Browser vs. App",
+			colBrowser: "Browser",
+			colApp: "App",
+			featVote: "Ψήφισε & πρότεινε τραγούδια",
+			featVideo: "Δες το βίντεο",
+			featPrelisten: "Άκουσε πριν ψηφίσεις",
+			featHost: "Φιλοξένησε το δικό σου πάρτι",
+			continueBrowser: "Συνέχισε ούτως ή άλλως στο browser",
+			continueNote: "Περιορισμένες λειτουργίες. Μπορείς να κατεβάσεις την εφαρμογή όποτε θες για την πλήρη εμπειρία."
 		},
 		suggestions: {
 			title: "Σχετικά βίντεο",
@@ -5931,7 +6195,18 @@ export const translations = {
 			requirement: "Требуется Android 7.0+",
 			downloadFail: "Если скачивание не удалось:",
 			installInstruction: "Настройки > Включить \"Установка неизвестных приложений\"",
-			privacyLegal: "Конфиденциальность и правовая информация"
+			privacyLegal: "Конфиденциальность и правовая информация",
+			appBest: "Лучший опыт",
+			recommended: "Рекомендуем",
+			compareTitle: "Браузер vs. Приложение",
+			colBrowser: "Браузер",
+			colApp: "Приложение",
+			featVote: "Голосуй и предлагай песни",
+			featVideo: "Смотреть видео",
+			featPrelisten: "Прослушать перед голосованием",
+			featHost: "Организуй свою вечеринку",
+			continueBrowser: "Всё равно продолжить в браузере",
+			continueNote: "Ограниченные функции. Приложение можно скачать в любой момент для полного опыта."
 		},
 		suggestions: {
 			title: "Похожие видео",
@@ -6173,7 +6448,18 @@ export const translations = {
 			requirement: "Потрібно Android 7.0+",
 			downloadFail: "Якщо завантаження не вдалося:",
 			installInstruction: "Налаштування > Увімкнути \"Встановлення невідомих додатків\"",
-			privacyLegal: "Конфіденційність та правова інформація"
+			privacyLegal: "Конфіденційність та правова інформація",
+			appBest: "Найкращий досвід",
+			recommended: "Рекомендовано",
+			compareTitle: "Браузер vs. Додаток",
+			colBrowser: "Браузер",
+			colApp: "Додаток",
+			featVote: "Голосуй і пропонуй пісні",
+			featVideo: "Дивитися відео",
+			featPrelisten: "Прослухати перед голосуванням",
+			featHost: "Організуй свою вечірку",
+			continueBrowser: "Все одно продовжити в браузері",
+			continueNote: "Обмежені функції. Додаток можна завантажити будь-коли для повного досвіду."
 		},
 		suggestions: {
 			title: "Пов'язані відео",
@@ -6415,7 +6701,18 @@ export const translations = {
 			requirement: "Vyžaduje Android 7.0+",
 			downloadFail: "Pokud stahování selže:",
 			installInstruction: "Nastavení > Povolit „Instalovat neznámé aplikace“",
-			privacyLegal: "Ochrana soukromí a právní informace"
+			privacyLegal: "Ochrana soukromí a právní informace",
+			appBest: "Nejlepší zážitek",
+			recommended: "Doporučeno",
+			compareTitle: "Prohlížeč vs. App",
+			colBrowser: "Prohlížeč",
+			colApp: "App",
+			featVote: "Hlasuj a navrhuj písně",
+			featVideo: "Sleduj video",
+			featPrelisten: "Poslechni si před hlasováním",
+			featHost: "Pořádej vlastní párty",
+			continueBrowser: "Přesto pokračovat v prohlížeči",
+			continueNote: "Omezené funkce. Aplikaci si můžeš stáhnout kdykoli pro plný zážitek."
 		},
 		suggestions: {
 			title: "Související videa",
@@ -6653,7 +6950,18 @@ export const translations = {
 			requirement: "Android 7.0+ szükséges",
 			downloadFail: "Ha a letöltés sikertelen:",
 			installInstruction: "Beállítások > Engedélyezze az \"Ismeretlen alkalmazások telepítése\" opciót",
-			privacyLegal: "Adatvédelem és Jogi"
+			privacyLegal: "Adatvédelem és Jogi",
+			appBest: "Legjobb élmény",
+			recommended: "Ajánlott",
+			compareTitle: "Böngésző vs. App",
+			colBrowser: "Böngésző",
+			colApp: "App",
+			featVote: "Szavazz és ajánlj dalokat",
+			featVideo: "Nézd meg a videót",
+			featPrelisten: "Hallgasd meg szavazás előtt",
+			featHost: "Légy a saját bulid házigazdája",
+			continueBrowser: "Folytatás mégis a böngészőben",
+			continueNote: "Korlátozott funkciók. Az alkalmazást bármikor letöltheted a teljes élményért."
 		},
 		suggestions: {
 			title: "Kapcsolódó videók",
@@ -6893,7 +7201,18 @@ export const translations = {
 			requirement: "Necesită Android 7.0+",
 			downloadFail: "Dacă descărcarea eșuează:",
 			installInstruction: "Setări > Activați \"Instalare aplicații necunoscute\"",
-			privacyLegal: "Confidențialitate și Legal"
+			privacyLegal: "Confidențialitate și Legal",
+			appBest: "Cea mai bună experiență",
+			recommended: "Recomandat",
+			compareTitle: "Browser vs. App",
+			colBrowser: "Browser",
+			colApp: "App",
+			featVote: "Votează și sugerează melodii",
+			featVideo: "Vezi videoclipul",
+			featPrelisten: "Ascultă înainte de a vota",
+			featHost: "Găzduiește-ți propria petrecere",
+			continueBrowser: "Continuă oricum în browser",
+			continueNote: "Funcții limitate. Poți descărca aplicația oricând pentru experiența completă."
 		},
 		suggestions: {
 			title: "Videoclipuri asemănătoare",
@@ -7131,7 +7450,18 @@ export const translations = {
 			requirement: "Изисква Android 7.0+",
 			downloadFail: "Ако изтеглянето е неуспешно:",
 			installInstruction: "Настройки > Разреши \"Инсталиране на неизвестни приложения\"",
-			privacyLegal: "Поверителност и Правни"
+			privacyLegal: "Поверителност и Правни",
+			appBest: "Най-добро изживяване",
+			recommended: "Препоръчано",
+			compareTitle: "Браузър vs. Приложение",
+			colBrowser: "Браузър",
+			colApp: "Приложение",
+			featVote: "Гласувай и предлагай песни",
+			featVideo: "Гледай видеото",
+			featPrelisten: "Чуй преди да гласуваш",
+			featHost: "Бъди домакин на своето парти",
+			continueBrowser: "Продължи въпреки това в браузъра",
+			continueNote: "Ограничени функции. Можеш да изтеглиш приложението по всяко време за пълното изживяване."
 		},
 		suggestions: {
 			title: "Свързани видеа",
@@ -7371,7 +7701,18 @@ export const translations = {
 			requirement: "Zahtijeva Android 7.0+",
 			downloadFail: "Ako preuzimanje ne uspije:",
 			installInstruction: "Postavke > Omogući \"Instaliraj nepoznate aplikacije\"",
-			privacyLegal: "Privatnost i Pravno"
+			privacyLegal: "Privatnost i Pravno",
+			appBest: "Najbolje iskustvo",
+			recommended: "Preporučeno",
+			compareTitle: "Preglednik vs. App",
+			colBrowser: "Preglednik",
+			colApp: "App",
+			featVote: "Glasaj i predloži pjesme",
+			featVideo: "Gledaj video",
+			featPrelisten: "Poslušaj prije glasanja",
+			featHost: "Budi domaćin vlastite zabave",
+			continueBrowser: "Ipak nastavi u pregledniku",
+			continueNote: "Ograničene značajke. Aplikaciju možeš preuzeti bilo kada za potpuno iskustvo."
 		},
 		suggestions: {
 			title: "Povezani videi",
@@ -7611,7 +7952,18 @@ export const translations = {
 			requirement: "Zahteva Android 7.0+",
 			downloadFail: "Ako preuzimanje ne uspe:",
 			installInstruction: "Podešavanja > Omogući \"Instaliraj nepoznate aplikacije\"",
-			privacyLegal: "Privatnost i Pravno"
+			privacyLegal: "Privatnost i Pravno",
+			appBest: "Najbolje iskustvo",
+			recommended: "Preporučeno",
+			compareTitle: "Pregledač vs. App",
+			colBrowser: "Pregledač",
+			colApp: "App",
+			featVote: "Glasaj i predloži pesme",
+			featVideo: "Gledaj video",
+			featPrelisten: "Poslušaj pre glasanja",
+			featHost: "Budi domaćin sopstvene zabave",
+			continueBrowser: "Ipak nastavi u pregledaču",
+			continueNote: "Ograničene funkcije. Aplikaciju možeš preuzeti bilo kada za potpuno iskustvo."
 		},
 		suggestions: {
 			title: "Повезани видео снимци",
@@ -7853,7 +8205,18 @@ export const translations = {
 			requirement: "Vyžaduje Android 7.0+",
 			downloadFail: "Ak sťahovanie zlyhá:",
 			installInstruction: "Nastavenia > Povoliť „Inštalovať neznáme aplikácie“",
-			privacyLegal: "Súkromie a Právne"
+			privacyLegal: "Súkromie a Právne",
+			appBest: "Najlepší zážitok",
+			recommended: "Odporúčané",
+			compareTitle: "Prehliadač vs. App",
+			colBrowser: "Prehliadač",
+			colApp: "App",
+			featVote: "Hlasuj a navrhuj piesne",
+			featVideo: "Pozri si video",
+			featPrelisten: "Vypočuj si pred hlasovaním",
+			featHost: "Usporiadaj vlastnú párty",
+			continueBrowser: "Napriek tomu pokračovať v prehliadači",
+			continueNote: "Obmedzené funkcie. Aplikáciu si môžeš stiahnuť kedykoľvek pre plný zážitok."
 		},
 		suggestions: {
 			title: "Súvisiace videá",
@@ -8099,7 +8462,18 @@ export const translations = {
 			requirement: "يتطلب Android 7.0+",
 			downloadFail: "إذا فشل التنزيل:",
 			installInstruction: "الإعدادات > تمكين \"تثبيت تطبيقات غير معروفة\"",
-			privacyLegal: "الخصوصية والقانونية"
+			privacyLegal: "الخصوصية والقانونية",
+			appBest: "أفضل تجربة",
+			recommended: "موصى به",
+			compareTitle: "المتصفح مقابل التطبيق",
+			colBrowser: "المتصفح",
+			colApp: "التطبيق",
+			featVote: "صوّت واقترح الأغاني",
+			featVideo: "شاهد الفيديو",
+			featPrelisten: "استمع قبل التصويت",
+			featHost: "استضف حفلتك الخاصة",
+			continueBrowser: "المتابعة في المتصفح على أي حال",
+			continueNote: "ميزات محدودة. يمكنك تنزيل التطبيق في أي وقت للحصول على التجربة الكاملة."
 		},
 		suggestions: {
 			title: "فيديوهات ذات صلة",
@@ -8339,7 +8713,18 @@ export const translations = {
 			requirement: "דורש Android 7.0+",
 			downloadFail: "אם ההורדה נכשלת:",
 			installInstruction: "הגדרות > אפשר \"התקן אפליקציות לא ידועות\"",
-			privacyLegal: "פרטיות ומשפטי"
+			privacyLegal: "פרטיות ומשפטי",
+			appBest: "החוויה הטובה ביותר",
+			recommended: "מומלץ",
+			compareTitle: "דפדפן מול אפליקציה",
+			colBrowser: "דפדפן",
+			colApp: "אפליקציה",
+			featVote: "הצבע והצע שירים",
+			featVideo: "צפה בווידאו",
+			featPrelisten: "האזן לפני ההצבעה",
+			featHost: "ארח מסיבה משלך",
+			continueBrowser: "המשך בכל זאת בדפדפן",
+			continueNote: "תכונות מוגבלות. תוכל להוריד את האפליקציה בכל עת לחוויה המלאה."
 		},
 		suggestions: {
 			title: "סרטונים קשורים",
