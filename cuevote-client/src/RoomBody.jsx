@@ -1756,6 +1756,7 @@ function RoomBody() {
               disableFloatingUI={!!previewTrack}
               onLibraryDelete={isOwner ? handleRemoveFromLibrary : undefined}
               activeTab={playlistActiveTab}
+              appFooterPresent={showAppFooter}
             />
             </div>
             {showAppFooter && <AppPromoFooter />}

@@ -26,6 +26,7 @@ export function PlaylistView({
     disableFloatingUI = false,
     onLibraryDelete,
     activeTab = "playlist",
+    appFooterPresent = false,
 }) {
     const scrollRef = useRef(null);
     const [expandedTrackId, setExpandedTrackId] = useState(null);
@@ -215,7 +216,7 @@ export function PlaylistView({
 
             {/* Back to Now Button - only in playlist tab */}
             {!isLibrary && showJumpToNow && currentTrack && !disableFloatingUI && createPortal(
-                <div className="fixed bottom-8 right-8 z-[100] animate-fadeIn">
+                <div className={`fixed ${appFooterPresent ? 'bottom-20' : 'bottom-8'} right-8 z-[100] animate-fadeIn`}>
                     <button
                         onClick={() => scrollToCurrent(true)}
                         className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 hover:shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0 font-medium text-sm"
@@ -231,6 +232,7 @@ export function PlaylistView({
 }
 
 PlaylistView.propTypes = {
+    appFooterPresent: PropTypes.bool,
     history: PropTypes.array,
     currentTrack: PropTypes.object,
     queue: PropTypes.array,

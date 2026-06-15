@@ -10,14 +10,16 @@ import { AppPromoFooter } from './AppPromoFooter';
 
 const mk = (id, videoId, title, artist, score) => ({ id, videoId, title, artist, score });
 
-// queue[0] mirrors currentTrack (the live invariant the real room maintains).
-const QUEUE = [
-	mk('t1', 'dQw4w9WgXcQ', 'Blinding Lights', 'The Weeknd', 14),
-	mk('t2', '3JZ_D3ELwOQ', 'Levitating', 'Dua Lipa', 11),
-	mk('t3', 'kJQP7kiw5Fk', 'Despacito', 'Luis Fonsi', 9),
-	mk('t4', 'fLexgOxsZu0', 'As It Was', 'Harry Styles', 6),
-	mk('t5', 'L_jWHffIx5E', 'Smells Like Teen Spirit', 'Nirvana', 3),
+const VIDS = ['dQw4w9WgXcQ', '3JZ_D3ELwOQ', 'kJQP7kiw5Fk', 'fLexgOxsZu0', 'L_jWHffIx5E'];
+const SONGS = [
+	['Blinding Lights', 'The Weeknd'], ['Levitating', 'Dua Lipa'], ['Despacito', 'Luis Fonsi'],
+	['As It Was', 'Harry Styles'], ['Smells Like Teen Spirit', 'Nirvana'], ['Bad Guy', 'Billie Eilish'],
+	['Shape of You', 'Ed Sheeran'], ['Uptown Funk', 'Mark Ronson'], ['Rolling in the Deep', 'Adele'],
+	['Believer', 'Imagine Dragons'], ['Counting Stars', 'OneRepublic'], ['Sunflower', 'Post Malone'],
+	['Dance Monkey', 'Tones and I'], ['Numb', 'Linkin Park'],
 ];
+// queue[0] mirrors currentTrack (the live invariant the real room maintains).
+const QUEUE = SONGS.map(([title, artist], i) => mk('t' + i, VIDS[i % VIDS.length], title, artist, 20 - i));
 
 export default function AndroidVenuePreview() {
 	const noop = () => {};
@@ -51,6 +53,7 @@ export default function AndroidVenuePreview() {
 						queueVideoIds={queueVideoIds}
 						disableFloatingUI={false}
 						activeTab="playlist"
+						appFooterPresent
 					/>
 				</div>
 				<AppPromoFooter />
