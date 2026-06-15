@@ -203,12 +203,16 @@ function RoomBody() {
 
   const isOwner = user && ownerId && user.id === ownerId;
   // TV always ignores Venue Mode (shows video).
-  // Mobile WEB browsers (iOS AND Android, not the native app) are FORCED into
-  // Venue Mode: in-browser video autoplay/playback is unreliable and ToS-sensitive.
-  const isVenueMode = (playlistViewMode && !isOwner && !deviceDetection.isTV()) || deviceDetection.isMobileWebBrowser();
-  // Prelisten streams audio through the YT player — unreliable in mobile browsers
-  // and outside the browser feature set we advertise, so disable it there.
-  const prelistenEnabled = allowPrelisten && !deviceDetection.isMobileWebBrowser();
+  // FORCED Venue Mode: a mobile WEB browser (iOS or Android, NOT running in the
+  // native app) can't reliably autoplay video, so we force vote/suggest-only
+  // regardless of room settings. Distinct from the owner-configured
+  // playlistViewMode below (e.g. desktop, where playback works fine).
+  const isForcedVenueMode = deviceDetection.isMobileWebBrowser();
+  const isVenueMode = (playlistViewMode && !isOwner && !deviceDetection.isTV()) || isForcedVenueMode;
+  // Prelisten streams audio through the YT player. Disable it ONLY in forced
+  // Venue Mode (mobile browser + app not running) — unreliable there and outside
+  // the browser feature set we advertise. Configured venue mode keeps prelisten.
+  const prelistenEnabled = allowPrelisten && !isForcedVenueMode;
   // Android web guests can sideload the native app; offer it via a footer + a
   // pre-download comparison. iOS cannot sideload, so it never sees this.
   const showAppFooter = deviceDetection.isAndroid() && !deviceDetection.isNativeApp();
