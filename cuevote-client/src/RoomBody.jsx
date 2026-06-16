@@ -13,6 +13,7 @@ import { Queue } from "./components/Queue";
 import { Suggestions } from "./components/Suggestions";
 import { PlaylistView } from "./components/PlaylistView";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
+import { AppPromoFooter } from "./components/AppPromoFooter";
 import { SettingsView } from "./components/SettingsView";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
@@ -201,9 +202,20 @@ function RoomBody() {
   }, [upcomingCount]);
 
   const isOwner = user && ownerId && user.id === ownerId;
-  // TV always ignores Venue Mode (shows video)
-  // iOS Browsers (not native app) are FORCED into Venue Mode because video autoplay/playback is unreliable/broken in browser
-  const isVenueMode = (playlistViewMode && !isOwner && !deviceDetection.isTV()) || (deviceDetection.isIOS() && !deviceDetection.isNativeApp());
+  // TV always ignores Venue Mode (shows video).
+  // FORCED Venue Mode: a mobile WEB browser (iOS or Android, NOT running in the
+  // native app) can't reliably autoplay video, so we force vote/suggest-only
+  // regardless of room settings. Distinct from the owner-configured
+  // playlistViewMode below (e.g. desktop, where playback works fine).
+  const isForcedVenueMode = deviceDetection.isMobileWebBrowser();
+  const isVenueMode = (playlistViewMode && !isOwner && !deviceDetection.isTV()) || isForcedVenueMode;
+  // Prelisten streams audio through the YT player. Disable it ONLY in forced
+  // Venue Mode (mobile browser + app not running) — unreliable there and outside
+  // the browser feature set we advertise. Configured venue mode keeps prelisten.
+  const prelistenEnabled = allowPrelisten && !isForcedVenueMode;
+  // Android web guests can sideload the native app; offer it via a footer + a
+  // pre-download comparison. iOS cannot sideload, so it never sees this.
+  const showAppFooter = deviceDetection.isAndroid() && !deviceDetection.isNativeApp();
   // TV always defaults to Fullscreen (CinemaMode), unless manually exited
   const isAnyPlaylistView = isVenueMode || localPlaylistView;
 
@@ -1715,6 +1727,7 @@ function RoomBody() {
         {isAnyPlaylistView ? (
           /* Venue Mode: Only Playlist View */
           <div className="w-full h-full flex flex-col overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden">
             <PlaylistView
               history={history}
               currentTrack={currentTrack}
@@ -1731,7 +1744,7 @@ function RoomBody() {
               onMuteToggle={handleMuteToggle}
               onVolumeChange={handleVolumeChange}
               votesEnabled={serverState?.votesEnabled ?? true}
-              onPreview={allowPrelisten ? handlePreviewTrack : null}
+              onPreview={prelistenEnabled ? handlePreviewTrack : null}
               onDelete={isOwner ? handleDeleteSong : null}
               onRecommend={handleFetchSuggestions} // Passed handler
               onAdd={handleLibraryAdd}
@@ -1743,7 +1756,10 @@ function RoomBody() {
               disableFloatingUI={!!previewTrack}
               onLibraryDelete={isOwner ? handleRemoveFromLibrary : undefined}
               activeTab={playlistActiveTab}
+              appFooterPresent={showAppFooter}
             />
+            </div>
+            {showAppFooter && <AppPromoFooter />}
             {previewTrack && (
               <PrelistenOverlay
                 hasConsent={hasConsent}
@@ -1803,7 +1819,7 @@ function RoomBody() {
             onVote={handleVote}
             onToggleExpand={(trackId) => setExpandedTrackId(prev => prev === trackId ? null : trackId)}
             isMinimized={isQueueMinimized}
-            onPreview={allowPrelisten ? handlePreviewTrack : null}
+            onPreview={prelistenEnabled ? handlePreviewTrack : null}
             votesEnabled={serverState?.votesEnabled ?? true}
             onDelete={isOwner ? handleDeleteSong : null}
             onRecommend={handleFetchSuggestions}

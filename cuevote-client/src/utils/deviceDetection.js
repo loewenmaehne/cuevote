@@ -42,6 +42,26 @@ function isNativeApp() {
 	return navigator.userAgent.toLowerCase().includes('cuevotewrapper');
 }
 
+// Raw Android phone/tablet (NOT Android TV — that is handled by isTV()).
+function isAndroid() {
+	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
+	// Honor the ?tv=true dev override like isTV()/isMobile() do, so simulating a
+	// TV consistently reports "not an Android phone" everywhere.
+	if (typeof window !== 'undefined' &&
+		new URLSearchParams(window.location.search).get('tv') === 'true') return false;
+	const userAgent = navigator.userAgent.toLowerCase();
+	return /android/i.test(userAgent) && !_isTV(userAgent);
+}
+
+// A phone/tablet WEB browser (iOS or Android), not the native wrapper, not a TV.
+// These clients are forced into Venue Mode (vote/suggest only): in-browser video
+// playback & prelisten are unreliable and ToS-sensitive, so the full player lives
+// in the native app. iOS cannot sideload, so only Android sees the app-download
+// footer — that gating lives at the call site via isAndroid().
+function isMobileWebBrowser() {
+	return (isIOS() || isAndroid()) && !isNativeApp();
+}
+
 function _isTV(userAgent) {
 	return (
 		userAgent.includes('smart-tv') || userAgent.includes('smarttv') || userAgent.includes('googletv') ||
@@ -69,4 +89,4 @@ function isMobile() {
 	);
 }
 
-export const deviceDetection = { isTV, isTablet, isIOS, isNativeApp, isMobile };
+export const deviceDetection = { isTV, isTablet, isIOS, isNativeApp, isMobile, isAndroid, isMobileWebBrowser };

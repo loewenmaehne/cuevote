@@ -1,100 +1,64 @@
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // Copyright (c) 2026 Julian Zienert
 import React from 'react';
-import { Download, Monitor, Smartphone, Tv, Settings } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { deviceDetection } from '../utils/deviceDetection';
 import { Language } from '../contexts/LanguageContext';
 
+// Shown only to devices that genuinely cannot run the web player — currently
+// TVs (leanback), which need the native CueVote TV app. Phones are NOT blocked:
+// iOS/Android browsers run the web app in Venue Mode, and Android is offered the
+// app via AppPromoFooter. (?forceBlock=1 in DEV also lands here for preview.)
 export const MobileBlockPage = () => {
 	const isTvDevice = deviceDetection.isTV();
 	const { t } = Language.useLanguage();
 
+	const apkUrl = "https://github.com/loewenmaehne/cuevote/releases/latest/download/app-release.apk";
+
 	return (
-		<div className="flex flex-col h-[100dvh] bg-[#050505] items-center justify-center p-6 text-center relative overflow-hidden select-none font-sans">
+		<div className="flex flex-col min-h-[100dvh] bg-[#050505] items-center justify-center p-[clamp(0.9rem,4.5vw,1.5rem)] text-center relative overflow-hidden select-none font-sans">
 			{/* Dynamic Background */}
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-900/40 via-[#050505] to-[#050505] animate-pulse-slow pointer-events-none" />
-			{/* Inline SVG noise texture to avoid missing /noise.png asset at build time */}
-			<div
-				className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay"
-				style={{
-					backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(
-						'<svg xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /></filter><rect width="100%" height="100%" filter="url(%23n)"/></svg>'
-					)}")`
-				}}
-			/>
 
-			<div className="relative z-10 max-w-md w-full space-y-8 animate-in fade-in zoom-in-95 duration-700 flex flex-col items-center">
+			<div className="relative z-10 w-full max-w-md space-y-[clamp(1.1rem,4.5vw,1.75rem)] animate-in fade-in zoom-in-95 duration-700 flex flex-col items-center py-[clamp(1.25rem,5vw,2rem)]">
 
-				{/* Header Section */}
-				<div className="space-y-3">
-					<div className="flex flex-col items-center">
-						<h1 className="text-5xl font-black tracking-tighter text-white mb-1 drop-shadow-2xl">
-							CueVote
-						</h1>
-						<div className="h-1 w-24 bg-gradient-to-r from-orange-600 to-orange-400 rounded-full mb-4" />
-						<p className="text-xl font-bold tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400 drop-shadow-sm">
-							{t('mobile.tagline')}
-						</p>
-					</div>
-
-					<p className="text-lg text-neutral-300 font-medium leading-relaxed max-w-xs mx-auto opacity-90">
-						{isTvDevice
-							? t('mobile.tvDescription')
-							: t('mobile.mobileDescription')
-						}
+				{/* Header */}
+				<div className="space-y-[clamp(0.4rem,2vw,0.75rem)] flex flex-col items-center">
+					<h1 className="text-[clamp(1.75rem,9vw,2.75rem)] font-black tracking-tighter text-white leading-none drop-shadow-2xl">CueVote</h1>
+					<div className="h-[3px] w-[clamp(3.5rem,16vw,6rem)] bg-gradient-to-r from-orange-600 to-orange-400 rounded-full" />
+					<p className="text-[clamp(0.72rem,3.1vw,0.95rem)] font-bold tracking-widest uppercase text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400">
+						{t('mobile.tagline')}
+					</p>
+					<p className="text-[clamp(0.82rem,3.4vw,1rem)] text-neutral-300 font-medium leading-relaxed max-w-xs mx-auto opacity-90">
+						{isTvDevice ? t('mobile.tvDescription') : t('mobile.mobileDescription')}
 					</p>
 				</div>
 
-				{/* Feature Cards - Glassmorphism */}
-				<div className="w-full grid gap-4">
-					<div className="group p-5 rounded-2xl bg-neutral-900/40 border border-white/10 backdrop-blur-xl flex items-start gap-4 text-left shadow-2xl hover:bg-neutral-800/50 transition-colors duration-300">
-						<div className="p-3 rounded-full bg-orange-500/20 text-orange-400 mt-1 shadow-inner group-hover:scale-110 transition-transform duration-300">
-							{isTvDevice ? <Tv size={22} /> : <Monitor size={22} />}
-						</div>
-						<div>
-							<h3 className="text-white font-bold text-lg mb-1 tracking-tight">
-								{isTvDevice ? t('mobile.tvFeatureTitle') : t('mobile.mobileFeatureTitle')}
-							</h3>
-							<p className="text-sm text-neutral-400 leading-snug font-medium">
-								{isTvDevice
-									? t('mobile.tvFeatureBody')
-									: t('mobile.mobileFeatureBody')
-								}
-							</p>
-						</div>
+				{/* Download */}
+				<div className="w-full space-y-[clamp(0.6rem,2.6vw,0.85rem)]">
+					<div className="relative pt-2">
+						<span className="absolute top-0 left-1/2 -translate-x-1/2 z-20 px-2.5 py-0.5 rounded-full bg-orange-500 text-[clamp(0.55rem,2.4vw,0.625rem)] font-bold uppercase tracking-wider text-white shadow-lg whitespace-nowrap">
+							{isTvDevice ? t('mobile.recommended') : t('mobile.appBest')}
+						</span>
+						<a
+							href={apkUrl}
+							download="CueVote-App.apk"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="relative w-full py-[clamp(0.75rem,3.4vw,1rem)] px-[clamp(2.6rem,12vw,3.25rem)] rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-[clamp(0.95rem,3.9vw,1.125rem)] shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center text-center leading-tight"
+						>
+							<Download className="absolute left-[clamp(0.85rem,4.5vw,1.25rem)] top-1/2 -translate-y-1/2 w-[clamp(1.05rem,4.6vw,1.4rem)] h-[clamp(1.05rem,4.6vw,1.4rem)] fill-current" />
+							<span>{isTvDevice ? t('mobile.downloadTv') : t('mobile.downloadMobile')}</span>
+						</a>
 					</div>
+					<p className="text-[clamp(0.62rem,2.7vw,0.75rem)] text-neutral-500 leading-snug">
+						{t('mobile.requirement')} · <span className="opacity-70">{t('mobile.downloadFail')}</span> {t('mobile.installInstruction')}
+					</p>
 				</div>
 
-				{/* Primary Call to Action */}
-				<div className="w-full space-y-4 pt-4">
-					<a
-						href="https://github.com/loewenmaehne/cuevote/releases/latest/download/app-release.apk"
-						download="CueVote-App.apk"
-						target="_blank"
-						rel="noopener noreferrer"
-						className="group relative w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-lg shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 overflow-hidden"
-					>
-						<div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-						<Download size={24} className="fill-current animate-bounce-subtle" />
-						<span className="relative z-10">{isTvDevice ? t('mobile.downloadTv') : t('mobile.downloadMobile')}</span>
-					</a>
-
-					<div className="text-center space-y-1">
-						<p className="text-xs text-neutral-500 font-medium">
-							{t('mobile.requirement')}
-						</p>
-						<p className="text-xs text-neutral-400">
-							<span className="opacity-70">{t('mobile.downloadFail')}</span> {t('mobile.installInstruction')}
-						</p>
-					</div>
-				</div>
-
-				<div className="pt-8">
-					<a href="/legal" className="text-xs text-neutral-500 hover:text-orange-400 underline underline-offset-4 transition-colors">
-						{t('mobile.privacyLegal')}
-					</a>
-				</div>
-
+				<a href="/legal" className="text-[clamp(0.62rem,2.7vw,0.75rem)] text-neutral-500 hover:text-orange-400 underline underline-offset-4 transition-colors">
+					{t('mobile.privacyLegal')}
+				</a>
 			</div>
 		</div>
 	);
