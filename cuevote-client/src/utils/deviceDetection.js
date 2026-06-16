@@ -45,6 +45,10 @@ function isNativeApp() {
 // Raw Android phone/tablet (NOT Android TV — that is handled by isTV()).
 function isAndroid() {
 	if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
+	// Honor the ?tv=true dev override like isTV()/isMobile() do, so simulating a
+	// TV consistently reports "not an Android phone" everywhere.
+	if (typeof window !== 'undefined' &&
+		new URLSearchParams(window.location.search).get('tv') === 'true') return false;
 	const userAgent = navigator.userAgent.toLowerCase();
 	return /android/i.test(userAgent) && !_isTV(userAgent);
 }
