@@ -36,21 +36,16 @@ export const MobileBlockPage = () => {
 
 				{/* Download */}
 				<div className="w-full space-y-[clamp(0.6rem,2.6vw,0.85rem)]">
-					<div className="relative pt-2">
-						<span className="absolute top-0 left-1/2 -translate-x-1/2 z-20 px-2.5 py-0.5 rounded-full bg-orange-500 text-[clamp(0.55rem,2.4vw,0.625rem)] font-bold uppercase tracking-wider text-white shadow-lg whitespace-nowrap">
-							{isTvDevice ? t('mobile.recommended') : t('mobile.appBest')}
-						</span>
-						<a
-							href={apkUrl}
-							download="CueVote-App.apk"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="relative w-full py-[clamp(0.75rem,3.4vw,1rem)] px-[clamp(2.6rem,12vw,3.25rem)] rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-[clamp(0.95rem,3.9vw,1.125rem)] shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center text-center leading-tight"
-						>
-							<Download className="absolute left-[clamp(0.85rem,4.5vw,1.25rem)] top-1/2 -translate-y-1/2 w-[clamp(1.05rem,4.6vw,1.4rem)] h-[clamp(1.05rem,4.6vw,1.4rem)] fill-current" />
-							<span>{isTvDevice ? t('mobile.downloadTv') : t('mobile.downloadMobile')}</span>
-						</a>
-					</div>
+					<a
+						href={apkUrl}
+						download="CueVote-App.apk"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="relative w-full py-[clamp(0.75rem,3.4vw,1rem)] px-[clamp(2.6rem,12vw,3.25rem)] rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-[clamp(0.95rem,3.9vw,1.125rem)] shadow-xl hover:shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center text-center leading-tight"
+					>
+						<Download className="absolute left-[clamp(0.85rem,4.5vw,1.25rem)] top-1/2 -translate-y-1/2 w-[clamp(1.05rem,4.6vw,1.4rem)] h-[clamp(1.05rem,4.6vw,1.4rem)] fill-current" />
+						<span>{isTvDevice ? t('mobile.downloadTv') : t('mobile.downloadMobile')}</span>
+					</a>
 					<p className="text-[clamp(0.62rem,2.7vw,0.75rem)] text-neutral-500 leading-snug">
 						{t('mobile.requirement')} · <span className="opacity-70">{t('mobile.downloadFail')}</span> {t('mobile.installInstruction')}
 					</p>
