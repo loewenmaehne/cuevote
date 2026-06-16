@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // Copyright (c) 2026 Julian Zienert
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Download, Check, X, Video, Headphones, Crown, ThumbsUp, Globe, Smartphone, ChevronUp } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
 
@@ -18,6 +18,32 @@ const COMPARE_COLS = "grid-cols-[1fr_clamp(1.9rem,9vw,2.9rem)_clamp(1.9rem,9vw,2
 export const AppPromoFooter = () => {
 	const { t } = Language.useLanguage();
 	const [open, setOpen] = useState(false);
+	const triggerRef = useRef(null);
+	const dialogRef = useRef(null);
+
+	const close = useCallback(() => {
+		setOpen(false);
+		triggerRef.current?.focus(); // restore focus to the trigger for keyboard/SR users
+	}, []);
+
+	// Dialog a11y: move focus into the dialog on open, close on Escape, and keep
+	// Tab focus trapped inside while it is open.
+	useEffect(() => {
+		if (!open) return;
+		dialogRef.current?.focus();
+		const onKey = (e) => {
+			if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+			if (e.key === 'Tab') {
+				const els = dialogRef.current?.querySelectorAll('a[href], button:not([disabled])');
+				if (!els || !els.length) return;
+				const first = els[0], last = els[els.length - 1];
+				if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+				else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+			}
+		};
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [open, close]);
 
 	// browser:true → works in the mobile browser; all rows work in the native app.
 	const features = [
@@ -34,6 +60,7 @@ export const AppPromoFooter = () => {
 		<>
 			{/* Footer bar — flows at the bottom of the venue view */}
 			<button
+				ref={triggerRef}
 				type="button"
 				onClick={() => setOpen(true)}
 				className="flex-none w-full flex items-center justify-center gap-[clamp(0.4rem,2vw,0.6rem)] px-[clamp(0.9rem,4vw,1.25rem)] py-[clamp(0.7rem,3.2vw,1rem)] bg-neutral-900/95 backdrop-blur-md border-t border-white/10 text-white active:bg-neutral-800 transition-colors select-none"
@@ -50,10 +77,14 @@ export const AppPromoFooter = () => {
 					role="dialog"
 					aria-modal="true"
 					aria-label={t('mobile.modalTitle')}
-					onClick={() => setOpen(false)}
+					onClick={close}
 				>
+					{/* On short viewports (e.g. landscape phones) the content scales down via
+					    vh-based spacing; if it still doesn't fit it scrolls rather than clips. */}
 					<div
-						className="relative w-full max-w-sm rounded-2xl bg-neutral-900 border border-white/10 shadow-2xl px-[clamp(1rem,4vw,1.5rem)] py-[clamp(0.8rem,2.4vh,1.35rem)] space-y-[clamp(0.5rem,1.8vh,1.1rem)] max-h-[100dvh] overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300"
+						ref={dialogRef}
+						tabIndex={-1}
+						className="relative w-full max-w-sm rounded-2xl bg-neutral-900 border border-white/10 shadow-2xl px-[clamp(1rem,4vw,1.5rem)] py-[clamp(0.8rem,2.4vh,1.35rem)] space-y-[clamp(0.5rem,1.8vh,1.1rem)] max-h-[calc(100dvh-1.5rem)] overflow-y-auto custom-scrollbar focus:outline-none animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-300"
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="text-center">
@@ -92,7 +123,7 @@ export const AppPromoFooter = () => {
 								download="CueVote-App.apk"
 								target="_blank"
 								rel="noopener noreferrer"
-								onClick={() => setOpen(false)}
+								onClick={close}
 								className="relative w-full py-[clamp(0.5rem,1.9vh,0.95rem)] px-[clamp(2.6rem,12vw,3.25rem)] rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-[clamp(0.95rem,3.9vw,1.125rem)] shadow-xl hover:shadow-orange-500/30 active:scale-95 transition-all duration-200 flex items-center justify-center text-center leading-tight"
 							>
 								<Download className="absolute left-[clamp(0.85rem,4.5vw,1.25rem)] top-1/2 -translate-y-1/2 w-[clamp(1.05rem,4.6vw,1.4rem)] h-[clamp(1.05rem,4.6vw,1.4rem)] fill-current" />
@@ -105,7 +136,7 @@ export const AppPromoFooter = () => {
 
 						<button
 							type="button"
-							onClick={() => setOpen(false)}
+							onClick={close}
 							className="w-full py-[clamp(0.3rem,1.3vh,0.7rem)] text-neutral-400 hover:text-white font-semibold text-[clamp(0.85rem,3.5vw,1rem)] transition-colors"
 						>
 							{t('mobile.later')}
