@@ -214,7 +214,9 @@ export function PlaylistView({
                 </div>
             )}
 
-            {/* Back to Now Button - only in playlist tab */}
+            {/* Back to Now Button - only in playlist tab.
+                When the Android app footer is present, bottom-20 lifts this clear of
+                AppPromoFooter (~52px tall) — keep in sync if that footer's height changes. */}
             {!isLibrary && showJumpToNow && currentTrack && !disableFloatingUI && createPortal(
                 <div className={`fixed ${appFooterPresent ? 'bottom-20' : 'bottom-8'} right-8 z-[100] animate-fadeIn`}>
                     <button
