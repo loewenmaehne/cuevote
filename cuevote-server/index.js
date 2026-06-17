@@ -46,6 +46,25 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({ status: 'ok' }));
         return;
     }
+    // RFC 9116 security contact. Expires is computed per request (~10 months out,
+    // always < 1 year), so it never lapses regardless of deploy cadence or uptime.
+    // GET and HEAD both answer (HEAD returns the headers only), like a static file.
+    if ((req.method === 'GET' || req.method === 'HEAD') && req.url === '/.well-known/security.txt') {
+        const expires = new Date(Date.now() + 300 * 24 * 60 * 60 * 1000).toISOString();
+        const body =
+            'Contact: mailto:security@cuevote.com\n' +
+            'Expires: ' + expires + '\n' +
+            'Preferred-Languages: en\n' +
+            'Canonical: https://cuevote.com/.well-known/security.txt\n' +
+            'Policy: https://github.com/loewenmaehne/cuevote/blob/main/SECURITY.md\n';
+        res.writeHead(200, {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'Content-Length': Buffer.byteLength(body),
+            'Cache-Control': 'public, max-age=86400',
+        });
+        res.end(req.method === 'HEAD' ? undefined : body);
+        return;
+    }
     res.writeHead(404);
     res.end();
 });

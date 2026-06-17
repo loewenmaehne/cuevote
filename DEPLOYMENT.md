@@ -207,6 +207,15 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
     }
 
+    # RFC 9116 security.txt — proxied to the Node app so `Expires` is computed
+    # per request and never lapses. Exact match (=) so /.well-known/acme-challenge/
+    # (Certbot HTTP-01 cert renewal) stays on the origin, untouched.
+    location = /.well-known/security.txt {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
     # Proxy WebSocket connections
     location /ws {
         proxy_pass http://localhost:8080;
