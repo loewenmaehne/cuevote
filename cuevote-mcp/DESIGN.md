@@ -5,7 +5,7 @@ Copyright (c) 2026 Julian Zienert
 
 # CueVote MCP Server — Design & Plan
 
-> Status: **Entwurf** · Autor: Julian Zienert · Stand: 2026-06-26
+> Status: **Umgesetzt (M0–M4)** · Autor: Julian Zienert · Stand: 2026-06-26
 > Ziel: Ein MCP-Server (Model Context Protocol), der CueVote für KI-Assistenten
 > nutzbar macht — gestuft: **Phase 1 Ops/Admin** (für den Solo-Dev), danach
 > **Phase 2 KI-DJ** (für Endnutzer).
@@ -190,6 +190,8 @@ Owner-only: `cv_skip`, `cv_play_pause`, `cv_update_settings`.
 ---
 
 ## 6. Liefer-Meilensteine (je eigener Commit/PR)
+
+> ✅ Alle Meilensteine umgesetzt, je als eigener Commit, jeweils end-to-end getestet.
 
 | # | Inhalt | Risiko | Server-Eingriff |
 |---|---|---|---|
