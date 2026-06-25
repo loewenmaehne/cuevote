@@ -23,7 +23,8 @@ export function getDb(): Database.Database {
 }
 
 // Mirror the server's defaults (db.js / cleanup constants).
-const ACTIVE_DAYS = Number(process.env.ACTIVE_CHANNEL_DAYS ?? 60);
+const _activeDaysEnv = Number(process.env.ACTIVE_CHANNEL_DAYS);
+const ACTIVE_DAYS = Number.isFinite(_activeDaysEnv) && _activeDaysEnv > 0 ? _activeDaysEnv : 60;
 const RETENTION_DAYS = 28;
 const nowS = (): number => Math.floor(Date.now() / 1000);
 
@@ -82,6 +83,11 @@ export function getRoom(roomId: string): RoomDetail | null {
     )
     .get(roomId) as RoomDetail["room"] | undefined;
   if (!room) return null;
+
+  // Don't carry the bcrypt password hash around; expose only a boolean flag.
+  const anyRoom = room as Record<string, unknown>;
+  anyRoom.is_protected = !!anyRoom.password;
+  delete anyRoom.password;
 
   const hc = db
     .prepare(`SELECT COUNT(*) AS c FROM room_history WHERE room_id = ?`)

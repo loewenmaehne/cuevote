@@ -64,7 +64,7 @@ export function registerReadonlyTools(server: McpServer): void {
         const lines: string[] = [
           `Room:        ${r.name} (${r.id})`,
           `Owner:       ${r.owner_name ?? "—"} (${r.owner_id})`,
-          `Visibility:  ${r.is_public ? "public" : "private"}${r.password ? " · password-protected" : ""}`,
+          `Visibility:  ${r.is_public ? "public" : "private"}${r.is_protected ? " · password-protected" : ""}`,
           `Description: ${r.description ?? "—"}`,
           `Language:    ${r.language_flag ?? "international"}`,
           `Created:     ${tsAgo(Number(r.created_at))}`,
