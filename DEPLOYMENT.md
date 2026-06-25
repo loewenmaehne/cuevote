@@ -62,6 +62,13 @@ NODE_ENV=production
 # Optional Configuration
 ACTIVE_CHANNEL_DAYS=60
 # LOG_LEVEL=info
+#
+# Admin API for the cuevote-mcp ops server (Phase 1b). Disabled unless
+# ADMIN_TOKEN is set. Binds to 127.0.0.1 only — do NOT expose this port via
+# nginx or any public reverse proxy.
+# ADMIN_TOKEN=generate_a_long_random_secret
+# ADMIN_PORT=8081
+# ADMIN_HOST=127.0.0.1
 ```
 
 ### Start Backend

@@ -22,6 +22,8 @@ const bcrypt = require('bcryptjs');
 const { slugify } = require('transliteration');
 const db = require('./db');
 const dbAsync = require('./db-async');
+const gdpr = require('./gdpr');
+const adminApi = require('./admin');
 const backupScheduler = require('./backup_scheduler');
 backupScheduler.start();
 
@@ -152,6 +154,9 @@ function loadRooms() {
 }
 
 loadRooms();
+
+// Localhost-only admin API for ops tooling (no-op unless ADMIN_TOKEN is set).
+adminApi.start({ rooms });
 
 const clients = new Set();
 
@@ -402,41 +407,11 @@ wss.on("connection", (ws, req) => {
                         return;
                     }
 
-                    // 2. Destroy Memory
-                    const roomsToDestroy = [];
-                    logger.info(`[GDPR DEBUG] Checking ${rooms.size} active memory rooms for ownership...`);
-                    const targetId = String(userId).trim();
-
-                    for (const [id, room] of rooms.entries()) {
-                        const owner = String(room.metadata.owner_id || '').trim();
-                        if (owner === targetId) {
-                            logger.info(`[GDPR DEBUG] Marking memory room ${id} for destruction.`);
-                            roomsToDestroy.push(id);
-                        }
-                    }
-
-                    roomsToDestroy.forEach(id => {
-                        const room = rooms.get(id);
-                        if (room) {
-                            logger.info(`[GDPR] Destroying room ${id} from memory.`);
-                            try {
-                                room.broadcast({ type: "error", code: "ROOM_DELETED", message: "Room has been deleted by owner." });
-                                room.destroy();
-                                rooms.delete(id);
-                            } catch (err) {
-                                logger.info(`[GDPR ERROR] Failed to destroy room ${id}: ${err.message}`);
-                            }
-                        }
-                    });
-
-                    // 2b. GDPR: Scrub deleted user's PII from all other rooms (voters, suggestedBy, suggestedByUsername)
-                    for (const [id, room] of rooms.entries()) {
-                        try {
-                            room.scrubDeletedUser(userId);
-                        } catch (err) {
-                            logger.info(`[GDPR ERROR] Failed to scrub user from room ${id}: ${err.message}`);
-                        }
-                    }
+                    // 2 + 2b. Destroy owned rooms and scrub the user's PII from
+                    // every remaining loaded room. Shared with the admin GDPR
+                    // endpoint so both paths behave identically (see gdpr.js).
+                    const purge = gdpr.purgeUserFromMemory(rooms, userId);
+                    logger.info(`[GDPR] Memory purge — destroyed ${purge.destroyedRooms.length} room(s), scrubbed ${purge.scrubbedRooms}.`);
 
                     // 3. Success
                     logger.info("[GDPR TRACE] Sending DELETE_ACCOUNT_SUCCESS");
