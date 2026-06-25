@@ -3,10 +3,16 @@
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { existsSync } from "node:fs";
+import dotenv from "dotenv";
 
 const here = dirname(fileURLToPath(import.meta.url));
 // dist/ (or src/ at dev time) -> package root
 const pkgRoot = resolve(here, "..");
+
+// Load a .env sitting next to the package, so config travels with the install
+// and works regardless of cwd (e.g. when launched over SSH). quiet:true keeps
+// dotenv from writing to stdout, which would corrupt the MCP stdio stream.
+dotenv.config({ path: resolve(pkgRoot, ".env"), quiet: true });
 
 function env(name: string, fallback = ""): string {
   const v = process.env[name];
