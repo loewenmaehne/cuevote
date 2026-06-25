@@ -6,6 +6,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { config } from "./config.js";
 import { registerReadonlyTools } from "./tools/readonly.js";
 import { registerAdminTools } from "./tools/admin.js";
+import { registerDjTools } from "./tools/dj.js";
 
 const server = new McpServer({ name: "cuevote-mcp", version: "0.1.0" });
 
@@ -38,6 +39,11 @@ registerReadonlyTools(server);
 // Phase 1b: live ops / moderation — only when an admin token is configured.
 if (config.admin.enabled) {
   registerAdminTools(server);
+}
+
+// Phase 2: AI-DJ / guest control — only when a session token is configured.
+if (config.ws.enabled) {
+  registerDjTools(server);
 }
 
 async function main(): Promise<void> {
