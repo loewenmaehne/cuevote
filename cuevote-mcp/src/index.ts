@@ -4,6 +4,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { config } from "./config.js";
+import { registerReadonlyTools } from "./tools/readonly.js";
 
 const server = new McpServer({ name: "cuevote-mcp", version: "0.1.0" });
 
@@ -28,6 +29,10 @@ server.registerTool(
     return { content: [{ type: "text", text: lines.join("\n") }] };
   },
 );
+
+// Phase 1a: read-only ops tools (always registered; they return a clean error
+// if the DB file isn't reachable).
+registerReadonlyTools(server);
 
 async function main(): Promise<void> {
   // stdout is reserved for the MCP protocol; all logging must go to stderr.
