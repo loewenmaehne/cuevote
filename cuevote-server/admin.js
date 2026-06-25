@@ -10,6 +10,8 @@
 //   Authorization: Bearer <ADMIN_TOKEN>
 const http = require('http');
 const crypto = require('crypto');
+const path = require('path');
+const fs = require('fs');
 const logger = require('./logger');
 const db = require('./db');
 const dbAsync = require('./db-async');
@@ -48,6 +50,26 @@ function safeMeta(meta) {
     if (!meta) return meta;
     const { password, ...rest } = meta;
     return { ...rest, is_protected: !!password };
+}
+
+// Strip per-user identifiers (voter ids, suggestedBy) from a track. Display
+// fields (title/artist/score/suggestedByUsername) are kept for moderation.
+function stripTrackPII(track) {
+    if (!track || typeof track !== 'object') return track;
+    const { voters, suggestedBy, ...rest } = track;
+    return rest;
+}
+
+// Copy of a room's live state with raw user ids scrubbed from every track
+// collection — they don't need to leave the server even over localhost.
+function sanitizeState(state) {
+    if (!state || typeof state !== 'object') return state;
+    const s = { ...state };
+    if (Array.isArray(s.queue)) s.queue = s.queue.map(stripTrackPII);
+    if (Array.isArray(s.history)) s.history = s.history.map(stripTrackPII);
+    if (Array.isArray(s.pendingSuggestions)) s.pendingSuggestions = s.pendingSuggestions.map(stripTrackPII);
+    if (s.currentTrack) s.currentTrack = stripTrackPII(s.currentTrack);
+    return s;
 }
 
 function nowPlaying(room) {
@@ -120,7 +142,6 @@ function roomAction(room, action, body, rooms, roomId) {
 
 function deleteRoom(rooms, roomId) {
     const room = rooms.get(roomId);
-    const result = db.deleteRoom(roomId);
     if (room) {
         room.deleted = true;
         try { room.broadcast(JSON.stringify({ type: 'ROOM_DELETED' })); } catch { /* ignore */ }
@@ -128,9 +149,12 @@ function deleteRoom(rooms, roomId) {
             room.clients.forEach((c) => { try { c.close(); } catch { /* ignore */ } });
             room.clients.clear();
         }, 200);
-        try { room.destroy(); } catch { /* room_state row already cascade-deleted */ }
-        rooms.delete(roomId);
+        // Stop timers (and let destroy() checkpoint) while the row still exists,
+        // so the deleteRoom below cleanly CASCADE-removes its room_state.
+        try { room.destroy(); } catch { /* ignore */ }
     }
+    const result = db.deleteRoom(roomId);
+    if (room) rooms.delete(roomId);
     return { ok: true, dbChanges: result.changes, wasActive: !!room };
 }
 
@@ -183,7 +207,7 @@ async function handle(req, res, rooms, token) {
                     active: true,
                     listeners: room.clients.size,
                     metadata: safeMeta(room.metadata),
-                    state: room.state,
+                    state: sanitizeState(room.state),
                 });
             }
             const meta = db.getRoom(roomId);
@@ -227,8 +251,13 @@ async function handle(req, res, rooms, token) {
         }
         if (task === 'backup') {
             const body = await readBody(req);
-            const dest = body.dest || `./backups/admin-backup-${Date.now()}.db`;
+            const backupsDir = path.resolve('./backups');
+            // Constrain to the backups dir: strip any directory component from a
+            // caller-supplied name so it can't traverse out (e.g. ../../public).
+            const name = body.dest ? path.basename(String(body.dest)) : `admin-backup-${Date.now()}.db`;
+            const dest = path.join(backupsDir, name);
             try {
+                fs.mkdirSync(backupsDir, { recursive: true });
                 await db.backup(dest);
                 return sendJson(res, 200, { ok: true, dest });
             } catch (e) {
@@ -256,6 +285,9 @@ function start({ rooms }) {
     }
     const port = parseInt(process.env.ADMIN_PORT || '8081', 10);
     const host = process.env.ADMIN_HOST || '127.0.0.1';
+    if (host !== '127.0.0.1' && host !== '::1' && host !== 'localhost') {
+        logger.warn(`[Admin] Binding to non-loopback host "${host}". The admin API must never be publicly reachable — ensure a firewall restricts this port.`);
+    }
 
     const server = http.createServer((req, res) => {
         handle(req, res, rooms, token).catch((err) => {

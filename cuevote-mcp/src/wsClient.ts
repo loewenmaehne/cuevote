@@ -23,7 +23,6 @@ export class CueVoteBridge {
   private clientId = "mcp-" + randomUUID();
   private connecting: Promise<void> | null = null;
   private waiters: Waiter[] = [];
-  private sniffers: ((m: AnyMsg) => void)[] = [];
 
   user: { id: string; name?: string } | null = null;
   roomId: string | null = null;
@@ -52,6 +51,8 @@ export class CueVoteBridge {
         reject(new Error("CUEVOTE_SESSION_TOKEN not set."));
         return;
       }
+      // Close any prior (possibly half-open) socket before reconnecting.
+      try { this.ws?.close(); } catch { /* ignore */ }
       const ws = new WebSocket(this.url(), { origin: config.ws.origin });
       this.ws = ws;
       const failTimer = setTimeout(() => {
@@ -79,6 +80,7 @@ export class CueVoteBridge {
       ws.on("close", () => this.handleClose());
       ws.on("error", (err: Error) => {
         clearTimeout(failTimer);
+        try { ws.close(); } catch { /* ignore */ }
         reject(err instanceof Error ? err : new Error(String(err)));
       });
     });
@@ -100,7 +102,6 @@ export class CueVoteBridge {
     else if (m.type === "state_delta") this.latestState = { ...(this.latestState || {}), ...m.payload };
     else if (m.type === "PING") this.safeSend({ type: "PONG" });
 
-    for (const s of this.sniffers) s(m);
     for (const w of [...this.waiters]) {
       if (w.match(m)) {
         clearTimeout(w.timer);
@@ -129,22 +130,22 @@ export class CueVoteBridge {
     });
   }
 
-  /** Send a message, await its ACK, and capture any error the server emits. */
+  /**
+   * Send a message and resolve on the first of its ACK or a server error,
+   * so a rejection that arrives without an ACK surfaces immediately instead of
+   * waiting out the timeout. (CueVote sends an `error` before the `ACK` on a
+   * failed SUGGEST/VOTE, so the error wins the race.)
+   */
   private async sendAcked(obj: AnyMsg, msgId: string, settleMs = 250): Promise<{ ok: boolean; error?: string }> {
-    let lastError: string | null = null;
-    const sniff = (m: AnyMsg): void => {
-      if (m.type === "error") lastError = m.message || m.code || "error";
-    };
-    this.sniffers.push(sniff);
-    try {
-      const ack = this.waitFor((m) => m.type === "ACK" && m.msgId === msgId, 12000);
-      this.send({ ...obj, msgId });
-      await ack;
-      await sleep(settleMs); // let the resulting state_delta land
-    } finally {
-      this.sniffers = this.sniffers.filter((s) => s !== sniff);
-    }
-    return lastError ? { ok: false, error: lastError } : { ok: true };
+    const settled = this.waitFor(
+      (m) => (m.type === "ACK" && m.msgId === msgId) || m.type === "error",
+      12000,
+    );
+    this.send({ ...obj, msgId });
+    const m = await settled;
+    if (m.type === "error") return { ok: false, error: m.message || m.code || "error" };
+    await sleep(settleMs); // let the resulting state_delta land
+    return { ok: true };
   }
 
   // ---- High-level operations ----

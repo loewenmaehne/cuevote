@@ -255,7 +255,8 @@ export function registerAdminTools(server: McpServer): void {
       title: "Run a maintenance task",
       description:
         "Trigger server maintenance: 'cleanup' (daily retention sweep) or " +
-        "'backup' (SQLite backup; optional dest path).",
+        "'backup' (SQLite backup; optional dest filename, always stored under " +
+        "the server's backups/ directory).",
       inputSchema: {
         task: z.enum(["cleanup", "backup"]),
         dest: z.string().max(500).optional(),
