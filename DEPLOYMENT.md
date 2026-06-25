@@ -71,6 +71,11 @@ ACTIVE_CHANNEL_DAYS=60
 # ADMIN_HOST=127.0.0.1
 ```
 
+> **MCP ops server (optional):** rather than setting `ADMIN_TOKEN` by hand, run
+> `./setup-mcp.sh` from the repo root after deploying — it generates the token,
+> builds the MCP, writes its `.env`, verifies the admin API, and prints the
+> client command. See [cuevote-mcp/README.md](cuevote-mcp/README.md).
+
 ### Start Backend
 ```bash
 pm2 start index.js --name cuevote-server
