@@ -30,10 +30,31 @@ npm install
 npm run build
 ```
 
-## Configure
+## Quick start on the server (both tiers, ~2 commands)
 
-Copy `.env.example` and fill in what you need (or pass the same vars via your MCP
-client config). The most important one for read-only use is `CUEVOTE_DB_PATH`.
+On the host that runs `cuevote-server`, from the repo root:
+
+```bash
+./setup-mcp.sh
+```
+
+It builds the MCP, enables the admin API (generates `ADMIN_TOKEN` and restarts the
+server once), writes `cuevote-mcp/.env`, verifies the admin health endpoint, and
+prints the one line to run on your Mac — typically:
+
+```bash
+claude mcp add cuevote -- ssh -T <user>@cuevote.com node /abs/path/cuevote-mcp/dist/index.js
+```
+
+Re-run `./setup-mcp.sh` after each deploy to rebuild the MCP. Read-only **and**
+live-ops are then both active.
+
+## Configure (manual / local)
+
+The MCP **auto-loads a `.env` placed next to the package** (regardless of cwd, so
+it works when launched over SSH). Copy `.env.example`, or pass the same vars via
+your MCP client config. The only one needed for read-only use is `CUEVOTE_DB_PATH`
+— and it already defaults to the sibling `../cuevote-server/cuevote.db`.
 
 Run `cuevote_diagnostics` first — it reports which capabilities are wired up
 without printing any secrets.
