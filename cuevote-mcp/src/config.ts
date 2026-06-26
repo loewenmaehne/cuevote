@@ -44,6 +44,17 @@ export const config = {
     },
   },
 
+  // Internal call to cuevote-server to mint a WS session for an authenticated
+  // user (remote DJ MCP, Phase 2). Same localhost server as the admin API,
+  // but gated by a narrower secret (matches the server's MCP_SESSION_SECRET).
+  internal: {
+    url: env("CUEVOTE_INTERNAL_URL", "http://127.0.0.1:8081").replace(/\/$/, ""),
+    secret: env("CUEVOTE_MINT_SECRET"),
+    get enabled(): boolean {
+      return this.secret.length > 0;
+    },
+  },
+
   // Remote DJ MCP (HTTP entrypoint). Binds localhost; nginx + Cloudflare sit in front.
   http: {
     host: env("CUEVOTE_HTTP_HOST", "127.0.0.1"),

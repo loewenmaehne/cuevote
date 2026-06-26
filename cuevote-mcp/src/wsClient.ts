@@ -23,16 +23,23 @@ export class CueVoteBridge {
   private clientId = "mcp-" + randomUUID();
   private connecting: Promise<void> | null = null;
   private waiters: Waiter[] = [];
-  private readonly sessionToken: string;
+  private readonly tokenSource: string | (() => Promise<string>);
 
   user: { id: string; name?: string } | null = null;
   roomId: string | null = null;
   latestState: any = null;
 
-  // One bridge per CueVote session. Defaults to the env token (stdio/single-user);
-  // the remote HTTP entrypoint passes a per-connection token.
-  constructor(sessionToken: string = config.ws.sessionToken) {
-    this.sessionToken = sessionToken;
+  // One bridge per CueVote session. The token source is either a static session
+  // token (stdio / Phase-1b interim auth) or a provider that mints a fresh token
+  // per connect (Phase-2 OAuth: a freshly minted WS session for the auth'd user).
+  constructor(tokenSource: string | (() => Promise<string>) = config.ws.sessionToken) {
+    this.tokenSource = tokenSource;
+  }
+
+  private async resolveToken(): Promise<string> {
+    const t = typeof this.tokenSource === "function" ? await this.tokenSource() : this.tokenSource;
+    if (!t) throw new Error("No CueVote session token for this bridge.");
+    return t;
   }
 
   private url(): string {
@@ -52,12 +59,9 @@ export class CueVoteBridge {
     await this.connecting;
   }
 
-  private connect(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!this.sessionToken) {
-        reject(new Error("No CueVote session token for this bridge."));
-        return;
-      }
+  private async connect(): Promise<void> {
+    const token = await this.resolveToken();
+    await new Promise<void>((resolve, reject) => {
       // Close any prior (possibly half-open) socket before reconnecting.
       try { this.ws?.close(); } catch { /* ignore */ }
       const ws = new WebSocket(this.url(), { origin: config.ws.origin });
@@ -68,7 +72,7 @@ export class CueVoteBridge {
       }, 15000);
 
       ws.on("open", () => {
-        ws.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token: this.sessionToken }, msgId: "auth" }));
+        ws.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token }, msgId: "auth" }));
       });
       ws.on("message", (data: WebSocket.RawData) => {
         let m: AnyMsg;
