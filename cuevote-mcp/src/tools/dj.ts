@@ -115,6 +115,9 @@ export function registerDjTools(server: McpServer, bridge: CueVoteBridge): void 
     },
     ({ query }) =>
       guard(async () => {
+        if (!bridge.allowSuggest()) {
+          return fail("Rate limit: too many suggestions in a short time — please slow down.");
+        }
         const res = await bridge.suggest(query);
         audit("cv_suggest", { userId: bridge.user?.id, roomId: bridge.roomId, query, ok: res.ok });
         if (!res.ok) return fail(`Suggestion rejected: ${res.error}`);

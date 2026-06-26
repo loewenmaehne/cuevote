@@ -23,6 +23,7 @@ export class CueVoteBridge {
   private clientId = "mcp-" + randomUUID();
   private connecting: Promise<void> | null = null;
   private waiters: Waiter[] = [];
+  private suggestHits: number[] = [];
   private readonly tokenSource: string | (() => Promise<string>);
 
   user: { id: string; name?: string } | null = null;
@@ -185,6 +186,16 @@ export class CueVoteBridge {
     if (!this.roomId) throw new Error("Not in a room — call cv_join_room first.");
     if (!this.latestState) await this.joinRoom(this.roomId); // reconnected → rejoin
     return this.latestState;
+  }
+
+  /** Per-bridge (≈ per-user) sliding-window limit to curb YouTube search quota. */
+  allowSuggest(): boolean {
+    const max = Number(process.env.CUEVOTE_SUGGEST_PER_MIN || 10);
+    const t = Date.now();
+    this.suggestHits = this.suggestHits.filter((x) => t - x < 60_000);
+    if (this.suggestHits.length >= max) return false;
+    this.suggestHits.push(t);
+    return true;
   }
 
   async suggest(query: string): Promise<{ ok: boolean; error?: string; state?: any }> {
