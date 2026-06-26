@@ -23,10 +23,17 @@ export class CueVoteBridge {
   private clientId = "mcp-" + randomUUID();
   private connecting: Promise<void> | null = null;
   private waiters: Waiter[] = [];
+  private readonly sessionToken: string;
 
   user: { id: string; name?: string } | null = null;
   roomId: string | null = null;
   latestState: any = null;
+
+  // One bridge per CueVote session. Defaults to the env token (stdio/single-user);
+  // the remote HTTP entrypoint passes a per-connection token.
+  constructor(sessionToken: string = config.ws.sessionToken) {
+    this.sessionToken = sessionToken;
+  }
 
   private url(): string {
     const u = new URL(config.ws.url);
@@ -47,8 +54,8 @@ export class CueVoteBridge {
 
   private connect(): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (!config.ws.sessionToken) {
-        reject(new Error("CUEVOTE_SESSION_TOKEN not set."));
+      if (!this.sessionToken) {
+        reject(new Error("No CueVote session token for this bridge."));
         return;
       }
       // Close any prior (possibly half-open) socket before reconnecting.
@@ -61,7 +68,7 @@ export class CueVoteBridge {
       }, 15000);
 
       ws.on("open", () => {
-        ws.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token: config.ws.sessionToken }, msgId: "auth" }));
+        ws.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token: this.sessionToken }, msgId: "auth" }));
       });
       ws.on("message", (data: WebSocket.RawData) => {
         let m: AnyMsg;
