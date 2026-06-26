@@ -64,6 +64,22 @@ export const config = {
       .split(",")
       .map((h) => h.trim())
       .filter(Boolean),
+    // Public issuer/base URL (what clients reach via Cloudflare/nginx). Used as
+    // the OAuth issuer + resource identifier.
+    get publicUrl(): string {
+      return env("CUEVOTE_PUBLIC_URL") || `http://${this.host}:${this.port}`;
+    },
+  },
+
+  // OAuth 2.1 (Phase 2c). CueVote is the authorization server; identity comes
+  // from the existing Google login via the web consent page.
+  oauth: {
+    // DEV ONLY: auto-approve this CueVote user id without Google (for testing).
+    devUser: env("CUEVOTE_OAUTH_DEV_USER"),
+    // PROD: the web-app consent/login page the authorize step redirects to.
+    consentUrl: env("CUEVOTE_OAUTH_CONSENT_URL"),
+    // Shared secret the web app uses to finalize an authorization after login.
+    finalizeSecret: env("CUEVOTE_OAUTH_FINALIZE_SECRET"),
   },
 
   auditLog: resolvePath(env("CUEVOTE_AUDIT_LOG", "mcp-audit.log")),

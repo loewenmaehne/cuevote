@@ -2,93 +2,100 @@
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // Copyright (c) 2026 Julian Zienert
 //
-// Phase 1b: the PUBLIC remote DJ MCP — a Streamable-HTTP server that exposes
-// ONLY the cv_* DJ tools, one authenticated session per user, each backed by
-// its own CueVoteBridge. Binds to localhost; nginx + Cloudflare sit in front.
+// The PUBLIC remote DJ MCP: a Streamable-HTTP server exposing ONLY the cv_*
+// DJ tools, protected by OAuth 2.1 (CueVote is the authorization server). Each
+// authenticated user gets a session backed by its own CueVoteBridge, which
+// connects to the WS server AS that user via a freshly minted session.
 //
-// SECURITY: this entrypoint must NEVER register the ops/admin/read-only tools.
-// Auth here is INTERIM (Bearer = the user's CueVote session token) for closed
-// local/beta testing only — Phase 2 replaces it with OAuth. Do not expose
-// publicly until OAuth + guardrails (Phase 3) are in place.
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+// SECURITY: never register ops/admin/read-only tools here. Binds to localhost;
+// nginx + Cloudflare sit in front. Do not flip on the public rollout until the
+// guardrails (Phase 3) land and the YouTube quota review is clear.
+import express, { type Request, type Response } from "express";
 import { randomUUID } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
+import { mcpAuthRouter } from "@modelcontextprotocol/sdk/server/auth/router.js";
+import { requireBearerAuth } from "@modelcontextprotocol/sdk/server/auth/middleware/bearerAuth.js";
+import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 import { config } from "./config.js";
 import { CueVoteBridge } from "./wsClient.js";
 import { registerDjTools } from "./tools/dj.js";
+import { provider, finalizeAuthorization } from "./oauth/provider.js";
+import { mintSessionToken } from "./minter.js";
 
 interface Session {
   transport: StreamableHTTPServerTransport;
   bridge: CueVoteBridge;
+  userId: string;
 }
 const sessions = new Map<string, Session>();
 
-function sendJson(res: ServerResponse, code: number, obj: unknown): void {
-  const body = JSON.stringify(obj);
-  res.writeHead(code, { "Content-Type": "application/json" });
-  res.end(body);
+const userIdOf = (req: Request): string =>
+  (((req as Request & { auth?: AuthInfo }).auth?.extra?.userId as string) || "");
+
+function rpcErr(res: Response, status: number, message: string): void {
+  res.status(status).json({ jsonrpc: "2.0", error: { code: -32000, message }, id: null });
 }
 
-function rpcError(res: ServerResponse, code: number, rpcCode: number, message: string): void {
-  sendJson(res, code, { jsonrpc: "2.0", error: { code: rpcCode, message }, id: null });
-}
+const app = express();
+const issuerUrl = new URL(config.http.publicUrl);
 
-function readBody(req: IncomingMessage): Promise<unknown> {
-  return new Promise((resolve) => {
-    let data = "";
-    req.on("data", (c) => {
-      data += c;
-      if (data.length > 4_000_000) req.destroy(); // 4 MB cap
-    });
-    req.on("end", () => {
-      if (!data) return resolve(undefined);
-      try {
-        resolve(JSON.parse(data));
-      } catch {
-        resolve(undefined);
-      }
-    });
-    req.on("error", () => resolve(undefined));
-  });
-}
+// OAuth 2.1 endpoints: /.well-known/*, /authorize, /token, /register, /revoke.
+app.use(
+  mcpAuthRouter({
+    provider,
+    issuerUrl,
+    scopesSupported: ["dj"],
+    resourceName: "CueVote DJ",
+  }),
+);
 
-function bearer(req: IncomingMessage): string | null {
-  const h = req.headers["authorization"];
-  return typeof h === "string" && h.startsWith("Bearer ") ? h.slice(7) : null;
-}
+// Web-app callback: after Google login it finalizes a pending authorization.
+// Gated by a shared secret (the web app holds CUEVOTE_OAUTH_FINALIZE_SECRET).
+app.post("/oauth/finalize", express.json(), (req: Request, res: Response) => {
+  const secret = config.oauth.finalizeSecret;
+  const provided = (req.headers["authorization"] || "").toString().replace(/^Bearer /, "");
+  if (!secret || provided !== secret) return void res.status(401).json({ error: "unauthorized" });
+  const body = (req.body ?? {}) as { handle?: string; userId?: string };
+  if (!body.handle || !body.userId) return void res.status(400).json({ error: "missing handle or userId" });
+  try {
+    res.json({ redirectTo: finalizeAuthorization(String(body.handle), String(body.userId)) });
+  } catch (e) {
+    res.status(400).json({ error: e instanceof Error ? e.message : "finalize_failed" });
+  }
+});
 
-async function handlePost(req: IncomingMessage, res: ServerResponse): Promise<void> {
+app.get("/health", (_req: Request, res: Response) => res.json({ status: "ok", sessions: sessions.size }));
+
+// Every /mcp request must carry a valid OAuth access token.
+const bearer = requireBearerAuth({ verifier: provider, requiredScopes: [] });
+
+app.post("/mcp", bearer, express.json(), async (req: Request, res: Response) => {
+  const userId = userIdOf(req);
   const sid = req.headers["mcp-session-id"] as string | undefined;
-  const body = await readBody(req);
 
-  // Existing session → route to its transport.
   if (sid) {
-    const session = sessions.get(sid);
-    if (!session) return rpcError(res, 404, -32001, "Unknown or expired session.");
-    await session.transport.handleRequest(req, res, body);
+    const s = sessions.get(sid);
+    if (!s) return rpcErr(res, 404, "Unknown or expired session.");
+    if (s.userId !== userId) return rpcErr(res, 403, "Session does not belong to this user.");
+    await s.transport.handleRequest(req, res, req.body);
     return;
   }
 
-  // New session: must be an initialize request, and must carry a token.
-  if (!isInitializeRequest(body)) {
-    return rpcError(res, 400, -32000, "Bad Request: initialize a session first.");
-  }
-  // INTERIM AUTH (Phase 1b): Bearer is the user's CueVote session token. The
-  // MCP session is bound to that token at init; Phase 2 swaps this for OAuth.
-  const token = bearer(req);
-  if (!token) return rpcError(res, 401, -32001, "Unauthorized: Bearer token required.");
+  if (!isInitializeRequest(req.body)) return rpcErr(res, 400, "Initialize a session first.");
+  if (!userId) return rpcErr(res, 401, "No user associated with token.");
 
-  const bridge = new CueVoteBridge(token);
+  // Bridge connects AS this user via a freshly minted WS session per connect.
+  const bridge = new CueVoteBridge(() => mintSessionToken(userId));
   const server = new McpServer({ name: "cuevote-dj", version: "0.1.0" });
-  registerDjTools(server, bridge); // DJ tools ONLY — never ops/admin/read-only.
+  registerDjTools(server, bridge); // DJ tools ONLY.
 
-  const transport = new StreamableHTTPServerTransport({
+  const transport: StreamableHTTPServerTransport = new StreamableHTTPServerTransport({
     sessionIdGenerator: () => randomUUID(),
-    enableJsonResponse: true, // request/response (no long-lived SSE behind CF)
-    onsessioninitialized: (id) => {
-      sessions.set(id, { transport, bridge });
+    enableJsonResponse: true,
+    onsessioninitialized: (id: string) => {
+      sessions.set(id, { transport, bridge, userId });
     },
   });
   transport.onclose = () => {
@@ -104,42 +111,23 @@ async function handlePost(req: IncomingMessage, res: ServerResponse): Promise<vo
   };
 
   await server.connect(transport);
-  await transport.handleRequest(req, res, body);
-}
-
-async function handleSession(req: IncomingMessage, res: ServerResponse): Promise<void> {
-  const sid = req.headers["mcp-session-id"] as string | undefined;
-  const session = sid ? sessions.get(sid) : undefined;
-  if (!session) return rpcError(res, 404, -32001, "Unknown or expired session.");
-  await session.transport.handleRequest(req, res);
-}
-
-const httpServer = createServer((req, res) => {
-  const url = new URL(req.url || "/", "http://localhost");
-  if (url.pathname === "/health" && req.method === "GET") {
-    return sendJson(res, 200, { status: "ok", sessions: sessions.size });
-  }
-  if (url.pathname === "/mcp") {
-    if (req.method === "POST") {
-      return void handlePost(req, res).catch((e) => {
-        console.error("[http] POST error:", e);
-        if (!res.headersSent) rpcError(res, 500, -32603, "Internal error.");
-      });
-    }
-    if (req.method === "GET" || req.method === "DELETE") {
-      return void handleSession(req, res).catch((e) => {
-        console.error("[http] session error:", e);
-        if (!res.headersSent) rpcError(res, 500, -32603, "Internal error.");
-      });
-    }
-  }
-  sendJson(res, 404, { error: "not_found" });
+  await transport.handleRequest(req, res, req.body);
 });
 
-httpServer.listen(config.http.port, config.http.host, () => {
+async function handleSession(req: Request, res: Response): Promise<void> {
+  const sid = req.headers["mcp-session-id"] as string | undefined;
+  const s = sid ? sessions.get(sid) : undefined;
+  if (!s) return rpcErr(res, 404, "Unknown or expired session.");
+  if (s.userId !== userIdOf(req)) return rpcErr(res, 403, "Session does not belong to this user.");
+  await s.transport.handleRequest(req, res);
+}
+app.get("/mcp", bearer, handleSession);
+app.delete("/mcp", bearer, handleSession);
+
+const httpServer = app.listen(config.http.port, config.http.host, () => {
   console.error(
-    `[cuevote-mcp:http] DJ MCP on http://${config.http.host}:${config.http.port}/mcp ` +
-      `(DJ tools only, interim bearer auth — not for public exposure yet)`,
+    `[cuevote-mcp:http] DJ MCP (OAuth) on ${config.http.publicUrl}/mcp — DJ tools only` +
+      (config.oauth.devUser ? ` [DEV identity: ${config.oauth.devUser}]` : ""),
   );
 });
 
