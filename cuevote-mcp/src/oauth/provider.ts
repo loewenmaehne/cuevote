@@ -18,6 +18,7 @@ import type {
   OAuthTokenRevocationRequest,
 } from "@modelcontextprotocol/sdk/shared/auth.js";
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
+import { InvalidGrantError, InvalidTokenError } from "@modelcontextprotocol/sdk/server/auth/errors.js";
 import { config } from "../config.js";
 
 const ACCESS_TTL = 3600; // 1h
@@ -63,6 +64,11 @@ function sweep(): void {
   for (const [k, v] of refreshTokens) if (v.expiresAt < t) refreshTokens.delete(k);
   for (const [k, v] of pending) if (v.expiresAt < t) pending.delete(k);
 }
+
+// Reclaim expired entries even with no authorize/finalize traffic (the on-demand
+// sweep calls above only fire during those flows).
+const _sweepTimer = setInterval(() => sweep(), 5 * 60_000);
+_sweepTimer.unref();
 
 const clientsStore: OAuthRegisteredClientsStore = {
   getClient(clientId) {
@@ -160,29 +166,30 @@ export const provider: OAuthServerProvider = {
   async challengeForAuthorizationCode(client, authorizationCode) {
     const rec = codes.get(authorizationCode);
     if (!rec || rec.clientId !== client.client_id || rec.expiresAt < now()) {
-      throw new Error("invalid_grant");
+      throw new InvalidGrantError("Invalid or expired authorization grant.");
     }
     return rec.codeChallenge;
   },
 
   async exchangeAuthorizationCode(client, authorizationCode, _codeVerifier, redirectUri) {
     const rec = codes.get(authorizationCode);
-    if (!rec || rec.clientId !== client.client_id || rec.expiresAt < now()) throw new Error("invalid_grant");
-    if (redirectUri && redirectUri !== rec.redirectUri) throw new Error("invalid_grant");
+    if (!rec || rec.clientId !== client.client_id || rec.expiresAt < now()) throw new InvalidGrantError("Invalid or expired authorization grant.");
+    if (redirectUri && redirectUri !== rec.redirectUri) throw new InvalidGrantError("Invalid or expired authorization grant.");
     codes.delete(authorizationCode); // single use
     return issueTokens(client.client_id, rec.userId, rec.scopes);
   },
 
   async exchangeRefreshToken(client, refreshToken, scopes) {
     const rec = refreshTokens.get(refreshToken);
-    if (!rec || rec.clientId !== client.client_id || rec.expiresAt < now()) throw new Error("invalid_grant");
+    if (!rec || rec.clientId !== client.client_id || rec.expiresAt < now()) throw new InvalidGrantError("Invalid or expired authorization grant.");
+    refreshTokens.delete(refreshToken); // rotate: the old refresh token is single-use
     const grantScopes = scopes && scopes.length ? scopes.filter((s) => rec.scopes.includes(s)) : rec.scopes;
     return issueTokens(client.client_id, rec.userId, grantScopes);
   },
 
   async verifyAccessToken(token): Promise<AuthInfo> {
     const rec = accessTokens.get(token);
-    if (!rec || rec.expiresAt < now()) throw new Error("invalid_token");
+    if (!rec || rec.expiresAt < now()) throw new InvalidTokenError("Invalid or expired access token.");
     return {
       token,
       clientId: rec.clientId,

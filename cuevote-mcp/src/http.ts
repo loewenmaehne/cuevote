@@ -28,8 +28,14 @@ interface Session {
   transport: StreamableHTTPServerTransport;
   bridge: CueVoteBridge;
   userId: string;
+  lastSeen: number;
 }
 const sessions = new Map<string, Session>();
+// In JSON-response mode there is no persistent socket, so transport.onclose only
+// fires on an explicit DELETE. Reap idle sessions (and their bridges' WS) so a
+// client that vanishes without closing can't leak them forever.
+const SESSION_TTL_MS = Number(process.env.CUEVOTE_HTTP_SESSION_TTL_MS || 30 * 60 * 1000);
+const MAX_SESSIONS = Number(process.env.CUEVOTE_HTTP_MAX_SESSIONS || 1000);
 
 const userIdOf = (req: Request): string =>
   (((req as Request & { auth?: AuthInfo }).auth?.extra?.userId as string) || "");
@@ -85,12 +91,14 @@ app.post("/mcp", bearer, express.json(), async (req: Request, res: Response) => 
     const s = sessions.get(sid);
     if (!s) return rpcErr(res, 404, "Unknown or expired session.");
     if (s.userId !== userId) return rpcErr(res, 403, "Session does not belong to this user.");
+    s.lastSeen = Date.now();
     await s.transport.handleRequest(req, res, req.body);
     return;
   }
 
   if (!isInitializeRequest(req.body)) return rpcErr(res, 400, "Initialize a session first.");
   if (!userId) return rpcErr(res, 401, "No user associated with token.");
+  if (sessions.size >= MAX_SESSIONS) return rpcErr(res, 503, "Too many active sessions; try again later.");
 
   // Bridge connects AS this user via a freshly minted WS session per connect.
   const bridge = new CueVoteBridge(() => mintSessionToken(userId));
@@ -101,7 +109,7 @@ app.post("/mcp", bearer, express.json(), async (req: Request, res: Response) => 
     sessionIdGenerator: () => randomUUID(),
     enableJsonResponse: true,
     onsessioninitialized: (id: string) => {
-      sessions.set(id, { transport, bridge, userId });
+      sessions.set(id, { transport, bridge, userId, lastSeen: Date.now() });
     },
   });
   transport.onclose = () => {
@@ -125,8 +133,22 @@ async function handleSession(req: Request, res: Response): Promise<void> {
   const s = sid ? sessions.get(sid) : undefined;
   if (!s) return rpcErr(res, 404, "Unknown or expired session.");
   if (s.userId !== userIdOf(req)) return rpcErr(res, 403, "Session does not belong to this user.");
+  s.lastSeen = Date.now();
   await s.transport.handleRequest(req, res);
 }
+
+// Reap idle sessions + their bridge WebSockets (see SESSION_TTL_MS above).
+const reaper = setInterval(() => {
+  const cutoff = Date.now() - SESSION_TTL_MS;
+  for (const [id, s] of sessions) {
+    if (s.lastSeen < cutoff) {
+      try { s.transport.close(); } catch { /* ignore */ }
+      try { s.bridge.close(); } catch { /* ignore */ }
+      sessions.delete(id);
+    }
+  }
+}, 60_000);
+reaper.unref();
 app.get("/mcp", bearer, handleSession);
 app.delete("/mcp", bearer, handleSession);
 
@@ -142,6 +164,7 @@ const httpServer = app.listen(config.http.port, config.http.host, () => {
 });
 
 function shutdown(): void {
+  clearInterval(reaper);
   for (const { transport, bridge } of sessions.values()) {
     try { transport.close(); } catch { /* ignore */ }
     try { bridge.close(); } catch { /* ignore */ }
