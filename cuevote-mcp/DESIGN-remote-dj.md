@@ -104,6 +104,8 @@ Claude ─HTTPS▶ Cloudflare (Proxy, IP versteckt) ─▶ nginx (TLS, mcp.cuevo
 
 **Server (`cuevote-server/.env`):** `MCP_SESSION_SECRET=<random>` aktiviert die
 interne `mint-session`-Route (localhost). `MCP_SESSION_TTL` optional (Default 3600).
+`CUEVOTE_OAUTH_FINALIZE_SECRET=<random>` (= MCP-Wert) + `MCP_INTERNAL_URL`
+(Default `http://127.0.0.1:8082`) aktivieren den `MCP_AUTHORIZE`-Consent-Bridge.
 
 **Remote-MCP (`cuevote-mcp/.env`), läuft als eigener PM2-Dienst (`dist/http.js`):**
 `CUEVOTE_PUBLIC_URL=https://mcp.cuevote.com`, `CUEVOTE_MINT_SECRET=`(=Server-
@@ -121,12 +123,18 @@ Eine Route unter `CUEVOTE_OAUTH_CONSENT_URL` (z. B. `/connect-ai`), die
 1. `?auth=<handle>` liest,
 2. den User per Google einloggt (bestehender Flow),
 3. einen Consent-Screen zeigt („Diese KI darf in deinem Namen Songs vorschlagen/voten"),
-4. bei Zustimmung `POST {MCP}/oauth/finalize` mit `Authorization: Bearer <FINALIZE_SECRET>`
-   und `{ handle, userId }` aufruft → erhält `{ redirectTo }`,
-5. den Browser zu `redirectTo` weiterleitet (zurück zum MCP-Client mit dem Code).
+4. bei Zustimmung über die **bestehende WS-Verbindung** `MCP_AUTHORIZE { handle }`
+   sendet (der User ist auf diesem Socket schon eingeloggt),
+5. auf `MCP_AUTHORIZE_RESULT { redirectTo }` wartet und den Browser dorthin
+   weiterleitet (zurück zum MCP-Client mit dem Code).
 
-Der Server-Teil dieses Vertrags (`/oauth/finalize`, Pending-Store) **ist
-implementiert**; nur die React-Seite fehlt noch.
+> **Sicherheit (korrigiert):** Der Browser ruft **nicht** den Finalize-Endpoint
+> mit dem Secret auf — das Secret darf nie in den Client. Stattdessen geht die
+> Zustimmung über `cuevote-server` (`MCP_AUTHORIZE`, authentifiziert über die
+> Session des Users); der Server fügt die `userId` hinzu und ruft
+> `POST {MCP}/oauth/finalize` **server-zu-server** mit `CUEVOTE_OAUTH_FINALIZE_SECRET`.
+> Server (`MCP_AUTHORIZE`-Handler) **und** MCP (`/oauth/finalize`, Pending-Store)
+> **sind implementiert & getestet**; nur die React-Seite fehlt noch.
 
 ## 9. Status-Checkliste
 
@@ -136,5 +144,6 @@ implementiert**; nur die React-Seite fehlt noch.
 - [x] **2c** OAuth 2.1 (Discovery/Register/Authorize-PKCE/Token/Verify) — e2e getestet (Dev-Identity)
 - [x] **3b** pro-User-Suggest-Rate-Limit (Quota-Guardrail) — getestet
 - [x] **3c** Hosting-/Env-Doku + Web-Vertrag
-- [ ] **3a** Web-Consent-Seite in `cuevote-client` (React + Google) — **TODO**
+- [x] **3a (Server)** `MCP_AUTHORIZE`-Consent-Bridge (Secret bleibt server-seitig) — e2e getestet
+- [ ] **3a (Client)** Web-Consent-Seite in `cuevote-client` (React + Google) — in Arbeit
 - [ ] **Public-Rollout** — gated auf YouTube-Quota-Review + `/security-review`

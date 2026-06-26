@@ -75,6 +75,8 @@ ACTIVE_CHANNEL_DAYS=60
 # the OAuth-authenticated DJ service. Leave unset until you deploy that service.
 # MCP_SESSION_SECRET=generate_a_long_random_secret
 # MCP_SESSION_TTL=3600
+# CUEVOTE_OAUTH_FINALIZE_SECRET=generate_a_long_random_secret  # = MCP value; enables the consent bridge
+# MCP_INTERNAL_URL=http://127.0.0.1:8082                       # where the remote DJ MCP listens
 ```
 
 > **MCP ops server (optional):** rather than setting `ADMIN_TOKEN` by hand, run
