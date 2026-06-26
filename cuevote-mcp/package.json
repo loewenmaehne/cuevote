@@ -15,6 +15,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
+    "start:http": "node dist/http.js",
     "dev": "node --watch dist/index.js",
     "typecheck": "tsc --noEmit"
   },

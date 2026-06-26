@@ -44,6 +44,17 @@ export const config = {
     },
   },
 
+  // Remote DJ MCP (HTTP entrypoint). Binds localhost; nginx + Cloudflare sit in front.
+  http: {
+    host: env("CUEVOTE_HTTP_HOST", "127.0.0.1"),
+    port: Number(env("CUEVOTE_HTTP_PORT", "8082")),
+    // Comma-separated Host header allow-list for DNS-rebinding protection (Phase 3).
+    allowedHosts: env("CUEVOTE_HTTP_ALLOWED_HOSTS")
+      .split(",")
+      .map((h) => h.trim())
+      .filter(Boolean),
+  },
+
   auditLog: resolvePath(env("CUEVOTE_AUDIT_LOG", "mcp-audit.log")),
 
   dbExists(): boolean {
