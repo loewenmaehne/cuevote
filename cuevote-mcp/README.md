@@ -5,22 +5,26 @@ Copyright (c) 2026 Julian Zienert
 
 # cuevote-mcp
 
-MCP (Model Context Protocol) server for **CueVote**. It lets an AI assistant
-(Claude Desktop, Claude Code, …) work with CueVote through typed tools.
+MCP (Model Context Protocol) server for **CueVote**. It runs in **two modes**:
 
-See [DESIGN.md](DESIGN.md) for the full architecture and rationale. This README
-covers setup and the tool surface.
+- **stdio — ops console** (`dist/index.js`): for the operator. Read-only insight
+  (rooms, users, history, stats) + live moderation (skip, ban, approve, delete,
+  GDPR). Runs on the server, driven over SSH from your machine. Architecture: [DESIGN.md](DESIGN.md).
+- **HTTP — public AI DJ** (`dist/http.js`): a hosted, OAuth-protected remote MCP
+  so **any CueVote user** can connect an AI assistant and control CueVote *as
+  themselves* (suggest, vote, now-playing, skip own rooms). Architecture:
+  **[DESIGN-remote-dj.md](DESIGN-remote-dj.md)**; deployment: `DEPLOYMENT.md` §9.
 
-## Capabilities (gated by configuration)
-
-| Group | Needs | Status |
-|---|---|---|
-| **Read-only ops** (rooms, users, history, stats) | read access to `cuevote.db` | ✅ Phase 1a |
-| **Live ops / moderation** (skip, ban, approve, delete, GDPR) | server admin API + `CUEVOTE_ADMIN_TOKEN` | ✅ Phase 1b |
-| **AI-DJ / guest control** (suggest, vote, now-playing, skip) | a CueVote session token | ✅ Phase 2 |
-
-Each group activates only when its configuration is present, so you can run a
+Every tool group activates only when its configuration is present — you can run a
 pure read-only console without ever touching the live server.
+
+## Tools (gated by configuration)
+
+| Group | Mode | Needs |
+|---|---|---|
+| **Read-only ops** — `list_rooms`, `get_room`, `find_user`, `platform_stats`, `db_health` | stdio | read access to `cuevote.db` (defaults to the sibling server DB) |
+| **Live ops / moderation** — `list_active_rooms`, `get_live_room`, `skip_track`, `ban_video`, `approve_suggestion`, `delete_room`, `gdpr_delete_user`, `run_maintenance`, … | stdio | server admin API + `CUEVOTE_ADMIN_TOKEN` |
+| **AI DJ** — `cv_list_rooms`, `cv_join_room`, `cv_now_playing`, `cv_get_queue`, `cv_suggest`, `cv_vote`, `cv_skip`, `cv_play_pause` | stdio (single-user via session token) **or** HTTP (multi-user via OAuth) | a `CUEVOTE_SESSION_TOKEN`, or the public OAuth deploy |
 
 ## Install & build
 
@@ -81,10 +85,24 @@ For live ops the MCP process must run **on the server host** (so it can reach th
 localhost-only admin API and the DB file). The recommended setup is to launch it
 over `ssh` as a stdio command from your dev machine.
 
+## Public AI DJ (HTTP + OAuth)
+
+`dist/http.js` is the **public** remote MCP: it exposes **only** the `cv_*` DJ
+tools (never the ops/admin tools), authenticates each user via OAuth 2.1
+("Connect with CueVote" → Google login on the `/connect-ai` consent page), and
+acts as that user. It binds localhost and sits behind nginx + Cloudflare at
+`mcp.cuevote.com`. Stand it up with **`DEPLOYMENT.md` §9** — the public exposure
+is gated on the YouTube quota review. Users then add
+`https://mcp.cuevote.com/mcp` to their MCP client and sign in.
+
 ## Security notes
 
 - The server admin API binds to `127.0.0.1` and requires `ADMIN_TOKEN`. Never
   proxy it publicly.
+- The public DJ endpoint exposes **DJ tools only** (no ops/admin), is
+  OAuth-protected, and acts strictly as the authenticated user (owner actions
+  stay server-enforced). Set `CUEVOTE_HTTP_ALLOWED_HOSTS` and keep
+  `CUEVOTE_OAUTH_DEV_USER` empty in production.
 - Email (PII) is returned only by the explicit user/GDPR tools, never in lists.
 - Destructive tools require `confirm: true` and are written to the audit log.
 - All code is PolyForm Noncommercial licensed, like the rest of CueVote.

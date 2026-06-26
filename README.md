@@ -57,6 +57,11 @@ Whether you're hosting a house party, running a bar, or just hanging out online,
 * **Track History:** The channel automatically remembers videos played in the past.
 * **Quick Add:** Easily re-add previously played videos to the queue without searching.
 
+### 🤖 AI & Automation (MCP)
+* **Model Context Protocol server:** CueVote ships an MCP server (`cuevote-mcp/`) so it can be driven from an AI assistant (Claude Desktop/Code, …).
+    * *Ops console:* read-only insight (rooms, users, stats, retention health) + live moderation (skip, ban, approve, GDPR delete) for the operator, over SSH.
+    * *AI DJ:* an OAuth-protected remote mode ("Connect with CueVote") lets a user attach their AI to suggest songs, vote, and see what's playing — in their own name.
+
 ### ⚖️ Legal & Privacy
 * **GDPR Compliant:** Users have full control to request account deletion and data removal directly within the app.
 * **Transparency:** Dedicated Legal Center with Terms of Service, Privacy Policy, and Colophon.
@@ -70,6 +75,7 @@ Whether you're hosting a house party, running a bar, or just hanging out online,
 * **Backend:** Node.js, WebSocket (`ws`), SQLite3.
 * **Database:** SQLite with WAL mode for high-performance, concurrent read/write operations.
 * **API:** YouTube Data API v3 for robust video metadata verification.
+* **AI Integration:** Model Context Protocol (MCP) server (`@modelcontextprotocol/sdk`) — an ops console + an OAuth-based AI DJ. See `cuevote-mcp/`.
 
 ---
 
