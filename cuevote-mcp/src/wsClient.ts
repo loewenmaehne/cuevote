@@ -24,6 +24,7 @@ export class CueVoteBridge {
   private connecting: Promise<void> | null = null;
   private waiters: Waiter[] = [];
   private suggestHits: number[] = [];
+  private searchFallbackHits: number[] = [];
   private lock: Promise<unknown> = Promise.resolve();
   private readonly tokenSource: string | (() => Promise<string>);
 
@@ -216,6 +217,21 @@ export class CueVoteBridge {
     this.suggestHits = this.suggestHits.filter((x) => t - x < 60_000);
     if (this.suggestHits.length >= max) return false;
     this.suggestHits.push(t);
+    return true;
+  }
+
+  /**
+   * Separate, much tighter cap on the EXPENSIVE server-side title search
+   * fallback (≈100× the quota of a direct URL lookup). This bounds the
+   * worst-case YouTube Search-API spend per user regardless of how the AI
+   * behaves — the hard ceiling that does not depend on the model cooperating.
+   */
+  allowSearchFallback(): boolean {
+    const max = Number(process.env.CUEVOTE_SEARCH_FALLBACK_PER_HOUR || 3);
+    const t = Date.now();
+    this.searchFallbackHits = this.searchFallbackHits.filter((x) => t - x < 3_600_000);
+    if (this.searchFallbackHits.length >= max) return false;
+    this.searchFallbackHits.push(t);
     return true;
   }
 

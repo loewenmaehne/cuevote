@@ -10,6 +10,20 @@ import type { CueVoteBridge } from "../wsClient.js";
 import { audit } from "../audit.js";
 import { ok, fail, guard, table, duration } from "../util.js";
 
+// Accept a YouTube watch URL or a bare 11-char video id and return the
+// canonical watch URL, so the server resolves it via the cheap videos.list
+// (~1 quota unit) instead of a Search-API call (~100). Returns null for
+// anything else (free text), which the caller then gates behind an explicit
+// opt-in + rate cap.
+const YT_URL_RE =
+  /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
+function toCanonicalUrl(input: string): string | null {
+  const s = input.trim();
+  const m = s.match(YT_URL_RE);
+  const id = m ? m[1] : /^[A-Za-z0-9_-]{11}$/.test(s) ? s : null;
+  return id ? `https://www.youtube.com/watch?v=${id}` : null;
+}
+
 interface Track {
   id?: string;
   videoId?: string;
@@ -109,22 +123,64 @@ export function registerDjTools(server: McpServer, bridge: CueVoteBridge): void 
     {
       title: "Suggest a song",
       description:
-        "Suggest a track by search terms or a YouTube URL. The server resolves it " +
-        "via YouTube and adds it to the queue (or to pending approval in manual mode).",
-      inputSchema: { query: z.string().min(1).max(500) },
+        "Add a song to the room by its YouTube URL. Find the URL yourself (e.g. with your web " +
+        "search) and pass it in `query`: a real https://www.youtube.com/watch?v=… link or an " +
+        "11-character video id. Do NOT pass a song title or free text — bare titles are rejected " +
+        "by default, because the server-side title search (a) returns only the single top result, " +
+        "which is often the wrong version (live/cover/lyric/sped-up), and (b) costs CueVote ~100× " +
+        "the YouTube API quota of a direct URL lookup. Only if you truly cannot find a URL, retry " +
+        "with allowServerSearch=true (a rate-limited last resort).",
+      inputSchema: {
+        query: z
+          .string()
+          .min(1)
+          .max(500)
+          .describe("A YouTube watch URL or 11-char video id. Free text is only honored with allowServerSearch=true."),
+        allowServerSearch: z
+          .boolean()
+          .optional()
+          .describe(
+            "Last resort. Set true ONLY if you genuinely cannot find a YouTube URL. Triggers a server " +
+              "title search: lower quality (top result only) and ~100× the API quota. Prefer passing a URL.",
+          ),
+      },
     },
-    ({ query }) =>
+    ({ query, allowServerSearch }) =>
       guard(async () => {
+        const canonical = toCanonicalUrl(query);
+        // Free text (no URL/id resolved). Block it unless the caller explicitly
+        // opted into the expensive fallback — and explain why, so a cooperative
+        // model goes and finds the URL instead.
+        if (!canonical && !allowServerSearch) {
+          return fail(
+            `"${query}" isn't a YouTube URL. Find the real watch URL yourself (e.g. via web search) and ` +
+              "pass it. A bare title is rejected because the server search returns only the single top result " +
+              "(often the wrong version) and costs ~100× the API quota. If you truly cannot find a URL, call " +
+              "again with allowServerSearch=true.",
+          );
+        }
+        // Hard ceiling on the expensive path — independent of the model behaving.
+        if (!canonical && !bridge.allowSearchFallback()) {
+          return fail("Server-search fallback limit reached for now — find a real YouTube URL and pass it instead.");
+        }
         if (!bridge.allowSuggest()) {
           return fail("Rate limit: too many suggestions in a short time — please slow down.");
         }
-        const res = await bridge.suggest(query);
-        audit("cv_suggest", { userId: bridge.user?.id, roomId: bridge.roomId, query, ok: res.ok });
+        const usedServerSearch = !canonical;
+        const sent = canonical ?? query;
+        const res = await bridge.suggest(sent);
+        audit("cv_suggest", {
+          userId: bridge.user?.id,
+          roomId: bridge.roomId,
+          query: sent,
+          usedServerSearch,
+          ok: res.ok,
+        });
         if (!res.ok) return fail(`Suggestion rejected: ${res.error}`);
         const state = res.state ?? {};
         const pending = (state.pendingSuggestions ?? []).length;
         return ok(
-          `Suggested "${query}".\n` +
+          `Suggested ${usedServerSearch ? `"${query}" via server search (prefer a URL next time)` : sent}.\n` +
             (pending ? `It's awaiting owner approval (${pending} pending).\n` : "") +
             `\n${queueTable(state.queue ?? [])}`,
         );
