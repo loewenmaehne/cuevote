@@ -20,7 +20,7 @@ export function ConnectAI() {
   const clientName = params.get('client');
   const redirectHost = params.get('redirect');
   const { t } = Language.useLanguage();
-  const { user, isConnected, sendMessage, lastMessage, handleLoginSuccess } = useWebSocketContext();
+  const { user, isConnected, sendMessage, lastMessage, handleLoginSuccess, clearMessage } = useWebSocketContext();
   const [phase, setPhase] = useState('idle'); // idle | submitting | success | denied | error
 
   // React to the server's reply on the shared socket.
@@ -36,9 +36,17 @@ export function ConnectAI() {
 
   const approve = () => {
     if (!handle || !user) return;
+    clearMessage(); // drop any stale error so the effect only reacts to THIS request's reply
     setPhase('submitting');
     sendMessage({ type: 'MCP_AUTHORIZE', payload: { handle } });
   };
+
+  // If neither result nor error comes back, don't leave the button stuck.
+  useEffect(() => {
+    if (phase !== 'submitting') return;
+    const t = setTimeout(() => setPhase('error'), 15000);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   const Card = ({ children }) => (
     <div className="min-h-screen bg-[#050505] text-neutral-100 flex items-center justify-center px-4">
