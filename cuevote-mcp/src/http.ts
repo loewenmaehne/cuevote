@@ -55,12 +55,17 @@ const issuerUrl = new URL(config.http.publicUrl);
 
 // DNS-rebinding protection: when CUEVOTE_HTTP_ALLOWED_HOSTS is set, reject any
 // request whose Host header isn't in the allow-list. (The SDK's transport-level
-// option is deprecated in favor of external middleware.) /health is exempt so
-// load-balancer/uptime checks using an IP or localhost Host still pass.
+// option is deprecated in favor of external middleware.)
+//
+// Two paths are exempt because they are reached on localhost (Host 127.0.0.1),
+// never through the public proxy: /health (uptime/LB checks) and /oauth/finalize
+// (the cuevote-server calls it server-to-server; it stays protected by the
+// finalize secret, so skipping the host check costs no security).
+const HOST_CHECK_EXEMPT = new Set(["/health", "/oauth/finalize"]);
 if (config.http.allowedHosts.length) {
   const allowed = new Set(config.http.allowedHosts.map((h) => h.split(":")[0]));
   app.use((req: Request, res: Response, next) => {
-    if (req.path === "/health") return next();
+    if (HOST_CHECK_EXEMPT.has(req.path)) return next();
     const host = (req.headers.host || "").split(":")[0];
     if (!allowed.has(host)) {
       res.status(421).json({ error: "host_not_allowed" });
