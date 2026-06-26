@@ -93,11 +93,14 @@ export function ConnectAI() {
   return (
     <Card>
       <p className="mb-2 text-neutral-300">{t('connectAi.permissionDesc')}</p>
-      {clientName && redirectHost && (
-        <p className="mb-4 rounded-lg border border-amber-700/40 bg-amber-950/30 px-3 py-2 text-sm text-amber-200">
-          {t('connectAi.requestedBy', { client: clientName, host: redirectHost })}
-        </p>
-      )}
+      {/* Always show the trust box in the consent state. The redirect HOST is the
+          truthful signal; when it's absent (native/custom-scheme client) we still
+          warn generically rather than silently falling back to a bare screen. */}
+      <p className="mb-4 rounded-lg border border-amber-700/40 bg-amber-950/30 px-3 py-2 text-sm text-amber-200">
+        {redirectHost
+          ? t('connectAi.requestedBy', { client: clientName || '—', host: redirectHost })
+          : t('connectAi.requestedByNoHost')}
+      </p>
       <p className="mb-6 text-sm text-neutral-500">
         {t('connectAi.signedInAs', { name: user.name || user.email || '—' })}
       </p>

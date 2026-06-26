@@ -3,6 +3,7 @@
 export const translations = {
 	en: {
 		connectAi: {
+			requestedByNoHost: "A native or local app requested this — only continue if you started it yourself.",
 			requestedBy: "Requested by {client} ({host}). Only continue if you trust it.",
 			title: "Connect your AI",
 			permissionDesc: "Your AI assistant will be able to suggest songs and vote in your name on CueVote.",
@@ -269,6 +270,7 @@ export const translations = {
 	},
 	nl: {
 		connectAi: {
+			requestedByNoHost: "Een native of lokale app vroeg dit aan — ga alleen verder als je het zelf hebt gestart.",
 			requestedBy: "Aangevraagd door {client} ({host}). Ga alleen verder als je dit vertrouwt.",
 			title: "Verbind je AI",
 			permissionDesc: "Je AI-assistent kan op CueVote in jouw naam nummers voorstellen en stemmen.",
@@ -535,6 +537,7 @@ export const translations = {
 	},
 	de: {
 		connectAi: {
+			requestedByNoHost: "Eine native oder lokale App hat dies angefragt — fahre nur fort, wenn du es selbst gestartet hast.",
 			requestedBy: "Angefragt von {client} ({host}). Fahre nur fort, wenn du dem vertraust.",
 			title: "Mit deiner KI verbinden",
 			permissionDesc: "Deine KI darf auf CueVote in deinem Namen Songs vorschlagen und abstimmen.",
@@ -801,6 +804,7 @@ export const translations = {
 	},
 	fr: {
 		connectAi: {
+			requestedByNoHost: "Une application native ou locale a fait cette demande — ne continuez que si vous l'avez lancée vous-même.",
 			requestedBy: "Demandé par {client} ({host}). Ne continuez que si vous lui faites confiance.",
 			title: "Connectez votre IA",
 			permissionDesc: "Votre assistant IA pourra suggérer des titres et voter en votre nom sur CueVote.",
@@ -1069,6 +1073,7 @@ export const translations = {
 	},
 	es: {
 		connectAi: {
+			requestedByNoHost: "Una app nativa o local solicitó esto: continúa solo si lo iniciaste tú.",
 			requestedBy: "Solicitado por {client} ({host}). Continúa solo si confías en ello.",
 			title: "Conecta tu IA",
 			permissionDesc: "Tu asistente de IA podrá sugerir canciones y votar en tu nombre en CueVote.",
@@ -1337,6 +1342,7 @@ export const translations = {
 	},
 	it: {
 		connectAi: {
+			requestedByNoHost: "Un'app nativa o locale ha richiesto questo: continua solo se l'hai avviata tu.",
 			requestedBy: "Richiesto da {client} ({host}). Continua solo se ti fidi.",
 			title: "Collega la tua IA",
 			permissionDesc: "Il tuo assistente IA potrà suggerire brani e votare a tuo nome su CueVote.",
@@ -1605,6 +1611,7 @@ export const translations = {
 	},
 	pt: {
 		connectAi: {
+			requestedByNoHost: "Um app nativo ou local solicitou isto — só continue se foi você que iniciou.",
 			requestedBy: "Solicitado por {client} ({host}). Só continue se confiar nisto.",
 			title: "Conecte a sua IA",
 			permissionDesc: "O seu assistente de IA poderá sugerir músicas e votar em seu nome no CueVote.",
@@ -1873,6 +1880,7 @@ export const translations = {
 	},
 	"zh-CN": {
 		connectAi: {
+			requestedByNoHost: "某个本地或原生应用发起了此请求——只有在你本人发起时才继续。",
 			requestedBy: "由 {client}（{host}）请求。仅在你信任时继续。",
 			title: "连接你的 AI",
 			permissionDesc: "你的 AI 助手将能在 CueVote 上以你的名义推荐歌曲并投票。",
@@ -2137,6 +2145,7 @@ export const translations = {
 	},
 	"zh-TW": {
 		connectAi: {
+			requestedByNoHost: "某個本機或原生應用程式發起了此請求——只有在你本人發起時才繼續。",
 			requestedBy: "由 {client}（{host}）請求。僅在你信任時繼續。",
 			title: "連接你的 AI",
 			permissionDesc: "你的 AI 助理將能在 CueVote 上以你的名義推薦歌曲並投票。",
@@ -2401,6 +2410,7 @@ export const translations = {
 	},
 	ja: {
 		connectAi: {
+			requestedByNoHost: "ネイティブまたはローカルのアプリが要求しています。自分で開始した場合のみ続行してください。",
 			requestedBy: "{client}（{host}）からのリクエストです。信頼できる場合のみ続行してください。",
 			title: "AI を連携する",
 			permissionDesc: "あなたの AI アシスタントが CueVote であなたの名前で曲をリクエストし、投票できるようになります。",
@@ -2665,6 +2675,7 @@ export const translations = {
 	},
 	ko: {
 		connectAi: {
+			requestedByNoHost: "네이티브 또는 로컬 앱이 요청했습니다. 직접 시작한 경우에만 계속하세요.",
 			requestedBy: "{client}({host})에서 요청했습니다. 신뢰하는 경우에만 계속하세요.",
 			title: "AI 연결",
 			permissionDesc: "AI 어시스턴트가 CueVote에서 당신의 이름으로 곡을 추천하고 투표할 수 있습니다.",
@@ -2929,6 +2940,7 @@ export const translations = {
 	},
 	hi: {
 		connectAi: {
+			requestedByNoHost: "किसी नेटिव या स्थानीय ऐप ने यह अनुरोध किया — केवल तभी जारी रखें जब आपने इसे स्वयं शुरू किया हो।",
 			requestedBy: "{client} ({host}) द्वारा अनुरोधित। केवल तभी जारी रखें जब आप इस पर भरोसा करते हों।",
 			title: "अपना AI कनेक्ट करें",
 			permissionDesc: "आपका AI सहायक CueVote पर आपके नाम से गाने सुझा और वोट कर सकेगा।",
@@ -3195,6 +3207,7 @@ export const translations = {
 	},
 	th: {
 		connectAi: {
+			requestedByNoHost: "แอปเนทีฟหรือแอปในเครื่องร้องขอสิ่งนี้ — ดำเนินการต่อเฉพาะเมื่อคุณเริ่มเองเท่านั้น",
 			requestedBy: "ร้องขอโดย {client} ({host}) ดำเนินการต่อเฉพาะเมื่อคุณเชื่อถือเท่านั้น",
 			title: "เชื่อมต่อ AI ของคุณ",
 			permissionDesc: "ผู้ช่วย AI ของคุณจะสามารถแนะนำเพลงและโหวตในนามของคุณบน CueVote ได้",
@@ -3459,6 +3472,7 @@ export const translations = {
 	},
 	vi: {
 		connectAi: {
+			requestedByNoHost: "Một ứng dụng gốc hoặc cục bộ đã yêu cầu điều này — chỉ tiếp tục nếu chính bạn bắt đầu.",
 			requestedBy: "Được yêu cầu bởi {client} ({host}). Chỉ tiếp tục nếu bạn tin tưởng.",
 			title: "Kết nối AI của bạn",
 			permissionDesc: "Trợ lý AI của bạn sẽ có thể đề xuất bài hát và bình chọn thay mặt bạn trên CueVote.",
@@ -3723,6 +3737,7 @@ export const translations = {
 	},
 	id: {
 		connectAi: {
+			requestedByNoHost: "Aplikasi native atau lokal meminta ini — lanjutkan hanya jika Anda sendiri yang memulainya.",
 			requestedBy: "Diminta oleh {client} ({host}). Lanjutkan hanya jika Anda memercayainya.",
 			title: "Hubungkan AI Anda",
 			permissionDesc: "Asisten AI Anda akan dapat menyarankan lagu dan memberikan suara atas nama Anda di CueVote.",
@@ -3987,6 +4002,7 @@ export const translations = {
 	},
 	ms: {
 		connectAi: {
+			requestedByNoHost: "Apl natif atau setempat meminta ini — teruskan hanya jika anda sendiri memulakannya.",
 			requestedBy: "Diminta oleh {client} ({host}). Teruskan hanya jika anda mempercayainya.",
 			title: "Sambungkan AI anda",
 			permissionDesc: "Pembantu AI anda akan dapat mencadangkan lagu dan mengundi bagi pihak anda di CueVote.",
@@ -4251,6 +4267,7 @@ export const translations = {
 	},
 	tl: {
 		connectAi: {
+			requestedByNoHost: "May native o lokal na app na humiling nito — magpatuloy lamang kung ikaw mismo ang nagsimula.",
 			requestedBy: "Hiniling ng {client} ({host}). Magpatuloy lamang kung pinagkakatiwalaan mo ito.",
 			title: "Ikonekta ang iyong AI",
 			permissionDesc: "Magagawa ng iyong AI assistant na magmungkahi ng mga kanta at bumoto sa ngalan mo sa CueVote.",
@@ -4517,6 +4534,7 @@ export const translations = {
 	},
 	pl: {
 		connectAi: {
+			requestedByNoHost: "Aplikacja natywna lub lokalna o to poprosiła — kontynuuj tylko, jeśli sam(a) to rozpocząłeś(aś).",
 			requestedBy: "Żądane przez {client} ({host}). Kontynuuj tylko, jeśli temu ufasz.",
 			title: "Połącz swoją AI",
 			permissionDesc: "Twój asystent AI będzie mógł proponować utwory i głosować w Twoim imieniu w CueVote.",
@@ -4787,6 +4805,7 @@ export const translations = {
 	},
 	sv: {
 		connectAi: {
+			requestedByNoHost: "En inbyggd eller lokal app begärde detta – fortsätt bara om du själv startade det.",
 			requestedBy: "Begärt av {client} ({host}). Fortsätt bara om du litar på det.",
 			title: "Anslut din AI",
 			permissionDesc: "Din AI-assistent kommer att kunna föreslå låtar och rösta i ditt namn på CueVote.",
@@ -5053,6 +5072,7 @@ export const translations = {
 	},
 	da: {
 		connectAi: {
+			requestedByNoHost: "En native eller lokal app anmodede om dette – fortsæt kun, hvis du selv startede det.",
 			requestedBy: "Anmodet af {client} ({host}). Fortsæt kun, hvis du stoler på det.",
 			title: "Forbind din AI",
 			permissionDesc: "Din AI-assistent vil kunne foreslå sange og stemme i dit navn på CueVote.",
@@ -5319,6 +5339,7 @@ export const translations = {
 	},
 	no: {
 		connectAi: {
+			requestedByNoHost: "En nativ eller lokal app ba om dette – fortsett bare hvis du selv startet det.",
 			requestedBy: "Forespurt av {client} ({host}). Fortsett bare hvis du stoler på det.",
 			title: "Koble til AI-en din",
 			permissionDesc: "AI-assistenten din vil kunne foreslå sanger og stemme i ditt navn på CueVote.",
@@ -5585,6 +5606,7 @@ export const translations = {
 	},
 	fi: {
 		connectAi: {
+			requestedByNoHost: "Natiivi tai paikallinen sovellus pyysi tätä – jatka vain, jos aloitit sen itse.",
 			requestedBy: "Pyytäjä: {client} ({host}). Jatka vain, jos luotat siihen.",
 			title: "Yhdistä tekoälysi",
 			permissionDesc: "Tekoälyavustajasi voi ehdottaa kappaleita ja äänestää puolestasi CueVotessa.",
@@ -5851,6 +5873,7 @@ export const translations = {
 	},
 	tr: {
 		connectAi: {
+			requestedByNoHost: "Yerel veya native bir uygulama bunu istedi — yalnızca bunu kendin başlattıysan devam et.",
 			requestedBy: "{client} ({host}) tarafından istendi. Yalnızca güveniyorsan devam et.",
 			title: "Yapay zekânı bağla",
 			permissionDesc: "Yapay zekâ asistanın CueVote'ta senin adına şarkı önerebilecek ve oy verebilecek.",
@@ -6117,6 +6140,7 @@ export const translations = {
 	},
 	el: {
 		connectAi: {
+			requestedByNoHost: "Μια εγγενής ή τοπική εφαρμογή το ζήτησε — συνέχισε μόνο αν το ξεκίνησες ο ίδιος.",
 			requestedBy: "Ζητήθηκε από {client} ({host}). Συνέχισε μόνο αν το εμπιστεύεσαι.",
 			title: "Σύνδεσε το AI σου",
 			permissionDesc: "Ο βοηθός AI σου θα μπορεί να προτείνει τραγούδια και να ψηφίζει εκ μέρους σου στο CueVote.",
@@ -6383,6 +6407,7 @@ export const translations = {
 	},
 	ru: {
 		connectAi: {
+			requestedByNoHost: "Запрос отправило нативное или локальное приложение — продолжайте, только если вы сами это начали.",
 			requestedBy: "Запрошено {client} ({host}). Продолжайте, только если доверяете.",
 			title: "Подключите свой ИИ",
 			permissionDesc: "Ваш ИИ-ассистент сможет предлагать песни и голосовать от вашего имени в CueVote.",
@@ -6653,6 +6678,7 @@ export const translations = {
 	},
 	uk: {
 		connectAi: {
+			requestedByNoHost: "Запит надіслав нативний або локальний застосунок — продовжуйте, лише якщо ви самі це почали.",
 			requestedBy: "Запит від {client} ({host}). Продовжуйте, лише якщо довіряєте.",
 			title: "Підключіть свій ШІ",
 			permissionDesc: "Ваш ШІ-асистент зможе пропонувати пісні та голосувати від вашого імені в CueVote.",
@@ -6923,6 +6949,7 @@ export const translations = {
 	},
 	cs: {
 		connectAi: {
+			requestedByNoHost: "Požádala o to nativní nebo místní aplikace — pokračujte, jen pokud jste to spustili sami.",
 			requestedBy: "Požaduje {client} ({host}). Pokračujte, jen pokud tomu důvěřujete.",
 			title: "Připojte svou AI",
 			permissionDesc: "Váš AI asistent bude moci na CueVote navrhovat skladby a hlasovat vaším jménem.",
@@ -7193,6 +7220,7 @@ export const translations = {
 	},
 	hu: {
 		connectAi: {
+			requestedByNoHost: "Egy natív vagy helyi alkalmazás kérte ezt — csak akkor folytasd, ha te magad indítottad.",
 			requestedBy: "Kérelmező: {client} ({host}). Csak akkor folytasd, ha megbízol benne.",
 			title: "Csatlakoztasd az AI-odat",
 			permissionDesc: "Az AI-asszisztensed a nevedben javasolhat dalokat és szavazhat a CueVote-on.",
@@ -7459,6 +7487,7 @@ export const translations = {
 	},
 	ro: {
 		connectAi: {
+			requestedByNoHost: "O aplicație nativă sau locală a solicitat asta — continuă doar dacă ai inițiat-o tu.",
 			requestedBy: "Solicitat de {client} ({host}). Continuă doar dacă ai încredere.",
 			title: "Conectează-ți AI-ul",
 			permissionDesc: "Asistentul tău AI va putea sugera melodii și vota în numele tău pe CueVote.",
@@ -7727,6 +7756,7 @@ export const translations = {
 	},
 	bg: {
 		connectAi: {
+			requestedByNoHost: "Заявка от нативно или локално приложение — продължете само ако вие сте я започнали.",
 			requestedBy: "Заявено от {client} ({host}). Продължете само ако му се доверявате.",
 			title: "Свържете своя ИИ",
 			permissionDesc: "Вашият ИИ асистент ще може да предлага песни и да гласува от ваше име в CueVote.",
@@ -7993,6 +8023,7 @@ export const translations = {
 	},
 	hr: {
 		connectAi: {
+			requestedByNoHost: "Ovo je zatražila nativna ili lokalna aplikacija — nastavi samo ako si to sam pokrenuo.",
 			requestedBy: "Zatražio {client} ({host}). Nastavi samo ako mu vjeruješ.",
 			title: "Poveži svoj AI",
 			permissionDesc: "Tvoj AI asistent moći će na CueVoteu predlagati pjesme i glasovati u tvoje ime.",
@@ -8261,6 +8292,7 @@ export const translations = {
 	},
 	sr: {
 		connectAi: {
+			requestedByNoHost: "Ovo je zatražila nativna ili lokalna aplikacija — nastavi samo ako si to sam pokrenuo.",
 			requestedBy: "Zatražio {client} ({host}). Nastavi samo ako mu veruješ.",
 			title: "Poveži svoj AI",
 			permissionDesc: "Tvoj AI asistent moći će da na CueVote-u predlaže pesme i glasa u tvoje ime.",
@@ -8529,6 +8561,7 @@ export const translations = {
 	},
 	sk: {
 		connectAi: {
+			requestedByNoHost: "Požiadala o to natívna alebo lokálna aplikácia — pokračuj len ak si to spustil sám.",
 			requestedBy: "Požaduje {client} ({host}). Pokračuj len ak tomu dôveruješ.",
 			title: "Pripoj svoju AI",
 			permissionDesc: "Tvoj AI asistent bude môcť na CueVote navrhovať skladby a hlasovať v tvojom mene.",
@@ -8799,6 +8832,7 @@ export const translations = {
 	},
 	ar: {
 		connectAi: {
+			requestedByNoHost: "طلب ذلك تطبيق محلي أو أصلي — تابع فقط إذا كنت قد بدأته بنفسك.",
 			requestedBy: "مطلوب من {client} ({host}). تابع فقط إذا كنت تثق به.",
 			title: "اربط الذكاء الاصطناعي الخاص بك",
 			permissionDesc: "سيتمكن مساعد الذكاء الاصطناعي من اقتراح الأغاني والتصويت نيابةً عنك على CueVote.",
@@ -9073,6 +9107,7 @@ export const translations = {
 	},
 	he: {
 		connectAi: {
+			requestedByNoHost: "אפליקציה מקומית או נייטיב ביקשה זאת — המשך רק אם התחלת זאת בעצמך.",
 			requestedBy: "התבקש על ידי {client} ({host}). המשך רק אם אתה סומך על כך.",
 			title: "חבר את ה-AI שלך",
 			permissionDesc: "עוזר ה-AI שלך יוכל להציע שירים ולהצביע בשמך ב-CueVote.",
