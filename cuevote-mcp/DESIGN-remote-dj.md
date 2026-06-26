@@ -94,6 +94,13 @@ Claude ─HTTPS▶ Cloudflare (Proxy, IP versteckt) ─▶ nginx (TLS, mcp.cuevo
   (Streamable-HTTP ist überwiegend Request/Response, meist unkritisch).
 - **Kein Rechte-Leak:** die Bridge darf ausschließlich als der authentifizierte
   User handeln.
+- **Consent-Phishing / Confused-Deputy** (Security-Review-Fund): Dynamic Client
+  Registration ist offen (nötig für beliebige KI-Clients), daher **muss der
+  Consent-Screen zeigen, WER autorisiert wird**. `authorize()` hängt `client`
+  (Name) + `redirect` (nur Host) an die Consent-URL; die Seite zeigt sie in einer
+  Warn-Box („Angefragt von … (host). Nur fortfahren, wenn du dem vertraust."),
+  damit ein Opfer eine fremde Ziel-Domain erkennt und ablehnt. Optional später:
+  bekannte Clients vorab registrieren statt offener DCR.
 
 ## 7. Non-Goals
 

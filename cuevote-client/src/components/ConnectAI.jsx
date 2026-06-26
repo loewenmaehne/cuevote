@@ -17,6 +17,8 @@ import { GoogleGIcon } from './GoogleGIcon';
 export function ConnectAI() {
   const [params] = useSearchParams();
   const handle = params.get('auth');
+  const clientName = params.get('client');
+  const redirectHost = params.get('redirect');
   const { t } = Language.useLanguage();
   const { user, isConnected, sendMessage, lastMessage, handleLoginSuccess } = useWebSocketContext();
   const [phase, setPhase] = useState('idle'); // idle | submitting | success | denied | error
@@ -91,6 +93,11 @@ export function ConnectAI() {
   return (
     <Card>
       <p className="mb-2 text-neutral-300">{t('connectAi.permissionDesc')}</p>
+      {clientName && redirectHost && (
+        <p className="mb-4 rounded-lg border border-amber-700/40 bg-amber-950/30 px-3 py-2 text-sm text-amber-200">
+          {t('connectAi.requestedBy', { client: clientName, host: redirectHost })}
+        </p>
+      )}
       <p className="mb-6 text-sm text-neutral-500">
         {t('connectAi.signedInAs', { name: user.name || user.email || '—' })}
       </p>

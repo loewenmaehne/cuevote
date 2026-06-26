@@ -3,6 +3,7 @@
 export const translations = {
 	en: {
 		connectAi: {
+			requestedBy: "Requested by {client} ({host}). Only continue if you trust it.",
 			title: "Connect your AI",
 			permissionDesc: "Your AI assistant will be able to suggest songs and vote in your name on CueVote.",
 			signInDesc: "Sign in to let your AI assistant act for you on CueVote.",
@@ -268,6 +269,7 @@ export const translations = {
 	},
 	nl: {
 		connectAi: {
+			requestedBy: "Aangevraagd door {client} ({host}). Ga alleen verder als je dit vertrouwt.",
 			title: "Verbind je AI",
 			permissionDesc: "Je AI-assistent kan op CueVote in jouw naam nummers voorstellen en stemmen.",
 			signInDesc: "Log in zodat je AI-assistent namens jou kan handelen op CueVote.",
@@ -533,6 +535,7 @@ export const translations = {
 	},
 	de: {
 		connectAi: {
+			requestedBy: "Angefragt von {client} ({host}). Fahre nur fort, wenn du dem vertraust.",
 			title: "Mit deiner KI verbinden",
 			permissionDesc: "Deine KI darf auf CueVote in deinem Namen Songs vorschlagen und abstimmen.",
 			signInDesc: "Melde dich an, damit deine KI für dich auf CueVote handeln darf.",
@@ -798,6 +801,7 @@ export const translations = {
 	},
 	fr: {
 		connectAi: {
+			requestedBy: "Demandé par {client} ({host}). Ne continuez que si vous lui faites confiance.",
 			title: "Connectez votre IA",
 			permissionDesc: "Votre assistant IA pourra suggérer des titres et voter en votre nom sur CueVote.",
 			signInDesc: "Connectez-vous pour autoriser votre assistant IA à agir pour vous sur CueVote.",
@@ -1065,6 +1069,7 @@ export const translations = {
 	},
 	es: {
 		connectAi: {
+			requestedBy: "Solicitado por {client} ({host}). Continúa solo si confías en ello.",
 			title: "Conecta tu IA",
 			permissionDesc: "Tu asistente de IA podrá sugerir canciones y votar en tu nombre en CueVote.",
 			signInDesc: "Inicia sesión para que tu asistente de IA actúe por ti en CueVote.",
@@ -1332,6 +1337,7 @@ export const translations = {
 	},
 	it: {
 		connectAi: {
+			requestedBy: "Richiesto da {client} ({host}). Continua solo se ti fidi.",
 			title: "Collega la tua IA",
 			permissionDesc: "Il tuo assistente IA potrà suggerire brani e votare a tuo nome su CueVote.",
 			signInDesc: "Accedi per permettere al tuo assistente IA di agire per te su CueVote.",
@@ -1599,6 +1605,7 @@ export const translations = {
 	},
 	pt: {
 		connectAi: {
+			requestedBy: "Solicitado por {client} ({host}). Só continue se confiar nisto.",
 			title: "Conecte a sua IA",
 			permissionDesc: "O seu assistente de IA poderá sugerir músicas e votar em seu nome no CueVote.",
 			signInDesc: "Inicie sessão para permitir que o seu assistente de IA aja por você no CueVote.",
@@ -1866,6 +1873,7 @@ export const translations = {
 	},
 	"zh-CN": {
 		connectAi: {
+			requestedBy: "由 {client}（{host}）请求。仅在你信任时继续。",
 			title: "连接你的 AI",
 			permissionDesc: "你的 AI 助手将能在 CueVote 上以你的名义推荐歌曲并投票。",
 			signInDesc: "登录以允许你的 AI 助手在 CueVote 上代你操作。",
@@ -2129,6 +2137,7 @@ export const translations = {
 	},
 	"zh-TW": {
 		connectAi: {
+			requestedBy: "由 {client}（{host}）請求。僅在你信任時繼續。",
 			title: "連接你的 AI",
 			permissionDesc: "你的 AI 助理將能在 CueVote 上以你的名義推薦歌曲並投票。",
 			signInDesc: "登入以允許你的 AI 助理在 CueVote 上代你操作。",
@@ -2392,6 +2401,7 @@ export const translations = {
 	},
 	ja: {
 		connectAi: {
+			requestedBy: "{client}（{host}）からのリクエストです。信頼できる場合のみ続行してください。",
 			title: "AI を連携する",
 			permissionDesc: "あなたの AI アシスタントが CueVote であなたの名前で曲をリクエストし、投票できるようになります。",
 			signInDesc: "サインインして、AI アシスタントが CueVote であなたの代わりに操作できるようにします。",
@@ -2655,6 +2665,7 @@ export const translations = {
 	},
 	ko: {
 		connectAi: {
+			requestedBy: "{client}({host})에서 요청했습니다. 신뢰하는 경우에만 계속하세요.",
 			title: "AI 연결",
 			permissionDesc: "AI 어시스턴트가 CueVote에서 당신의 이름으로 곡을 추천하고 투표할 수 있습니다.",
 			signInDesc: "로그인하면 AI 어시스턴트가 CueVote에서 당신을 대신해 작동할 수 있습니다.",
@@ -2918,6 +2929,7 @@ export const translations = {
 	},
 	hi: {
 		connectAi: {
+			requestedBy: "{client} ({host}) द्वारा अनुरोधित। केवल तभी जारी रखें जब आप इस पर भरोसा करते हों।",
 			title: "अपना AI कनेक्ट करें",
 			permissionDesc: "आपका AI सहायक CueVote पर आपके नाम से गाने सुझा और वोट कर सकेगा।",
 			signInDesc: "साइन इन करें ताकि आपका AI सहायक CueVote पर आपके लिए कार्य कर सके।",
@@ -3183,6 +3195,7 @@ export const translations = {
 	},
 	th: {
 		connectAi: {
+			requestedBy: "ร้องขอโดย {client} ({host}) ดำเนินการต่อเฉพาะเมื่อคุณเชื่อถือเท่านั้น",
 			title: "เชื่อมต่อ AI ของคุณ",
 			permissionDesc: "ผู้ช่วย AI ของคุณจะสามารถแนะนำเพลงและโหวตในนามของคุณบน CueVote ได้",
 			signInDesc: "ลงชื่อเข้าใช้เพื่อให้ผู้ช่วย AI ดำเนินการแทนคุณบน CueVote",
@@ -3446,6 +3459,7 @@ export const translations = {
 	},
 	vi: {
 		connectAi: {
+			requestedBy: "Được yêu cầu bởi {client} ({host}). Chỉ tiếp tục nếu bạn tin tưởng.",
 			title: "Kết nối AI của bạn",
 			permissionDesc: "Trợ lý AI của bạn sẽ có thể đề xuất bài hát và bình chọn thay mặt bạn trên CueVote.",
 			signInDesc: "Đăng nhập để trợ lý AI có thể hành động thay bạn trên CueVote.",
@@ -3709,6 +3723,7 @@ export const translations = {
 	},
 	id: {
 		connectAi: {
+			requestedBy: "Diminta oleh {client} ({host}). Lanjutkan hanya jika Anda memercayainya.",
 			title: "Hubungkan AI Anda",
 			permissionDesc: "Asisten AI Anda akan dapat menyarankan lagu dan memberikan suara atas nama Anda di CueVote.",
 			signInDesc: "Masuk agar asisten AI dapat bertindak untuk Anda di CueVote.",
@@ -3972,6 +3987,7 @@ export const translations = {
 	},
 	ms: {
 		connectAi: {
+			requestedBy: "Diminta oleh {client} ({host}). Teruskan hanya jika anda mempercayainya.",
 			title: "Sambungkan AI anda",
 			permissionDesc: "Pembantu AI anda akan dapat mencadangkan lagu dan mengundi bagi pihak anda di CueVote.",
 			signInDesc: "Log masuk supaya pembantu AI boleh bertindak bagi pihak anda di CueVote.",
@@ -4235,6 +4251,7 @@ export const translations = {
 	},
 	tl: {
 		connectAi: {
+			requestedBy: "Hiniling ng {client} ({host}). Magpatuloy lamang kung pinagkakatiwalaan mo ito.",
 			title: "Ikonekta ang iyong AI",
 			permissionDesc: "Magagawa ng iyong AI assistant na magmungkahi ng mga kanta at bumoto sa ngalan mo sa CueVote.",
 			signInDesc: "Mag-sign in para makakilos ang iyong AI assistant para sa iyo sa CueVote.",
@@ -4500,6 +4517,7 @@ export const translations = {
 	},
 	pl: {
 		connectAi: {
+			requestedBy: "Żądane przez {client} ({host}). Kontynuuj tylko, jeśli temu ufasz.",
 			title: "Połącz swoją AI",
 			permissionDesc: "Twój asystent AI będzie mógł proponować utwory i głosować w Twoim imieniu w CueVote.",
 			signInDesc: "Zaloguj się, aby asystent AI mógł działać w Twoim imieniu w CueVote.",
@@ -4769,6 +4787,7 @@ export const translations = {
 	},
 	sv: {
 		connectAi: {
+			requestedBy: "Begärt av {client} ({host}). Fortsätt bara om du litar på det.",
 			title: "Anslut din AI",
 			permissionDesc: "Din AI-assistent kommer att kunna föreslå låtar och rösta i ditt namn på CueVote.",
 			signInDesc: "Logga in så att din AI-assistent kan agera åt dig på CueVote.",
@@ -5034,6 +5053,7 @@ export const translations = {
 	},
 	da: {
 		connectAi: {
+			requestedBy: "Anmodet af {client} ({host}). Fortsæt kun, hvis du stoler på det.",
 			title: "Forbind din AI",
 			permissionDesc: "Din AI-assistent vil kunne foreslå sange og stemme i dit navn på CueVote.",
 			signInDesc: "Log ind, så din AI-assistent kan handle for dig på CueVote.",
@@ -5299,6 +5319,7 @@ export const translations = {
 	},
 	no: {
 		connectAi: {
+			requestedBy: "Forespurt av {client} ({host}). Fortsett bare hvis du stoler på det.",
 			title: "Koble til AI-en din",
 			permissionDesc: "AI-assistenten din vil kunne foreslå sanger og stemme i ditt navn på CueVote.",
 			signInDesc: "Logg inn så AI-assistenten kan handle for deg på CueVote.",
@@ -5564,6 +5585,7 @@ export const translations = {
 	},
 	fi: {
 		connectAi: {
+			requestedBy: "Pyytäjä: {client} ({host}). Jatka vain, jos luotat siihen.",
 			title: "Yhdistä tekoälysi",
 			permissionDesc: "Tekoälyavustajasi voi ehdottaa kappaleita ja äänestää puolestasi CueVotessa.",
 			signInDesc: "Kirjaudu sisään, jotta tekoälyavustajasi voi toimia puolestasi CueVotessa.",
@@ -5829,6 +5851,7 @@ export const translations = {
 	},
 	tr: {
 		connectAi: {
+			requestedBy: "{client} ({host}) tarafından istendi. Yalnızca güveniyorsan devam et.",
 			title: "Yapay zekânı bağla",
 			permissionDesc: "Yapay zekâ asistanın CueVote'ta senin adına şarkı önerebilecek ve oy verebilecek.",
 			signInDesc: "Yapay zekâ asistanının CueVote'ta senin adına işlem yapabilmesi için oturum aç.",
@@ -6094,6 +6117,7 @@ export const translations = {
 	},
 	el: {
 		connectAi: {
+			requestedBy: "Ζητήθηκε από {client} ({host}). Συνέχισε μόνο αν το εμπιστεύεσαι.",
 			title: "Σύνδεσε το AI σου",
 			permissionDesc: "Ο βοηθός AI σου θα μπορεί να προτείνει τραγούδια και να ψηφίζει εκ μέρους σου στο CueVote.",
 			signInDesc: "Συνδέσου ώστε ο βοηθός AI να ενεργεί για εσένα στο CueVote.",
@@ -6359,6 +6383,7 @@ export const translations = {
 	},
 	ru: {
 		connectAi: {
+			requestedBy: "Запрошено {client} ({host}). Продолжайте, только если доверяете.",
 			title: "Подключите свой ИИ",
 			permissionDesc: "Ваш ИИ-ассистент сможет предлагать песни и голосовать от вашего имени в CueVote.",
 			signInDesc: "Войдите, чтобы ИИ-ассистент мог действовать от вашего имени в CueVote.",
@@ -6628,6 +6653,7 @@ export const translations = {
 	},
 	uk: {
 		connectAi: {
+			requestedBy: "Запит від {client} ({host}). Продовжуйте, лише якщо довіряєте.",
 			title: "Підключіть свій ШІ",
 			permissionDesc: "Ваш ШІ-асистент зможе пропонувати пісні та голосувати від вашого імені в CueVote.",
 			signInDesc: "Увійдіть, щоб ваш ШІ-асистент міг діяти від вашого імені в CueVote.",
@@ -6897,6 +6923,7 @@ export const translations = {
 	},
 	cs: {
 		connectAi: {
+			requestedBy: "Požaduje {client} ({host}). Pokračujte, jen pokud tomu důvěřujete.",
 			title: "Připojte svou AI",
 			permissionDesc: "Váš AI asistent bude moci na CueVote navrhovat skladby a hlasovat vaším jménem.",
 			signInDesc: "Přihlaste se, aby váš AI asistent mohl jednat za vás na CueVote.",
@@ -7166,6 +7193,7 @@ export const translations = {
 	},
 	hu: {
 		connectAi: {
+			requestedBy: "Kérelmező: {client} ({host}). Csak akkor folytasd, ha megbízol benne.",
 			title: "Csatlakoztasd az AI-odat",
 			permissionDesc: "Az AI-asszisztensed a nevedben javasolhat dalokat és szavazhat a CueVote-on.",
 			signInDesc: "Jelentkezz be, hogy az AI-asszisztensed a nevedben járhasson el a CueVote-on.",
@@ -7431,6 +7459,7 @@ export const translations = {
 	},
 	ro: {
 		connectAi: {
+			requestedBy: "Solicitat de {client} ({host}). Continuă doar dacă ai încredere.",
 			title: "Conectează-ți AI-ul",
 			permissionDesc: "Asistentul tău AI va putea sugera melodii și vota în numele tău pe CueVote.",
 			signInDesc: "Conectează-te pentru ca asistentul AI să acționeze în numele tău pe CueVote.",
@@ -7698,6 +7727,7 @@ export const translations = {
 	},
 	bg: {
 		connectAi: {
+			requestedBy: "Заявено от {client} ({host}). Продължете само ако му се доверявате.",
 			title: "Свържете своя ИИ",
 			permissionDesc: "Вашият ИИ асистент ще може да предлага песни и да гласува от ваше име в CueVote.",
 			signInDesc: "Влезте, за да може ИИ асистентът да действа от ваше име в CueVote.",
@@ -7963,6 +7993,7 @@ export const translations = {
 	},
 	hr: {
 		connectAi: {
+			requestedBy: "Zatražio {client} ({host}). Nastavi samo ako mu vjeruješ.",
 			title: "Poveži svoj AI",
 			permissionDesc: "Tvoj AI asistent moći će na CueVoteu predlagati pjesme i glasovati u tvoje ime.",
 			signInDesc: "Prijavi se kako bi AI asistent mogao djelovati umjesto tebe na CueVoteu.",
@@ -8230,6 +8261,7 @@ export const translations = {
 	},
 	sr: {
 		connectAi: {
+			requestedBy: "Zatražio {client} ({host}). Nastavi samo ako mu veruješ.",
 			title: "Poveži svoj AI",
 			permissionDesc: "Tvoj AI asistent moći će da na CueVote-u predlaže pesme i glasa u tvoje ime.",
 			signInDesc: "Prijavi se kako bi AI asistent mogao da deluje umesto tebe na CueVote-u.",
@@ -8497,6 +8529,7 @@ export const translations = {
 	},
 	sk: {
 		connectAi: {
+			requestedBy: "Požaduje {client} ({host}). Pokračuj len ak tomu dôveruješ.",
 			title: "Pripoj svoju AI",
 			permissionDesc: "Tvoj AI asistent bude môcť na CueVote navrhovať skladby a hlasovať v tvojom mene.",
 			signInDesc: "Prihlás sa, aby tvoj AI asistent mohol konať za teba na CueVote.",
@@ -8766,6 +8799,7 @@ export const translations = {
 	},
 	ar: {
 		connectAi: {
+			requestedBy: "مطلوب من {client} ({host}). تابع فقط إذا كنت تثق به.",
 			title: "اربط الذكاء الاصطناعي الخاص بك",
 			permissionDesc: "سيتمكن مساعد الذكاء الاصطناعي من اقتراح الأغاني والتصويت نيابةً عنك على CueVote.",
 			signInDesc: "سجّل الدخول للسماح لمساعد الذكاء الاصطناعي بالتصرف نيابةً عنك على CueVote.",
@@ -9039,6 +9073,7 @@ export const translations = {
 	},
 	he: {
 		connectAi: {
+			requestedBy: "התבקש על ידי {client} ({host}). המשך רק אם אתה סומך על כך.",
 			title: "חבר את ה-AI שלך",
 			permissionDesc: "עוזר ה-AI שלך יוכל להציע שירים ולהצביע בשמך ב-CueVote.",
 			signInDesc: "התחבר כדי לאפשר לעוזר ה-AI לפעול בשמך ב-CueVote.",

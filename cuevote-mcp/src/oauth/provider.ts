@@ -145,6 +145,15 @@ export const provider: OAuthServerProvider = {
     });
     const c = new URL(config.oauth.consentUrl);
     c.searchParams.set("auth", handle);
+    // Display hints so the consent screen can name what is being authorized
+    // (defends against consent phishing / confused-deputy). The redirect host is
+    // the meaningful trust signal — the user should refuse an unfamiliar host.
+    if (client.client_name) c.searchParams.set("client", client.client_name);
+    try {
+      c.searchParams.set("redirect", new URL(params.redirectUri).host);
+    } catch {
+      /* non-URL redirect (e.g. custom scheme) — omit host hint */
+    }
     res.redirect(c.toString());
   },
 
