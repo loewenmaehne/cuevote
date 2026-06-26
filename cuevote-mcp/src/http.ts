@@ -53,6 +53,23 @@ function safeEqual(a: string, b: string): boolean {
 const app = express();
 const issuerUrl = new URL(config.http.publicUrl);
 
+// DNS-rebinding protection: when CUEVOTE_HTTP_ALLOWED_HOSTS is set, reject any
+// request whose Host header isn't in the allow-list. (The SDK's transport-level
+// option is deprecated in favor of external middleware.) /health is exempt so
+// load-balancer/uptime checks using an IP or localhost Host still pass.
+if (config.http.allowedHosts.length) {
+  const allowed = new Set(config.http.allowedHosts.map((h) => h.split(":")[0]));
+  app.use((req: Request, res: Response, next) => {
+    if (req.path === "/health") return next();
+    const host = (req.headers.host || "").split(":")[0];
+    if (!allowed.has(host)) {
+      res.status(421).json({ error: "host_not_allowed" });
+      return;
+    }
+    next();
+  });
+}
+
 // OAuth 2.1 endpoints: /.well-known/*, /authorize, /token, /register, /revoke.
 app.use(
   mcpAuthRouter({
