@@ -341,3 +341,81 @@ For maximum security, disable password login entirely and use SSH keys.
 1. Generate a key on your local machine: `ssh-keygen -t ed25519`
 2. Copy it to server: `ssh-copy-id user@your-server-ip`
 3. Once verified working, disable `PasswordAuthentication` in `/etc/ssh/sshd_config`.
+
+## 9. Remote DJ MCP — public OAuth service (optional)
+
+The **public** "AI DJ" endpoint (`cuevote-mcp/src/http.ts`, served at
+`mcp.cuevote.com`) lets any CueVote user connect an AI assistant via OAuth. See
+`cuevote-mcp/DESIGN-remote-dj.md`. This is **separate** from the stdio ops MCP.
+
+> ⚠️ **Gate the public flip on the YouTube quota review.** Steps 1–3 stand the
+> service up bound to **localhost only** (not reachable from the internet) — safe
+> to do anytime. Only Step 4 (nginx vhost) + Step 5 (Cloudflare DNS) actually
+> expose it; do those **only once the quota review is green**, since a public
+> AI-suggest channel raises YouTube Search-API usage.
+
+**1. Server env** (`cuevote-server/.env`) — then restart the server:
+```ini
+MCP_SESSION_SECRET=<random>                 # already set if you ran setup-mcp.sh
+CUEVOTE_OAUTH_FINALIZE_SECRET=<random>      # NEW; the MCP must use the same value
+MCP_INTERNAL_URL=http://127.0.0.1:8082      # where the remote MCP listens
+```
+```bash
+pm2 restart cuevote-server
+```
+
+**2. Remote-MCP env** (`cuevote-mcp/.env`):
+```ini
+CUEVOTE_HTTP_HOST=127.0.0.1
+CUEVOTE_HTTP_PORT=8082
+CUEVOTE_PUBLIC_URL=https://mcp.cuevote.com
+CUEVOTE_HTTP_ALLOWED_HOSTS=mcp.cuevote.com  # DNS-rebinding protection
+CUEVOTE_OAUTH_CONSENT_URL=https://cuevote.com/connect-ai
+CUEVOTE_OAUTH_FINALIZE_SECRET=<same as server>
+CUEVOTE_MINT_SECRET=<= server MCP_SESSION_SECRET>
+CUEVOTE_WS_URL=ws://127.0.0.1:8080
+CUEVOTE_WS_ORIGIN=https://cuevote.com
+# CUEVOTE_OAUTH_DEV_USER must be EMPTY in production (it bypasses login).
+```
+
+**3. Run the service under PM2** (localhost-bound; not public yet):
+```bash
+cd /var/www/cuevote/cuevote-mcp && npm run build   # ensure dist/http.js is current
+pm2 start dist/http.js --name cuevote-mcp-dj
+pm2 save
+curl -fsS http://127.0.0.1:8082/health             # -> {"status":"ok",...}
+```
+The consent page is already served at `https://cuevote.com/connect-ai` by the
+existing SPA (no nginx change needed for it).
+
+**4. nginx vhost — PUBLIC EXPOSURE (quota-gated).** `sudo nano /etc/nginx/sites-available/cuevote-mcp`:
+```nginx
+server {
+    listen 80;
+    server_name mcp.cuevote.com;
+    location / {
+        proxy_pass http://127.0.0.1:8082;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;                 # forwards mcp.cuevote.com -> ALLOWED_HOSTS check
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;
+    }
+}
+```
+```bash
+sudo ln -s /etc/nginx/sites-available/cuevote-mcp /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl restart nginx
+sudo certbot --nginx -d mcp.cuevote.com            # TLS
+```
+
+**5. Cloudflare — PUBLIC EXPOSURE (quota-gated).** Add a DNS record for `mcp`
+pointing at the VPS and **orange-cloud it** (proxied) so the origin IP stays
+hidden, like the apex domain.
+
+**6. Connect.** In an MCP client (Claude, …) add the remote server
+`https://mcp.cuevote.com/mcp`; it discovers OAuth via
+`/.well-known/oauth-authorization-server`, the user signs in on `/connect-ai`,
+and the `cv_*` DJ tools become available. Re-run `pm2 restart cuevote-mcp-dj`
+after each deploy that rebuilds the MCP.
