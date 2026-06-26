@@ -165,19 +165,44 @@ function gdprDelete(rooms, userId) {
     return { ok: true, dbDeleted, destroyedRooms: purge.destroyedRooms.length, scrubbedRooms: purge.scrubbedRooms };
 }
 
-async function handle(req, res, rooms, token) {
-    // Auth (timing-safe).
-    const auth = req.headers['authorization'] || '';
-    const provided = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-    if (!tokensMatch(provided, token)) {
-        return sendJson(res, 401, { error: 'unauthorized' });
-    }
+// Mint a short-lived CueVote session for a user — used by the remote DJ MCP to
+// open a WS connection AS that user after it has authenticated them via OAuth.
+function mintSession(userId) {
+    const user = db.getUser(userId);
+    if (!user) return { error: 'user_not_found' };
+    const token = crypto.randomBytes(32).toString('hex');
+    const ttl = parseInt(process.env.MCP_SESSION_TTL || '3600', 10);
+    const expiresAt = Math.floor(Date.now() / 1000) + ttl;
+    db.createSession(token, userId, expiresAt);
+    return { ok: true, token, expiresAt };
+}
 
+async function handle(req, res, rooms, secrets) {
     const url = new URL(req.url, 'http://localhost');
     const parts = url.pathname.split('/').filter(Boolean); // e.g. ['admin','rooms','id','skip']
     const M = req.method;
+    const auth = req.headers['authorization'] || '';
+    const provided = auth.startsWith('Bearer ') ? auth.slice(7) : '';
 
+    // Internal API for the remote DJ MCP — gated by MCP_SESSION_SECRET (a narrower
+    // secret than ADMIN_TOKEN, so the public DJ service never holds admin power).
+    if (parts[0] === 'internal') {
+        if (!secrets.mcpSecret) return sendJson(res, 404, { error: 'not_found' });
+        if (!tokensMatch(provided, secrets.mcpSecret)) return sendJson(res, 401, { error: 'unauthorized' });
+        if (parts[1] === 'mint-session' && M === 'POST') {
+            const body = await readBody(req);
+            const userId = body && body.userId ? String(body.userId) : '';
+            if (!userId) return sendJson(res, 400, { error: 'missing_userId' });
+            const result = mintSession(userId);
+            return sendJson(res, result.error ? 404 : 200, result);
+        }
+        return sendJson(res, 404, { error: 'not_found' });
+    }
+
+    // Admin (ops) routes — gated by ADMIN_TOKEN (timing-safe).
     if (parts[0] !== 'admin') return sendJson(res, 404, { error: 'not_found' });
+    if (!secrets.adminToken) return sendJson(res, 404, { error: 'not_found' });
+    if (!tokensMatch(provided, secrets.adminToken)) return sendJson(res, 401, { error: 'unauthorized' });
 
     // GET /admin/health
     if (parts[1] === 'health' && M === 'GET') {
@@ -275,29 +300,33 @@ async function handle(req, res, rooms, token) {
  * so existing deployments are unaffected until they opt in.
  */
 function start({ rooms }) {
-    const token = process.env.ADMIN_TOKEN;
-    if (!token) {
-        logger.info('[Admin] ADMIN_TOKEN not set — admin API disabled.');
+    const adminToken = process.env.ADMIN_TOKEN || '';
+    const mcpSecret = process.env.MCP_SESSION_SECRET || '';
+    if (!adminToken && !mcpSecret) {
+        logger.info('[Admin] Neither ADMIN_TOKEN nor MCP_SESSION_SECRET set — internal API disabled.');
         return null;
     }
-    if (token.length < 16) {
+    if (adminToken && adminToken.length < 16) {
         logger.warn('[Admin] ADMIN_TOKEN is shorter than 16 chars — use a strong random token.');
+    }
+    if (mcpSecret && mcpSecret.length < 16) {
+        logger.warn('[Admin] MCP_SESSION_SECRET is shorter than 16 chars — use a strong random token.');
     }
     const port = parseInt(process.env.ADMIN_PORT || '8081', 10);
     const host = process.env.ADMIN_HOST || '127.0.0.1';
     if (host !== '127.0.0.1' && host !== '::1' && host !== 'localhost') {
-        logger.warn(`[Admin] Binding to non-loopback host "${host}". The admin API must never be publicly reachable — ensure a firewall restricts this port.`);
+        logger.warn(`[Admin] Binding to non-loopback host "${host}". This internal API must never be publicly reachable — ensure a firewall restricts this port.`);
     }
 
     const server = http.createServer((req, res) => {
-        handle(req, res, rooms, token).catch((err) => {
+        handle(req, res, rooms, { adminToken, mcpSecret }).catch((err) => {
             logger.error('[Admin] handler error:', err);
             try { sendJson(res, 500, { error: 'internal_error' }); } catch { /* ignore */ }
         });
     });
     server.on('error', (err) => logger.error('[Admin] server error:', err));
     server.listen(port, host, () => {
-        logger.info(`[Admin] Admin API listening on http://${host}:${port} (token required, localhost only)`);
+        logger.info(`[Admin] Internal API on http://${host}:${port} (localhost only; admin=${adminToken ? 'on' : 'off'}, mint=${mcpSecret ? 'on' : 'off'})`);
     });
     return server;
 }
