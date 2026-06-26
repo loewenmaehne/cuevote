@@ -145,5 +145,5 @@ Eine Route unter `CUEVOTE_OAUTH_CONSENT_URL` (z. B. `/connect-ai`), die
 - [x] **3b** pro-User-Suggest-Rate-Limit (Quota-Guardrail) — getestet
 - [x] **3c** Hosting-/Env-Doku + Web-Vertrag
 - [x] **3a (Server)** `MCP_AUTHORIZE`-Consent-Bridge (Secret bleibt server-seitig) — e2e getestet
-- [ ] **3a (Client)** Web-Consent-Seite in `cuevote-client` (React + Google) — in Arbeit
+- [x] **3a (Client)** Web-Consent-Seite `/connect-ai` (React, 35 Sprachen) — gebaut + im Browser verifiziert (DE/NL geprüft). ⚠️ Die 33 Nicht-EN/DE-Übersetzungen sind Maschinen-Entwürfe und sollten review't werden.
 - [ ] **Public-Rollout** — gated auf YouTube-Quota-Review + `/security-review`

@@ -2,6 +2,19 @@
 // Copyright (c) 2026 Julian Zienert
 export const translations = {
 	en: {
+		connectAi: {
+			title: "Connect your AI",
+			permissionDesc: "Your AI assistant will be able to suggest songs and vote in your name on CueVote.",
+			signInDesc: "Sign in to let your AI assistant act for you on CueVote.",
+			signedInAs: "Signed in as {name}",
+			allow: "Allow",
+			connecting: "Connecting…",
+			success: "Connected! You can return to your AI assistant.",
+			denied: "Cancelled. You can close this page.",
+			invalidLink: "This link is invalid or has expired. Please start again from your AI assistant.",
+			error: "Something went wrong. Please try again from your AI assistant.",
+			waiting: "Connecting to CueVote…",
+		},
 		lobby: {
 			browseChannels: "Browse Channels",
 			public: "Public",
@@ -254,6 +267,19 @@ export const translations = {
 		}
 	},
 	nl: {
+		connectAi: {
+			title: "Verbind je AI",
+			permissionDesc: "Je AI-assistent kan op CueVote in jouw naam nummers voorstellen en stemmen.",
+			signInDesc: "Log in zodat je AI-assistent namens jou kan handelen op CueVote.",
+			signedInAs: "Ingelogd als {name}",
+			allow: "Toestaan",
+			connecting: "Verbinden…",
+			success: "Verbonden! Je kunt terug naar je AI-assistent.",
+			denied: "Geannuleerd. Je kunt deze pagina sluiten.",
+			invalidLink: "Deze link is ongeldig of verlopen. Begin opnieuw vanuit je AI-assistent.",
+			error: "Er ging iets mis. Probeer het opnieuw vanuit je AI-assistent.",
+			waiting: "Verbinden met CueVote…",
+		},
 		lobby: {
 			browseChannels: "Kanalen Bladeren",
 			public: "Openbaar",
@@ -506,6 +532,19 @@ export const translations = {
 		}
 	},
 	de: {
+		connectAi: {
+			title: "Mit deiner KI verbinden",
+			permissionDesc: "Deine KI darf auf CueVote in deinem Namen Songs vorschlagen und abstimmen.",
+			signInDesc: "Melde dich an, damit deine KI für dich auf CueVote handeln darf.",
+			signedInAs: "Angemeldet als {name}",
+			allow: "Erlauben",
+			connecting: "Verbinde…",
+			success: "Verbunden! Du kannst zu deiner KI zurückkehren.",
+			denied: "Abgebrochen. Du kannst diese Seite schließen.",
+			invalidLink: "Dieser Link ist ungültig oder abgelaufen. Bitte starte erneut über deine KI.",
+			error: "Etwas ist schiefgelaufen. Bitte versuche es erneut über deine KI.",
+			waiting: "Verbinde mit CueVote…",
+		},
 		lobby: {
 			browseChannels: "Kanäle Durchsuchen",
 			public: "Öffentlich",
@@ -758,6 +797,19 @@ export const translations = {
 		}
 	},
 	fr: {
+		connectAi: {
+			title: "Connectez votre IA",
+			permissionDesc: "Votre assistant IA pourra suggérer des titres et voter en votre nom sur CueVote.",
+			signInDesc: "Connectez-vous pour autoriser votre assistant IA à agir pour vous sur CueVote.",
+			signedInAs: "Connecté en tant que {name}",
+			allow: "Autoriser",
+			connecting: "Connexion…",
+			success: "Connecté ! Vous pouvez revenir à votre assistant IA.",
+			denied: "Annulé. Vous pouvez fermer cette page.",
+			invalidLink: "Ce lien est invalide ou a expiré. Veuillez recommencer depuis votre assistant IA.",
+			error: "Une erreur s'est produite. Veuillez réessayer depuis votre assistant IA.",
+			waiting: "Connexion à CueVote…",
+		},
 		lobby: {
 			browseChannels: "Parcourir les chaînes",
 			public: "Public",
@@ -1012,6 +1064,19 @@ export const translations = {
 		}
 	},
 	es: {
+		connectAi: {
+			title: "Conecta tu IA",
+			permissionDesc: "Tu asistente de IA podrá sugerir canciones y votar en tu nombre en CueVote.",
+			signInDesc: "Inicia sesión para que tu asistente de IA actúe por ti en CueVote.",
+			signedInAs: "Sesión iniciada como {name}",
+			allow: "Permitir",
+			connecting: "Conectando…",
+			success: "¡Conectado! Puedes volver a tu asistente de IA.",
+			denied: "Cancelado. Puedes cerrar esta página.",
+			invalidLink: "Este enlace no es válido o ha caducado. Vuelve a empezar desde tu asistente de IA.",
+			error: "Algo salió mal. Inténtalo de nuevo desde tu asistente de IA.",
+			waiting: "Conectando con CueVote…",
+		},
 		lobby: {
 			browseChannels: "Explorar Canales",
 			public: "Público",
@@ -1266,6 +1331,19 @@ export const translations = {
 		}
 	},
 	it: {
+		connectAi: {
+			title: "Collega la tua IA",
+			permissionDesc: "Il tuo assistente IA potrà suggerire brani e votare a tuo nome su CueVote.",
+			signInDesc: "Accedi per permettere al tuo assistente IA di agire per te su CueVote.",
+			signedInAs: "Accesso come {name}",
+			allow: "Consenti",
+			connecting: "Connessione…",
+			success: "Connesso! Puoi tornare al tuo assistente IA.",
+			denied: "Annullato. Puoi chiudere questa pagina.",
+			invalidLink: "Questo link non è valido o è scaduto. Riprova dal tuo assistente IA.",
+			error: "Qualcosa è andato storto. Riprova dal tuo assistente IA.",
+			waiting: "Connessione a CueVote…",
+		},
 		lobby: {
 			browseChannels: "Sfoglia Canali",
 			public: "Pubblico",
@@ -1520,6 +1598,19 @@ export const translations = {
 		}
 	},
 	pt: {
+		connectAi: {
+			title: "Conecte a sua IA",
+			permissionDesc: "O seu assistente de IA poderá sugerir músicas e votar em seu nome no CueVote.",
+			signInDesc: "Inicie sessão para permitir que o seu assistente de IA aja por você no CueVote.",
+			signedInAs: "Sessão iniciada como {name}",
+			allow: "Permitir",
+			connecting: "A ligar…",
+			success: "Ligado! Pode voltar ao seu assistente de IA.",
+			denied: "Cancelado. Pode fechar esta página.",
+			invalidLink: "Este link é inválido ou expirou. Comece novamente a partir do seu assistente de IA.",
+			error: "Algo correu mal. Tente novamente a partir do seu assistente de IA.",
+			waiting: "A ligar ao CueVote…",
+		},
 		lobby: {
 			browseChannels: "Navegar Canais",
 			public: "Público",
@@ -1774,6 +1865,19 @@ export const translations = {
 		}
 	},
 	"zh-CN": {
+		connectAi: {
+			title: "连接你的 AI",
+			permissionDesc: "你的 AI 助手将能在 CueVote 上以你的名义推荐歌曲并投票。",
+			signInDesc: "登录以允许你的 AI 助手在 CueVote 上代你操作。",
+			signedInAs: "已登录为 {name}",
+			allow: "允许",
+			connecting: "连接中…",
+			success: "已连接！你可以返回你的 AI 助手。",
+			denied: "已取消。你可以关闭此页面。",
+			invalidLink: "此链接无效或已过期。请从你的 AI 助手重新开始。",
+			error: "出错了。请从你的 AI 助手重试。",
+			waiting: "正在连接 CueVote…",
+		},
 		lobby: {
 			browseChannels: "浏览频道",
 			public: "公开",
@@ -2024,6 +2128,19 @@ export const translations = {
 		}
 	},
 	"zh-TW": {
+		connectAi: {
+			title: "連接你的 AI",
+			permissionDesc: "你的 AI 助理將能在 CueVote 上以你的名義推薦歌曲並投票。",
+			signInDesc: "登入以允許你的 AI 助理在 CueVote 上代你操作。",
+			signedInAs: "已登入為 {name}",
+			allow: "允許",
+			connecting: "連線中…",
+			success: "已連接！你可以返回你的 AI 助理。",
+			denied: "已取消。你可以關閉此頁面。",
+			invalidLink: "此連結無效或已過期。請從你的 AI 助理重新開始。",
+			error: "發生錯誤。請從你的 AI 助理重試。",
+			waiting: "正在連接 CueVote…",
+		},
 		lobby: {
 			browseChannels: "瀏覽頻道",
 			public: "公開",
@@ -2274,6 +2391,19 @@ export const translations = {
 		}
 	},
 	ja: {
+		connectAi: {
+			title: "AI を連携する",
+			permissionDesc: "あなたの AI アシスタントが CueVote であなたの名前で曲をリクエストし、投票できるようになります。",
+			signInDesc: "サインインして、AI アシスタントが CueVote であなたの代わりに操作できるようにします。",
+			signedInAs: "{name} としてサインイン中",
+			allow: "許可",
+			connecting: "接続中…",
+			success: "接続しました！AI アシスタントに戻れます。",
+			denied: "キャンセルしました。このページを閉じてかまいません。",
+			invalidLink: "このリンクは無効か期限切れです。AI アシスタントからやり直してください。",
+			error: "問題が発生しました。AI アシスタントからもう一度お試しください。",
+			waiting: "CueVote に接続中…",
+		},
 		lobby: {
 			browseChannels: "チャンネルを探す",
 			public: "公開",
@@ -2524,6 +2654,19 @@ export const translations = {
 		}
 	},
 	ko: {
+		connectAi: {
+			title: "AI 연결",
+			permissionDesc: "AI 어시스턴트가 CueVote에서 당신의 이름으로 곡을 추천하고 투표할 수 있습니다.",
+			signInDesc: "로그인하면 AI 어시스턴트가 CueVote에서 당신을 대신해 작동할 수 있습니다.",
+			signedInAs: "{name}(으)로 로그인됨",
+			allow: "허용",
+			connecting: "연결 중…",
+			success: "연결되었습니다! AI 어시스턴트로 돌아가세요.",
+			denied: "취소되었습니다. 이 페이지를 닫아도 됩니다.",
+			invalidLink: "이 링크가 잘못되었거나 만료되었습니다. AI 어시스턴트에서 다시 시작하세요.",
+			error: "문제가 발생했습니다. AI 어시스턴트에서 다시 시도하세요.",
+			waiting: "CueVote에 연결 중…",
+		},
 		lobby: {
 			browseChannels: "채널 탐색",
 			public: "공개",
@@ -2774,6 +2917,19 @@ export const translations = {
 		}
 	},
 	hi: {
+		connectAi: {
+			title: "अपना AI कनेक्ट करें",
+			permissionDesc: "आपका AI सहायक CueVote पर आपके नाम से गाने सुझा और वोट कर सकेगा।",
+			signInDesc: "साइन इन करें ताकि आपका AI सहायक CueVote पर आपके लिए कार्य कर सके।",
+			signedInAs: "{name} के रूप में साइन इन",
+			allow: "अनुमति दें",
+			connecting: "कनेक्ट हो रहा है…",
+			success: "कनेक्ट हो गया! आप अपने AI सहायक पर लौट सकते हैं।",
+			denied: "रद्द कर दिया गया। आप इस पृष्ठ को बंद कर सकते हैं।",
+			invalidLink: "यह लिंक अमान्य है या समाप्त हो गया है। कृपया अपने AI सहायक से फिर से शुरू करें।",
+			error: "कुछ गलत हो गया। कृपया अपने AI सहायक से पुनः प्रयास करें।",
+			waiting: "CueVote से कनेक्ट हो रहा है…",
+		},
 		lobby: {
 			browseChannels: "चैनल ब्राउज़ करें",
 			public: "सार्वजनिक",
@@ -3026,6 +3182,19 @@ export const translations = {
 		}
 	},
 	th: {
+		connectAi: {
+			title: "เชื่อมต่อ AI ของคุณ",
+			permissionDesc: "ผู้ช่วย AI ของคุณจะสามารถแนะนำเพลงและโหวตในนามของคุณบน CueVote ได้",
+			signInDesc: "ลงชื่อเข้าใช้เพื่อให้ผู้ช่วย AI ดำเนินการแทนคุณบน CueVote",
+			signedInAs: "ลงชื่อเข้าใช้เป็น {name}",
+			allow: "อนุญาต",
+			connecting: "กำลังเชื่อมต่อ…",
+			success: "เชื่อมต่อแล้ว! คุณสามารถกลับไปที่ผู้ช่วย AI ได้",
+			denied: "ยกเลิกแล้ว คุณสามารถปิดหน้านี้ได้",
+			invalidLink: "ลิงก์นี้ไม่ถูกต้องหรือหมดอายุ โปรดเริ่มใหม่จากผู้ช่วย AI ของคุณ",
+			error: "เกิดข้อผิดพลาด โปรดลองอีกครั้งจากผู้ช่วย AI ของคุณ",
+			waiting: "กำลังเชื่อมต่อกับ CueVote…",
+		},
 		lobby: {
 			browseChannels: "เลือกดูช่อง",
 			public: "สาธารณะ",
@@ -3276,6 +3445,19 @@ export const translations = {
 		}
 	},
 	vi: {
+		connectAi: {
+			title: "Kết nối AI của bạn",
+			permissionDesc: "Trợ lý AI của bạn sẽ có thể đề xuất bài hát và bình chọn thay mặt bạn trên CueVote.",
+			signInDesc: "Đăng nhập để trợ lý AI có thể hành động thay bạn trên CueVote.",
+			signedInAs: "Đã đăng nhập với tên {name}",
+			allow: "Cho phép",
+			connecting: "Đang kết nối…",
+			success: "Đã kết nối! Bạn có thể quay lại trợ lý AI.",
+			denied: "Đã hủy. Bạn có thể đóng trang này.",
+			invalidLink: "Liên kết này không hợp lệ hoặc đã hết hạn. Vui lòng bắt đầu lại từ trợ lý AI.",
+			error: "Đã xảy ra lỗi. Vui lòng thử lại từ trợ lý AI.",
+			waiting: "Đang kết nối với CueVote…",
+		},
 		lobby: {
 			browseChannels: "Duyệt Kênh",
 			public: "Công khai",
@@ -3526,6 +3708,19 @@ export const translations = {
 		}
 	},
 	id: {
+		connectAi: {
+			title: "Hubungkan AI Anda",
+			permissionDesc: "Asisten AI Anda akan dapat menyarankan lagu dan memberikan suara atas nama Anda di CueVote.",
+			signInDesc: "Masuk agar asisten AI dapat bertindak untuk Anda di CueVote.",
+			signedInAs: "Masuk sebagai {name}",
+			allow: "Izinkan",
+			connecting: "Menghubungkan…",
+			success: "Terhubung! Anda dapat kembali ke asisten AI Anda.",
+			denied: "Dibatalkan. Anda dapat menutup halaman ini.",
+			invalidLink: "Tautan ini tidak valid atau telah kedaluwarsa. Silakan mulai lagi dari asisten AI Anda.",
+			error: "Terjadi kesalahan. Silakan coba lagi dari asisten AI Anda.",
+			waiting: "Menghubungkan ke CueVote…",
+		},
 		lobby: {
 			browseChannels: "Jelajahi Kanal",
 			public: "Publik",
@@ -3776,6 +3971,19 @@ export const translations = {
 		}
 	},
 	ms: {
+		connectAi: {
+			title: "Sambungkan AI anda",
+			permissionDesc: "Pembantu AI anda akan dapat mencadangkan lagu dan mengundi bagi pihak anda di CueVote.",
+			signInDesc: "Log masuk supaya pembantu AI boleh bertindak bagi pihak anda di CueVote.",
+			signedInAs: "Log masuk sebagai {name}",
+			allow: "Benarkan",
+			connecting: "Menyambung…",
+			success: "Disambungkan! Anda boleh kembali ke pembantu AI anda.",
+			denied: "Dibatalkan. Anda boleh tutup halaman ini.",
+			invalidLink: "Pautan ini tidak sah atau telah tamat tempoh. Sila mula semula dari pembantu AI anda.",
+			error: "Sesuatu tidak kena. Sila cuba lagi dari pembantu AI anda.",
+			waiting: "Menyambung ke CueVote…",
+		},
 		lobby: {
 			browseChannels: "Semak Saluran",
 			public: "Awam",
@@ -4026,6 +4234,19 @@ export const translations = {
 		}
 	},
 	tl: {
+		connectAi: {
+			title: "Ikonekta ang iyong AI",
+			permissionDesc: "Magagawa ng iyong AI assistant na magmungkahi ng mga kanta at bumoto sa ngalan mo sa CueVote.",
+			signInDesc: "Mag-sign in para makakilos ang iyong AI assistant para sa iyo sa CueVote.",
+			signedInAs: "Naka-sign in bilang {name}",
+			allow: "Payagan",
+			connecting: "Kumokonekta…",
+			success: "Nakakonekta! Maaari ka nang bumalik sa iyong AI assistant.",
+			denied: "Kinansela. Maaari mo nang isara ang pahinang ito.",
+			invalidLink: "Hindi wasto o nag-expire na ang link na ito. Magsimula muli mula sa iyong AI assistant.",
+			error: "May nangyaring mali. Subukan muli mula sa iyong AI assistant.",
+			waiting: "Kumokonekta sa CueVote…",
+		},
 		lobby: {
 			browseChannels: "Mag-browse ng Mga Channel",
 			public: "Pampubliko",
@@ -4278,6 +4499,19 @@ export const translations = {
 		}
 	},
 	pl: {
+		connectAi: {
+			title: "Połącz swoją AI",
+			permissionDesc: "Twój asystent AI będzie mógł proponować utwory i głosować w Twoim imieniu w CueVote.",
+			signInDesc: "Zaloguj się, aby asystent AI mógł działać w Twoim imieniu w CueVote.",
+			signedInAs: "Zalogowano jako {name}",
+			allow: "Zezwól",
+			connecting: "Łączenie…",
+			success: "Połączono! Możesz wrócić do swojego asystenta AI.",
+			denied: "Anulowano. Możesz zamknąć tę stronę.",
+			invalidLink: "Ten link jest nieprawidłowy lub wygasł. Zacznij ponownie od swojego asystenta AI.",
+			error: "Coś poszło nie tak. Spróbuj ponownie z poziomu asystenta AI.",
+			waiting: "Łączenie z CueVote…",
+		},
 		lobby: {
 			browseChannels: "Przeglądaj kanały",
 			public: "Publiczne",
@@ -4534,6 +4768,19 @@ export const translations = {
 		}
 	},
 	sv: {
+		connectAi: {
+			title: "Anslut din AI",
+			permissionDesc: "Din AI-assistent kommer att kunna föreslå låtar och rösta i ditt namn på CueVote.",
+			signInDesc: "Logga in så att din AI-assistent kan agera åt dig på CueVote.",
+			signedInAs: "Inloggad som {name}",
+			allow: "Tillåt",
+			connecting: "Ansluter…",
+			success: "Ansluten! Du kan återgå till din AI-assistent.",
+			denied: "Avbrutet. Du kan stänga den här sidan.",
+			invalidLink: "Länken är ogiltig eller har gått ut. Börja om från din AI-assistent.",
+			error: "Något gick fel. Försök igen från din AI-assistent.",
+			waiting: "Ansluter till CueVote…",
+		},
 		lobby: {
 			browseChannels: "Bläddra kanaler",
 			public: "Offentlig",
@@ -4786,6 +5033,19 @@ export const translations = {
 		}
 	},
 	da: {
+		connectAi: {
+			title: "Forbind din AI",
+			permissionDesc: "Din AI-assistent vil kunne foreslå sange og stemme i dit navn på CueVote.",
+			signInDesc: "Log ind, så din AI-assistent kan handle for dig på CueVote.",
+			signedInAs: "Logget ind som {name}",
+			allow: "Tillad",
+			connecting: "Forbinder…",
+			success: "Forbundet! Du kan vende tilbage til din AI-assistent.",
+			denied: "Annulleret. Du kan lukke denne side.",
+			invalidLink: "Linket er ugyldigt eller udløbet. Start forfra fra din AI-assistent.",
+			error: "Noget gik galt. Prøv igen fra din AI-assistent.",
+			waiting: "Forbinder til CueVote…",
+		},
 		lobby: {
 			browseChannels: "Gennemse kanaler",
 			public: "Offentlig",
@@ -5038,6 +5298,19 @@ export const translations = {
 		}
 	},
 	no: {
+		connectAi: {
+			title: "Koble til AI-en din",
+			permissionDesc: "AI-assistenten din vil kunne foreslå sanger og stemme i ditt navn på CueVote.",
+			signInDesc: "Logg inn så AI-assistenten kan handle for deg på CueVote.",
+			signedInAs: "Logget inn som {name}",
+			allow: "Tillat",
+			connecting: "Kobler til…",
+			success: "Tilkoblet! Du kan gå tilbake til AI-assistenten din.",
+			denied: "Avbrutt. Du kan lukke denne siden.",
+			invalidLink: "Lenken er ugyldig eller utløpt. Start på nytt fra AI-assistenten din.",
+			error: "Noe gikk galt. Prøv igjen fra AI-assistenten din.",
+			waiting: "Kobler til CueVote…",
+		},
 		lobby: {
 			browseChannels: "Bla gjennom kanaler",
 			public: "Offentlig",
@@ -5290,6 +5563,19 @@ export const translations = {
 		}
 	},
 	fi: {
+		connectAi: {
+			title: "Yhdistä tekoälysi",
+			permissionDesc: "Tekoälyavustajasi voi ehdottaa kappaleita ja äänestää puolestasi CueVotessa.",
+			signInDesc: "Kirjaudu sisään, jotta tekoälyavustajasi voi toimia puolestasi CueVotessa.",
+			signedInAs: "Kirjautunut nimellä {name}",
+			allow: "Salli",
+			connecting: "Yhdistetään…",
+			success: "Yhdistetty! Voit palata tekoälyavustajaasi.",
+			denied: "Peruutettu. Voit sulkea tämän sivun.",
+			invalidLink: "Linkki on virheellinen tai vanhentunut. Aloita uudelleen tekoälyavustajastasi.",
+			error: "Jokin meni pieleen. Yritä uudelleen tekoälyavustajastasi.",
+			waiting: "Yhdistetään CueVoteen…",
+		},
 		lobby: {
 			browseChannels: "Selaa kanavia",
 			public: "Julkinen",
@@ -5542,6 +5828,19 @@ export const translations = {
 		}
 	},
 	tr: {
+		connectAi: {
+			title: "Yapay zekânı bağla",
+			permissionDesc: "Yapay zekâ asistanın CueVote'ta senin adına şarkı önerebilecek ve oy verebilecek.",
+			signInDesc: "Yapay zekâ asistanının CueVote'ta senin adına işlem yapabilmesi için oturum aç.",
+			signedInAs: "{name} olarak oturum açıldı",
+			allow: "İzin ver",
+			connecting: "Bağlanıyor…",
+			success: "Bağlandı! Yapay zekâ asistanına dönebilirsin.",
+			denied: "İptal edildi. Bu sayfayı kapatabilirsin.",
+			invalidLink: "Bu bağlantı geçersiz veya süresi dolmuş. Lütfen yapay zekâ asistanından yeniden başla.",
+			error: "Bir şeyler ters gitti. Lütfen yapay zekâ asistanından tekrar dene.",
+			waiting: "CueVote'a bağlanıyor…",
+		},
 		lobby: {
 			browseChannels: "Kanallara Göz At",
 			public: "Halka Açık",
@@ -5794,6 +6093,19 @@ export const translations = {
 		}
 	},
 	el: {
+		connectAi: {
+			title: "Σύνδεσε το AI σου",
+			permissionDesc: "Ο βοηθός AI σου θα μπορεί να προτείνει τραγούδια και να ψηφίζει εκ μέρους σου στο CueVote.",
+			signInDesc: "Συνδέσου ώστε ο βοηθός AI να ενεργεί για εσένα στο CueVote.",
+			signedInAs: "Σύνδεση ως {name}",
+			allow: "Επιτρέπω",
+			connecting: "Σύνδεση…",
+			success: "Συνδέθηκε! Μπορείς να επιστρέψεις στον βοηθό AI σου.",
+			denied: "Ακυρώθηκε. Μπορείς να κλείσεις αυτή τη σελίδα.",
+			invalidLink: "Αυτός ο σύνδεσμος δεν είναι έγκυρος ή έχει λήξει. Ξεκίνα ξανά από τον βοηθό AI σου.",
+			error: "Κάτι πήγε στραβά. Δοκίμασε ξανά από τον βοηθό AI σου.",
+			waiting: "Σύνδεση στο CueVote…",
+		},
 		lobby: {
 			browseChannels: "Περιήγηση Καναλιών",
 			public: "Δημόσιο",
@@ -6046,6 +6358,19 @@ export const translations = {
 		}
 	},
 	ru: {
+		connectAi: {
+			title: "Подключите свой ИИ",
+			permissionDesc: "Ваш ИИ-ассистент сможет предлагать песни и голосовать от вашего имени в CueVote.",
+			signInDesc: "Войдите, чтобы ИИ-ассистент мог действовать от вашего имени в CueVote.",
+			signedInAs: "Вы вошли как {name}",
+			allow: "Разрешить",
+			connecting: "Подключение…",
+			success: "Подключено! Вы можете вернуться к своему ИИ-ассистенту.",
+			denied: "Отменено. Эту страницу можно закрыть.",
+			invalidLink: "Ссылка недействительна или устарела. Начните заново из своего ИИ-ассистента.",
+			error: "Что-то пошло не так. Повторите попытку из своего ИИ-ассистента.",
+			waiting: "Подключение к CueVote…",
+		},
 		lobby: {
 			browseChannels: "Обзор каналов",
 			public: "Публичные",
@@ -6302,6 +6627,19 @@ export const translations = {
 		}
 	},
 	uk: {
+		connectAi: {
+			title: "Підключіть свій ШІ",
+			permissionDesc: "Ваш ШІ-асистент зможе пропонувати пісні та голосувати від вашого імені в CueVote.",
+			signInDesc: "Увійдіть, щоб ваш ШІ-асистент міг діяти від вашого імені в CueVote.",
+			signedInAs: "Ви увійшли як {name}",
+			allow: "Дозволити",
+			connecting: "Підключення…",
+			success: "Підключено! Ви можете повернутися до свого ШІ-асистента.",
+			denied: "Скасовано. Цю сторінку можна закрити.",
+			invalidLink: "Посилання недійсне або застаріло. Почніть знову зі свого ШІ-асистента.",
+			error: "Щось пішло не так. Спробуйте ще раз зі свого ШІ-асистента.",
+			waiting: "Підключення до CueVote…",
+		},
 		lobby: {
 			browseChannels: "Перегляд каналів",
 			public: "Публічні",
@@ -6558,6 +6896,19 @@ export const translations = {
 		}
 	},
 	cs: {
+		connectAi: {
+			title: "Připojte svou AI",
+			permissionDesc: "Váš AI asistent bude moci na CueVote navrhovat skladby a hlasovat vaším jménem.",
+			signInDesc: "Přihlaste se, aby váš AI asistent mohl jednat za vás na CueVote.",
+			signedInAs: "Přihlášen jako {name}",
+			allow: "Povolit",
+			connecting: "Připojování…",
+			success: "Připojeno! Můžete se vrátit ke svému AI asistentovi.",
+			denied: "Zrušeno. Tuto stránku můžete zavřít.",
+			invalidLink: "Tento odkaz je neplatný nebo vypršel. Začněte znovu od svého AI asistenta.",
+			error: "Něco se pokazilo. Zkuste to znovu ze svého AI asistenta.",
+			waiting: "Připojování k CueVote…",
+		},
 		lobby: {
 			browseChannels: "Procházet Kanály",
 			public: "Veřejné",
@@ -6814,6 +7165,19 @@ export const translations = {
 		}
 	},
 	hu: {
+		connectAi: {
+			title: "Csatlakoztasd az AI-odat",
+			permissionDesc: "Az AI-asszisztensed a nevedben javasolhat dalokat és szavazhat a CueVote-on.",
+			signInDesc: "Jelentkezz be, hogy az AI-asszisztensed a nevedben járhasson el a CueVote-on.",
+			signedInAs: "Bejelentkezve mint {name}",
+			allow: "Engedélyezés",
+			connecting: "Csatlakozás…",
+			success: "Csatlakozva! Visszatérhetsz az AI-asszisztensedhez.",
+			denied: "Megszakítva. Bezárhatod ezt az oldalt.",
+			invalidLink: "Ez a hivatkozás érvénytelen vagy lejárt. Kezdd újra az AI-asszisztensedből.",
+			error: "Valami hiba történt. Próbáld újra az AI-asszisztensedből.",
+			waiting: "Csatlakozás a CueVote-hoz…",
+		},
 		lobby: {
 			browseChannels: "Csatornák Böngészése",
 			public: "Nyilvános",
@@ -7066,6 +7430,19 @@ export const translations = {
 		}
 	},
 	ro: {
+		connectAi: {
+			title: "Conectează-ți AI-ul",
+			permissionDesc: "Asistentul tău AI va putea sugera melodii și vota în numele tău pe CueVote.",
+			signInDesc: "Conectează-te pentru ca asistentul AI să acționeze în numele tău pe CueVote.",
+			signedInAs: "Conectat ca {name}",
+			allow: "Permite",
+			connecting: "Se conectează…",
+			success: "Conectat! Te poți întoarce la asistentul tău AI.",
+			denied: "Anulat. Poți închide această pagină.",
+			invalidLink: "Acest link este invalid sau a expirat. Reia din asistentul tău AI.",
+			error: "Ceva nu a mers bine. Încearcă din nou din asistentul tău AI.",
+			waiting: "Se conectează la CueVote…",
+		},
 		lobby: {
 			browseChannels: "Răsfoiește Canale",
 			public: "Public",
@@ -7320,6 +7697,19 @@ export const translations = {
 		}
 	},
 	bg: {
+		connectAi: {
+			title: "Свържете своя ИИ",
+			permissionDesc: "Вашият ИИ асистент ще може да предлага песни и да гласува от ваше име в CueVote.",
+			signInDesc: "Влезте, за да може ИИ асистентът да действа от ваше име в CueVote.",
+			signedInAs: "Влезли сте като {name}",
+			allow: "Разреши",
+			connecting: "Свързване…",
+			success: "Свързано! Можете да се върнете към своя ИИ асистент.",
+			denied: "Отменено. Можете да затворите тази страница.",
+			invalidLink: "Връзката е невалидна или е изтекла. Започнете отново от своя ИИ асистент.",
+			error: "Нещо се обърка. Опитайте отново от своя ИИ асистент.",
+			waiting: "Свързване с CueVote…",
+		},
 		lobby: {
 			browseChannels: "Разгледай канали",
 			public: "Публични",
@@ -7572,6 +7962,19 @@ export const translations = {
 		}
 	},
 	hr: {
+		connectAi: {
+			title: "Poveži svoj AI",
+			permissionDesc: "Tvoj AI asistent moći će na CueVoteu predlagati pjesme i glasovati u tvoje ime.",
+			signInDesc: "Prijavi se kako bi AI asistent mogao djelovati umjesto tebe na CueVoteu.",
+			signedInAs: "Prijavljen kao {name}",
+			allow: "Dopusti",
+			connecting: "Povezivanje…",
+			success: "Povezano! Možeš se vratiti svom AI asistentu.",
+			denied: "Otkazano. Možeš zatvoriti ovu stranicu.",
+			invalidLink: "Ova poveznica nije važeća ili je istekla. Počni ponovno iz svog AI asistenta.",
+			error: "Nešto je pošlo po zlu. Pokušaj ponovno iz svog AI asistenta.",
+			waiting: "Povezivanje s CueVoteom…",
+		},
 		lobby: {
 			browseChannels: "Pregledaj Kanale",
 			public: "Javno",
@@ -7826,6 +8229,19 @@ export const translations = {
 		}
 	},
 	sr: {
+		connectAi: {
+			title: "Poveži svoj AI",
+			permissionDesc: "Tvoj AI asistent moći će da na CueVote-u predlaže pesme i glasa u tvoje ime.",
+			signInDesc: "Prijavi se kako bi AI asistent mogao da deluje umesto tebe na CueVote-u.",
+			signedInAs: "Prijavljen kao {name}",
+			allow: "Dozvoli",
+			connecting: "Povezivanje…",
+			success: "Povezano! Možeš da se vratiš svom AI asistentu.",
+			denied: "Otkazano. Možeš da zatvoriš ovu stranicu.",
+			invalidLink: "Ova veza nije važeća ili je istekla. Počni ponovo iz svog AI asistenta.",
+			error: "Nešto je pošlo naopako. Pokušaj ponovo iz svog AI asistenta.",
+			waiting: "Povezivanje sa CueVote-om…",
+		},
 		lobby: {
 			browseChannels: "Pretraži Kanale",
 			public: "Javno",
@@ -8080,6 +8496,19 @@ export const translations = {
 		}
 	},
 	sk: {
+		connectAi: {
+			title: "Pripoj svoju AI",
+			permissionDesc: "Tvoj AI asistent bude môcť na CueVote navrhovať skladby a hlasovať v tvojom mene.",
+			signInDesc: "Prihlás sa, aby tvoj AI asistent mohol konať za teba na CueVote.",
+			signedInAs: "Prihlásený ako {name}",
+			allow: "Povoliť",
+			connecting: "Pripája sa…",
+			success: "Pripojené! Môžeš sa vrátiť k svojmu AI asistentovi.",
+			denied: "Zrušené. Túto stránku môžeš zavrieť.",
+			invalidLink: "Tento odkaz je neplatný alebo vypršal. Začni znova zo svojho AI asistenta.",
+			error: "Niečo sa pokazilo. Skús to znova zo svojho AI asistenta.",
+			waiting: "Pripája sa k CueVote…",
+		},
 		lobby: {
 			browseChannels: "Prehľadávať Kanály",
 			public: "Verejné",
@@ -8336,6 +8765,19 @@ export const translations = {
 		}
 	},
 	ar: {
+		connectAi: {
+			title: "اربط الذكاء الاصطناعي الخاص بك",
+			permissionDesc: "سيتمكن مساعد الذكاء الاصطناعي من اقتراح الأغاني والتصويت نيابةً عنك على CueVote.",
+			signInDesc: "سجّل الدخول للسماح لمساعد الذكاء الاصطناعي بالتصرف نيابةً عنك على CueVote.",
+			signedInAs: "تم تسجيل الدخول باسم {name}",
+			allow: "السماح",
+			connecting: "جارٍ الاتصال…",
+			success: "تم الاتصال! يمكنك العودة إلى مساعد الذكاء الاصطناعي.",
+			denied: "تم الإلغاء. يمكنك إغلاق هذه الصفحة.",
+			invalidLink: "هذا الرابط غير صالح أو منتهي الصلاحية. يُرجى البدء من جديد من مساعد الذكاء الاصطناعي.",
+			error: "حدث خطأ ما. يُرجى المحاولة مرة أخرى من مساعد الذكاء الاصطناعي.",
+			waiting: "جارٍ الاتصال بـ CueVote…",
+		},
 		lobby: {
 			browseChannels: "تصفح القنوات",
 			public: "عام",
@@ -8596,6 +9038,19 @@ export const translations = {
 		}
 	},
 	he: {
+		connectAi: {
+			title: "חבר את ה-AI שלך",
+			permissionDesc: "עוזר ה-AI שלך יוכל להציע שירים ולהצביע בשמך ב-CueVote.",
+			signInDesc: "התחבר כדי לאפשר לעוזר ה-AI לפעול בשמך ב-CueVote.",
+			signedInAs: "מחובר בתור {name}",
+			allow: "אישור",
+			connecting: "מתחבר…",
+			success: "מחובר! אפשר לחזור לעוזר ה-AI שלך.",
+			denied: "בוטל. אפשר לסגור את הדף הזה.",
+			invalidLink: "הקישור אינו תקין או שפג תוקפו. התחל מחדש מעוזר ה-AI שלך.",
+			error: "משהו השתבש. נסה שוב מעוזר ה-AI שלך.",
+			waiting: "מתחבר ל-CueVote…",
+		},
 		lobby: {
 			browseChannels: "דפדף בערוצים",
 			public: "ציבורי",
