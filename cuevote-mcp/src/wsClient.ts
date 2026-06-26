@@ -23,10 +23,26 @@ export class CueVoteBridge {
   private clientId = "mcp-" + randomUUID();
   private connecting: Promise<void> | null = null;
   private waiters: Waiter[] = [];
+  private suggestHits: number[] = [];
+  private lock: Promise<unknown> = Promise.resolve();
+  private readonly tokenSource: string | (() => Promise<string>);
 
   user: { id: string; name?: string } | null = null;
   roomId: string | null = null;
   latestState: any = null;
+
+  // One bridge per CueVote session. The token source is either a static session
+  // token (stdio / Phase-1b interim auth) or a provider that mints a fresh token
+  // per connect (Phase-2 OAuth: a freshly minted WS session for the auth'd user).
+  constructor(tokenSource: string | (() => Promise<string>) = config.ws.sessionToken) {
+    this.tokenSource = tokenSource;
+  }
+
+  private async resolveToken(): Promise<string> {
+    const t = typeof this.tokenSource === "function" ? await this.tokenSource() : this.tokenSource;
+    if (!t) throw new Error("No CueVote session token for this bridge.");
+    return t;
+  }
 
   private url(): string {
     const u = new URL(config.ws.url);
@@ -45,12 +61,9 @@ export class CueVoteBridge {
     await this.connecting;
   }
 
-  private connect(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!config.ws.sessionToken) {
-        reject(new Error("CUEVOTE_SESSION_TOKEN not set."));
-        return;
-      }
+  private async connect(): Promise<void> {
+    const token = await this.resolveToken();
+    await new Promise<void>((resolve, reject) => {
       // Close any prior (possibly half-open) socket before reconnecting.
       try { this.ws?.close(); } catch { /* ignore */ }
       const ws = new WebSocket(this.url(), { origin: config.ws.origin });
@@ -61,7 +74,7 @@ export class CueVoteBridge {
       }, 15000);
 
       ws.on("open", () => {
-        ws.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token: config.ws.sessionToken }, msgId: "auth" }));
+        ws.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token }, msgId: "auth" }));
       });
       ws.on("message", (data: WebSocket.RawData) => {
         let m: AnyMsg;
@@ -149,15 +162,31 @@ export class CueVoteBridge {
   }
 
   // ---- High-level operations ----
-
-  async listRooms(type?: "public" | "private" | "my_channels"): Promise<any> {
-    await this.ensureReady();
-    const p = this.waitFor((m) => m.type === "ROOM_LIST");
-    this.send({ type: "LIST_ROOMS", payload: type ? { type } : {} });
-    return (await p).payload;
+  // Serialized per bridge: the server's error/state/ROOM_LIST replies carry no
+  // msgId, so only ONE request may be in flight at a time — otherwise a reply
+  // could resolve the wrong waiter. Public ops go through withLock(); the
+  // internal _-prefixed helpers run while the lock is held and must NOT
+  // re-acquire it (that would deadlock).
+  private withLock<T>(fn: () => Promise<T>): Promise<T> {
+    const run = this.lock.then(fn, fn);
+    this.lock = run.then(() => undefined, () => undefined);
+    return run;
   }
 
-  async joinRoom(roomId: string, password?: string): Promise<any> {
+  listRooms(type?: "public" | "private" | "my_channels"): Promise<any> {
+    return this.withLock(async () => {
+      await this.ensureReady();
+      const p = this.waitFor((m) => m.type === "ROOM_LIST");
+      this.send({ type: "LIST_ROOMS", payload: type ? { type } : {} });
+      return (await p).payload;
+    });
+  }
+
+  joinRoom(roomId: string, password?: string): Promise<any> {
+    return this.withLock(() => this._joinRoom(roomId, password));
+  }
+
+  private async _joinRoom(roomId: string, password?: string): Promise<any> {
     await this.ensureReady();
     const msgId = "join-" + randomUUID();
     const p = this.waitFor((m) => m.type === "state" || m.type === "error");
@@ -169,38 +198,60 @@ export class CueVoteBridge {
     return m.payload;
   }
 
-  async ensureJoined(): Promise<any> {
+  ensureJoined(): Promise<any> {
+    return this.withLock(() => this._ensureJoined());
+  }
+
+  private async _ensureJoined(): Promise<any> {
     await this.ensureReady();
     if (!this.roomId) throw new Error("Not in a room — call cv_join_room first.");
-    if (!this.latestState) await this.joinRoom(this.roomId); // reconnected → rejoin
+    if (!this.latestState) await this._joinRoom(this.roomId); // reconnected → rejoin
     return this.latestState;
   }
 
-  async suggest(query: string): Promise<{ ok: boolean; error?: string; state?: any }> {
-    await this.ensureJoined();
-    const res = await this.sendAcked({ type: "SUGGEST_SONG", payload: { query } }, "sug-" + randomUUID());
-    return { ...res, state: this.latestState };
+  /** Per-bridge (≈ per-user) sliding-window limit to curb YouTube search quota. */
+  allowSuggest(): boolean {
+    const max = Number(process.env.CUEVOTE_SUGGEST_PER_MIN || 10);
+    const t = Date.now();
+    this.suggestHits = this.suggestHits.filter((x) => t - x < 60_000);
+    if (this.suggestHits.length >= max) return false;
+    this.suggestHits.push(t);
+    return true;
   }
 
-  async vote(trackId: string, voteType: "up" | "down"): Promise<{ ok: boolean; error?: string; state?: any }> {
-    await this.ensureJoined();
-    const res = await this.sendAcked({ type: "VOTE", payload: { trackId, voteType } }, "vote-" + randomUUID());
-    return { ...res, state: this.latestState };
+  suggest(query: string): Promise<{ ok: boolean; error?: string; state?: any }> {
+    return this.withLock(async () => {
+      await this._ensureJoined();
+      const res = await this.sendAcked({ type: "SUGGEST_SONG", payload: { query } }, "sug-" + randomUUID());
+      return { ...res, state: this.latestState };
+    });
+  }
+
+  vote(trackId: string, voteType: "up" | "down"): Promise<{ ok: boolean; error?: string; state?: any }> {
+    return this.withLock(async () => {
+      await this._ensureJoined();
+      const res = await this.sendAcked({ type: "VOTE", payload: { trackId, voteType } }, "vote-" + randomUUID());
+      return { ...res, state: this.latestState };
+    });
   }
 
   /** Owner-only; a silent no-op server-side if the session user isn't the owner. */
-  async skip(): Promise<any> {
-    await this.ensureJoined();
-    this.send({ type: "NEXT_TRACK" });
-    await sleep(300);
-    return this.latestState;
+  skip(): Promise<any> {
+    return this.withLock(async () => {
+      await this._ensureJoined();
+      this.send({ type: "NEXT_TRACK" });
+      await sleep(300);
+      return this.latestState;
+    });
   }
 
-  async playPause(playing: boolean): Promise<any> {
-    await this.ensureJoined();
-    this.send({ type: "PLAY_PAUSE", payload: playing });
-    await sleep(250);
-    return this.latestState;
+  playPause(playing: boolean): Promise<any> {
+    return this.withLock(async () => {
+      await this._ensureJoined();
+      this.send({ type: "PLAY_PAUSE", payload: playing });
+      await sleep(250);
+      return this.latestState;
+    });
   }
 
   close(): void {

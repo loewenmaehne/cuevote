@@ -7,6 +7,7 @@ import { config } from "./config.js";
 import { registerReadonlyTools } from "./tools/readonly.js";
 import { registerAdminTools } from "./tools/admin.js";
 import { registerDjTools } from "./tools/dj.js";
+import { bridge } from "./wsClient.js";
 
 const server = new McpServer({ name: "cuevote-mcp", version: "0.1.0" });
 
@@ -43,7 +44,7 @@ if (config.admin.enabled) {
 
 // Phase 2: AI-DJ / guest control — only when a session token is configured.
 if (config.ws.enabled) {
-  registerDjTools(server);
+  registerDjTools(server, bridge);
 }
 
 async function main(): Promise<void> {

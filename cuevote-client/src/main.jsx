@@ -10,6 +10,7 @@ import ErrorBoundary from './ErrorBoundary.jsx'
 
 const App = lazy(() => import('./App.jsx'))
 const LegalPage = lazy(() => import('./components/LegalPage.jsx').then(m => ({ default: m.LegalPage })))
+const ConnectAI = lazy(() => import('./components/ConnectAI.jsx').then(m => ({ default: m.ConnectAI })))
 // DEV-only: preview Android Venue Mode + the app-download footer without a backend.
 const AndroidVenuePreview = import.meta.env.DEV ? lazy(() => import('./components/__AndroidVenuePreview.jsx')) : null;
 
@@ -34,6 +35,7 @@ createRoot(document.getElementById('root')).render(
                   ) : null}
                   <Route path="/room/:roomId" element={<Suspense fallback={<div className="min-h-screen bg-[#050505] flex items-center justify-center"><span className="text-neutral-500">Loading…</span></div>}><App /></Suspense>} />
                   <Route path="/legal" element={<Suspense fallback={<div className="min-h-screen bg-[#050505]" />}><LegalPage /></Suspense>} />
+                  <Route path="/connect-ai" element={<Suspense fallback={<div className="min-h-screen bg-[#050505]" />}><ConnectAI /></Suspense>} />
                   <Route path="/" element={<Lobby />} />
                 </Routes>
               </WebSocketProvider>

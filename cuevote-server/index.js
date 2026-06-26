@@ -647,6 +647,47 @@ wss.on("connection", (ws, req) => {
                     ws.send(JSON.stringify({ type: "PONG" }));
                     return;
                 }
+                case "MCP_AUTHORIZE": {
+                    // Web consent page approving a remote-DJ OAuth authorization.
+                    // The user is already authenticated on this socket; we add
+                    // their id and finalize with the MCP server-to-server, so the
+                    // finalize secret never reaches the browser.
+                    const r = schemas.McpAuthorizePayload.safeParse(parsedMessage.payload);
+                    if (!r.success) {
+                        ws.send(JSON.stringify({ type: "error", message: "Invalid authorization request." }));
+                        return;
+                    }
+                    if (!ws.user) {
+                        ws.send(JSON.stringify({ type: "error", code: "NOT_LOGGED_IN", message: "You must be signed in to connect an AI." }));
+                        return;
+                    }
+                    sendAck();
+                    const finalizeSecret = process.env.CUEVOTE_OAUTH_FINALIZE_SECRET;
+                    if (!finalizeSecret) {
+                        logger.warn('[MCP_AUTHORIZE] CUEVOTE_OAUTH_FINALIZE_SECRET not set — remote DJ OAuth disabled.');
+                        ws.send(JSON.stringify({ type: "error", message: "AI connection is not available." }));
+                        return;
+                    }
+                    const mcpUrl = (process.env.MCP_INTERNAL_URL || 'http://127.0.0.1:8082').replace(/\/$/, '');
+                    try {
+                        const res = await fetch(`${mcpUrl}/oauth/finalize`, {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${finalizeSecret}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ handle: r.data.handle, userId: ws.user.id })
+                        });
+                        const data = await res.json().catch(() => ({}));
+                        if (!res.ok || !data.redirectTo) {
+                            logger.warn(`[MCP_AUTHORIZE] finalize failed (status ${res.status})`);
+                            ws.send(JSON.stringify({ type: "error", message: "Authorization expired or invalid. Please try again from your AI." }));
+                            return;
+                        }
+                        ws.send(JSON.stringify({ type: "MCP_AUTHORIZE_RESULT", payload: { redirectTo: data.redirectTo } }));
+                    } catch (e) {
+                        logger.error('[MCP_AUTHORIZE] finalize error:', e);
+                        ws.send(JSON.stringify({ type: "error", message: "Could not complete the AI connection." }));
+                    }
+                    return;
+                }
             }
 
             // Delegate Room-Specific Messages

@@ -44,6 +44,44 @@ export const config = {
     },
   },
 
+  // Internal call to cuevote-server to mint a WS session for an authenticated
+  // user (remote DJ MCP, Phase 2). Same localhost server as the admin API,
+  // but gated by a narrower secret (matches the server's MCP_SESSION_SECRET).
+  internal: {
+    url: env("CUEVOTE_INTERNAL_URL", "http://127.0.0.1:8081").replace(/\/$/, ""),
+    secret: env("CUEVOTE_MINT_SECRET"),
+    get enabled(): boolean {
+      return this.secret.length > 0;
+    },
+  },
+
+  // Remote DJ MCP (HTTP entrypoint). Binds localhost; nginx + Cloudflare sit in front.
+  http: {
+    host: env("CUEVOTE_HTTP_HOST", "127.0.0.1"),
+    port: Number(env("CUEVOTE_HTTP_PORT", "8082")),
+    // Comma-separated Host header allow-list for DNS-rebinding protection (Phase 3).
+    allowedHosts: env("CUEVOTE_HTTP_ALLOWED_HOSTS")
+      .split(",")
+      .map((h) => h.trim())
+      .filter(Boolean),
+    // Public issuer/base URL (what clients reach via Cloudflare/nginx). Used as
+    // the OAuth issuer + resource identifier.
+    get publicUrl(): string {
+      return env("CUEVOTE_PUBLIC_URL") || `http://${this.host}:${this.port}`;
+    },
+  },
+
+  // OAuth 2.1 (Phase 2c). CueVote is the authorization server; identity comes
+  // from the existing Google login via the web consent page.
+  oauth: {
+    // DEV ONLY: auto-approve this CueVote user id without Google (for testing).
+    devUser: env("CUEVOTE_OAUTH_DEV_USER"),
+    // PROD: the web-app consent/login page the authorize step redirects to.
+    consentUrl: env("CUEVOTE_OAUTH_CONSENT_URL"),
+    // Shared secret the web app uses to finalize an authorization after login.
+    finalizeSecret: env("CUEVOTE_OAUTH_FINALIZE_SECRET"),
+  },
+
   auditLog: resolvePath(env("CUEVOTE_AUDIT_LOG", "mcp-audit.log")),
 
   dbExists(): boolean {

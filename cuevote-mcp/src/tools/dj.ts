@@ -6,7 +6,7 @@
 // joined room. Tools are prefixed cv_ to set them apart from the ops tools.
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { bridge } from "../wsClient.js";
+import type { CueVoteBridge } from "../wsClient.js";
 import { audit } from "../audit.js";
 import { ok, fail, guard, table, duration } from "../util.js";
 
@@ -31,7 +31,7 @@ function nowPlayingLine(state: any): string {
   return `${state.isPlaying ? "▶" : "⏸"} ${t.title} — ${t.artist} @ ${duration(state.progress)}`;
 }
 
-export function registerDjTools(server: McpServer): void {
+export function registerDjTools(server: McpServer, bridge: CueVoteBridge): void {
   server.registerTool(
     "cv_list_rooms",
     {
@@ -115,6 +115,9 @@ export function registerDjTools(server: McpServer): void {
     },
     ({ query }) =>
       guard(async () => {
+        if (!bridge.allowSuggest()) {
+          return fail("Rate limit: too many suggestions in a short time — please slow down.");
+        }
         const res = await bridge.suggest(query);
         audit("cv_suggest", { userId: bridge.user?.id, roomId: bridge.roomId, query, ok: res.ok });
         if (!res.ok) return fail(`Suggestion rejected: ${res.error}`);

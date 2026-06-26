@@ -92,6 +92,14 @@ const UpdateDurationPayload = z.number().finite().positive().max(86400);
 
 const PlayPausePayload = z.boolean();
 
+// Remote DJ MCP: the web consent page sends this (over the user's authenticated
+// socket) to approve an OAuth authorization. The server adds the user id and
+// finalizes with the MCP server-to-server, so the finalize secret never reaches
+// the browser.
+const McpAuthorizePayload = z.object({
+  handle: z.string().min(1).max(200),
+});
+
 const WebSocketMessage = z.object({
   type: z.string().min(1).max(50),
   payload: z.any().optional(),
@@ -114,5 +122,6 @@ module.exports = {
   FetchSuggestionsPayload,
   UpdateDurationPayload,
   PlayPausePayload,
+  McpAuthorizePayload,
   WebSocketMessage,
 };
