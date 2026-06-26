@@ -69,6 +69,12 @@ ACTIVE_CHANNEL_DAYS=60
 # ADMIN_TOKEN=generate_a_long_random_secret
 # ADMIN_PORT=8081
 # ADMIN_HOST=127.0.0.1
+#
+# Public remote DJ MCP (cuevote-mcp/DESIGN-remote-dj.md). MCP_SESSION_SECRET
+# enables the localhost internal "mint a WS session for a user" route used by
+# the OAuth-authenticated DJ service. Leave unset until you deploy that service.
+# MCP_SESSION_SECRET=generate_a_long_random_secret
+# MCP_SESSION_TTL=3600
 ```
 
 > **MCP ops server (optional):** rather than setting `ADMIN_TOKEN` by hand, run

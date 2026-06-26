@@ -5,7 +5,9 @@ Copyright (c) 2026 Julian Zienert
 
 # Remote DJ MCP — Design (Phase 2 public, „für alle")
 
-> Status: **Plan** · Stand: 2026-06-26
+> Status: **Phasen 1b–2c umgesetzt & end-to-end getestet** (mit Dev-Identity);
+> **Phase 3 offen**: Web-Consent-Seite (cuevote-client), Hosting, Public-Rollout
+> (gated auf Quota-Review + `/security-review`). · Stand: 2026-06-26
 > Ziel: Ein **gehosteter Remote-MCP**, mit dem **jeder CueVote-User** eine KI
 > (Claude o. ä.) verbinden und CueVote **als sich selbst** steuern kann —
 > Songs vorschlagen, voten, Now-Playing/Queue sehen, und Owner-Aktionen auf
@@ -97,3 +99,42 @@ Claude ─HTTPS▶ Cloudflare (Proxy, IP versteckt) ─▶ nginx (TLS, mcp.cuevo
 
 - Ops/Admin-Tools **niemals** über den öffentlichen Remote-MCP.
 - Kein unbegrenztes Auto-DJ / Massen-Suggest durch die KI.
+
+## 8. Deployment & Web-Consent-Vertrag (Phase 3)
+
+**Server (`cuevote-server/.env`):** `MCP_SESSION_SECRET=<random>` aktiviert die
+interne `mint-session`-Route (localhost). `MCP_SESSION_TTL` optional (Default 3600).
+
+**Remote-MCP (`cuevote-mcp/.env`), läuft als eigener PM2-Dienst (`dist/http.js`):**
+`CUEVOTE_PUBLIC_URL=https://mcp.cuevote.com`, `CUEVOTE_MINT_SECRET=`(=Server-
+`MCP_SESSION_SECRET`), `CUEVOTE_WS_URL=ws://127.0.0.1:8080`,
+`CUEVOTE_WS_ORIGIN=https://cuevote.com`, `CUEVOTE_OAUTH_CONSENT_URL`,
+`CUEVOTE_OAUTH_FINALIZE_SECRET`, `CUEVOTE_SUGGEST_PER_MIN`. **`CUEVOTE_OAUTH_DEV_USER`
+in Prod leer lassen** (umgeht Login).
+
+**nginx:** `server { server_name mcp.cuevote.com; … proxy_pass http://127.0.0.1:8082; }`
+(WS/HTTP-Header durchreichen). **Cloudflare:** den `mcp`-Record orange-clouden
+(Origin-IP versteckt).
+
+**Web-Consent-Seite (cuevote-client) — der einzige noch fehlende Baustein:**
+Eine Route unter `CUEVOTE_OAUTH_CONSENT_URL` (z. B. `/connect-ai`), die
+1. `?auth=<handle>` liest,
+2. den User per Google einloggt (bestehender Flow),
+3. einen Consent-Screen zeigt („Diese KI darf in deinem Namen Songs vorschlagen/voten"),
+4. bei Zustimmung `POST {MCP}/oauth/finalize` mit `Authorization: Bearer <FINALIZE_SECRET>`
+   und `{ handle, userId }` aufruft → erhält `{ redirectTo }`,
+5. den Browser zu `redirectTo` weiterleitet (zurück zum MCP-Client mit dem Code).
+
+Der Server-Teil dieses Vertrags (`/oauth/finalize`, Pending-Store) **ist
+implementiert**; nur die React-Seite fehlt noch.
+
+## 9. Status-Checkliste
+
+- [x] **1b** Remote-HTTP-Transport, DJ-tools-only, pro-Session — getestet
+- [x] **2a** `mint-session`-Endpoint (Server) — getestet
+- [x] **2b** Token-Provider-Bridge (mintet WS-Session als User) — getestet
+- [x] **2c** OAuth 2.1 (Discovery/Register/Authorize-PKCE/Token/Verify) — e2e getestet (Dev-Identity)
+- [x] **3b** pro-User-Suggest-Rate-Limit (Quota-Guardrail) — getestet
+- [x] **3c** Hosting-/Env-Doku + Web-Vertrag
+- [ ] **3a** Web-Consent-Seite in `cuevote-client` (React + Google) — **TODO**
+- [ ] **Public-Rollout** — gated auf YouTube-Quota-Review + `/security-review`
