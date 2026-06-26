@@ -11,7 +11,7 @@
 // nginx + Cloudflare sit in front. Do not flip on the public rollout until the
 // guardrails (Phase 3) land and the YouTube quota review is clear.
 import express, { type Request, type Response } from "express";
-import { randomUUID } from "node:crypto";
+import { randomUUID, timingSafeEqual } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
@@ -38,6 +38,12 @@ function rpcErr(res: Response, status: number, message: string): void {
   res.status(status).json({ jsonrpc: "2.0", error: { code: -32000, message }, id: null });
 }
 
+function safeEqual(a: string, b: string): boolean {
+  const ba = Buffer.from(a, "utf8");
+  const bb = Buffer.from(b, "utf8");
+  return ba.length === bb.length && timingSafeEqual(ba, bb);
+}
+
 const app = express();
 const issuerUrl = new URL(config.http.publicUrl);
 
@@ -56,7 +62,7 @@ app.use(
 app.post("/oauth/finalize", express.json(), (req: Request, res: Response) => {
   const secret = config.oauth.finalizeSecret;
   const provided = (req.headers["authorization"] || "").toString().replace(/^Bearer /, "");
-  if (!secret || provided !== secret) return void res.status(401).json({ error: "unauthorized" });
+  if (!secret || !safeEqual(provided, secret)) return void res.status(401).json({ error: "unauthorized" });
   const body = (req.body ?? {}) as { handle?: string; userId?: string };
   if (!body.handle || !body.userId) return void res.status(400).json({ error: "missing handle or userId" });
   try {
@@ -125,10 +131,14 @@ app.get("/mcp", bearer, handleSession);
 app.delete("/mcp", bearer, handleSession);
 
 const httpServer = app.listen(config.http.port, config.http.host, () => {
+  const devActive = config.oauth.devUser && process.env.NODE_ENV !== "production";
   console.error(
     `[cuevote-mcp:http] DJ MCP (OAuth) on ${config.http.publicUrl}/mcp — DJ tools only` +
-      (config.oauth.devUser ? ` [DEV identity: ${config.oauth.devUser}]` : ""),
+      (devActive ? ` [DEV identity: ${config.oauth.devUser}]` : ""),
   );
+  if (config.oauth.devUser && process.env.NODE_ENV === "production") {
+    console.error("[cuevote-mcp:http] WARNING: CUEVOTE_OAUTH_DEV_USER is set in production and is being IGNORED — unset it.");
+  }
 });
 
 function shutdown(): void {

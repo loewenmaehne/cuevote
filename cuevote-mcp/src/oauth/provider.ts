@@ -109,10 +109,14 @@ export const provider: OAuthServerProvider = {
     const scopes = params.scopes ?? [];
 
     // DEV ONLY: auto-approve a configured user, no Google. For testing.
-    if (config.oauth.devUser) {
+    // Hard-disabled under NODE_ENV=production so a misconfigured env var can
+    // never become a login bypass on the live service.
+    const devUser =
+      config.oauth.devUser && process.env.NODE_ENV !== "production" ? config.oauth.devUser : "";
+    if (devUser) {
       const code = createCode({
         clientId: client.client_id,
-        userId: config.oauth.devUser,
+        userId: devUser,
         codeChallenge: params.codeChallenge,
         redirectUri: params.redirectUri,
         scopes,
