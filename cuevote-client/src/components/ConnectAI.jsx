@@ -49,15 +49,19 @@ export function ConnectAI() {
   }, [phase]);
 
   const Card = ({ children }) => (
-    <div className="min-h-screen bg-[#050505] text-neutral-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl border border-neutral-800 bg-neutral-950/80 p-8 shadow-xl">
-        <div className="mb-6 flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-600 to-indigo-600">
-            <Sparkles className="h-5 w-5" />
-          </span>
-          <h1 className="text-lg font-semibold">{t('connectAi.title')}</h1>
+    <div className="min-h-screen bg-[#050505] text-neutral-100 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md">
+        {/* CueVote brand wordmark — orange is the product's signature color. */}
+        <h1 className="mb-5 text-center text-3xl font-bold tracking-tight text-orange-500">CueVote</h1>
+        <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-7 shadow-2xl">
+          <div className="mb-5 flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-orange-500/30 bg-orange-500/10">
+              <Sparkles className="h-5 w-5 text-orange-500" />
+            </span>
+            <h2 className="text-base font-semibold text-neutral-100">{t('connectAi.title')}</h2>
+          </div>
+          {children}
         </div>
-        {children}
       </div>
     </div>
   );
@@ -113,20 +117,20 @@ export function ConnectAI() {
         {t('connectAi.signedInAs', { name: user.name || user.email || '—' })}
       </p>
       {phase === 'error' && (
-        <p className="mb-4 rounded-lg bg-red-950/60 px-3 py-2 text-sm text-red-300">{t('connectAi.error')}</p>
+        <p className="mb-4 rounded-lg border border-red-500/40 bg-red-950/40 px-3 py-2 text-sm text-red-300">{t('connectAi.error')}</p>
       )}
       <div className="flex gap-3">
         <button
           onClick={() => setPhase('denied')}
           disabled={phase === 'submitting'}
-          className="flex-1 rounded-xl border border-neutral-700 px-4 py-3 font-medium text-neutral-300 transition hover:bg-neutral-900"
+          className="flex-1 rounded-xl border border-neutral-700 px-4 py-3 font-medium text-neutral-300 transition hover:bg-neutral-800"
         >
           {t('lobby.cancel')}
         </button>
         <button
           onClick={approve}
           disabled={phase === 'submitting' || !isConnected}
-          className="flex-1 rounded-xl bg-gradient-to-br from-fuchsia-600 to-indigo-600 px-4 py-3 font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+          className="flex-1 rounded-xl bg-orange-500 px-4 py-3 font-semibold text-white shadow-lg shadow-orange-500/20 transition hover:bg-orange-600 disabled:opacity-50 disabled:shadow-none"
         >
           {phase === 'submitting' ? t('connectAi.connecting') : t('connectAi.allow')}
         </button>
