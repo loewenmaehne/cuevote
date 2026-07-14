@@ -320,11 +320,17 @@ EOF
 
 The default policy in `/etc/apt/apt.conf.d/50unattended-upgrades` only installs from the `${distro_id}:${distro_codename}-security` archive — i.e. **security updates only**, no feature upgrades that could break Node.js, nginx, or PM2.
 
-**Auto-reboot is intentionally left off.** A kernel update will install but won't be active until you reboot manually. This trades a small window of vulnerability for never having the server reboot itself unexpectedly. If you want auto-reboot anyway, add to `/etc/apt/apt.conf.d/50unattended-upgrades`:
-```
+**Auto-reboot (enabled on the production VM since 2026-07).** A kernel update only becomes active after a reboot — a patched kernel on disk protects nothing while the old one keeps running. Since the whole boot chain recovers on its own (PM2 resurrects via its systemd unit, nginx is enabled), the production VM reboots itself at night, but only when an update requires it (`/var/run/reboot-required` exists). Configured via a drop-in so the packaged default file stays pristine. The same drop-in also widens the allowed origins to NodeSource, whose Release metadata has a broken `Origin` field — match by `site` instead:
+
+```bash
+sudo tee /etc/apt/apt.conf.d/52unattended-upgrades-local > /dev/null <<'EOF'
+Unattended-Upgrade::Origins-Pattern:: "site=deb.nodesource.com";
 Unattended-Upgrade::Automatic-Reboot "true";
-Unattended-Upgrade::Automatic-Reboot-Time "03:00";
+Unattended-Upgrade::Automatic-Reboot-Time "04:30";
+EOF
 ```
+
+If you prefer never rebooting unattended, leave the two reboot lines out — but then check for `/var/run/reboot-required` regularly.
 
 Verify the configuration with a dry run:
 ```bash
@@ -335,6 +341,20 @@ Check what was actually upgraded later:
 ```bash
 cat /var/log/unattended-upgrades/unattended-upgrades.log
 ```
+
+### Keeping npm Dependencies Patched
+
+`unattended-upgrades` only covers **apt packages**. The app's npm dependencies are pinned by `package-lock.json`, and `npm ci` (used by `update_server.sh`) installs exactly those pinned versions — a deploy never bumps anything by itself. That is deliberate (reproducible builds), but it means a known vulnerability in a dependency stays on the server until someone acts:
+
+```bash
+# check (run in cuevote-server/ and cuevote-client/)
+npm audit --omit=dev
+
+# fix within semver ranges, then prove the build still passes
+npm audit fix && npm ci && npm run build
+```
+
+Commit the resulting `package-lock.json`, merge, then deploy with `bash update_server.sh` as usual. Run the audit on a schedule (monthly works) and/or enable GitHub Dependabot alerts on the repository, so new advisories reach you instead of waiting to be discovered.
 
 ### Use SSH Keys (Best Practice)
 For maximum security, disable password login entirely and use SSH keys.
