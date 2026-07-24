@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Shield, FileText, Scale, ChevronRight, Music, Mail, Phone, Globe, Flag, Loader2, Package, ExternalLink } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
 import { dangerousHtml } from '../utils/sanitizeHtml';
+import { legalProfile } from '../constants/legalProfile';
 
 const VALID_TABS = ['terms', 'privacy', 'imprint', 'attributions'];
 
@@ -208,11 +209,11 @@ export function LegalPage() {
                                     <div className="not-prose space-y-8">
                                         <div className="grid md:grid-cols-2 gap-8">
                                             <div className="space-y-4">
-                                                <h3 className="text-white font-bold text-lg border-b border-white/10 pb-2">{content.imprint.addressHeading}</h3>
+                                                <h3 className="text-white font-bold text-lg border-b border-white/10 pb-2">{legalProfile.isCommercial ? content.imprint.registeredOfficeHeading : content.imprint.operatorHeading}</h3>
                                                 <div className="text-sm text-neutral-400 space-y-1">
-                                                    <p className="font-medium text-white">{import.meta.env.VITE_LEGAL_NAME || "CueVote Digital"}</p>
-                                                    <p>{import.meta.env.VITE_LEGAL_ADDRESS_LINE1 || "[Street Address]"}</p>
-                                                    <p>{import.meta.env.VITE_LEGAL_ADDRESS_LINE2 || "[City, Country]"}</p>
+                                                    <p className="font-medium text-white">{legalProfile.entityName}</p>
+                                                    <p>{legalProfile.addressLines[0]}</p>
+                                                    {legalProfile.addressLines[1] && <p>{legalProfile.addressLines[1]}</p>}
                                                     <p>{currentLang === 'nl' ? 'Nederland' : 'The Netherlands'}</p>
                                                 </div>
 
@@ -223,20 +224,20 @@ export function LegalPage() {
                                                 <ul className="space-y-3 text-sm">
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Mail size={16} />
-                                                        <a href={`mailto:${import.meta.env.VITE_IMPRINT_EMAIL || "hello@cuevote.com"}`} className="text-orange-500 hover:text-white transition-colors">
-                                                            {import.meta.env.VITE_IMPRINT_EMAIL || "hello@cuevote.com"}
+                                                        <a href={`mailto:${legalProfile.contactEmail}`} className="text-orange-500 hover:text-white transition-colors">
+                                                            {legalProfile.contactEmail}
                                                         </a>
                                                     </li>
                                                     <li className="flex items-center gap-3 text-neutral-400">
                                                         <Flag size={16} className="shrink-0" />
-                                                        <a href={`mailto:${import.meta.env.VITE_ABUSE_EMAIL || "abuse@cuevote.com"}?subject=Abuse%20Report`} className="text-neutral-300 hover:text-white transition-colors">
+                                                        <a href={`mailto:${legalProfile.abuseEmail}?subject=Abuse%20Report`} className="text-neutral-300 hover:text-white transition-colors">
                                                             {content.imprint.abuse}
                                                         </a>
                                                     </li>
-                                                    {import.meta.env.VITE_LEGAL_PHONE && (
+                                                    {legalProfile.phone && (
                                                         <li className="flex items-center gap-3 text-neutral-400">
                                                             <Phone size={16} />
-                                                            <span>{import.meta.env.VITE_LEGAL_PHONE}</span>
+                                                            <span>{legalProfile.phone}</span>
                                                         </li>
                                                     )}
                                                     <li className="flex items-center gap-3 text-neutral-400">
@@ -247,19 +248,19 @@ export function LegalPage() {
                                             </div>
                                         </div>
 
-                                        {(import.meta.env.VITE_LEGAL_KVK || import.meta.env.VITE_LEGAL_VAT) && (
+                                        {(legalProfile.kvk || legalProfile.vat) && (
                                             <div className="p-6 rounded-xl bg-neutral-900 border border-white/5 space-y-4 text-sm">
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    {import.meta.env.VITE_LEGAL_KVK && (
+                                                    {legalProfile.kvk && (
                                                         <div>
                                                             <span className="block text-neutral-500 text-xs uppercase tracking-wider mb-1">KVK (Chamber of Commerce)</span>
-                                                            <span className="font-mono text-neutral-300">{import.meta.env.VITE_LEGAL_KVK}</span>
+                                                            <span className="font-mono text-neutral-300">{legalProfile.kvk}</span>
                                                         </div>
                                                     )}
-                                                    {import.meta.env.VITE_LEGAL_VAT && (
+                                                    {legalProfile.vat && (
                                                         <div>
                                                             <span className="block text-neutral-500 text-xs uppercase tracking-wider mb-1">BTW (VAT ID)</span>
-                                                            <span className="font-mono text-neutral-300">{import.meta.env.VITE_LEGAL_VAT}</span>
+                                                            <span className="font-mono text-neutral-300">{legalProfile.vat}</span>
                                                         </div>
                                                     )}
                                                 </div>

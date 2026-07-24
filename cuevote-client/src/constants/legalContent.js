@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // Copyright (c) 2026 Julian Zienert
 
+import { legalProfile } from './legalProfile';
+
 // Helper takes en reference as argument so we never close over LEGAL_CONTENT (avoids "Cannot access before initialization" with bundlers).
 const withEnglishContent = (enRef, overrides) => ({
 	...enRef,
@@ -68,10 +70,10 @@ const enContent = {
 				{
 					title: "1. Who We Are",
 					content: `Data Controller:<br />
-                            <strong>${import.meta.env.VITE_LEGAL_NAME || "CueVote Digital"}</strong><br />
-                            ${import.meta.env.VITE_LEGAL_ADDRESS_LINE1 || "[Street Address]"}<br />
-                            ${import.meta.env.VITE_LEGAL_ADDRESS_LINE2 || "[City, Country]"}, The Netherlands<br />
-                            Contact: <a href="mailto:${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}">${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}</a>`
+                            <strong>${legalProfile.entityName}</strong><br />
+                            ${legalProfile.addressLines.join('<br />')}<br />
+                            The Netherlands<br />
+                            Contact: <a href="mailto:${legalProfile.controllerEmail}">${legalProfile.controllerEmail}</a>`
 				},
 				{
 					title: "2. Data Collection & Purpose",
@@ -133,7 +135,8 @@ const enContent = {
 			]
 		},
 		imprint: {
-			addressHeading: "Legal Address",
+			operatorHeading: "Operator",
+			registeredOfficeHeading: "Registered Office",
 			managedBy: "Managed by",
 			abuse: "Report Abuse",
 			country: "The Netherlands",
@@ -244,10 +247,10 @@ const nlContent = {
 				{
 					title: "1. Wie Wij Zijn",
 					content: `Verwerkingsverantwoordelijke:<br />
-                            <strong>${import.meta.env.VITE_LEGAL_NAME || "CueVote Digital"}</strong><br />
-                            ${import.meta.env.VITE_LEGAL_ADDRESS_LINE1 || "[Straatadres]"}<br />
-                            ${import.meta.env.VITE_LEGAL_ADDRESS_LINE2 || "[Stad, Land]"}, Nederland<br />
-                            Contact: <a href="mailto:${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}">${import.meta.env.VITE_LEGAL_EMAIL || "privacy@cuevote.com"}</a>`
+                            <strong>${legalProfile.entityName}</strong><br />
+                            ${legalProfile.addressLines.join('<br />')}<br />
+                            Nederland<br />
+                            Contact: <a href="mailto:${legalProfile.controllerEmail}">${legalProfile.controllerEmail}</a>`
 				},
 				{
 					title: "2. Gegevensverzameling & Doel",
@@ -309,7 +312,8 @@ const nlContent = {
 			]
 		},
 		imprint: {
-			addressHeading: "Juridisch Adres",
+			operatorHeading: "Beheerder",
+			registeredOfficeHeading: "Vestigingsadres",
 			managedBy: "Beheerd door",
 			abuse: "Misbruik melden",
 			country: "Nederland",
