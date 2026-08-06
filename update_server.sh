@@ -6,7 +6,9 @@ set -e
 # Configuration
 SERVER_DIR="cuevote-server"
 CLIENT_DIR="cuevote-client"
+MCP_DIR="cuevote-mcp"
 PM2_PROCESS_NAME="cuevote-server"
+PM2_MCP_NAME="cuevote-mcp-dj"
 
 # ---- Worktree detection ----
 
@@ -42,9 +44,9 @@ do_update() {
 
     # 1. Sync to latest remote main
     if [ "$IS_WORKTREE" = true ]; then
-        echo "[1/4] Skipping git pull (worktree mode — code is managed by the worktree)"
+        echo "[1/5] Skipping git pull (worktree mode — code is managed by the worktree)"
     else
-        echo "[1/4] Updating code from git (reset to origin/main)..."
+        echo "[1/5] Updating code from git (reset to origin/main)..."
         if ! git fetch origin; then
             echo "Error: git fetch failed."
             exit 1
@@ -56,7 +58,7 @@ do_update() {
     fi
 
     # 2. Update Client (Frontend)
-    echo "[2/4] Updating Client (Frontend)..."
+    echo "[2/5] Updating Client (Frontend)..."
     cd "$CLIENT_DIR"
 
     echo "  -> Installing client dependencies..."
@@ -72,14 +74,14 @@ do_update() {
     cd ..
 
     # 3. Update Server (Backend)
-    echo "[3/4] Updating Server (Backend)..."
+    echo "[3/5] Updating Server (Backend)..."
     cd "$SERVER_DIR"
 
     echo "  -> Installing server dependencies..."
     npm ci --silent
 
     # 4. Restart Server Process
-    echo "[4/4] Restarting Server Process..."
+    echo "[4/5] Restarting Server Process..."
     if pm2 describe "$PM2_PROCESS_NAME" > /dev/null 2>&1; then
         echo "  -> Process found, attempting reload..."
         pm2 reload "$PM2_PROCESS_NAME" --update-env || pm2 restart "$PM2_PROCESS_NAME" --update-env
@@ -91,8 +93,38 @@ do_update() {
 
     cd ..
 
+    # 5. Update MCP (DJ tools server)
+    # Needs its own block: its dist/ is gitignored, so a pull never carries the
+    # build, and npm ci must keep devDependencies because the build runs tsc.
+    echo "[5/5] Updating MCP (DJ tools)..."
+    if [ ! -f "$MCP_DIR/package.json" ]; then
+        echo "  -> No $MCP_DIR/package.json found — skipping."
+    else
+        cd "$MCP_DIR"
+
+        echo "  -> Installing MCP dependencies..."
+        npm ci --silent
+
+        echo "  -> Building MCP..."
+        if ! npm run build; then
+            echo "Error: MCP build failed."
+            exit 1
+        fi
+
+        if pm2 describe "$PM2_MCP_NAME" > /dev/null 2>&1; then
+            echo "  -> Process found, restarting..."
+            pm2 restart "$PM2_MCP_NAME" --update-env
+        else
+            echo "  -> Process not found in PM2, starting new instance..."
+            pm2 start dist/http.js --name "$PM2_MCP_NAME" --update-env
+            pm2 save
+        fi
+
+        cd ..
+    fi
+
     echo "==== Update Completed Successfully ===="
-    echo "Run 'pm2 logs $PM2_PROCESS_NAME' to see output."
+    echo "Run 'pm2 logs $PM2_PROCESS_NAME' or 'pm2 logs $PM2_MCP_NAME' to see output."
 }
 
 do_start() {
@@ -157,7 +189,7 @@ show_usage() {
     echo "Usage: bash update_server.sh [command]"
     echo ""
     echo "Commands:"
-    echo "  (no command)   Update code from GitHub, build client, restart server"
+    echo "  (no command)   Update code from GitHub, build client + MCP, restart both processes"
     echo "  start          Start the server (without pulling updates)"
     echo "  stop           Stop the server"
     echo "  status         Show PM2 process status"
