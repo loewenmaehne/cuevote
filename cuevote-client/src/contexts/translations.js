@@ -3,10 +3,11 @@
 export const translations = {
 	en: {
 		connectAi: {
+			willSendTo: "Approval will be sent to",
+			clientClaimsUnverified: "It calls itself “{client}” — a name anyone can pick. Only continue if you started this yourself and recognise the address above.",
 			openInBrowserTitle: "Continue in your browser",
 			openInBrowserDesc: "For your safety the CueVote app does not open external sites. Open this page in your browser and approve it there — you will then be sent on to {host}.",
 			requestedByNoHost: "A native or local app requested this — only continue if you started it yourself.",
-			requestedBy: "Requested by {client} ({host}). Only continue if you trust it.",
 			title: "Connect your AI",
 			permissionDesc: "Your AI assistant will be able to suggest songs and vote in your name on CueVote.",
 			signInDesc: "Sign in to let your AI assistant act for you on CueVote.",
@@ -272,10 +273,11 @@ export const translations = {
 	},
 	nl: {
 		connectAi: {
+			willSendTo: "Goedkeuring wordt gestuurd naar",
+			clientClaimsUnverified: "Het noemt zichzelf “{client}” — een naam die iedereen kan kiezen. Ga alleen verder als je dit zelf hebt gestart en het adres hierboven herkent.",
 			openInBrowserTitle: "Ga verder in je browser",
 			openInBrowserDesc: "Voor je veiligheid opent de CueVote-app geen externe sites. Open deze pagina in je browser en keur het daar goed — daarna word je doorgestuurd naar {host}.",
 			requestedByNoHost: "Een native of lokale app vroeg dit aan — ga alleen verder als je het zelf hebt gestart.",
-			requestedBy: "Aangevraagd door {client} ({host}). Ga alleen verder als je dit vertrouwt.",
 			title: "Verbind je AI",
 			permissionDesc: "Je AI-assistent kan op CueVote in jouw naam nummers voorstellen en stemmen.",
 			signInDesc: "Log in zodat je AI-assistent namens jou kan handelen op CueVote.",
@@ -541,10 +543,11 @@ export const translations = {
 	},
 	de: {
 		connectAi: {
+			willSendTo: "Bestätigung geht an",
+			clientClaimsUnverified: "Sie nennt sich selbst „{client}“ — diesen Namen kann jeder frei wählen. Fahre nur fort, wenn du das selbst gestartet hast und die Adresse oben kennst.",
 			openInBrowserTitle: "Im Browser fortsetzen",
 			openInBrowserDesc: "Zu deiner Sicherheit öffnet die CueVote-App keine fremden Seiten. Öffne diese Seite im Browser und bestätige dort — von dort geht es weiter zu {host}.",
 			requestedByNoHost: "Eine native oder lokale App hat dies angefragt — fahre nur fort, wenn du es selbst gestartet hast.",
-			requestedBy: "Angefragt von {client} ({host}). Fahre nur fort, wenn du dem vertraust.",
 			title: "Mit deiner KI verbinden",
 			permissionDesc: "Deine KI darf auf CueVote in deinem Namen Songs vorschlagen und abstimmen.",
 			signInDesc: "Melde dich an, damit deine KI für dich auf CueVote handeln darf.",
@@ -810,10 +813,11 @@ export const translations = {
 	},
 	fr: {
 		connectAi: {
+			willSendTo: "L'autorisation sera envoyée à",
+			clientClaimsUnverified: "Elle se présente comme « {client} » — un nom que n'importe qui peut choisir. Ne continue que si tu as lancé cela toi-même et que tu reconnais l'adresse ci-dessus.",
 			openInBrowserTitle: "Continue dans ton navigateur",
 			openInBrowserDesc: "Pour ta sécurité, l'application CueVote n'ouvre pas de sites externes. Ouvre cette page dans ton navigateur et valide là-bas — tu seras ensuite redirigé vers {host}.",
 			requestedByNoHost: "Une application native ou locale a fait cette demande — ne continuez que si vous l'avez lancée vous-même.",
-			requestedBy: "Demandé par {client} ({host}). Ne continuez que si vous lui faites confiance.",
 			title: "Connectez votre IA",
 			permissionDesc: "Votre assistant IA pourra suggérer des titres et voter en votre nom sur CueVote.",
 			signInDesc: "Connectez-vous pour autoriser votre assistant IA à agir pour vous sur CueVote.",
@@ -1081,10 +1085,11 @@ export const translations = {
 	},
 	es: {
 		connectAi: {
+			willSendTo: "La autorización se enviará a",
+			clientClaimsUnverified: "Se llama a sí misma “{client}” — un nombre que cualquiera puede elegir. Continúa solo si iniciaste esto tú y reconoces la dirección de arriba.",
 			openInBrowserTitle: "Continúa en tu navegador",
 			openInBrowserDesc: "Por tu seguridad, la app de CueVote no abre sitios externos. Abre esta página en tu navegador y autorízalo allí — después se te enviará a {host}.",
 			requestedByNoHost: "Una app nativa o local solicitó esto: continúa solo si lo iniciaste tú.",
-			requestedBy: "Solicitado por {client} ({host}). Continúa solo si confías en ello.",
 			title: "Conecta tu IA",
 			permissionDesc: "Tu asistente de IA podrá sugerir canciones y votar en tu nombre en CueVote.",
 			signInDesc: "Inicia sesión para que tu asistente de IA actúe por ti en CueVote.",
@@ -1352,10 +1357,11 @@ export const translations = {
 	},
 	it: {
 		connectAi: {
+			willSendTo: "L'autorizzazione verrà inviata a",
+			clientClaimsUnverified: "Si presenta come “{client}” — un nome che chiunque può scegliere. Continua solo se hai avviato tu la richiesta e riconosci l'indirizzo qui sopra.",
 			openInBrowserTitle: "Continua nel browser",
 			openInBrowserDesc: "Per la tua sicurezza l'app CueVote non apre siti esterni. Apri questa pagina nel browser e conferma lì — poi verrai indirizzato a {host}.",
 			requestedByNoHost: "Un'app nativa o locale ha richiesto questo: continua solo se l'hai avviata tu.",
-			requestedBy: "Richiesto da {client} ({host}). Continua solo se ti fidi.",
 			title: "Collega la tua IA",
 			permissionDesc: "Il tuo assistente IA potrà suggerire brani e votare a tuo nome su CueVote.",
 			signInDesc: "Accedi per permettere al tuo assistente IA di agire per te su CueVote.",
@@ -1623,10 +1629,11 @@ export const translations = {
 	},
 	pt: {
 		connectAi: {
+			willSendTo: "A autorização será enviada para",
+			clientClaimsUnverified: "Diz chamar-se “{client}” — um nome que qualquer um pode escolher. Continua apenas se foste tu a iniciar isto e reconheces o endereço acima.",
 			openInBrowserTitle: "Continua no navegador",
 			openInBrowserDesc: "Para a tua segurança, a app CueVote não abre sites externos. Abre esta página no navegador e autoriza aí — depois serás encaminhado para {host}.",
 			requestedByNoHost: "Um app nativo ou local solicitou isto — só continue se foi você que iniciou.",
-			requestedBy: "Solicitado por {client} ({host}). Só continue se confiar nisto.",
 			title: "Conecte a sua IA",
 			permissionDesc: "O seu assistente de IA poderá sugerir músicas e votar em seu nome no CueVote.",
 			signInDesc: "Inicie sessão para permitir que o seu assistente de IA aja por você no CueVote.",
@@ -1894,10 +1901,11 @@ export const translations = {
 	},
 	"zh-CN": {
 		connectAi: {
+			willSendTo: "授权将发送至",
+			clientClaimsUnverified: "它自称“{client}”——这个名字任何人都可以填写。只有在你自己发起、并且认得上面这个地址时才继续。",
 			openInBrowserTitle: "请在浏览器中继续",
 			openInBrowserDesc: "为了你的安全，CueVote 应用不会打开外部网站。请在浏览器中打开此页面并在那里授权 — 之后会跳转到 {host}。",
 			requestedByNoHost: "某个本地或原生应用发起了此请求——只有在你本人发起时才继续。",
-			requestedBy: "由 {client}（{host}）请求。仅在你信任时继续。",
 			title: "连接你的 AI",
 			permissionDesc: "你的 AI 助手将能在 CueVote 上以你的名义推荐歌曲并投票。",
 			signInDesc: "登录以允许你的 AI 助手在 CueVote 上代你操作。",
@@ -2161,10 +2169,11 @@ export const translations = {
 	},
 	"zh-TW": {
 		connectAi: {
+			willSendTo: "授權將傳送至",
+			clientClaimsUnverified: "它自稱「{client}」——這個名字任何人都能填寫。只有在你自己發起、並且認得上面這個位址時才繼續。",
 			openInBrowserTitle: "請在瀏覽器中繼續",
 			openInBrowserDesc: "為了你的安全，CueVote 應用程式不會開啟外部網站。請在瀏覽器中開啟此頁面並在那裡授權 — 之後會前往 {host}。",
 			requestedByNoHost: "某個本機或原生應用程式發起了此請求——只有在你本人發起時才繼續。",
-			requestedBy: "由 {client}（{host}）請求。僅在你信任時繼續。",
 			title: "連接你的 AI",
 			permissionDesc: "你的 AI 助理將能在 CueVote 上以你的名義推薦歌曲並投票。",
 			signInDesc: "登入以允許你的 AI 助理在 CueVote 上代你操作。",
@@ -2428,10 +2437,11 @@ export const translations = {
 	},
 	ja: {
 		connectAi: {
+			willSendTo: "承認の送信先",
+			clientClaimsUnverified: "自ら “{client}” と名乗っていますが、この名前は誰でも設定できます。自分で始めた場合で、上のアドレスに心当たりがあるときだけ続けてください。",
 			openInBrowserTitle: "ブラウザで続ける",
 			openInBrowserDesc: "安全のため、CueVote アプリは外部サイトを開きません。このページをブラウザで開いて承認してください — そのあと {host} に移動します。",
 			requestedByNoHost: "ネイティブまたはローカルのアプリが要求しています。自分で開始した場合のみ続行してください。",
-			requestedBy: "{client}（{host}）からのリクエストです。信頼できる場合のみ続行してください。",
 			title: "AI を連携する",
 			permissionDesc: "あなたの AI アシスタントが CueVote であなたの名前で曲をリクエストし、投票できるようになります。",
 			signInDesc: "サインインして、AI アシスタントが CueVote であなたの代わりに操作できるようにします。",
@@ -2695,10 +2705,11 @@ export const translations = {
 	},
 	ko: {
 		connectAi: {
+			willSendTo: "승인이 전송될 주소",
+			clientClaimsUnverified: "스스로 “{client}”라고 밝히지만, 이 이름은 누구나 정할 수 있습니다. 직접 시작했고 위 주소가 익숙할 때만 계속하세요.",
 			openInBrowserTitle: "브라우저에서 계속하기",
 			openInBrowserDesc: "보안을 위해 CueVote 앱은 외부 사이트를 열지 않습니다. 이 페이지를 브라우저에서 열고 그곳에서 승인하세요 — 그 후 {host}(으)로 이동합니다.",
 			requestedByNoHost: "네이티브 또는 로컬 앱이 요청했습니다. 직접 시작한 경우에만 계속하세요.",
-			requestedBy: "{client}({host})에서 요청했습니다. 신뢰하는 경우에만 계속하세요.",
 			title: "AI 연결",
 			permissionDesc: "AI 어시스턴트가 CueVote에서 당신의 이름으로 곡을 추천하고 투표할 수 있습니다.",
 			signInDesc: "로그인하면 AI 어시스턴트가 CueVote에서 당신을 대신해 작동할 수 있습니다.",
@@ -2962,10 +2973,11 @@ export const translations = {
 	},
 	hi: {
 		connectAi: {
+			willSendTo: "अनुमति यहाँ भेजी जाएगी",
+			clientClaimsUnverified: "यह खुद को “{client}” कहता है — यह नाम कोई भी चुन सकता है। आगे तभी बढ़ें जब आपने खुद यह शुरू किया हो और ऊपर का पता पहचानते हों।",
 			openInBrowserTitle: "अपने ब्राउज़र में जारी रखें",
 			openInBrowserDesc: "आपकी सुरक्षा के लिए CueVote ऐप बाहरी साइटें नहीं खोलता। इस पेज को अपने ब्राउज़र में खोलें और वहीं अनुमति दें — इसके बाद आपको {host} पर भेजा जाएगा।",
 			requestedByNoHost: "किसी नेटिव या स्थानीय ऐप ने यह अनुरोध किया — केवल तभी जारी रखें जब आपने इसे स्वयं शुरू किया हो।",
-			requestedBy: "{client} ({host}) द्वारा अनुरोधित। केवल तभी जारी रखें जब आप इस पर भरोसा करते हों।",
 			title: "अपना AI कनेक्ट करें",
 			permissionDesc: "आपका AI सहायक CueVote पर आपके नाम से गाने सुझा और वोट कर सकेगा।",
 			signInDesc: "साइन इन करें ताकि आपका AI सहायक CueVote पर आपके लिए कार्य कर सके।",
@@ -3231,10 +3243,11 @@ export const translations = {
 	},
 	th: {
 		connectAi: {
+			willSendTo: "การอนุญาตจะถูกส่งไปที่",
+			clientClaimsUnverified: "มันเรียกตัวเองว่า “{client}” — ชื่อนี้ใครก็ตั้งได้ ดำเนินการต่อเฉพาะเมื่อคุณเริ่มเองและจำที่อยู่ด้านบนได้",
 			openInBrowserTitle: "ดำเนินการต่อในเบราว์เซอร์",
 			openInBrowserDesc: "เพื่อความปลอดภัยของคุณ แอป CueVote จะไม่เปิดเว็บไซต์ภายนอก เปิดหน้านี้ในเบราว์เซอร์แล้วอนุญาตที่นั่น — จากนั้นคุณจะถูกส่งต่อไปยัง {host}",
 			requestedByNoHost: "แอปเนทีฟหรือแอปในเครื่องร้องขอสิ่งนี้ — ดำเนินการต่อเฉพาะเมื่อคุณเริ่มเองเท่านั้น",
-			requestedBy: "ร้องขอโดย {client} ({host}) ดำเนินการต่อเฉพาะเมื่อคุณเชื่อถือเท่านั้น",
 			title: "เชื่อมต่อ AI ของคุณ",
 			permissionDesc: "ผู้ช่วย AI ของคุณจะสามารถแนะนำเพลงและโหวตในนามของคุณบน CueVote ได้",
 			signInDesc: "ลงชื่อเข้าใช้เพื่อให้ผู้ช่วย AI ดำเนินการแทนคุณบน CueVote",
@@ -3498,10 +3511,11 @@ export const translations = {
 	},
 	vi: {
 		connectAi: {
+			willSendTo: "Phê duyệt sẽ được gửi tới",
+			clientClaimsUnverified: "Nó tự xưng là “{client}” — cái tên ai cũng đặt được. Chỉ tiếp tục nếu chính bạn đã bắt đầu việc này và nhận ra địa chỉ ở trên.",
 			openInBrowserTitle: "Tiếp tục trong trình duyệt",
 			openInBrowserDesc: "Vì sự an toàn của bạn, ứng dụng CueVote không mở các trang bên ngoài. Hãy mở trang này trong trình duyệt và cho phép ở đó — sau đó bạn sẽ được chuyển tới {host}.",
 			requestedByNoHost: "Một ứng dụng gốc hoặc cục bộ đã yêu cầu điều này — chỉ tiếp tục nếu chính bạn bắt đầu.",
-			requestedBy: "Được yêu cầu bởi {client} ({host}). Chỉ tiếp tục nếu bạn tin tưởng.",
 			title: "Kết nối AI của bạn",
 			permissionDesc: "Trợ lý AI của bạn sẽ có thể đề xuất bài hát và bình chọn thay mặt bạn trên CueVote.",
 			signInDesc: "Đăng nhập để trợ lý AI có thể hành động thay bạn trên CueVote.",
@@ -3765,10 +3779,11 @@ export const translations = {
 	},
 	id: {
 		connectAi: {
+			willSendTo: "Persetujuan akan dikirim ke",
+			clientClaimsUnverified: "Ia menyebut dirinya “{client}” — nama yang bisa dipilih siapa saja. Lanjutkan hanya jika Anda sendiri yang memulainya dan mengenali alamat di atas.",
 			openInBrowserTitle: "Lanjutkan di peramban",
 			openInBrowserDesc: "Demi keamanan Anda, aplikasi CueVote tidak membuka situs eksternal. Buka halaman ini di peramban dan setujui di sana — setelah itu Anda akan diarahkan ke {host}.",
 			requestedByNoHost: "Aplikasi native atau lokal meminta ini — lanjutkan hanya jika Anda sendiri yang memulainya.",
-			requestedBy: "Diminta oleh {client} ({host}). Lanjutkan hanya jika Anda memercayainya.",
 			title: "Hubungkan AI Anda",
 			permissionDesc: "Asisten AI Anda akan dapat menyarankan lagu dan memberikan suara atas nama Anda di CueVote.",
 			signInDesc: "Masuk agar asisten AI dapat bertindak untuk Anda di CueVote.",
@@ -4032,10 +4047,11 @@ export const translations = {
 	},
 	ms: {
 		connectAi: {
+			willSendTo: "Kebenaran akan dihantar ke",
+			clientClaimsUnverified: "Ia menamakan dirinya “{client}” — nama yang boleh dipilih sesiapa sahaja. Teruskan hanya jika anda sendiri yang memulakannya dan mengenali alamat di atas.",
 			openInBrowserTitle: "Teruskan dalam pelayar",
 			openInBrowserDesc: "Demi keselamatan anda, aplikasi CueVote tidak membuka laman luar. Buka halaman ini dalam pelayar dan benarkan di sana — selepas itu anda akan dihantar ke {host}.",
 			requestedByNoHost: "Apl natif atau setempat meminta ini — teruskan hanya jika anda sendiri memulakannya.",
-			requestedBy: "Diminta oleh {client} ({host}). Teruskan hanya jika anda mempercayainya.",
 			title: "Sambungkan AI anda",
 			permissionDesc: "Pembantu AI anda akan dapat mencadangkan lagu dan mengundi bagi pihak anda di CueVote.",
 			signInDesc: "Log masuk supaya pembantu AI boleh bertindak bagi pihak anda di CueVote.",
@@ -4299,10 +4315,11 @@ export const translations = {
 	},
 	tl: {
 		connectAi: {
+			willSendTo: "Ipapadala ang pag-apruba sa",
+			clientClaimsUnverified: "Tinatawag nito ang sarili na “{client}” — isang pangalang kahit sino ay puwedeng pumili. Magpatuloy lamang kung ikaw mismo ang nagsimula nito at kilala mo ang address sa itaas.",
 			openInBrowserTitle: "Magpatuloy sa iyong browser",
 			openInBrowserDesc: "Para sa iyong kaligtasan, hindi nagbubukas ng panlabas na site ang CueVote app. Buksan ang page na ito sa iyong browser at aprubahan doon — pagkatapos ay dadalhin ka sa {host}.",
 			requestedByNoHost: "May native o lokal na app na humiling nito — magpatuloy lamang kung ikaw mismo ang nagsimula.",
-			requestedBy: "Hiniling ng {client} ({host}). Magpatuloy lamang kung pinagkakatiwalaan mo ito.",
 			title: "Ikonekta ang iyong AI",
 			permissionDesc: "Magagawa ng iyong AI assistant na magmungkahi ng mga kanta at bumoto sa ngalan mo sa CueVote.",
 			signInDesc: "Mag-sign in para makakilos ang iyong AI assistant para sa iyo sa CueVote.",
@@ -4568,10 +4585,11 @@ export const translations = {
 	},
 	pl: {
 		connectAi: {
+			willSendTo: "Zgoda zostanie wysłana do",
+			clientClaimsUnverified: "Przedstawia się jako “{client}” — tę nazwę może wybrać każdy. Kontynuuj tylko wtedy, gdy sam(a) to rozpocząłeś(-aś) i rozpoznajesz adres powyżej.",
 			openInBrowserTitle: "Kontynuuj w przeglądarce",
 			openInBrowserDesc: "Dla Twojego bezpieczeństwa aplikacja CueVote nie otwiera zewnętrznych stron. Otwórz tę stronę w przeglądarce i zatwierdź tam — potem zostaniesz przekierowany do {host}.",
 			requestedByNoHost: "Aplikacja natywna lub lokalna o to poprosiła — kontynuuj tylko, jeśli sam(a) to rozpocząłeś(aś).",
-			requestedBy: "Żądane przez {client} ({host}). Kontynuuj tylko, jeśli temu ufasz.",
 			title: "Połącz swoją AI",
 			permissionDesc: "Twój asystent AI będzie mógł proponować utwory i głosować w Twoim imieniu w CueVote.",
 			signInDesc: "Zaloguj się, aby asystent AI mógł działać w Twoim imieniu w CueVote.",
@@ -4841,10 +4859,11 @@ export const translations = {
 	},
 	sv: {
 		connectAi: {
+			willSendTo: "Godkännandet skickas till",
+			clientClaimsUnverified: "Den kallar sig “{client}” — ett namn vem som helst kan välja. Fortsätt bara om du själv startade detta och känner igen adressen ovan.",
 			openInBrowserTitle: "Fortsätt i din webbläsare",
 			openInBrowserDesc: "För din säkerhet öppnar CueVote-appen inga externa webbplatser. Öppna den här sidan i webbläsaren och godkänn där — därefter skickas du vidare till {host}.",
 			requestedByNoHost: "En inbyggd eller lokal app begärde detta – fortsätt bara om du själv startade det.",
-			requestedBy: "Begärt av {client} ({host}). Fortsätt bara om du litar på det.",
 			title: "Anslut din AI",
 			permissionDesc: "Din AI-assistent kommer att kunna föreslå låtar och rösta i ditt namn på CueVote.",
 			signInDesc: "Logga in så att din AI-assistent kan agera åt dig på CueVote.",
@@ -5110,10 +5129,11 @@ export const translations = {
 	},
 	da: {
 		connectAi: {
+			willSendTo: "Godkendelsen sendes til",
+			clientClaimsUnverified: "Den kalder sig “{client}” — et navn, som hvem som helst kan vælge. Fortsæt kun, hvis du selv startede det, og du genkender adressen ovenfor.",
 			openInBrowserTitle: "Fortsæt i din browser",
 			openInBrowserDesc: "Af hensyn til din sikkerhed åbner CueVote-appen ikke eksterne sider. Åbn denne side i din browser og godkend der — derefter sendes du videre til {host}.",
 			requestedByNoHost: "En native eller lokal app anmodede om dette – fortsæt kun, hvis du selv startede det.",
-			requestedBy: "Anmodet af {client} ({host}). Fortsæt kun, hvis du stoler på det.",
 			title: "Forbind din AI",
 			permissionDesc: "Din AI-assistent vil kunne foreslå sange og stemme i dit navn på CueVote.",
 			signInDesc: "Log ind, så din AI-assistent kan handle for dig på CueVote.",
@@ -5379,10 +5399,11 @@ export const translations = {
 	},
 	no: {
 		connectAi: {
+			willSendTo: "Godkjenningen sendes til",
+			clientClaimsUnverified: "Den kaller seg “{client}” — et navn hvem som helst kan velge. Fortsett bare hvis du selv startet dette og kjenner igjen adressen over.",
 			openInBrowserTitle: "Fortsett i nettleseren",
 			openInBrowserDesc: "Av hensyn til sikkerheten din åpner ikke CueVote-appen eksterne nettsteder. Åpne denne siden i nettleseren og godkjenn der — deretter sendes du videre til {host}.",
 			requestedByNoHost: "En nativ eller lokal app ba om dette – fortsett bare hvis du selv startet det.",
-			requestedBy: "Forespurt av {client} ({host}). Fortsett bare hvis du stoler på det.",
 			title: "Koble til AI-en din",
 			permissionDesc: "AI-assistenten din vil kunne foreslå sanger og stemme i ditt navn på CueVote.",
 			signInDesc: "Logg inn så AI-assistenten kan handle for deg på CueVote.",
@@ -5648,10 +5669,11 @@ export const translations = {
 	},
 	fi: {
 		connectAi: {
+			willSendTo: "Hyväksyntä lähetetään osoitteeseen",
+			clientClaimsUnverified: "Se kutsuu itseään nimellä “{client}” — kuka tahansa voi valita sen nimen. Jatka vain, jos aloitit tämän itse ja tunnistat yllä olevan osoitteen.",
 			openInBrowserTitle: "Jatka selaimessa",
 			openInBrowserDesc: "Turvallisuutesi vuoksi CueVote-sovellus ei avaa ulkoisia sivustoja. Avaa tämä sivu selaimessa ja hyväksy siellä — sen jälkeen sinut ohjataan osoitteeseen {host}.",
 			requestedByNoHost: "Natiivi tai paikallinen sovellus pyysi tätä – jatka vain, jos aloitit sen itse.",
-			requestedBy: "Pyytäjä: {client} ({host}). Jatka vain, jos luotat siihen.",
 			title: "Yhdistä tekoälysi",
 			permissionDesc: "Tekoälyavustajasi voi ehdottaa kappaleita ja äänestää puolestasi CueVotessa.",
 			signInDesc: "Kirjaudu sisään, jotta tekoälyavustajasi voi toimia puolestasi CueVotessa.",
@@ -5917,10 +5939,11 @@ export const translations = {
 	},
 	tr: {
 		connectAi: {
+			willSendTo: "Onay şu adrese gönderilecek",
+			clientClaimsUnverified: "Kendini “{client}” olarak tanıtıyor — bu ismi herkes seçebilir. Yalnızca bunu kendin başlattıysan ve yukarıdaki adresi tanıyorsan devam et.",
 			openInBrowserTitle: "Tarayıcında devam et",
 			openInBrowserDesc: "Güvenliğin için CueVote uygulaması dış siteleri açmaz. Bu sayfayı tarayıcında aç ve orada onayla — ardından {host} adresine yönlendirileceksin.",
 			requestedByNoHost: "Yerel veya native bir uygulama bunu istedi — yalnızca bunu kendin başlattıysan devam et.",
-			requestedBy: "{client} ({host}) tarafından istendi. Yalnızca güveniyorsan devam et.",
 			title: "Yapay zekânı bağla",
 			permissionDesc: "Yapay zekâ asistanın CueVote'ta senin adına şarkı önerebilecek ve oy verebilecek.",
 			signInDesc: "Yapay zekâ asistanının CueVote'ta senin adına işlem yapabilmesi için oturum aç.",
@@ -6186,10 +6209,11 @@ export const translations = {
 	},
 	el: {
 		connectAi: {
+			willSendTo: "Η έγκριση θα σταλεί στο",
+			clientClaimsUnverified: "Αυτοαποκαλείται “{client}” — όνομα που μπορεί να διαλέξει οποιοσδήποτε. Συνέχισε μόνο αν το ξεκίνησες εσύ και αναγνωρίζεις τη διεύθυνση παραπάνω.",
 			openInBrowserTitle: "Συνέχισε στο πρόγραμμα περιήγησης",
 			openInBrowserDesc: "Για την ασφάλειά σου, η εφαρμογή CueVote δεν ανοίγει εξωτερικούς ιστότοπους. Άνοιξε αυτή τη σελίδα στο πρόγραμμα περιήγησης και ενέκρινε εκεί — έπειτα θα μεταφερθείς στο {host}.",
 			requestedByNoHost: "Μια εγγενής ή τοπική εφαρμογή το ζήτησε — συνέχισε μόνο αν το ξεκίνησες ο ίδιος.",
-			requestedBy: "Ζητήθηκε από {client} ({host}). Συνέχισε μόνο αν το εμπιστεύεσαι.",
 			title: "Σύνδεσε το AI σου",
 			permissionDesc: "Ο βοηθός AI σου θα μπορεί να προτείνει τραγούδια και να ψηφίζει εκ μέρους σου στο CueVote.",
 			signInDesc: "Συνδέσου ώστε ο βοηθός AI να ενεργεί για εσένα στο CueVote.",
@@ -6455,10 +6479,11 @@ export const translations = {
 	},
 	ru: {
 		connectAi: {
+			willSendTo: "Подтверждение будет отправлено на",
+			clientClaimsUnverified: "Оно называет себя “{client}” — это имя может выбрать кто угодно. Продолжайте, только если начали это сами и узнаёте адрес выше.",
 			openInBrowserTitle: "Продолжите в браузере",
 			openInBrowserDesc: "В целях безопасности приложение CueVote не открывает внешние сайты. Откройте эту страницу в браузере и подтвердите там — после этого вы перейдёте на {host}.",
 			requestedByNoHost: "Запрос отправило нативное или локальное приложение — продолжайте, только если вы сами это начали.",
-			requestedBy: "Запрошено {client} ({host}). Продолжайте, только если доверяете.",
 			title: "Подключите свой ИИ",
 			permissionDesc: "Ваш ИИ-ассистент сможет предлагать песни и голосовать от вашего имени в CueVote.",
 			signInDesc: "Войдите, чтобы ИИ-ассистент мог действовать от вашего имени в CueVote.",
@@ -6728,10 +6753,11 @@ export const translations = {
 	},
 	uk: {
 		connectAi: {
+			willSendTo: "Підтвердження буде надіслано на",
+			clientClaimsUnverified: "Воно називає себе “{client}” — це ім'я може обрати будь-хто. Продовжуйте, лише якщо ви почали це самі й упізнаєте адресу вище.",
 			openInBrowserTitle: "Продовжте у браузері",
 			openInBrowserDesc: "Задля вашої безпеки застосунок CueVote не відкриває зовнішні сайти. Відкрийте цю сторінку у браузері та підтвердьте там — після цього ви перейдете на {host}.",
 			requestedByNoHost: "Запит надіслав нативний або локальний застосунок — продовжуйте, лише якщо ви самі це почали.",
-			requestedBy: "Запит від {client} ({host}). Продовжуйте, лише якщо довіряєте.",
 			title: "Підключіть свій ШІ",
 			permissionDesc: "Ваш ШІ-асистент зможе пропонувати пісні та голосувати від вашого імені в CueVote.",
 			signInDesc: "Увійдіть, щоб ваш ШІ-асистент міг діяти від вашого імені в CueVote.",
@@ -7001,10 +7027,11 @@ export const translations = {
 	},
 	cs: {
 		connectAi: {
+			willSendTo: "Souhlas bude odeslán na",
+			clientClaimsUnverified: "Označuje se jako “{client}” — takové jméno si může zvolit kdokoli. Pokračuj jen tehdy, když jsi to spustil(a) sám(a) a poznáváš adresu výše.",
 			openInBrowserTitle: "Pokračuj v prohlížeči",
 			openInBrowserDesc: "Kvůli tvé bezpečnosti aplikace CueVote neotevírá cizí stránky. Otevři tuto stránku v prohlížeči a potvrď to tam — poté budeš přesměrován na {host}.",
 			requestedByNoHost: "Požádala o to nativní nebo místní aplikace — pokračujte, jen pokud jste to spustili sami.",
-			requestedBy: "Požaduje {client} ({host}). Pokračujte, jen pokud tomu důvěřujete.",
 			title: "Připojte svou AI",
 			permissionDesc: "Váš AI asistent bude moci na CueVote navrhovat skladby a hlasovat vaším jménem.",
 			signInDesc: "Přihlaste se, aby váš AI asistent mohl jednat za vás na CueVote.",
@@ -7274,10 +7301,11 @@ export const translations = {
 	},
 	hu: {
 		connectAi: {
+			willSendTo: "A jóváhagyás ide megy",
+			clientClaimsUnverified: "Így nevezi magát: “{client}” — ezt a nevet bárki megadhatja. Csak akkor folytasd, ha te indítottad, és felismered a fenti címet.",
 			openInBrowserTitle: "Folytasd a böngésződben",
 			openInBrowserDesc: "A biztonságod érdekében a CueVote alkalmazás nem nyit meg külső oldalakat. Nyisd meg ezt az oldalt a böngésződben, és ott hagyd jóvá — utána a(z) {host} címre kerülsz.",
 			requestedByNoHost: "Egy natív vagy helyi alkalmazás kérte ezt — csak akkor folytasd, ha te magad indítottad.",
-			requestedBy: "Kérelmező: {client} ({host}). Csak akkor folytasd, ha megbízol benne.",
 			title: "Csatlakoztasd az AI-odat",
 			permissionDesc: "Az AI-asszisztensed a nevedben javasolhat dalokat és szavazhat a CueVote-on.",
 			signInDesc: "Jelentkezz be, hogy az AI-asszisztensed a nevedben járhasson el a CueVote-on.",
@@ -7543,10 +7571,11 @@ export const translations = {
 	},
 	ro: {
 		connectAi: {
+			willSendTo: "Aprobarea va fi trimisă către",
+			clientClaimsUnverified: "Se prezintă drept “{client}” — un nume pe care oricine îl poate alege. Continuă doar dacă tu ai început asta și recunoști adresa de mai sus.",
 			openInBrowserTitle: "Continuă în browser",
 			openInBrowserDesc: "Pentru siguranța ta, aplicația CueVote nu deschide site-uri externe. Deschide această pagină în browser și aprobă acolo — apoi vei fi trimis către {host}.",
 			requestedByNoHost: "O aplicație nativă sau locală a solicitat asta — continuă doar dacă ai inițiat-o tu.",
-			requestedBy: "Solicitat de {client} ({host}). Continuă doar dacă ai încredere.",
 			title: "Conectează-ți AI-ul",
 			permissionDesc: "Asistentul tău AI va putea sugera melodii și vota în numele tău pe CueVote.",
 			signInDesc: "Conectează-te pentru ca asistentul AI să acționeze în numele tău pe CueVote.",
@@ -7814,10 +7843,11 @@ export const translations = {
 	},
 	bg: {
 		connectAi: {
+			willSendTo: "Одобрението ще бъде изпратено до",
+			clientClaimsUnverified: "Нарича себе си “{client}” — това име може да избере всеки. Продължи само ако ти си започнал(а) това и разпознаваш адреса по-горе.",
 			openInBrowserTitle: "Продължи в браузъра",
 			openInBrowserDesc: "За твоята сигурност приложението CueVote не отваря външни сайтове. Отвори тази страница в браузъра и потвърди там — след това ще бъдеш пренасочен към {host}.",
 			requestedByNoHost: "Заявка от нативно или локално приложение — продължете само ако вие сте я започнали.",
-			requestedBy: "Заявено от {client} ({host}). Продължете само ако му се доверявате.",
 			title: "Свържете своя ИИ",
 			permissionDesc: "Вашият ИИ асистент ще може да предлага песни и да гласува от ваше име в CueVote.",
 			signInDesc: "Влезте, за да може ИИ асистентът да действа от ваше име в CueVote.",
@@ -8083,10 +8113,11 @@ export const translations = {
 	},
 	hr: {
 		connectAi: {
+			willSendTo: "Odobrenje će biti poslano na",
+			clientClaimsUnverified: "Naziva se “{client}” — to ime može odabrati bilo tko. Nastavi samo ako si to sam(a) pokrenuo(la) i prepoznaješ adresu iznad.",
 			openInBrowserTitle: "Nastavi u pregledniku",
 			openInBrowserDesc: "Radi tvoje sigurnosti aplikacija CueVote ne otvara vanjske stranice. Otvori ovu stranicu u pregledniku i ondje odobri — nakon toga bit ćeš preusmjeren na {host}.",
 			requestedByNoHost: "Ovo je zatražila nativna ili lokalna aplikacija — nastavi samo ako si to sam pokrenuo.",
-			requestedBy: "Zatražio {client} ({host}). Nastavi samo ako mu vjeruješ.",
 			title: "Poveži svoj AI",
 			permissionDesc: "Tvoj AI asistent moći će na CueVoteu predlagati pjesme i glasovati u tvoje ime.",
 			signInDesc: "Prijavi se kako bi AI asistent mogao djelovati umjesto tebe na CueVoteu.",
@@ -8354,10 +8385,11 @@ export const translations = {
 	},
 	sr: {
 		connectAi: {
+			willSendTo: "Odobrenje će biti poslato na",
+			clientClaimsUnverified: "Naziva sebe “{client}” — to ime može da izabere bilo ko. Nastavi samo ako si to sam(a) pokrenuo(la) i prepoznaješ adresu iznad.",
 			openInBrowserTitle: "Nastavi u pregledaču",
 			openInBrowserDesc: "Radi tvoje bezbednosti CueVote aplikacija ne otvara spoljne sajtove. Otvori ovu stranicu u pregledaču i tamo odobri — nakon toga bićeš preusmeren na {host}.",
 			requestedByNoHost: "Ovo je zatražila nativna ili lokalna aplikacija — nastavi samo ako si to sam pokrenuo.",
-			requestedBy: "Zatražio {client} ({host}). Nastavi samo ako mu veruješ.",
 			title: "Poveži svoj AI",
 			permissionDesc: "Tvoj AI asistent moći će da na CueVote-u predlaže pesme i glasa u tvoje ime.",
 			signInDesc: "Prijavi se kako bi AI asistent mogao da deluje umesto tebe na CueVote-u.",
@@ -8625,10 +8657,11 @@ export const translations = {
 	},
 	sk: {
 		connectAi: {
+			willSendTo: "Súhlas sa odošle na",
+			clientClaimsUnverified: "Označuje sa ako “{client}” — také meno si môže zvoliť ktokoľvek. Pokračuj len vtedy, ak si to spustil(a) sám(a) a poznávaš adresu vyššie.",
 			openInBrowserTitle: "Pokračuj v prehliadači",
 			openInBrowserDesc: "Kvôli tvojej bezpečnosti aplikácia CueVote neotvára cudzie stránky. Otvor túto stránku v prehliadači a potvrď to tam — potom budeš presmerovaný na {host}.",
 			requestedByNoHost: "Požiadala o to natívna alebo lokálna aplikácia — pokračuj len ak si to spustil sám.",
-			requestedBy: "Požaduje {client} ({host}). Pokračuj len ak tomu dôveruješ.",
 			title: "Pripoj svoju AI",
 			permissionDesc: "Tvoj AI asistent bude môcť na CueVote navrhovať skladby a hlasovať v tvojom mene.",
 			signInDesc: "Prihlás sa, aby tvoj AI asistent mohol konať za teba na CueVote.",
@@ -8898,10 +8931,11 @@ export const translations = {
 	},
 	ar: {
 		connectAi: {
+			willSendTo: "سيتم إرسال الموافقة إلى",
+			clientClaimsUnverified: "تسمي نفسها “{client}” — وهو اسم يمكن لأي شخص اختياره. تابع فقط إذا كنت أنت من بدأ ذلك وتعرف العنوان أعلاه.",
 			openInBrowserTitle: "تابع في المتصفح",
 			openInBrowserDesc: "من أجل أمانك، لا يفتح تطبيق CueVote مواقع خارجية. افتح هذه الصفحة في المتصفح ووافق هناك — بعدها سيتم نقلك إلى {host}.",
 			requestedByNoHost: "طلب ذلك تطبيق محلي أو أصلي — تابع فقط إذا كنت قد بدأته بنفسك.",
-			requestedBy: "مطلوب من {client} ({host}). تابع فقط إذا كنت تثق به.",
 			title: "اربط الذكاء الاصطناعي الخاص بك",
 			permissionDesc: "سيتمكن مساعد الذكاء الاصطناعي من اقتراح الأغاني والتصويت نيابةً عنك على CueVote.",
 			signInDesc: "سجّل الدخول للسماح لمساعد الذكاء الاصطناعي بالتصرف نيابةً عنك على CueVote.",
@@ -9175,10 +9209,11 @@ export const translations = {
 	},
 	he: {
 		connectAi: {
+			willSendTo: "האישור יישלח אל",
+			clientClaimsUnverified: "היא מכנה את עצמה “{client}” — שם שכל אחד יכול לבחור. המשך רק אם אתה התחלת את זה ואתה מזהה את הכתובת שלמעלה.",
 			openInBrowserTitle: "המשך בדפדפן",
 			openInBrowserDesc: "למען ביטחונך אפליקציית CueVote לא פותחת אתרים חיצוניים. פתח דף זה בדפדפן ואשר שם — לאחר מכן תועבר אל {host}.",
 			requestedByNoHost: "אפליקציה מקומית או נייטיב ביקשה זאת — המשך רק אם התחלת זאת בעצמך.",
-			requestedBy: "התבקש על ידי {client} ({host}). המשך רק אם אתה סומך על כך.",
 			title: "חבר את ה-AI שלך",
 			permissionDesc: "עוזר ה-AI שלך יוכל להציע שירים ולהצביע בשמך ב-CueVote.",
 			signInDesc: "התחבר כדי לאפשר לעוזר ה-AI לפעול בשמך ב-CueVote.",

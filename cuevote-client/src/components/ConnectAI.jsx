@@ -146,14 +146,26 @@ export function ConnectAI() {
   return (
     <Card>
       <p className="mb-2 text-neutral-300">{t('connectAi.permissionDesc')}</p>
-      {/* Always show the trust box in the consent state. The redirect HOST is the
-          truthful signal; when it's absent (native/custom-scheme client) we still
-          warn generically rather than silently falling back to a bare screen. */}
-      <p className="mb-4 rounded-lg border border-amber-700/40 bg-amber-950/30 px-3 py-2 text-sm text-amber-200">
-        {redirectHost
-          ? t('connectAi.requestedBy', { client: clientName || '—', host: redirectHost })
-          : t('connectAi.requestedByNoHost')}
-      </p>
+      {/* Always show the trust box in the consent state. Registration is open, so
+          `client` is whatever the requester typed — "CueVote Official" is as
+          available to an attacker as anything else. The redirect HOST is the one
+          value CueVote can vouch for (the code goes there and nowhere else), so
+          it is what the box leads with; the self-chosen name sits underneath,
+          labelled as a claim. When there is no host at all (native/custom-scheme
+          client) we still warn generically rather than showing a bare screen. */}
+      <div className="mb-4 rounded-lg border border-amber-700/40 bg-amber-950/30 px-3 py-2.5 text-sm text-amber-200">
+        {redirectHost ? (
+          <>
+            <p className="text-xs uppercase tracking-wide text-amber-400/80">{t('connectAi.willSendTo')}</p>
+            <p className="mt-0.5 mb-2 break-all font-mono text-base font-semibold text-amber-100">{redirectHost}</p>
+            <p className="text-xs leading-relaxed text-amber-300/90">
+              {t('connectAi.clientClaimsUnverified', { client: clientName || '—' })}
+            </p>
+          </>
+        ) : (
+          t('connectAi.requestedByNoHost')
+        )}
+      </div>
       <p className="mb-6 text-sm text-neutral-500">
         {t('connectAi.signedInAs', { name: user.name || user.email || '—' })}
       </p>
