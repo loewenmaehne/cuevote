@@ -199,9 +199,16 @@ export const provider: OAuthServerProvider = {
     };
   },
 
-  async revokeToken(_client, request: OAuthTokenRevocationRequest) {
-    accessTokens.delete(request.token);
-    refreshTokens.delete(request.token);
+  async revokeToken(client, request: OAuthTokenRevocationRequest) {
+    // Only revoke a token that belongs to the client presenting it. Without the
+    // ownership check any authenticated client could revoke any token it managed
+    // to learn — RFC 7009 §2.1 requires the check for exactly that reason.
+    // Silence on a miss is deliberate: the endpoint must not report whether an
+    // unknown token exists.
+    for (const store of [accessTokens, refreshTokens]) {
+      const rec = store.get(request.token);
+      if (rec && rec.clientId === client.client_id) store.delete(request.token);
+    }
   },
 };
 
