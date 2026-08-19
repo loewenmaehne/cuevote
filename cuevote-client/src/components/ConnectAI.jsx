@@ -13,6 +13,17 @@ import { useWebSocketContext } from '../hooks/useWebSocketContext';
 import { Language } from '../contexts/LanguageContext';
 import { GoogleAuthButton } from './GoogleAuthButton';
 import { GoogleGIcon } from './GoogleGIcon';
+import { deviceDetection } from '../utils/deviceDetection';
+
+// Hosts that may be loaded inside the native wrapper. Everything else has to go
+// to a real browser: the wrapper shows no address bar and keeps a native Google
+// login bridge on window.webkit, so a foreign page loaded there is both
+// unrecognisable as foreign and within reach of the user's access token.
+const CUEVOTE_HOSTS = new Set(['cuevote.com', 'www.cuevote.com']);
+
+function isExternalHost(host) {
+  return !!host && !CUEVOTE_HOSTS.has(host.toLowerCase());
+}
 
 export function ConnectAI() {
   const [params] = useSearchParams();
@@ -21,18 +32,34 @@ export function ConnectAI() {
   const redirectHost = params.get('redirect');
   const { t } = Language.useLanguage();
   const { user, isConnected, sendMessage, lastMessage, handleLoginSuccess, clearMessage } = useWebSocketContext();
-  const [phase, setPhase] = useState('idle'); // idle | submitting | success | denied | error
+  const [phase, setPhase] = useState('idle'); // idle | submitting | success | denied | error | handoff
+  const [handoffHost, setHandoffHost] = useState('');
+
+  // The `redirect` hint is only a hint — the AI client picked it and an attacker
+  // crafting the link can leave it out. It is good enough to stop the flow early
+  // (before the one-shot handle is spent, so the user can redo this in a
+  // browser), but the authoritative check is on the URL the server hands back.
+  const inNativeWrapper = deviceDetection.isNativeApp();
 
   // React to the server's reply on the shared socket.
   useEffect(() => {
     if (!lastMessage) return;
     if (lastMessage.type === 'MCP_AUTHORIZE_RESULT' && lastMessage.payload?.redirectTo) {
+      const target = lastMessage.payload.redirectTo;
+      let host = '';
+      try { host = new URL(target, window.location.origin).host; } catch { /* keep '' */ }
+
+      if (inNativeWrapper && isExternalHost(host)) {
+        setHandoffHost(host);
+        setPhase('handoff');
+        return;
+      }
       setPhase('success');
-      window.location.href = lastMessage.payload.redirectTo;
+      window.location.href = target;
     } else if (lastMessage.type === 'error' && phase === 'submitting') {
       setPhase('error');
     }
-  }, [lastMessage, phase]);
+  }, [lastMessage, phase, inNativeWrapper]);
 
   const approve = () => {
     if (!handle || !user) return;
@@ -69,6 +96,20 @@ export function ConnectAI() {
   // Invalid / missing handle.
   if (!handle) {
     return <Card><p className="text-neutral-400">{t('connectAi.invalidLink')}</p></Card>;
+  }
+
+  // Refuse before the handle is spent when the hint already shows the flow would
+  // end on a foreign host. The consent screen is not even offered — nothing here
+  // can be completed inside the wrapper.
+  if (phase === 'handoff' || (inNativeWrapper && isExternalHost(redirectHost))) {
+    return (
+      <Card>
+        <p className="mb-3 font-semibold text-neutral-100">{t('connectAi.openInBrowserTitle')}</p>
+        <p className="text-neutral-400">
+          {t('connectAi.openInBrowserDesc', { host: handoffHost || redirectHost })}
+        </p>
+      </Card>
+    );
   }
 
   // Terminal states.

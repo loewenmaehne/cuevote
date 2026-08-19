@@ -3,6 +3,8 @@
 export const translations = {
 	en: {
 		connectAi: {
+			openInBrowserTitle: "Continue in your browser",
+			openInBrowserDesc: "For your safety the CueVote app does not open external sites. Open this page in your browser and approve it there — you will then be sent on to {host}.",
 			requestedByNoHost: "A native or local app requested this — only continue if you started it yourself.",
 			requestedBy: "Requested by {client} ({host}). Only continue if you trust it.",
 			title: "Connect your AI",
@@ -270,6 +272,8 @@ export const translations = {
 	},
 	nl: {
 		connectAi: {
+			openInBrowserTitle: "Ga verder in je browser",
+			openInBrowserDesc: "Voor je veiligheid opent de CueVote-app geen externe sites. Open deze pagina in je browser en keur het daar goed — daarna word je doorgestuurd naar {host}.",
 			requestedByNoHost: "Een native of lokale app vroeg dit aan — ga alleen verder als je het zelf hebt gestart.",
 			requestedBy: "Aangevraagd door {client} ({host}). Ga alleen verder als je dit vertrouwt.",
 			title: "Verbind je AI",
@@ -537,6 +541,8 @@ export const translations = {
 	},
 	de: {
 		connectAi: {
+			openInBrowserTitle: "Im Browser fortsetzen",
+			openInBrowserDesc: "Zu deiner Sicherheit öffnet die CueVote-App keine fremden Seiten. Öffne diese Seite im Browser und bestätige dort — von dort geht es weiter zu {host}.",
 			requestedByNoHost: "Eine native oder lokale App hat dies angefragt — fahre nur fort, wenn du es selbst gestartet hast.",
 			requestedBy: "Angefragt von {client} ({host}). Fahre nur fort, wenn du dem vertraust.",
 			title: "Mit deiner KI verbinden",
@@ -804,6 +810,8 @@ export const translations = {
 	},
 	fr: {
 		connectAi: {
+			openInBrowserTitle: "Continue dans ton navigateur",
+			openInBrowserDesc: "Pour ta sécurité, l'application CueVote n'ouvre pas de sites externes. Ouvre cette page dans ton navigateur et valide là-bas — tu seras ensuite redirigé vers {host}.",
 			requestedByNoHost: "Une application native ou locale a fait cette demande — ne continuez que si vous l'avez lancée vous-même.",
 			requestedBy: "Demandé par {client} ({host}). Ne continuez que si vous lui faites confiance.",
 			title: "Connectez votre IA",
@@ -1073,6 +1081,8 @@ export const translations = {
 	},
 	es: {
 		connectAi: {
+			openInBrowserTitle: "Continúa en tu navegador",
+			openInBrowserDesc: "Por tu seguridad, la app de CueVote no abre sitios externos. Abre esta página en tu navegador y autorízalo allí — después se te enviará a {host}.",
 			requestedByNoHost: "Una app nativa o local solicitó esto: continúa solo si lo iniciaste tú.",
 			requestedBy: "Solicitado por {client} ({host}). Continúa solo si confías en ello.",
 			title: "Conecta tu IA",
@@ -1342,6 +1352,8 @@ export const translations = {
 	},
 	it: {
 		connectAi: {
+			openInBrowserTitle: "Continua nel browser",
+			openInBrowserDesc: "Per la tua sicurezza l'app CueVote non apre siti esterni. Apri questa pagina nel browser e conferma lì — poi verrai indirizzato a {host}.",
 			requestedByNoHost: "Un'app nativa o locale ha richiesto questo: continua solo se l'hai avviata tu.",
 			requestedBy: "Richiesto da {client} ({host}). Continua solo se ti fidi.",
 			title: "Collega la tua IA",
@@ -1611,6 +1623,8 @@ export const translations = {
 	},
 	pt: {
 		connectAi: {
+			openInBrowserTitle: "Continua no navegador",
+			openInBrowserDesc: "Para a tua segurança, a app CueVote não abre sites externos. Abre esta página no navegador e autoriza aí — depois serás encaminhado para {host}.",
 			requestedByNoHost: "Um app nativo ou local solicitou isto — só continue se foi você que iniciou.",
 			requestedBy: "Solicitado por {client} ({host}). Só continue se confiar nisto.",
 			title: "Conecte a sua IA",
@@ -1880,6 +1894,8 @@ export const translations = {
 	},
 	"zh-CN": {
 		connectAi: {
+			openInBrowserTitle: "请在浏览器中继续",
+			openInBrowserDesc: "为了你的安全，CueVote 应用不会打开外部网站。请在浏览器中打开此页面并在那里授权 — 之后会跳转到 {host}。",
 			requestedByNoHost: "某个本地或原生应用发起了此请求——只有在你本人发起时才继续。",
 			requestedBy: "由 {client}（{host}）请求。仅在你信任时继续。",
 			title: "连接你的 AI",
@@ -2145,6 +2161,8 @@ export const translations = {
 	},
 	"zh-TW": {
 		connectAi: {
+			openInBrowserTitle: "請在瀏覽器中繼續",
+			openInBrowserDesc: "為了你的安全，CueVote 應用程式不會開啟外部網站。請在瀏覽器中開啟此頁面並在那裡授權 — 之後會前往 {host}。",
 			requestedByNoHost: "某個本機或原生應用程式發起了此請求——只有在你本人發起時才繼續。",
 			requestedBy: "由 {client}（{host}）請求。僅在你信任時繼續。",
 			title: "連接你的 AI",
@@ -2410,6 +2428,8 @@ export const translations = {
 	},
 	ja: {
 		connectAi: {
+			openInBrowserTitle: "ブラウザで続ける",
+			openInBrowserDesc: "安全のため、CueVote アプリは外部サイトを開きません。このページをブラウザで開いて承認してください — そのあと {host} に移動します。",
 			requestedByNoHost: "ネイティブまたはローカルのアプリが要求しています。自分で開始した場合のみ続行してください。",
 			requestedBy: "{client}（{host}）からのリクエストです。信頼できる場合のみ続行してください。",
 			title: "AI を連携する",
@@ -2675,6 +2695,8 @@ export const translations = {
 	},
 	ko: {
 		connectAi: {
+			openInBrowserTitle: "브라우저에서 계속하기",
+			openInBrowserDesc: "보안을 위해 CueVote 앱은 외부 사이트를 열지 않습니다. 이 페이지를 브라우저에서 열고 그곳에서 승인하세요 — 그 후 {host}(으)로 이동합니다.",
 			requestedByNoHost: "네이티브 또는 로컬 앱이 요청했습니다. 직접 시작한 경우에만 계속하세요.",
 			requestedBy: "{client}({host})에서 요청했습니다. 신뢰하는 경우에만 계속하세요.",
 			title: "AI 연결",
@@ -2940,6 +2962,8 @@ export const translations = {
 	},
 	hi: {
 		connectAi: {
+			openInBrowserTitle: "अपने ब्राउज़र में जारी रखें",
+			openInBrowserDesc: "आपकी सुरक्षा के लिए CueVote ऐप बाहरी साइटें नहीं खोलता। इस पेज को अपने ब्राउज़र में खोलें और वहीं अनुमति दें — इसके बाद आपको {host} पर भेजा जाएगा।",
 			requestedByNoHost: "किसी नेटिव या स्थानीय ऐप ने यह अनुरोध किया — केवल तभी जारी रखें जब आपने इसे स्वयं शुरू किया हो।",
 			requestedBy: "{client} ({host}) द्वारा अनुरोधित। केवल तभी जारी रखें जब आप इस पर भरोसा करते हों।",
 			title: "अपना AI कनेक्ट करें",
@@ -3207,6 +3231,8 @@ export const translations = {
 	},
 	th: {
 		connectAi: {
+			openInBrowserTitle: "ดำเนินการต่อในเบราว์เซอร์",
+			openInBrowserDesc: "เพื่อความปลอดภัยของคุณ แอป CueVote จะไม่เปิดเว็บไซต์ภายนอก เปิดหน้านี้ในเบราว์เซอร์แล้วอนุญาตที่นั่น — จากนั้นคุณจะถูกส่งต่อไปยัง {host}",
 			requestedByNoHost: "แอปเนทีฟหรือแอปในเครื่องร้องขอสิ่งนี้ — ดำเนินการต่อเฉพาะเมื่อคุณเริ่มเองเท่านั้น",
 			requestedBy: "ร้องขอโดย {client} ({host}) ดำเนินการต่อเฉพาะเมื่อคุณเชื่อถือเท่านั้น",
 			title: "เชื่อมต่อ AI ของคุณ",
@@ -3472,6 +3498,8 @@ export const translations = {
 	},
 	vi: {
 		connectAi: {
+			openInBrowserTitle: "Tiếp tục trong trình duyệt",
+			openInBrowserDesc: "Vì sự an toàn của bạn, ứng dụng CueVote không mở các trang bên ngoài. Hãy mở trang này trong trình duyệt và cho phép ở đó — sau đó bạn sẽ được chuyển tới {host}.",
 			requestedByNoHost: "Một ứng dụng gốc hoặc cục bộ đã yêu cầu điều này — chỉ tiếp tục nếu chính bạn bắt đầu.",
 			requestedBy: "Được yêu cầu bởi {client} ({host}). Chỉ tiếp tục nếu bạn tin tưởng.",
 			title: "Kết nối AI của bạn",
@@ -3737,6 +3765,8 @@ export const translations = {
 	},
 	id: {
 		connectAi: {
+			openInBrowserTitle: "Lanjutkan di peramban",
+			openInBrowserDesc: "Demi keamanan Anda, aplikasi CueVote tidak membuka situs eksternal. Buka halaman ini di peramban dan setujui di sana — setelah itu Anda akan diarahkan ke {host}.",
 			requestedByNoHost: "Aplikasi native atau lokal meminta ini — lanjutkan hanya jika Anda sendiri yang memulainya.",
 			requestedBy: "Diminta oleh {client} ({host}). Lanjutkan hanya jika Anda memercayainya.",
 			title: "Hubungkan AI Anda",
@@ -4002,6 +4032,8 @@ export const translations = {
 	},
 	ms: {
 		connectAi: {
+			openInBrowserTitle: "Teruskan dalam pelayar",
+			openInBrowserDesc: "Demi keselamatan anda, aplikasi CueVote tidak membuka laman luar. Buka halaman ini dalam pelayar dan benarkan di sana — selepas itu anda akan dihantar ke {host}.",
 			requestedByNoHost: "Apl natif atau setempat meminta ini — teruskan hanya jika anda sendiri memulakannya.",
 			requestedBy: "Diminta oleh {client} ({host}). Teruskan hanya jika anda mempercayainya.",
 			title: "Sambungkan AI anda",
@@ -4267,6 +4299,8 @@ export const translations = {
 	},
 	tl: {
 		connectAi: {
+			openInBrowserTitle: "Magpatuloy sa iyong browser",
+			openInBrowserDesc: "Para sa iyong kaligtasan, hindi nagbubukas ng panlabas na site ang CueVote app. Buksan ang page na ito sa iyong browser at aprubahan doon — pagkatapos ay dadalhin ka sa {host}.",
 			requestedByNoHost: "May native o lokal na app na humiling nito — magpatuloy lamang kung ikaw mismo ang nagsimula.",
 			requestedBy: "Hiniling ng {client} ({host}). Magpatuloy lamang kung pinagkakatiwalaan mo ito.",
 			title: "Ikonekta ang iyong AI",
@@ -4534,6 +4568,8 @@ export const translations = {
 	},
 	pl: {
 		connectAi: {
+			openInBrowserTitle: "Kontynuuj w przeglądarce",
+			openInBrowserDesc: "Dla Twojego bezpieczeństwa aplikacja CueVote nie otwiera zewnętrznych stron. Otwórz tę stronę w przeglądarce i zatwierdź tam — potem zostaniesz przekierowany do {host}.",
 			requestedByNoHost: "Aplikacja natywna lub lokalna o to poprosiła — kontynuuj tylko, jeśli sam(a) to rozpocząłeś(aś).",
 			requestedBy: "Żądane przez {client} ({host}). Kontynuuj tylko, jeśli temu ufasz.",
 			title: "Połącz swoją AI",
@@ -4805,6 +4841,8 @@ export const translations = {
 	},
 	sv: {
 		connectAi: {
+			openInBrowserTitle: "Fortsätt i din webbläsare",
+			openInBrowserDesc: "För din säkerhet öppnar CueVote-appen inga externa webbplatser. Öppna den här sidan i webbläsaren och godkänn där — därefter skickas du vidare till {host}.",
 			requestedByNoHost: "En inbyggd eller lokal app begärde detta – fortsätt bara om du själv startade det.",
 			requestedBy: "Begärt av {client} ({host}). Fortsätt bara om du litar på det.",
 			title: "Anslut din AI",
@@ -5072,6 +5110,8 @@ export const translations = {
 	},
 	da: {
 		connectAi: {
+			openInBrowserTitle: "Fortsæt i din browser",
+			openInBrowserDesc: "Af hensyn til din sikkerhed åbner CueVote-appen ikke eksterne sider. Åbn denne side i din browser og godkend der — derefter sendes du videre til {host}.",
 			requestedByNoHost: "En native eller lokal app anmodede om dette – fortsæt kun, hvis du selv startede det.",
 			requestedBy: "Anmodet af {client} ({host}). Fortsæt kun, hvis du stoler på det.",
 			title: "Forbind din AI",
@@ -5339,6 +5379,8 @@ export const translations = {
 	},
 	no: {
 		connectAi: {
+			openInBrowserTitle: "Fortsett i nettleseren",
+			openInBrowserDesc: "Av hensyn til sikkerheten din åpner ikke CueVote-appen eksterne nettsteder. Åpne denne siden i nettleseren og godkjenn der — deretter sendes du videre til {host}.",
 			requestedByNoHost: "En nativ eller lokal app ba om dette – fortsett bare hvis du selv startet det.",
 			requestedBy: "Forespurt av {client} ({host}). Fortsett bare hvis du stoler på det.",
 			title: "Koble til AI-en din",
@@ -5606,6 +5648,8 @@ export const translations = {
 	},
 	fi: {
 		connectAi: {
+			openInBrowserTitle: "Jatka selaimessa",
+			openInBrowserDesc: "Turvallisuutesi vuoksi CueVote-sovellus ei avaa ulkoisia sivustoja. Avaa tämä sivu selaimessa ja hyväksy siellä — sen jälkeen sinut ohjataan osoitteeseen {host}.",
 			requestedByNoHost: "Natiivi tai paikallinen sovellus pyysi tätä – jatka vain, jos aloitit sen itse.",
 			requestedBy: "Pyytäjä: {client} ({host}). Jatka vain, jos luotat siihen.",
 			title: "Yhdistä tekoälysi",
@@ -5873,6 +5917,8 @@ export const translations = {
 	},
 	tr: {
 		connectAi: {
+			openInBrowserTitle: "Tarayıcında devam et",
+			openInBrowserDesc: "Güvenliğin için CueVote uygulaması dış siteleri açmaz. Bu sayfayı tarayıcında aç ve orada onayla — ardından {host} adresine yönlendirileceksin.",
 			requestedByNoHost: "Yerel veya native bir uygulama bunu istedi — yalnızca bunu kendin başlattıysan devam et.",
 			requestedBy: "{client} ({host}) tarafından istendi. Yalnızca güveniyorsan devam et.",
 			title: "Yapay zekânı bağla",
@@ -6140,6 +6186,8 @@ export const translations = {
 	},
 	el: {
 		connectAi: {
+			openInBrowserTitle: "Συνέχισε στο πρόγραμμα περιήγησης",
+			openInBrowserDesc: "Για την ασφάλειά σου, η εφαρμογή CueVote δεν ανοίγει εξωτερικούς ιστότοπους. Άνοιξε αυτή τη σελίδα στο πρόγραμμα περιήγησης και ενέκρινε εκεί — έπειτα θα μεταφερθείς στο {host}.",
 			requestedByNoHost: "Μια εγγενής ή τοπική εφαρμογή το ζήτησε — συνέχισε μόνο αν το ξεκίνησες ο ίδιος.",
 			requestedBy: "Ζητήθηκε από {client} ({host}). Συνέχισε μόνο αν το εμπιστεύεσαι.",
 			title: "Σύνδεσε το AI σου",
@@ -6407,6 +6455,8 @@ export const translations = {
 	},
 	ru: {
 		connectAi: {
+			openInBrowserTitle: "Продолжите в браузере",
+			openInBrowserDesc: "В целях безопасности приложение CueVote не открывает внешние сайты. Откройте эту страницу в браузере и подтвердите там — после этого вы перейдёте на {host}.",
 			requestedByNoHost: "Запрос отправило нативное или локальное приложение — продолжайте, только если вы сами это начали.",
 			requestedBy: "Запрошено {client} ({host}). Продолжайте, только если доверяете.",
 			title: "Подключите свой ИИ",
@@ -6678,6 +6728,8 @@ export const translations = {
 	},
 	uk: {
 		connectAi: {
+			openInBrowserTitle: "Продовжте у браузері",
+			openInBrowserDesc: "Задля вашої безпеки застосунок CueVote не відкриває зовнішні сайти. Відкрийте цю сторінку у браузері та підтвердьте там — після цього ви перейдете на {host}.",
 			requestedByNoHost: "Запит надіслав нативний або локальний застосунок — продовжуйте, лише якщо ви самі це почали.",
 			requestedBy: "Запит від {client} ({host}). Продовжуйте, лише якщо довіряєте.",
 			title: "Підключіть свій ШІ",
@@ -6949,6 +7001,8 @@ export const translations = {
 	},
 	cs: {
 		connectAi: {
+			openInBrowserTitle: "Pokračuj v prohlížeči",
+			openInBrowserDesc: "Kvůli tvé bezpečnosti aplikace CueVote neotevírá cizí stránky. Otevři tuto stránku v prohlížeči a potvrď to tam — poté budeš přesměrován na {host}.",
 			requestedByNoHost: "Požádala o to nativní nebo místní aplikace — pokračujte, jen pokud jste to spustili sami.",
 			requestedBy: "Požaduje {client} ({host}). Pokračujte, jen pokud tomu důvěřujete.",
 			title: "Připojte svou AI",
@@ -7220,6 +7274,8 @@ export const translations = {
 	},
 	hu: {
 		connectAi: {
+			openInBrowserTitle: "Folytasd a böngésződben",
+			openInBrowserDesc: "A biztonságod érdekében a CueVote alkalmazás nem nyit meg külső oldalakat. Nyisd meg ezt az oldalt a böngésződben, és ott hagyd jóvá — utána a(z) {host} címre kerülsz.",
 			requestedByNoHost: "Egy natív vagy helyi alkalmazás kérte ezt — csak akkor folytasd, ha te magad indítottad.",
 			requestedBy: "Kérelmező: {client} ({host}). Csak akkor folytasd, ha megbízol benne.",
 			title: "Csatlakoztasd az AI-odat",
@@ -7487,6 +7543,8 @@ export const translations = {
 	},
 	ro: {
 		connectAi: {
+			openInBrowserTitle: "Continuă în browser",
+			openInBrowserDesc: "Pentru siguranța ta, aplicația CueVote nu deschide site-uri externe. Deschide această pagină în browser și aprobă acolo — apoi vei fi trimis către {host}.",
 			requestedByNoHost: "O aplicație nativă sau locală a solicitat asta — continuă doar dacă ai inițiat-o tu.",
 			requestedBy: "Solicitat de {client} ({host}). Continuă doar dacă ai încredere.",
 			title: "Conectează-ți AI-ul",
@@ -7756,6 +7814,8 @@ export const translations = {
 	},
 	bg: {
 		connectAi: {
+			openInBrowserTitle: "Продължи в браузъра",
+			openInBrowserDesc: "За твоята сигурност приложението CueVote не отваря външни сайтове. Отвори тази страница в браузъра и потвърди там — след това ще бъдеш пренасочен към {host}.",
 			requestedByNoHost: "Заявка от нативно или локално приложение — продължете само ако вие сте я започнали.",
 			requestedBy: "Заявено от {client} ({host}). Продължете само ако му се доверявате.",
 			title: "Свържете своя ИИ",
@@ -8023,6 +8083,8 @@ export const translations = {
 	},
 	hr: {
 		connectAi: {
+			openInBrowserTitle: "Nastavi u pregledniku",
+			openInBrowserDesc: "Radi tvoje sigurnosti aplikacija CueVote ne otvara vanjske stranice. Otvori ovu stranicu u pregledniku i ondje odobri — nakon toga bit ćeš preusmjeren na {host}.",
 			requestedByNoHost: "Ovo je zatražila nativna ili lokalna aplikacija — nastavi samo ako si to sam pokrenuo.",
 			requestedBy: "Zatražio {client} ({host}). Nastavi samo ako mu vjeruješ.",
 			title: "Poveži svoj AI",
@@ -8292,6 +8354,8 @@ export const translations = {
 	},
 	sr: {
 		connectAi: {
+			openInBrowserTitle: "Nastavi u pregledaču",
+			openInBrowserDesc: "Radi tvoje bezbednosti CueVote aplikacija ne otvara spoljne sajtove. Otvori ovu stranicu u pregledaču i tamo odobri — nakon toga bićeš preusmeren na {host}.",
 			requestedByNoHost: "Ovo je zatražila nativna ili lokalna aplikacija — nastavi samo ako si to sam pokrenuo.",
 			requestedBy: "Zatražio {client} ({host}). Nastavi samo ako mu veruješ.",
 			title: "Poveži svoj AI",
@@ -8561,6 +8625,8 @@ export const translations = {
 	},
 	sk: {
 		connectAi: {
+			openInBrowserTitle: "Pokračuj v prehliadači",
+			openInBrowserDesc: "Kvôli tvojej bezpečnosti aplikácia CueVote neotvára cudzie stránky. Otvor túto stránku v prehliadači a potvrď to tam — potom budeš presmerovaný na {host}.",
 			requestedByNoHost: "Požiadala o to natívna alebo lokálna aplikácia — pokračuj len ak si to spustil sám.",
 			requestedBy: "Požaduje {client} ({host}). Pokračuj len ak tomu dôveruješ.",
 			title: "Pripoj svoju AI",
@@ -8832,6 +8898,8 @@ export const translations = {
 	},
 	ar: {
 		connectAi: {
+			openInBrowserTitle: "تابع في المتصفح",
+			openInBrowserDesc: "من أجل أمانك، لا يفتح تطبيق CueVote مواقع خارجية. افتح هذه الصفحة في المتصفح ووافق هناك — بعدها سيتم نقلك إلى {host}.",
 			requestedByNoHost: "طلب ذلك تطبيق محلي أو أصلي — تابع فقط إذا كنت قد بدأته بنفسك.",
 			requestedBy: "مطلوب من {client} ({host}). تابع فقط إذا كنت تثق به.",
 			title: "اربط الذكاء الاصطناعي الخاص بك",
@@ -9107,6 +9175,8 @@ export const translations = {
 	},
 	he: {
 		connectAi: {
+			openInBrowserTitle: "המשך בדפדפן",
+			openInBrowserDesc: "למען ביטחונך אפליקציית CueVote לא פותחת אתרים חיצוניים. פתח דף זה בדפדפן ואשר שם — לאחר מכן תועבר אל {host}.",
 			requestedByNoHost: "אפליקציה מקומית או נייטיב ביקשה זאת — המשך רק אם התחלת זאת בעצמך.",
 			requestedBy: "התבקש על ידי {client} ({host}). המשך רק אם אתה סומך על כך.",
 			title: "חבר את ה-AI שלך",
