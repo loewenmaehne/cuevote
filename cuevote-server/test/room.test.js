@@ -304,6 +304,108 @@ describe('Room', () => {
     });
   });
 
+  describe('State projection (PII)', () => {
+    function roomWithVotes(id) {
+      const room = new Room(id, id, null, { owner_id: 'owner-1' });
+      room.state.queue = [
+        {
+          id: 'track-1', videoId: 'v1', title: 'Track 1', score: 1,
+          voters: { 'guest-1': 'up', 'guest-2': 'down' },
+          suggestedBy: 'guest-2', suggestedByUsername: 'Guest Two',
+        },
+      ];
+      room.state.currentTrack = room.state.queue[0];
+      room.state.history = [{ id: 'old', videoId: 'v0', voters: { 'guest-1': 'up' }, suggestedBy: 'guest-1' }];
+      room.state.pendingSuggestions = [{ id: 'p1', videoId: 'v9', voters: {}, suggestedBy: 'guest-2', suggestedByUsername: 'Guest Two' }];
+      return room;
+    }
+
+    // The voters map is keyed by Google account id — it must not reach any
+    // client, and JOIN_ROOM does not even require a login.
+    it('never sends voters or suggestedBy to a client', () => {
+      const room = roomWithVotes('project-room');
+      const ws = mockWs(null);
+      room.addClient(ws);
+
+      const state = ws._messages[0].payload;
+      for (const track of [state.currentTrack, ...state.queue, ...state.history, ...state.pendingSuggestions]) {
+        assert.equal(track.voters, undefined);
+        assert.equal(track.suggestedBy, undefined);
+      }
+      room.removeClient(ws);
+      room.destroy();
+    });
+
+    it('keeps the display name, which is meant to be visible', () => {
+      const room = roomWithVotes('project-name-room');
+      const ws = mockWs(null);
+      room.addClient(ws);
+
+      assert.equal(ws._messages[0].payload.queue[0].suggestedByUsername, 'Guest Two');
+      room.removeClient(ws);
+      room.destroy();
+    });
+
+    it('gives each viewer its own vote and nobody else\'s', () => {
+      const room = roomWithVotes('project-myvote-room');
+      const up = mockWs({ id: 'guest-1', name: 'One' });
+      const down = mockWs({ id: 'guest-2', name: 'Two' });
+      const guest = mockWs(null);
+      room.addClient(up);
+      room.addClient(down);
+      room.addClient(guest);
+
+      assert.equal(up._messages[0].payload.queue[0].myVote, 'up');
+      assert.equal(down._messages[0].payload.queue[0].myVote, 'down');
+      assert.equal(guest._messages[0].payload.queue[0].myVote, undefined);
+      room.destroy();
+    });
+
+    it('projects deltas per viewer too', () => {
+      const room = roomWithVotes('project-delta-room');
+      const up = mockWs({ id: 'guest-1', name: 'One' });
+      const guest = mockWs(null);
+      room.addClient(up);
+      room.addClient(guest);
+      up._messages.length = 0;
+      guest._messages.length = 0;
+
+      room.updateState({ queue: room.state.queue });
+
+      assert.equal(up._messages[0].payload.queue[0].myVote, 'up');
+      assert.equal(up._messages[0].payload.queue[0].voters, undefined);
+      assert.equal(guest._messages[0].payload.queue[0].myVote, undefined);
+      assert.equal(guest._messages[0].payload.queue[0].voters, undefined);
+      room.destroy();
+    });
+
+    it('leaves the server-side state untouched so voting still works', () => {
+      const room = roomWithVotes('project-server-state-room');
+      const ws = mockWs({ id: 'guest-1', name: 'One' });
+      room.addClient(ws);
+
+      assert.equal(room.state.queue[0].voters['guest-1'], 'up');
+      room.handleVote(ws, { trackId: 'track-1', voteType: 'up' }); // toggles off
+      assert.equal(room.state.queue[0].voters['guest-1'], undefined);
+      room.destroy();
+    });
+
+    it('re-projects for one socket when its identity changes', () => {
+      const room = roomWithVotes('project-resend-room');
+      const ws = mockWs(null);
+      room.addClient(ws);
+      assert.equal(ws._messages[0].payload.queue[0].myVote, undefined);
+
+      ws.user = { id: 'guest-1', name: 'One' }; // as LOGIN / RESUME_SESSION does
+      ws._messages.length = 0;
+      room.sendStateTo(ws);
+
+      assert.equal(ws._messages[0].type, 'state');
+      assert.equal(ws._messages[0].payload.queue[0].myVote, 'up');
+      room.destroy();
+    });
+  });
+
   describe('Metadata Rehydration', () => {
     it('fills cleared title/artist on the now-playing track + queue and broadcasts', async () => {
       const room = new Room('rehydrate-room', 'Rehydrate', null, { owner_id: 'owner-1' });

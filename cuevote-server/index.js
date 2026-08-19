@@ -338,6 +338,10 @@ wss.on("connection", (ws, req) => {
                             type: "LOGIN_SUCCESS",
                             payload: { user: ws.user, sessionToken }
                         }));
+                        // The room state this socket already holds was built for
+                        // a guest, so it carries no myVote. Re-send it now that we
+                        // know who they are.
+                        if (ws.roomId && rooms.has(ws.roomId)) rooms.get(ws.roomId).sendStateTo(ws);
                     } catch (e) {
                         logger.error("[LOGIN FAILURE] Error Details:", e);
                         ws.send(JSON.stringify({ type: "error", message: "Login failed. Please try again." }));
@@ -366,6 +370,7 @@ wss.on("connection", (ws, req) => {
                                 type: "LOGIN_SUCCESS",
                                 payload: resumePayload
                             }));
+                            if (ws.roomId && rooms.has(ws.roomId)) rooms.get(ws.roomId).sendStateTo(ws);
                         } else {
                             // Session exists but user is gone (deleted?)
                             logger.warn(`[Resume Session] Session found but user ${redactForLog(session.user_id)} is missing. Invalidating.`);
@@ -391,6 +396,9 @@ wss.on("connection", (ws, req) => {
                         logger.warn(`[Logout] Invalid payload (clientId: ${ws.id}). Session token not invalidated.`);
                     }
                     ws.user = null;
+                    // Same reason as on login: the state this socket holds still
+                    // shows the previous identity's votes.
+                    if (ws.roomId && rooms.has(ws.roomId)) rooms.get(ws.roomId).sendStateTo(ws);
                     return;
                 }
 

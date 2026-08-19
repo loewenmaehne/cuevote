@@ -27,6 +27,42 @@ function parseISO8601Duration(duration) {
     return hours * 3600 + minutes * 60 + seconds;
 }
 
+// Track fields that name a person: `voters` is a map keyed by Google account id,
+// and `suggestedBy` holds one. Neither has any use on the client — the display
+// name travels separately as `suggestedByUsername`, and a viewer only needs to
+// know its OWN vote, which is folded in as `myVote`.
+//
+// Broadcasting the raw map handed every room member a list of the Google account
+// ids of everyone who had voted, next to their display names. JOIN_ROOM does not
+// require a login, so that included clients that had never signed in. admin.js
+// already strips exactly these two fields before the state leaves the process
+// over localhost; the same is now true of the socket.
+const TRACK_COLLECTIONS = ['queue', 'history', 'pendingSuggestions', 'bannedVideos'];
+
+function projectTrack(track, viewerId) {
+    if (!track || typeof track !== 'object') return track;
+    const { voters, suggestedBy, ...rest } = track;
+    const myVote = viewerId && voters ? voters[viewerId] : undefined;
+    return myVote ? { ...rest, myVote } : rest;
+}
+
+// A copy of a state — or of a delta — with those fields removed and the viewer's
+// own vote added. Only keys that are actually present get touched, so deltas
+// pass through unchanged apart from the track collections they carry.
+function projectState(state, viewerId) {
+    if (!state || typeof state !== 'object') return state;
+    const out = { ...state };
+    if ('currentTrack' in out) out.currentTrack = projectTrack(out.currentTrack, viewerId);
+    for (const key of TRACK_COLLECTIONS) {
+        if (Array.isArray(out[key])) out[key] = out[key].map(t => projectTrack(t, viewerId));
+    }
+    return out;
+}
+
+function viewerIdOf(ws) {
+    return (ws && ws.user && ws.user.id) || '';
+}
+
 // Fisher-Yates shuffle for unbiased randomization
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -202,7 +238,7 @@ class Room {
         }
 
         try {
-            const payload = JSON.stringify({ type: "state", payload: this.state });
+            const payload = JSON.stringify({ type: "state", payload: projectState(this.state, viewerIdOf(ws)) });
             if (ws.readyState === 1) {
                 ws.send(payload);
             }
@@ -304,9 +340,36 @@ class Room {
         this.clients.delete(ws);
     }
 
+    // Send one socket the state as that viewer may see it. Used when ws.user
+    // changes mid-session (login / resume) — the copy the client already holds
+    // was projected for whoever it was at the time.
+    sendStateTo(ws) {
+        if (!ws || ws.readyState !== 1) return;
+        try {
+            ws.send(JSON.stringify({ type: "state", payload: projectState(this.state, viewerIdOf(ws)) }));
+        } catch (e) {
+            logger.error(`ERROR sending state to client ${ws.id}:`, e);
+        }
+    }
+
+    // Serialize once per distinct viewer identity, not once per socket: every
+    // guest shares one projection, and so do a user's several tabs.
+    broadcastProjected(type, payload) {
+        const byViewer = new Map();
+        for (const client of this.clients) {
+            if (client.readyState !== 1) continue;
+            const viewerId = viewerIdOf(client);
+            let message = byViewer.get(viewerId);
+            if (message === undefined) {
+                message = JSON.stringify({ type, payload: projectState(payload, viewerId) });
+                byViewer.set(viewerId, message);
+            }
+            client.send(message);
+        }
+    }
+
     broadcastState() {
-        const message = JSON.stringify({ type: "state", payload: this.state });
-        this.broadcast(message);
+        this.broadcastProjected("state", this.state);
     }
 
     broadcast(message) {
@@ -327,8 +390,7 @@ class Room {
     }
 
     broadcastDelta(delta) {
-        const message = JSON.stringify({ type: "state_delta", payload: delta });
-        this.broadcast(message);
+        this.broadcastProjected("state_delta", delta);
     }
 
     persistLobbyPreview() {

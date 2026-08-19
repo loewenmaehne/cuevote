@@ -102,7 +102,6 @@ function RoomBody() {
     lastErrorCode,
     lastErrorTimestamp,
     lastMessage,
-    clientId,
     user,
     handleLogout,
     handleLoginSuccess,
@@ -1391,17 +1390,16 @@ function RoomBody() {
 
 
 
-  // Compute user's votes from the queue data
+  // The viewer's own votes. The server marks them per recipient as `myVote` —
+  // the full voters map is no longer broadcast, since it is keyed by Google
+  // account id. (The old lookup here read voters[clientId], but clientId is a
+  // browser-local UUID and never matched, so no highlight ever showed.)
   const userVotes = {};
-  if (clientId) {
-    queue.forEach(track => {
-      if (track.voters && track.voters[clientId]) {
-        userVotes[track.id] = track.voters[clientId];
-      }
-    });
-    if (currentTrack && currentTrack.voters && currentTrack.voters[clientId]) {
-      userVotes[currentTrack.id] = currentTrack.voters[clientId];
-    }
+  queue.forEach(track => {
+    if (track.myVote) userVotes[track.id] = track.myVote;
+  });
+  if (currentTrack && currentTrack.myVote) {
+    userVotes[currentTrack.id] = currentTrack.myVote;
   }
 
   const passwordModalContent = showPasswordModal ? (
