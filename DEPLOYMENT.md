@@ -63,6 +63,15 @@ NODE_ENV=production
 ACTIVE_CHANNEL_DAYS=60
 # LOG_LEVEL=info
 #
+# Which peers may speak for a client. The per-IP socket cap identifies clients
+# by X-Real-IP / X-Forwarded-For, but only when the connection arrives from one
+# of these addresses — otherwise by the socket address. The default covers the
+# usual "nginx on the same host" layout; set this only if nginx (or another
+# reverse proxy) runs elsewhere. Never list an address you do not control: a
+# peer on this list can name itself anything and the cap stops counting.
+# TRUSTED_PROXY_IPS=127.0.0.1,::1,::ffff:127.0.0.1
+# MAX_SOCKETS_PER_IP=20
+#
 # Admin API for the cuevote-mcp ops server (Phase 1b). Disabled unless
 # ADMIN_TOKEN is set. Binds to 127.0.0.1 only — do NOT expose this port via
 # nginx or any public reverse proxy.
@@ -289,6 +298,12 @@ Check status with:
 ```bash
 sudo ufw status
 ```
+
+> **Do not open 8080 (or 8081/8082).** The backend binds `0.0.0.0`, so the only
+> thing keeping it behind nginx is the firewall. Reached directly, a client is
+> no longer a trusted proxy's forwarded request, and — by design — is then
+> identified by its socket address rather than by any header it sends. Keeping
+> the port closed is what makes `X-Real-IP` meaningful in the first place.
 
 ## 8. Security Hardening (Recommended)
 

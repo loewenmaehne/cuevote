@@ -169,10 +169,37 @@ const clients = new Set();
 const MAX_SOCKETS_PER_IP = parseInt(process.env.MAX_SOCKETS_PER_IP || '20', 10);
 const ipSocketCount = new Map(); // ip -> active socket count
 
+// Peers whose forwarding headers we believe. Everything else is treated as a
+// direct client and identified by its socket address.
+//
+// This matters because the server binds 0.0.0.0, so it can be reached without
+// going through nginx: a client that does so could otherwise name itself via a
+// header and the cap above would count each connection under a different key.
+const TRUSTED_PROXY_IPS = new Set(
+    (process.env.TRUSTED_PROXY_IPS || '127.0.0.1,::1,::ffff:127.0.0.1')
+        .split(',').map(s => s.trim()).filter(Boolean)
+);
+
 function getClientIp(req) {
+    const peer = req.socket.remoteAddress || 'unknown';
+    if (!TRUSTED_PROXY_IPS.has(peer)) return peer;
+
+    // nginx sets `X-Real-IP $remote_addr`, which REPLACES whatever the client
+    // sent — one hop, not spoofable. Prefer it.
+    const real = req.headers['x-real-ip'];
+    if (typeof real === 'string' && real.trim()) return real.trim();
+
+    // Fallback for a proxy that only sends X-Forwarded-For. Ours builds it with
+    // `$proxy_add_x_forwarded_for`, which APPENDS the peer address — so the last
+    // element is the proxy's own observation and the leading ones are whatever
+    // the client sent. Reading the first element (as this used to) means reading
+    // the client's own claim.
     const xff = req.headers['x-forwarded-for'];
-    if (xff) return xff.split(',')[0].trim();
-    return req.socket.remoteAddress || 'unknown';
+    if (typeof xff === 'string' && xff.trim()) {
+        const parts = xff.split(',').map(s => s.trim()).filter(Boolean);
+        if (parts.length) return parts[parts.length - 1];
+    }
+    return peer;
 }
 
 logger.info("WebSocket server started on port", process.env.PORT || 8080);
