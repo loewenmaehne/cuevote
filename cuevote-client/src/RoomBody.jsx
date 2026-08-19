@@ -1267,11 +1267,10 @@ function RoomBody() {
 
     sendMessage({
       type: "FETCH_SUGGESTIONS",
-      payload: {
-        videoId: track.videoId,
-        title: track.title,
-        artist: track.artist
-      }
+      // videoId only — the server resolves title/artist from the room's own
+      // tracks. Sending them from here would hand the caller both the cache key
+      // and the search term.
+      payload: { videoId: track.videoId }
     });
   }, [activeSuggestionId, sendMessage]);
 

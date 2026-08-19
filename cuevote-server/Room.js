@@ -803,8 +803,47 @@ class Room {
         }
     }
 
-    async handleFetchSuggestions(ws, { videoId, title, artist }) {
+    // Look a video up among the tracks this room actually holds. Used to keep
+    // FETCH_SUGGESTIONS from being a free-form YouTube search.
+    findRoomTrack(videoId) {
+        const pools = [
+            this.state.currentTrack ? [this.state.currentTrack] : [],
+            this.state.queue,
+            this.state.history,
+            this.state.pendingSuggestions,
+        ];
+        for (const pool of pools) {
+            const hit = Array.isArray(pool) && pool.find(t => t && t.videoId === videoId);
+            if (hit) return hit;
+        }
+        return null;
+    }
+
+    async handleFetchSuggestions(ws, { videoId }) {
         if (!videoId) return;
+
+        // Every other action that spends YouTube quota requires a login
+        // (handleSuggestSong, handleVote). This one was the exception, and it is
+        // the most expensive of them: a cache miss is a Search call at ~100 of
+        // the 10.000 daily quota units.
+        if (!ws.user) {
+            ws.send(JSON.stringify({ type: "error", message: "You must be logged in to fetch suggestions." }));
+            return;
+        }
+
+        // Title and artist come from the server, never from the payload. The
+        // client used to supply both the cache key AND the search term, which
+        // let anyone write an arbitrary result list under a popular track's id —
+        // platform-wide, for the 30 days the cache lives, and from there into
+        // real queues via autoRefill. Resolving against the room's own tracks
+        // (falling back to the videos table for one that just rotated out) pins
+        // the search to metadata we already hold for that exact id.
+        const known = this.findRoomTrack(videoId) || db.getVideo(videoId);
+        if (!known) {
+            ws.send(JSON.stringify({ type: "error", message: "Unknown video." }));
+            return;
+        }
+        const { title, artist } = known;
 
         try {
             // 1. Check Cache
