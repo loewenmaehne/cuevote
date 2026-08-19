@@ -22,6 +22,7 @@ import { config } from "./config.js";
 import { CueVoteBridge } from "./wsClient.js";
 import { registerDjTools } from "./tools/dj.js";
 import { provider, finalizeAuthorization } from "./oauth/provider.js";
+import { audit } from "./audit.js";
 import { mintSessionToken } from "./minter.js";
 
 interface Session {
@@ -90,7 +91,17 @@ app.use(
 app.post("/oauth/finalize", express.json(), (req: Request, res: Response) => {
   const secret = config.oauth.finalizeSecret;
   const provided = (req.headers["authorization"] || "").toString().replace(/^Bearer /, "");
-  if (!secret || !safeEqual(provided, secret)) return void res.status(401).json({ error: "unauthorized" });
+  if (!secret || !safeEqual(provided, secret)) {
+    // This route is reached server-to-server over loopback only, so a rejection
+    // here is not a user typo — it is either a misconfigured deploy or someone
+    // probing the consent bridge. Record the peer: anything but 127.0.0.1 means
+    // the endpoint is exposed further than it should be.
+    audit("oauth_finalize_rejected", {
+      reason: secret ? "bad_secret" : "not_configured",
+      peer: req.socket.remoteAddress,
+    });
+    return void res.status(401).json({ error: "unauthorized" });
+  }
   const body = (req.body ?? {}) as { handle?: string; userId?: string };
   if (!body.handle || !body.userId) return void res.status(400).json({ error: "missing handle or userId" });
   try {

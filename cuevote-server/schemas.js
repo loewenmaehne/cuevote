@@ -82,10 +82,13 @@ const VideoIdPayload = z.object({
   videoId: z.string().min(1).max(50),
 });
 
+// videoId is the related-videos cache KEY, so its shape is a security property:
+// a free-form string lets a caller pick which cache entry gets written. Pin it
+// to the YouTube id format. title/artist are deliberately absent — the server
+// resolves those itself (see Room.handleFetchSuggestions); anything the client
+// still sends is stripped here.
 const FetchSuggestionsPayload = z.object({
-  videoId: z.string().min(1).max(50),
-  title: z.string().max(500).optional(),
-  artist: z.string().max(500).optional(),
+  videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/),
 });
 
 const UpdateDurationPayload = z.number().finite().positive().max(86400);

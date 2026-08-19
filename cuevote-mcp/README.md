@@ -105,4 +105,13 @@ is gated on the YouTube quota review. Users then add
   `CUEVOTE_OAUTH_DEV_USER` empty in production.
 - Email (PII) is returned only by the explicit user/GDPR tools, never in lists.
 - Destructive tools require `confirm: true` and are written to the audit log.
+- The audit log also records the OAuth lifecycle of the public DJ server:
+  `oauth_client_registered`, `oauth_consent_requested`, `oauth_consent_granted`,
+  `oauth_consent_failed`, `oauth_token_issued`, `oauth_token_revoked`,
+  `oauth_finalize_rejected`, and `oauth_dev_bypass`. Client registration is open
+  and the client/token stores are in-memory, so without this log a restart
+  leaves no way to tell which clients were ever registered. Tokens themselves
+  are never logged — only a 12-char SHA-256 prefix, enough to tie an issue to
+  its revocation. It rotates at `CUEVOTE_AUDIT_MAX_BYTES`, keeping
+  `CUEVOTE_AUDIT_KEEP` files.
 - All code is PolyForm Noncommercial licensed, like the rest of CueVote.

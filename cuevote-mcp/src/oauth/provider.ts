@@ -8,7 +8,7 @@
 //
 // NOTE: stores are in-memory — a restart invalidates tokens/clients (users
 // re-authorize). Phase 3 hardening: move to SQLite.
-import { randomUUID, randomBytes } from "node:crypto";
+import { randomUUID, randomBytes, createHash } from "node:crypto";
 import type { Response } from "express";
 import type { OAuthServerProvider } from "@modelcontextprotocol/sdk/server/auth/provider.js";
 import type { OAuthRegisteredClientsStore } from "@modelcontextprotocol/sdk/server/auth/clients.js";
@@ -20,6 +20,12 @@ import type {
 import type { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 import { InvalidGrantError, InvalidTokenError } from "@modelcontextprotocol/sdk/server/auth/errors.js";
 import { config } from "../config.js";
+import { audit } from "../audit.js";
+
+// Short, non-reversible handle for a token, so an issue can be tied to its
+// revocation in the log without the log itself holding credentials.
+const fingerprint = (token: string): string =>
+  createHash("sha256").update(token).digest("hex").slice(0, 12);
 
 const ACCESS_TTL = 3600; // 1h
 const REFRESH_TTL = 30 * 86400; // 30d
@@ -81,15 +87,35 @@ const clientsStore: OAuthRegisteredClientsStore = {
       client_id_issued_at: now(),
     } as OAuthClientInformationFull;
     clients.set(full.client_id, full);
+    // Registration is open (Dynamic Client Registration, by design) and this
+    // store is in-memory, so a restart erases every trace of who registered
+    // what. Without this line, "was a client with a hostile redirect_uri ever
+    // registered?" has no answer at all after the next restart — and for that
+    // surface, absence of evidence would not be evidence of absence.
+    audit("oauth_client_registered", {
+      clientId: full.client_id,
+      clientName: full.client_name,
+      redirectUris: full.redirect_uris,
+      grantTypes: full.grant_types,
+      scope: full.scope,
+    });
     return full;
   },
 };
 
-function issueTokens(clientId: string, userId: string, scopes: string[]): OAuthTokens {
+function issueTokens(clientId: string, userId: string, scopes: string[], grant: string): OAuthTokens {
   const access = newToken();
   const refresh = newToken();
   accessTokens.set(access, { clientId, userId, scopes, expiresAt: now() + ACCESS_TTL });
   refreshTokens.set(refresh, { clientId, userId, scopes, expiresAt: now() + REFRESH_TTL });
+  audit("oauth_token_issued", {
+    clientId,
+    clientName: clients.get(clientId)?.client_name,
+    userId,
+    grant,
+    scopes,
+    tokenId: fingerprint(access),
+  });
   return {
     access_token: access,
     token_type: "Bearer",
@@ -127,6 +153,14 @@ export const provider: OAuthServerProvider = {
         redirectUri: params.redirectUri,
         scopes,
       });
+      // Non-production only, but it IS a login bypass — record every use so a
+      // dev build that somehow reaches real users is visible in the log.
+      audit("oauth_dev_bypass", {
+        clientId: client.client_id,
+        clientName: client.client_name,
+        userId: devUser,
+        redirectUri: params.redirectUri,
+      });
       const u = new URL(params.redirectUri);
       u.searchParams.set("code", code);
       if (params.state) u.searchParams.set("state", params.state);
@@ -160,6 +194,15 @@ export const provider: OAuthServerProvider = {
     } catch {
       /* non-URL redirect (e.g. custom scheme) — omit host hint */
     }
+    // The attempt, not just the outcome: a consent screen the user refuses
+    // leaves no other trace, and a burst of these against many users is exactly
+    // what a phishing run looks like.
+    audit("oauth_consent_requested", {
+      clientId: client.client_id,
+      clientName: client.client_name,
+      redirectUri: params.redirectUri,
+      scopes,
+    });
     res.redirect(c.toString());
   },
 
@@ -176,7 +219,7 @@ export const provider: OAuthServerProvider = {
     if (!rec || rec.clientId !== client.client_id || rec.expiresAt < now()) throw new InvalidGrantError("Invalid or expired authorization grant.");
     if (redirectUri && redirectUri !== rec.redirectUri) throw new InvalidGrantError("Invalid or expired authorization grant.");
     codes.delete(authorizationCode); // single use
-    return issueTokens(client.client_id, rec.userId, rec.scopes);
+    return issueTokens(client.client_id, rec.userId, rec.scopes, "authorization_code");
   },
 
   async exchangeRefreshToken(client, refreshToken, scopes) {
@@ -184,7 +227,7 @@ export const provider: OAuthServerProvider = {
     if (!rec || rec.clientId !== client.client_id || rec.expiresAt < now()) throw new InvalidGrantError("Invalid or expired authorization grant.");
     refreshTokens.delete(refreshToken); // rotate: the old refresh token is single-use
     const grantScopes = scopes && scopes.length ? scopes.filter((s) => rec.scopes.includes(s)) : rec.scopes;
-    return issueTokens(client.client_id, rec.userId, grantScopes);
+    return issueTokens(client.client_id, rec.userId, grantScopes, "refresh_token");
   },
 
   async verifyAccessToken(token): Promise<AuthInfo> {
@@ -199,9 +242,25 @@ export const provider: OAuthServerProvider = {
     };
   },
 
-  async revokeToken(_client, request: OAuthTokenRevocationRequest) {
-    accessTokens.delete(request.token);
-    refreshTokens.delete(request.token);
+  async revokeToken(client, request: OAuthTokenRevocationRequest) {
+    // Only revoke a token that belongs to the client presenting it. Without the
+    // ownership check any authenticated client could revoke any token it managed
+    // to learn — RFC 7009 §2.1 requires the check for exactly that reason.
+    // Silence on a miss is deliberate: the endpoint must not report whether an
+    // unknown token exists.
+    let revoked = false;
+    for (const store of [accessTokens, refreshTokens]) {
+      const rec = store.get(request.token);
+      if (rec && rec.clientId === client.client_id) {
+        store.delete(request.token);
+        revoked = true;
+      }
+    }
+    audit("oauth_token_revoked", {
+      clientId: client.client_id,
+      tokenId: fingerprint(request.token),
+      revoked,
+    });
   },
 };
 
@@ -212,12 +271,24 @@ export const provider: OAuthServerProvider = {
 export function finalizeAuthorization(handle: string, userId: string): string {
   sweep();
   const p = pending.get(handle);
-  if (!p) throw new Error("invalid_or_expired_handle");
+  if (!p) {
+    audit("oauth_consent_failed", { userId, reason: "invalid_or_expired_handle" });
+    throw new Error("invalid_or_expired_handle");
+  }
   pending.delete(handle);
   const code = createCode({
     clientId: p.clientId,
     userId,
     codeChallenge: p.codeChallenge,
+    redirectUri: p.redirectUri,
+    scopes: p.scopes,
+  });
+  // Who approved what. This is the record that says a real user consented to a
+  // named client sending their authorization to a specific host.
+  audit("oauth_consent_granted", {
+    clientId: p.clientId,
+    clientName: clients.get(p.clientId)?.client_name,
+    userId,
     redirectUri: p.redirectUri,
     scopes: p.scopes,
   });

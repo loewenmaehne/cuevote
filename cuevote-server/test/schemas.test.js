@@ -123,6 +123,37 @@ describe('Zod Schemas', () => {
     });
   });
 
+  describe('FetchSuggestionsPayload', () => {
+    it('should accept a YouTube video id', () => {
+      const result = schemas.FetchSuggestionsPayload.safeParse({ videoId: 'dQw4w9WgXcQ' });
+      assert.ok(result.success);
+    });
+
+    // videoId is the related-videos cache key. A free-form string would let a
+    // caller choose which cache entry gets overwritten.
+    it('should reject a free-form cache key', () => {
+      const result = schemas.FetchSuggestionsPayload.safeParse({ videoId: 'not-a-video-id' });
+      assert.ok(!result.success);
+    });
+
+    it('should reject the wrong length', () => {
+      assert.ok(!schemas.FetchSuggestionsPayload.safeParse({ videoId: 'dQw4w9WgXc' }).success);
+      assert.ok(!schemas.FetchSuggestionsPayload.safeParse({ videoId: 'dQw4w9WgXcQQ' }).success);
+    });
+
+    // The server resolves title/artist itself; anything sent here is stripped
+    // rather than passed through to the search query.
+    it('should strip client-supplied title and artist', () => {
+      const result = schemas.FetchSuggestionsPayload.safeParse({
+        videoId: 'dQw4w9WgXcQ',
+        title: 'attacker chosen',
+        artist: 'attacker chosen',
+      });
+      assert.ok(result.success);
+      assert.deepEqual(result.data, { videoId: 'dQw4w9WgXcQ' });
+    });
+  });
+
   describe('WebSocketMessage', () => {
     it('should accept valid message', () => {
       const result = schemas.WebSocketMessage.safeParse({
