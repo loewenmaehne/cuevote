@@ -145,11 +145,13 @@ struct ContentView: View {
                                 self.isButtonVisible = false 
                                 self.reloadKey = UUID()
                                 
-                                if let url = URL(string: code), code.hasPrefix("http") {
-                                    // STRICT VALIDATION
-                                    if url.scheme == "https" && (url.host == "cuevote.com" || url.host == "www.cuevote.com") {
-                                        currentUrl = url
-                                    }
+                                // A QR code is attacker-supplied input: anyone can
+                                // print one and stick it on a table. Validate against
+                                // the same allowlist the WebView enforces, so a scan
+                                // can never be the thing that gets a foreign origin
+                                // loaded next to the native bridge.
+                                if let url = URL(string: code), CueVoteOrigin.isTrusted(url) {
+                                    currentUrl = url
                                 }
                             }
                             

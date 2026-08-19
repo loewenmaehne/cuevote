@@ -3,6 +3,38 @@ import WebKit
 import AuthenticationServices
 import CryptoKit
 
+/// The origins this wrapper trusts.
+///
+/// Two separate jobs hang off this list, and both matter:
+///   * only these may load in the WebView's main frame, and
+///   * only these may talk to the native bridge.
+/// The bridge hands out a Google access token that doubles as the CueVote login,
+/// so any page that reaches it can take over the account. Keeping foreign pages
+/// out of the WebView entirely is the primary defence; the per-message origin
+/// check below is the backstop.
+enum CueVoteOrigin {
+    static let allowedHosts: Set<String> = ["cuevote.com", "www.cuevote.com"]
+
+    static func isTrusted(_ url: URL?) -> Bool {
+        guard let url = url,
+              url.scheme?.lowercased() == "https",
+              let host = url.host?.lowercased() else { return false }
+        return allowedHosts.contains(host)
+    }
+
+    /// Origin of the frame that actually sent a script message.
+    ///
+    /// `message.webView?.url` is the MAIN frame's URL — checking that would let a
+    /// third-party iframe embedded on cuevote.com (the YouTube player is one)
+    /// speak with CueVote's authority. `WKFrameInfo.securityOrigin` is the frame's
+    /// own origin and cannot be spoofed from JS.
+    static func isTrusted(_ frame: WKFrameInfo) -> Bool {
+        let origin = frame.securityOrigin
+        return origin.`protocol`.lowercased() == "https"
+            && allowedHosts.contains(origin.host.lowercased())
+    }
+}
+
 struct WebView: UIViewRepresentable {
     let url: URL
     @Binding var isOffline: Bool
@@ -18,11 +50,18 @@ struct WebView: UIViewRepresentable {
         config.preferences.javaScriptCanOpenWindowsAutomatically = true
         config.applicationNameForUserAgent = "CueVoteWrapper"
         
-        let scriptSource = "window.CueVoteAndroid = { isNative: function() { return true; } };"
-        let script = WKUserScript(source: scriptSource, injectionTime: .atDocumentStart, forMainFrameOnly: false)
-        config.userContentController.addUserScript(script)
-        
+        // One content controller for both the user script and the message
+        // handlers. Building a second one and assigning it over the first
+        // silently drops whatever was registered on the first — keep this as a
+        // single object so a future handler cannot be lost that way.
         let contentController = WKUserContentController()
+
+        // Main frame only: sub-frames are third-party (the YouTube player) and
+        // have no business seeing the wrapper marker.
+        let scriptSource = "window.CueVoteAndroid = { isNative: function() { return true; } };"
+        let script = WKUserScript(source: scriptSource, injectionTime: .atDocumentStart, forMainFrameOnly: true)
+        contentController.addUserScript(script)
+
         contentController.add(context.coordinator, name: "nativeGoogleLogin")
         contentController.add(context.coordinator, name: "toggleQRButton")
         config.userContentController = contentController
@@ -40,6 +79,12 @@ struct WebView: UIViewRepresentable {
             // OAuth tokens are alphanumeric in practice, but a single stray
             // quote or backslash would break out of the JS string context and
             // turn the bridge into an RCE primitive in the web layer.
+            //
+            // Re-check the origin at injection time, not just when the sign-in
+            // started. ASWebAuthenticationSession runs for as long as the user
+            // needs to type a password, and the page underneath can navigate in
+            // the meantime — deliver the token only if CueVote is still loaded.
+            guard CueVoteOrigin.isTrusted(webView.url) else { return }
             if let token = note.object as? String,
                let tokenData = try? JSONEncoder().encode(token),
                let tokenJson = String(data: tokenData, encoding: .utf8) {
@@ -124,6 +169,58 @@ struct WebView: UIViewRepresentable {
             webView.reload()
         }
 
+        /// Gate on what may load in the WebView at all.
+        ///
+        /// The wrapper shows no address bar, so a foreign page loaded here looks
+        /// exactly like CueVote to the user — and sits next to a native bridge
+        /// that hands out a Google access token. Foreign pages are therefore
+        /// handed to the system browser instead, where the user can see the real
+        /// origin and where no bridge exists.
+        func webView(_ webView: WKWebView,
+                     decidePolicyFor navigationAction: WKNavigationAction,
+                     decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+
+            // Sub-frames are the page's own business — the YouTube player lives in
+            // one, and the server's CSP (frame-src) already restricts them. Only
+            // the main frame is gated here. A nil targetFrame means a new window,
+            // which is treated like a main-frame navigation so target="_blank"
+            // links end up in the browser rather than dying silently.
+            if let target = navigationAction.targetFrame, !target.isMainFrame {
+                decisionHandler(.allow)
+                return
+            }
+
+            guard let url = navigationAction.request.url else {
+                decisionHandler(.cancel)
+                return
+            }
+
+            if CueVoteOrigin.isTrusted(url) {
+                decisionHandler(.allow)
+                return
+            }
+
+            // about:blank / about:srcdoc are WebKit's own, not a navigation away.
+            if url.scheme?.lowercased() == "about" {
+                decisionHandler(.allow)
+                return
+            }
+
+            decisionHandler(.cancel)
+
+            // Only a page of ours earns the hand-off. The OAuth consent screen
+            // legitimately redirects to a DJ client's redirect_uri — https, or a
+            // custom scheme for a native client — and that has to reach the
+            // system. Granting the same to any page would turn a foreign document
+            // into a launcher for arbitrary app URLs.
+            guard CueVoteOrigin.isTrusted(navigationAction.sourceFrame),
+                  let scheme = url.scheme?.lowercased(),
+                  !["about", "data", "blob", "file", "javascript"].contains(scheme),
+                  UIApplication.shared.canOpenURL(url) else { return }
+
+            UIApplication.shared.open(url)
+        }
+
         func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
             return UIApplication.shared.connectedScenes
                 .filter { $0.activationState == .foregroundActive }
@@ -133,6 +230,11 @@ struct WebView: UIViewRepresentable {
         }
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            // Message handlers are NOT origin-bound: WebKit delivers messages from
+            // whatever document happens to be loaded, main frame or iframe. Every
+            // handler therefore has to check for itself who is calling.
+            guard CueVoteOrigin.isTrusted(message.frameInfo) else { return }
+
             if message.name == "nativeGoogleLogin" {
                 startGoogleSignInPKCE()
             } else if message.name == "toggleQRButton" {
@@ -146,11 +248,7 @@ struct WebView: UIViewRepresentable {
                     show = numVal.boolValue
                 }
 
-                // Only honor requests from CueVote origin
-                if let host = message.webView?.url?.host,
-                   host == "cuevote.com" || host == "www.cuevote.com" {
-                    NotificationCenter.default.post(name: NSNotification.Name("ToggleQRButton"), object: show)
-                }
+                NotificationCenter.default.post(name: NSNotification.Name("ToggleQRButton"), object: show)
             }
         }
         
