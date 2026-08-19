@@ -30,6 +30,21 @@ import android.os.Message
 import android.app.Dialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
+// The origins this wrapper will load. Everything else belongs in the system
+// browser: the app has no address bar, so a foreign page here is
+// indistinguishable from CueVote, and window.CueVoteAndroid is injected into
+// whatever document happens to be loaded.
+private val CUEVOTE_HOSTS = setOf("cuevote.com", "www.cuevote.com")
+
+private fun isCueVoteUrl(uri: android.net.Uri?): Boolean {
+    if (uri == null) return false
+    return uri.scheme?.lowercase() == "https" && uri.host?.lowercase() in CUEVOTE_HOSTS
+}
+
+private fun isCueVoteUrl(url: String?): Boolean =
+    if (url.isNullOrBlank()) false
+    else try { isCueVoteUrl(android.net.Uri.parse(url)) } catch (_: Exception) { false }
+
 class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
 
     private lateinit var webView: WebView
@@ -121,7 +136,17 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         // Web Client to keep links internal & Handle Errors
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                return false 
+                // Sub-frames (the YouTube player) are the page's own business and
+                // are governed by the server's CSP; only main-frame navigation is
+                // gated here.
+                if (request?.isForMainFrame != true) return false
+                if (isCueVoteUrl(request.url)) return false
+
+                // Same routing as onCreateWindow below, which already did this for
+                // popups: hand it to the system browser, where the user can see
+                // the real origin and the JS interface does not exist.
+                this@MainActivity.openExternally(request.url)
+                return true
             }
             
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -158,16 +183,7 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
                 val captureWebView = WebView(this@MainActivity)
                 captureWebView.webViewClient = object : WebViewClient() {
                     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                        val url = request?.url
-                        if (url != null) {
-                            try {
-                                val intent = Intent(Intent.ACTION_VIEW, url)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                this@MainActivity.startActivity(intent)
-                            } catch (_: Exception) {
-                                // No browser installed — silently drop.
-                            }
-                        }
+                        this@MainActivity.openExternally(request?.url)
                         captureWebView.destroy()
                         return true
                     }
@@ -310,6 +326,26 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         scannerFragment.show(supportFragmentManager, "QRScanner")
     }
 
+    // Hand a URL to whatever app the system has for it.
+    //
+    // Restricted to schemes a web page may legitimately link to. Firing
+    // ACTION_VIEW for anything at all would let a page in the WebView reach
+    // arbitrary other apps by their custom scheme.
+    internal fun openExternally(uri: android.net.Uri?) {
+        if (uri == null) return
+        when (uri.scheme?.lowercase()) {
+            "http", "https", "mailto", "tel" -> {}
+            else -> return
+        }
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        } catch (_: Exception) {
+            // No app installed for it — silently drop.
+        }
+    }
+
     // QRScanListener Implementation
     override fun onScanComplete(contents: String) {
         var finalUrl: String? = null
@@ -318,8 +354,10 @@ class MainActivity : AppCompatActivity(), QRScannerBottomSheet.QRScanListener {
         if (contents.startsWith("http://") || contents.startsWith("https://")) {
             try {
                 val uri = android.net.Uri.parse(contents)
-                // STRICT SECURITY CHECK
-                if (uri.scheme == "https" && (uri.host == "cuevote.com" || uri.host == "www.cuevote.com")) {
+                // A QR code is attacker-supplied input — same allowlist the
+                // WebView enforces, so a scan cannot be what loads a foreign
+                // origin next to the JS interface.
+                if (isCueVoteUrl(uri)) {
                     finalUrl = contents
                 } else {
                      android.widget.Toast.makeText(this, "Invalid QR Code: Domain not trusted", android.widget.Toast.LENGTH_LONG).show()
@@ -361,16 +399,9 @@ class WebAppInterface(
     fun toggleQRButton(show: Boolean) {
         val activity = mContext as? MainActivity ?: return
         activity.runOnUiThread {
-            val currentUrl = webView.url
-            val uri = try {
-                if (currentUrl.isNullOrBlank()) null else android.net.Uri.parse(currentUrl)
-            } catch (e: Exception) {
-                null
-            }
-            val host = uri?.host ?: ""
-            if (host != "cuevote.com" && host != "www.cuevote.com") {
-                return@runOnUiThread
-            }
+            // addJavascriptInterface is not origin-bound — the object is exposed
+            // to whatever document is loaded, so the check belongs here.
+            if (!isCueVoteUrl(webView.url)) return@runOnUiThread
 
             // Only surface the scan button where a camera exists. The web layer requests it
             // without knowing the hardware; withholding it here keeps camera-less devices
