@@ -149,6 +149,13 @@ sudo truncate -s 0 ~/.pm2/logs/cuevote-server-error.log
 
 From the next rotation onwards, log files are bounded automatically.
 
+> **The MCP audit log is separate.** `cuevote-mcp` writes `mcp-audit.log`
+> directly rather than through PM2, so `pm2-logrotate` does not touch it. It
+> rotates itself (`CUEVOTE_AUDIT_MAX_BYTES`, default 10 MB × `CUEVOTE_AUDIT_KEEP`,
+> default 5). Raise the retention if you want a longer window on OAuth client
+> registrations — that log is the only record of which DJ clients were ever
+> registered, since the registry itself is in-memory and empty after a restart.
+
 Nginx access logs are rotated automatically by the Debian default `logrotate` config (`/etc/logrotate.d/nginx`, daily, 14 days kept) — no extra setup needed.
 
 ## 4. Frontend Setup (cuevote-client)
