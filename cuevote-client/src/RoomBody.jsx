@@ -16,6 +16,7 @@ import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { AppPromoFooter } from "./components/AppPromoFooter";
 import { SettingsView } from "./components/SettingsView";
 import { canParticipate } from "./utils/participation";
+import { useLatestRef } from "./hooks/useLatestRef";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
 import { Skeleton } from "./components/Skeleton";
@@ -422,8 +423,7 @@ function RoomBody() {
   }, []);
 
   // Fix: Use Ref to track showSuggeststate to suppress global toasts when bar is open
-  const showSuggestRef = useRef(showSuggest);
-  useEffect(() => { showSuggestRef.current = showSuggest; }, [showSuggest]);
+  const showSuggestRef = useLatestRef(showSuggest);
 
   const [toast, setToast] = useState(null);
 
@@ -437,7 +437,7 @@ function RoomBody() {
         : lastError.message || "An error occurred";
       setToast({ message: errorMessage, type: "error" });
     }
-  }, [lastError, lastErrorTimestamp]); // showSuggestRef is stable
+  }, [lastError, lastErrorTimestamp, showSuggestRef]);
 
   useEffect(() => {
     // If Suggest Bar is open, suppress global toasts
@@ -451,7 +451,7 @@ function RoomBody() {
       }
       else if (lastMessage.type === 'error') setToast({ message: lastMessage.message, type: "error" });
     }
-  }, [lastMessage]);
+  }, [lastMessage, showSuggestRef]);
 
   // Handle VIDEO_STATUS from server (playback error diagnosis)
   useEffect(() => {
@@ -643,31 +643,15 @@ function RoomBody() {
   const playerRef = useRef(null);
   const playerInitIdRef = useRef(0);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
-  const volumeRef = useRef(volume);
-  const isMutedRef = useRef(isMuted);
-  const isPlayingRef = useRef(isPlaying); // Track latest server state for event handlers
-  const isOwnerRef = useRef(isOwner);
-  const tRef = useRef(t);
+  const volumeRef = useLatestRef(volume);
+  const isMutedRef = useLatestRef(isMuted);
+  const isPlayingRef = useLatestRef(isPlaying); // Latest server state, for event handlers bound once
+  const isOwnerRef = useLatestRef(isOwner);
 
-  useEffect(() => {
-    volumeRef.current = volume;
-  }, [volume]);
 
-  useEffect(() => {
-    isMutedRef.current = isMuted;
-  }, [isMuted]);
 
-  useEffect(() => {
-    isPlayingRef.current = isPlaying;
-  }, [isPlaying]);
 
-  useEffect(() => {
-    isOwnerRef.current = isOwner;
-  }, [isOwner]);
 
-  useEffect(() => {
-    tRef.current = t;
-  }, [t]);
 
   const currentTrackRef = useRef(currentTrack);
   // Clear a stale playback error only when the track actually changes.
@@ -877,7 +861,7 @@ function RoomBody() {
         },
       });
     });
-  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled]);
+  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled, volumeRef, isMutedRef, isPlayingRef, isOwnerRef]);
 
   const playerContainerRef = useCallback(node => {
     if (!hasConsent) return;
