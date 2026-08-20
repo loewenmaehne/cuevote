@@ -372,8 +372,12 @@ cat /var/log/unattended-upgrades/unattended-upgrades.log
 # check (run in cuevote-server/ and cuevote-client/)
 npm audit --omit=dev
 
-# fix within semver ranges, then prove the build still passes
-npm audit fix && npm ci && npm run build
+# fix within semver ranges, then prove the project still passes
+npm audit fix && npm ci
+
+# then, per project:
+npm run build          # cuevote-client, cuevote-mcp
+npm run lint && npm test   # cuevote-server (it has no build step)
 ```
 
 Commit the resulting `package-lock.json`, merge, then deploy with `bash update_server.sh` as usual. Run the audit on a schedule (monthly works) and/or enable GitHub Dependabot alerts on the repository, so new advisories reach you instead of waiting to be discovered.

@@ -829,7 +829,7 @@ function gracefulShutdown(signal) {
             ws.close(1012, 'Server restarting');
         } catch (e) { /* ignore */ }
     });
-    for (const [id, room] of rooms.entries()) {
+    for (const room of rooms.values()) {
         room.destroy();
     }
     rooms.clear();

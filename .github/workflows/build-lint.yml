@@ -42,7 +42,7 @@ jobs:
       - run: npm run build
 
   server:
-    name: server — build (tsc)
+    name: server — lint
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -55,7 +55,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: cuevote-server/package-lock.json
       - run: npm ci
-      - run: npm run build
+      - run: npm run lint
 
   server-test:
     name: server — tests

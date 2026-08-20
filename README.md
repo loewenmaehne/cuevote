@@ -88,7 +88,8 @@ CueVote is ready to use at **[CueVote.com](https://cuevote.com)**. For developer
 1.  **Clone the repo**
 2.  **Install dependencies:** `npm install` (root), `cd cuevote-server && npm install`, `cd cuevote-client && npm install`
 3.  **Configure `.env`:** Add your `YOUTUBE_API_KEY` and `GOOGLE_CLIENT_ID`.
-4.  **Build & Run:** `npm run build` and `npm start`.
+4.  **Build the client:** `cd cuevote-client && npm run build`.
+5.  **Run the server:** `cd cuevote-server && npm start` (no build step — it runs plain Node).
 
 *See `DEPLOYMENT.md` for full instructions.*
 

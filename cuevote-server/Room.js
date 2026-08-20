@@ -683,7 +683,6 @@ class Room {
                 const data = await response.json();
 
                 if (data.items) {
-                    const returnedIds = new Set(data.items.map(item => item.id));
                     for (const item of data.items) {
                         const status = item.status;
                         if (status) {
@@ -1043,7 +1042,7 @@ class Room {
         let videoId = null;
 
         // 1. Resolve Video ID (URL or Search)
-        const urlMatch = query.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+        const urlMatch = query.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
 
         if (urlMatch) {
             videoId = urlMatch[1];
@@ -1431,7 +1430,7 @@ class Room {
         }
     }
 
-    async handlePlaybackError(ws, { videoId, errorCode }) {
+    async handlePlaybackError(ws, { videoId, errorCode: _errorCode }) {
         if (!videoId || !this.state.currentTrack || this.state.currentTrack.videoId !== videoId) return;
 
         const now = Date.now();

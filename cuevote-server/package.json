@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "node --test --test-concurrency=1 test/*.test.js",
-    "build": "tsc",
     "start": "node index.js",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -26,10 +26,11 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.5.0",
     "@types/ws": "^8.18.1",
     "eslint": "^10.0.2",
-    "typescript": "^6.0.2"
+    "globals": "^16.5.0"
   }
 }

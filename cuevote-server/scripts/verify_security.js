@@ -8,7 +8,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const WebSocket = require('ws');
 const Database = require('better-sqlite3');
-const crypto = require('crypto');
+
 const path = require('path');
 
 const dbPath = path.join(__dirname, '..', 'cuevote.db');

@@ -95,7 +95,7 @@ function listActiveRooms(rooms) {
     return list;
 }
 
-function roomAction(room, action, body, rooms, roomId) {
+function roomAction(room, action, body, _rooms, _roomId) {
     switch (action) {
         case 'skip':
             room.handleNextTrack();
