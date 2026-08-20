@@ -5,11 +5,13 @@ const db = require("./db");
 const dbAsync = require("./db-async");
 const logger = require("./logger");
 const schemas = require("./schemas");
+const { sortUpcoming } = require("./queue-order");
+const guest = require("./guest");
 
 // Helper to check ownership
 function isOwner(room, ws) {
     if (!ws.user) return false;
-    // Allow system admin (if we had one) or the specific room owner
+    // Ownership is the room's owner_id and nothing else.
     // For now, strict owner check
     return room.metadata.owner_id === ws.user.id;
 }
@@ -27,10 +29,11 @@ function parseISO8601Duration(duration) {
     return hours * 3600 + minutes * 60 + seconds;
 }
 
-// Track fields that name a person: `voters` is a map keyed by Google account id,
-// and `suggestedBy` holds one. Neither has any use on the client — the display
-// name travels separately as `suggestedByUsername`, and a viewer only needs to
-// know its OWN vote, which is folded in as `myVote`.
+// Track fields that name a person: `voters` is a map keyed by account id (a
+// Google subject, or a `guest:` id for someone who never signed in), and
+// `suggestedBy` holds one. Neither has any use on the client — the display name
+// travels separately as `suggestedByUsername`, and a viewer only needs to know
+// its OWN vote, which is folded in as `myVote`.
 //
 // Broadcasting the raw map handed every room member a list of the Google account
 // ids of everyone who had voted, next to their display names. JOIN_ROOM does not
@@ -84,7 +87,8 @@ class Room {
             is_public: metadata.is_public !== undefined ? metadata.is_public : 1,
             password: metadata.password || null,
             captions_enabled: metadata.captions_enabled !== undefined ? metadata.captions_enabled : 0,
-            language_flag: metadata.language_flag || 'international'
+            language_flag: metadata.language_flag || 'international',
+            require_login: metadata.require_login !== undefined ? metadata.require_login : 0
         };
         this.clients = new Set();
         this.knownVideos = new Set(); // Stores videoIds of approved videos
@@ -121,6 +125,10 @@ class Room {
             autoApproveKnown: true, // Default true
             autoRefill: metadata.auto_refill !== undefined ? !!metadata.auto_refill : true,
             captionsEnabled: !!(metadata.captions_enabled), // Initialize from metadata
+            // Off by default: a guest who scanned the QR code can vote and
+            // suggest straight away. Owners who want every participant tied to
+            // an account can turn it on per room.
+            requireLogin: !!(metadata.require_login),
             bannedVideos: [], // List of banned videos { videoId, title, artist, ... }
         };
 
@@ -202,6 +210,26 @@ class Room {
 
     hasViewers() {
         return this.clients.size > 0;
+    }
+
+    /**
+     * Whether this socket may vote or suggest, and why not when it may not.
+     *
+     * A socket always carries an identity by this point — a signed-in user or a
+     * room-scoped guest — because a stable id is what keeps one participant from
+     * voting the same track up repeatedly. `requireLogin` is the owner's choice
+     * to narrow that to real accounts.
+     */
+    canParticipate(ws) {
+        // Two different refusals, and they must not be conflated: one says the
+        // owner requires accounts, the other says this socket has no identity
+        // yet. Reporting the first for the second tells people to sign in to a
+        // room that never asked them to.
+        if (!ws.user) return { ok: false, code: "NO_IDENTITY", message: "Your session is not ready yet. Please reload the page." };
+        if (this.state.requireLogin && ws.user.isGuest) {
+            return { ok: false, code: "LOGIN_REQUIRED", message: "This channel requires a signed-in account." };
+        }
+        return { ok: true };
     }
 
     getSummary() {
@@ -631,10 +659,9 @@ class Room {
                 // Add to Queue
                 const newQueue = [...this.state.queue, ...finalTracks];
 
-                // If queue was empty and we added songs, we should start playing?
-                // The tick logic sets isPlaying = false if queue is empty.
-                // We are async here. Tick might have finished.
-                // We need to wake it up.
+                // tick() stops playback whenever the queue runs dry, and this
+                // refill is async — so by now it has likely already stopped.
+                // Setting isPlaying below is what starts it again.
                 const newState = {
                     queue: newQueue,
                     isRefilling: false
@@ -683,7 +710,6 @@ class Room {
                 const data = await response.json();
 
                 if (data.items) {
-                    const returnedIds = new Set(data.items.map(item => item.id));
                     for (const item of data.items) {
                         const status = item.status;
                         if (status) {
@@ -845,16 +871,9 @@ class Room {
                 }
                 break;
             case "DELETE_ACCOUNT":
-                // Delegate back to main server handler or handle here?
-                // Returning a specific flag or emitting an event would be ideal, 
-                // but since we are in `Room.js`, we can just implement the destruction logic or 
-                // rely on the fact that `index.js` might be checking this message type BEFORE calling room.handleMessage?
-                // ERROR: I suspect index.js logic forwards it blindly.
-                // Let's force a "return false" or similar if we want parent to handle it?
-                // Or simply `return` and ensure index.js handles it?
-                // Let's assume index.js needs to handle it.
-                // If I modify index.js to check for DELETE_ACCOUNT *before* routing to room, that fixes it globally.
-                // I will NOT edit Room.js yet. I will edit index.js.
+                // Unreachable: index.js answers DELETE_ACCOUNT in its own switch
+                // and returns, so it never reaches a room. Kept as an explicit
+                // no-op so the case is not mistaken for an oversight.
                 break;
             case "FETCH_SUGGESTIONS": {
                 const r = schemas.FetchSuggestionsPayload.safeParse(message.payload);
@@ -884,12 +903,12 @@ class Room {
     async handleFetchSuggestions(ws, { videoId }) {
         if (!videoId) return;
 
-        // Every other action that spends YouTube quota requires a login
-        // (handleSuggestSong, handleVote). This one was the exception, and it is
-        // the most expensive of them: a cache miss is a Search call at ~100 of
-        // the 10.000 daily quota units.
-        if (!ws.user) {
-            ws.send(JSON.stringify({ type: "error", message: "You must be logged in to fetch suggestions." }));
+        // The most expensive call in the room: a cache miss is a Search at ~100
+        // of the 10.000 daily quota units. Suggesting and voting were opened to
+        // guests deliberately; this was not, and `!ws.user` stopped meaning
+        // "signed in" the moment guests got an identity.
+        if (!guest.hasAccount(ws)) {
+            ws.send(JSON.stringify({ type: "error", code: "ACCOUNT_REQUIRED", message: "You must be logged in to fetch suggestions." }));
             return;
         }
 
@@ -968,8 +987,9 @@ class Room {
     }
 
     async handleSuggestSong(ws, payload) {
-        if (!ws.user) {
-            ws.send(JSON.stringify({ type: "error", message: "You must be logged in to suggest videos." }));
+        const access = this.canParticipate(ws);
+        if (!access.ok) {
+            ws.send(JSON.stringify({ type: "error", code: access.code, message: access.message }));
             return;
         }
 
@@ -983,20 +1003,12 @@ class Room {
 
         const { query } = payload; // Moved up for title check
 
-        // Duplicate Title Check
-        // We need to resolve the video first to get the title, OR we check videoId if we have it?
-        // Proposal says "Duplicate Video Title Prevention".
-        // Titles can slightly vary, but usually videoId is the unique identifier. 
-        // User asked for "same title", but practically "same video" (videoId) is safer and usually what is meant to prevent repetition.
-        // HOWEVER, if they want "same title" specifically to prevent covers or same video different video, that's harder.
-        // Let's stick to strict Title check as requested "repetition of turning in the same title".
-        // But we don't know the title yet until we fetch it!
-        // We will have to fetch the title first.
-        // The current flow fetches title in step 2.
-        // Let's implement the check AFTER fetching details (Step 2) but BEFORE adding to queue.
+        // The duplicate check compares titles, not video ids, so the same song
+        // re-uploaded under a different id still counts as a repeat. It cannot
+        // run here: the title only exists once the video has been resolved, so
+        // it happens after that step and before anything joins the queue.
 
-
-        let indexToRemove = -1; // Declare here to be accessible after video verification
+        let indexToRemove = -1; // Declared here to survive past video verification
 
         // Check Max Queue Size
         if (this.state.maxQueueSize > 0 && !canBypass && this.state.queue.length >= this.state.maxQueueSize) {
@@ -1043,7 +1055,7 @@ class Room {
         let videoId = null;
 
         // 1. Resolve Video ID (URL or Search)
-        const urlMatch = query.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+        const urlMatch = query.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
 
         if (urlMatch) {
             videoId = urlMatch[1];
@@ -1138,6 +1150,8 @@ class Room {
                 voters: {},
                 suggestedBy: userId,
                 suggestedByUsername: ws.user.name,
+                suggestedByIsGuest: !!ws.user.isGuest,
+                suggestedByGuestTag: ws.user.guestTag,
                 language: cachedVideo.language // Restore language from cache
             };
 
@@ -1205,6 +1219,8 @@ class Room {
                         voters: {},
                         suggestedBy: userId,
                         suggestedByUsername: ws.user.name,
+                        suggestedByIsGuest: !!ws.user.isGuest,
+                        suggestedByGuestTag: ws.user.guestTag,
                         language: videoData.snippet.defaultAudioLanguage || videoData.snippet.defaultLanguage
                     };
 
@@ -1252,10 +1268,9 @@ class Room {
             }
         }
 
-        // Fallback
+        // A video id that resolved to no metadata: no API key, a quota refusal,
+        // or a video that is gone. Reject rather than queue something unverified.
         if (!track && videoId) {
-            // If we rely on API key, we reject here. For now, fail safe reject or mocked track?
-            // Let's reject to be safe/consistent with previous logic
             ws.send(JSON.stringify({ type: "error", message: "Server could not verify video details." }));
             return;
         }
@@ -1298,26 +1313,8 @@ class Room {
                 newState.isPlaying = true;
                 newState.progress = 0;
             } else {
-                // Trigger auto-sort if we added to a non-empty queue
-                // We need to resort because this new track might be priority
-
-                const current = newQueue[0];
-                let upcoming = newQueue.slice(1);
-
-                upcoming.sort((a, b) => {
-                    // 1. Owner Priority
-                    if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
-                    if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
-
-                    // 2. Score
-                    const scoreDiff = (b.score || 0) - (a.score || 0);
-                    if (scoreDiff !== 0) return scoreDiff;
-
-                    // 3. Time added (implicit by stable sort or index if we had it, but generic sort is fine)
-                    return 0;
-                });
-
-                newState.queue = [current, ...upcoming];
+                // Re-order: the track just added may be a priority pick.
+                newState.queue = sortUpcoming(newQueue);
             }
             this.updateState(newState);
 
@@ -1328,8 +1325,9 @@ class Room {
     }
 
     handleVote(ws, { trackId, voteType }) {
-        if (!ws.user) {
-            ws.send(JSON.stringify({ type: "error", message: "You must be logged in to vote." }));
+        const access = this.canParticipate(ws);
+        if (!access.ok) {
+            ws.send(JSON.stringify({ type: "error", code: access.code, message: access.message }));
             return;
         }
 
@@ -1367,24 +1365,7 @@ class Room {
             track.score = (track.score || 0) + scoreChange;
             queue[trackIndex] = track;
 
-            // Exclude current track (index 0) from sorting?
-            // If trackIndex is 0 (Current Track), we don't want to move it.
-            // But if it's in the queue, we DO sort.
-            // Fix: Only sort queue.slice(1).
-
-            const current = queue[0];
-            const upcoming = queue.slice(1);
-
-            upcoming.sort((a, b) => {
-                if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
-                if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
-
-                const scoreDiff = (b.score || 0) - (a.score || 0);
-                return scoreDiff !== 0 ? scoreDiff : 0;
-            });
-
-            const newQueue = [current, ...upcoming];
-            this.updateState({ queue: newQueue });
+            this.updateState({ queue: sortUpcoming(queue) });
         }
     }
 
@@ -1431,7 +1412,7 @@ class Room {
         }
     }
 
-    async handlePlaybackError(ws, { videoId, errorCode }) {
+    async handlePlaybackError(ws, { videoId, errorCode: _errorCode }) {
         if (!videoId || !this.state.currentTrack || this.state.currentTrack.videoId !== videoId) return;
 
         const now = Date.now();
@@ -1530,7 +1511,7 @@ class Room {
         }
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled, requireLogin }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
@@ -1548,6 +1529,7 @@ class Room {
         if (typeof autoApproveKnown === 'boolean') updates.autoApproveKnown = autoApproveKnown;
         if (typeof autoRefill === 'boolean') updates.autoRefill = autoRefill;
         if (typeof captionsEnabled === 'boolean') updates.captionsEnabled = captionsEnabled;
+        if (typeof requireLogin === 'boolean') updates.requireLogin = requireLogin;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
@@ -1558,6 +1540,15 @@ class Room {
                 try {
                     db.updateRoomSettings(this.id, { captions_enabled: updates.captionsEnabled });
                 } catch (e) { logger.error("Failed to persist room settings", e); }
+            }
+
+            // Persist requireLogin to DB — a room's access rule has to survive
+            // a restart, or a party silently reopens to guests mid-evening.
+            if (updates.requireLogin !== undefined) {
+                this.metadata.require_login = updates.requireLogin ? 1 : 0;
+                try {
+                    db.updateRoomSettings(this.id, { require_login: updates.requireLogin });
+                } catch (e) { logger.error("Failed to persist require_login", e); }
             }
 
             // Persist autoRefill to DB
@@ -1595,18 +1586,8 @@ class Room {
                 newState.queue = newQueue;
                 newState.isPlaying = true;
                 newState.progress = 0;
-            } else if (newQueue.length > 1) {
-                const current = newQueue[0];
-                const upcoming = newQueue.slice(1);
-                upcoming.sort((a, b) => {
-                    if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
-                    if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
-                    const scoreDiff = (b.score || 0) - (a.score || 0);
-                    return scoreDiff !== 0 ? scoreDiff : 0;
-                });
-                newState.queue = [current, ...upcoming];
             } else {
-                newState.queue = newQueue;
+                newState.queue = sortUpcoming(newQueue);
             }
 
             this.updateState(newState);
@@ -1764,6 +1745,86 @@ class Room {
      * Call this for every active room when a user account is deleted so their
      * id/name are not broadcast in voters or suggestedBy/suggestedByUsername.
      */
+    /**
+     * Re-key one identity's votes and attributions onto another.
+     *
+     * Called when a socket signs in: the person keeps their guest votes instead
+     * of the queue forgetting them. Without this the guest id stays in
+     * `voters` while the new account id is absent, so the client shows the
+     * track as unvoted and the same human can vote on it a second time.
+     *
+     * If the account has already voted on a track (from another device), the
+     * guest's vote is removed and its contribution taken back out of the score,
+     * so one person is counted once.
+     */
+    mergeIdentity(fromId, toId) {
+        if (!fromId || !toId || fromId === toId) return false;
+
+        let changed = false;
+
+        // Returns a re-keyed copy, or the original when this track knows nothing
+        // about `fromId` — so untouched collections keep their identity.
+        const rekey = (track) => {
+            if (!track || typeof track !== 'object') return track;
+            let updated = track;
+
+            const voters = track.voters;
+            if (voters && voters[fromId] !== undefined) {
+                const carried = voters[fromId];
+                const nextVoters = { ...voters };
+                delete nextVoters[fromId];
+
+                let score = updated.score || 0;
+                if (nextVoters[toId] !== undefined) {
+                    // Already counted under the account (another device) — drop
+                    // the duplicate and take its contribution back out.
+                    score -= carried === 'up' ? 1 : -1;
+                } else {
+                    nextVoters[toId] = carried;
+                }
+                updated = { ...updated, voters: nextVoters, score };
+            }
+
+            if (updated.suggestedBy === fromId) {
+                const { suggestedByGuestTag: _tag, ...rest } = updated;
+                updated = { ...rest, suggestedBy: toId, suggestedByIsGuest: false };
+            }
+
+            return updated;
+        };
+
+        for (const key of TRACK_COLLECTIONS) {
+            const collection = this.state[key];
+            if (!Array.isArray(collection)) continue;
+
+            let collectionChanged = false;
+            const next = collection.map((track) => {
+                const updated = rekey(track);
+                if (updated !== track) collectionChanged = true;
+                return updated;
+            });
+
+            if (collectionChanged) {
+                this.state[key] = next;
+                changed = true;
+            }
+        }
+
+        // currentTrack is a separate object from queue[0], so it has to be
+        // re-keyed on its own or the now-playing row keeps the stale identity.
+        const nextCurrent = rekey(this.state.currentTrack);
+        if (nextCurrent !== this.state.currentTrack) {
+            this.state.currentTrack = nextCurrent;
+            changed = true;
+        }
+
+        if (changed) {
+            this.state.queue = sortUpcoming(this.state.queue);
+            this.broadcastState();
+        }
+        return changed;
+    }
+
     scrubDeletedUser(userId) {
         const id = String(userId).trim();
         const scrubTrack = (track) => {

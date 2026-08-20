@@ -72,6 +72,23 @@ ACTIVE_CHANNEL_DAYS=60
 # TRUSTED_PROXY_IPS=127.0.0.1,::1,::ffff:127.0.0.1
 # MAX_SOCKETS_PER_IP=20
 #
+# How many NEW guest identities one address may obtain per 10 minutes. A guest
+# identity is what stops one person voting a track up repeatedly, so minting
+# them has to cost something; a socket gets exactly one, and this bounds how
+# many can be had by opening more connections. A device mints once and then
+# re-presents its stored token, so the budget is spent by NEW devices — the
+# default comfortably covers a large party behind a single NAT. Raise it for a
+# venue with heavy turnover; lower it if you see vote manipulation.
+# MAX_GUEST_MINTS_PER_IP=60
+#
+# Signing secret for guest identities (people who vote without an account).
+# Optional: when unset the server generates one on first start and keeps it in
+# the database, which is correct for a single instance. Set it explicitly if you
+# run more than one server process, or you want guest identities to survive a
+# database restore — a changed secret signs every existing guest out. Minimum
+# 32 characters; shorter values are ignored with a warning.
+# GUEST_TOKEN_SECRET=generate_a_long_random_secret
+#
 # Admin API for the cuevote-mcp ops server (Phase 1b). Disabled unless
 # ADMIN_TOKEN is set. Binds to 127.0.0.1 only — do NOT expose this port via
 # nginx or any public reverse proxy.
@@ -372,8 +389,12 @@ cat /var/log/unattended-upgrades/unattended-upgrades.log
 # check (run in cuevote-server/ and cuevote-client/)
 npm audit --omit=dev
 
-# fix within semver ranges, then prove the build still passes
-npm audit fix && npm ci && npm run build
+# fix within semver ranges, then prove the project still passes
+npm audit fix && npm ci
+
+# then, per project:
+npm run build          # cuevote-client, cuevote-mcp
+npm run lint && npm test   # cuevote-server (it has no build step)
 ```
 
 Commit the resulting `package-lock.json`, merge, then deploy with `bash update_server.sh` as usual. Run the audit on a schedule (monthly works) and/or enable GitHub Dependabot alerts on the repository, so new advisories reach you instead of waiting to be discovered.
@@ -461,3 +482,58 @@ hidden, like the apex domain.
 `/.well-known/oauth-authorization-server`, the user signs in on `/connect-ai`,
 and the `cv_*` DJ tools become available. Re-run `pm2 restart cuevote-mcp-dj`
 after each deploy that rebuilds the MCP.
+
+---
+
+## 10. Deploying updates (`update_server.sh`)
+
+Routine deploys run from the checkout on the server:
+
+```bash
+bash update_server.sh
+```
+
+The script is not just "pull and restart" — it refuses to leave a broken
+version serving:
+
+| Step | What it does | On failure |
+|---|---|---|
+| 1 | Records the currently deployed commit, then `git reset --hard origin/main` | aborts before anything is built |
+| 2–3 | `npm ci` + client build, `npm ci` for the server | aborts; running server untouched |
+| 4 | **`npm test` on the server** | aborts **before** the restart — the running server never sees the new code |
+| 5 | `pm2 reload` (falls back to `restart`) | — |
+| 5 | `pm2 reload` (falls back to `restart`) | rolls back — a wedged pm2 no longer kills the script before the rollback can run |
+| 6 | **Polls `/health` for up to 15 s** | **rolls back** to the recorded commit, rebuilds, restarts and re-checks |
+| 7 | Rebuilds and restarts the MCP service | aborts |
+
+Exit codes distinguish the two bad outcomes, so monitoring can tell a recovered
+deploy from a dead server:
+
+| Code | Meaning |
+|---|---|
+| 0 | Deployed and healthy |
+| 1 | Deploy failed, **rolled back — the previous version is serving** |
+| 2 | Rollback failed too, or there was no rollback target: **the site needs you** |
+
+A rollback restores the server, not the branch: `origin/main` still points at the
+bad commit, and the next run of this script will deploy it again. Revert or fix
+main before re-running.
+
+Two consequences worth knowing:
+
+* **A failing test blocks the deploy.** That is the point — but it means a red
+  test suite means no deploys until it is fixed. Run `npm test` in
+  `cuevote-server/` locally before pushing.
+* **The rollback needs the commit it recorded in step 1.** In worktree mode the
+  script does not own the checkout, so it skips the git steps and therefore has
+  no rollback target: an unhealthy deploy there stops with an error and leaves
+  the process for you to inspect (`pm2 logs cuevote-server`).
+
+The health check calls `http://127.0.0.1:<PORT>/health` directly (bypassing
+nginx). It resolves `PORT` the same way the server does — an exported `PORT`
+wins over the file, because `dotenv` does not override an existing variable and
+`pm2 --update-env` passes the deployer's environment through — then falls back
+to `cuevote-server/.env` and finally to `8080`. Inline comments, quotes,
+`export` and spaces around `=` are all handled; anything that is not a plain
+number is ignored rather than polled. It needs `curl`, which section 1 already
+installs.

@@ -14,6 +14,7 @@ import { Language } from '../contexts/LanguageContext';
 import { GoogleAuthButton } from './GoogleAuthButton';
 import { GoogleGIcon } from './GoogleGIcon';
 import { deviceDetection } from '../utils/deviceDetection';
+import { isSignedIn } from '../utils/participation';
 
 // Hosts that may be loaded inside the native wrapper. Everything else has to go
 // to a real browser: the wrapper shows no address bar and keeps a native Google
@@ -120,8 +121,10 @@ export function ConnectAI() {
     return <Card><p className="text-neutral-400">{t('connectAi.denied')}</p></Card>;
   }
 
-  // Not signed in yet → offer Google sign-in (existing flow).
-  if (!user) {
+  // Not signed in yet → offer Google sign-in. A guest identity is not an
+  // account: the grant is meant to let an AI act in a person's name, and the
+  // server refuses to finalize one for a guest.
+  if (!isSignedIn(user)) {
     return (
       <Card>
         <p className="mb-6 text-neutral-400">{t('connectAi.signInDesc')}</p>

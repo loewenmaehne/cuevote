@@ -4,9 +4,15 @@
 set -e
 
 # Configuration
-SERVER_DIR="cuevote-server"
-CLIENT_DIR="cuevote-client"
-MCP_DIR="cuevote-mcp"
+#
+# do_update walks into cuevote-client and cuevote-server as it goes, so helpers
+# that resolve paths relative to the working directory are correct or broken
+# depending on which step called them. Everything is anchored to the directory
+# this script lives in instead.
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SERVER_DIR="$ROOT_DIR/cuevote-server"
+CLIENT_DIR="$ROOT_DIR/cuevote-client"
+MCP_DIR="$ROOT_DIR/cuevote-mcp"
 PM2_PROCESS_NAME="cuevote-server"
 PM2_MCP_NAME="cuevote-mcp-dj"
 
@@ -32,6 +38,101 @@ detect_worktree() {
 
 detect_worktree
 
+# ---- Health check ----
+
+# The server's own /health endpoint, on the port it actually listens on.
+#
+# Resolution has to match the server's, not approximate it. index.js reads
+# `process.env.PORT || 8080` after dotenv, and dotenv does NOT override a
+# variable that is already set — and `pm2 --update-env` hands the deployer's
+# environment to the process. So an exported PORT wins over the file, exactly
+# as it does for the server.
+#
+# The file parse also has to survive what people actually write. Keeping
+# everything after the first '=' turned `PORT=8080  # http port` into
+# `8080#httpport`, which curl reads as a fragment and requests `/` instead of
+# `/health` — failing every attempt and rolling back a healthy deploy.
+server_port() {
+    if [ -n "$PORT" ]; then
+        echo "$PORT"
+        return
+    fi
+
+    local line="" value=""
+    if [ -f "$SERVER_DIR/.env" ]; then
+        # Accept an optional `export`, and spaces around `=`, like dotenv does.
+        line="$(grep -E '^[[:space:]]*(export[[:space:]]+)?PORT[[:space:]]*=' "$SERVER_DIR/.env" | tail -n1)"
+    fi
+
+    if [ -n "$line" ]; then
+        value="${line#*=}"
+        value="${value%%#*}"                                    # drop a trailing comment
+        value="$(echo "$value" | tr -d '[:space:]"'"'"'')"      # drop spaces and quotes
+    fi
+
+    # Anything that is not a plain port number is not something to poll.
+    case "$value" in
+        ''|*[!0-9]*) echo 8080 ;;
+        *)           echo "$value" ;;
+    esac
+}
+
+# Polls /health until it answers or the budget runs out. pm2 reload returns as
+# soon as it has signalled the process, not when the new one is serving, so a
+# single immediate curl would race the restart.
+wait_for_health() {
+    local port
+    port="$(server_port)"
+    local attempts=15
+    local i=1
+    while [ "$i" -le "$attempts" ]; do
+        if curl -fsS --max-time 2 "http://127.0.0.1:${port}/health" > /dev/null 2>&1; then
+            echo "  -> Health check passed on port ${port} (attempt ${i}/${attempts})."
+            return 0
+        fi
+        sleep 1
+        i=$((i + 1))
+    done
+    echo "  -> Health check FAILED on port ${port} after ${attempts}s."
+    return 1
+}
+
+# Puts the working tree back on the previously deployed commit and restarts from
+# it. Only meaningful outside worktree mode, where this script owns the checkout.
+rollback_to() {
+    local sha="$1"
+    echo ""
+    echo "!!!! Deployment unhealthy — rolling back to ${sha} !!!!"
+
+    if ! git -C "$ROOT_DIR" reset --hard "$sha"; then
+        echo "Error: rollback checkout failed. The server is running unverified code."
+        echo "       Recover manually: git reset --hard ${sha} && bash update_server.sh start"
+        return 2
+    fi
+
+    (cd "$CLIENT_DIR" && npm ci --silent && npm run build) || {
+        echo "Error: client rebuild during rollback failed."
+        return 2
+    }
+    (cd "$SERVER_DIR" && npm ci --silent) || {
+        echo "Error: server dependency install during rollback failed."
+        return 2
+    }
+
+    pm2 reload "$PM2_PROCESS_NAME" --update-env || pm2 restart "$PM2_PROCESS_NAME" --update-env
+
+    if wait_for_health; then
+        echo "==== Rolled back to ${sha}. The previous version is serving again. ===="
+        echo "     NOTE: origin/main still points at the bad commit. Running this"
+        echo "     script again will redeploy it — fix or revert main first."
+        return 1
+    fi
+
+    echo "Error: the rollback target is unhealthy too. Manual intervention required."
+    echo "       Logs: pm2 logs ${PM2_PROCESS_NAME}"
+    return 2
+}
+
 # ---- Subcommands ----
 
 do_update() {
@@ -41,24 +142,34 @@ do_update() {
         echo "Error: pm2 is not installed or not in PATH."
         exit 1
     fi
+    if ! command -v curl &> /dev/null; then
+        echo "Error: curl is not installed or not in PATH (needed for the health check)."
+        exit 1
+    fi
 
     # 1. Sync to latest remote main
+    # PREV_SHA is captured *before* the reset — it is the only handle on the
+    # version that was known to work, and `git reset --hard` destroys the tree.
+    PREV_SHA=""
     if [ "$IS_WORKTREE" = true ]; then
-        echo "[1/5] Skipping git pull (worktree mode — code is managed by the worktree)"
+        echo "[1/7] Skipping git pull (worktree mode — code is managed by the worktree)"
     else
-        echo "[1/5] Updating code from git (reset to origin/main)..."
-        if ! git fetch origin; then
+        echo "[1/7] Updating code from git (reset to origin/main)..."
+        PREV_SHA="$(git -C "$ROOT_DIR" rev-parse HEAD)"
+        echo "  -> Currently deployed: ${PREV_SHA}"
+        if ! git -C "$ROOT_DIR" fetch origin; then
             echo "Error: git fetch failed."
             exit 1
         fi
-        if ! git reset --hard origin/main; then
+        if ! git -C "$ROOT_DIR" reset --hard origin/main; then
             echo "Error: git reset --hard origin/main failed."
             exit 1
         fi
+        echo "  -> Now deploying:      $(git -C "$ROOT_DIR" rev-parse HEAD)"
     fi
 
     # 2. Update Client (Frontend)
-    echo "[2/5] Updating Client (Frontend)..."
+    echo "[2/7] Updating Client (Frontend)..."
     cd "$CLIENT_DIR"
 
     echo "  -> Installing client dependencies..."
@@ -71,32 +182,74 @@ do_update() {
     fi
     echo "  -> Client build successful."
 
-    cd ..
+    cd "$ROOT_DIR"
 
     # 3. Update Server (Backend)
-    echo "[3/5] Updating Server (Backend)..."
+    echo "[3/7] Updating Server (Backend)..."
     cd "$SERVER_DIR"
 
     echo "  -> Installing server dependencies..."
     npm ci --silent
 
-    # 4. Restart Server Process
-    echo "[4/5] Restarting Server Process..."
+    # 4. Test the new code before it touches the running process. Everything up
+    #    to here is reversible by doing nothing; the reload below is not.
+    echo "[4/7] Running server tests..."
+    if ! npm test; then
+        echo ""
+        echo "Error: server tests failed. Aborting BEFORE restart — the running server is untouched."
+        if [ -n "$PREV_SHA" ]; then
+            echo "       The working tree is on the new code; restore it with:"
+            echo "       git reset --hard ${PREV_SHA}"
+        fi
+        exit 1
+    fi
+    echo "  -> Tests passed."
+
+    # 5. Restart Server Process
+    echo "[5/7] Restarting Server Process..."
     if pm2 describe "$PM2_PROCESS_NAME" > /dev/null 2>&1; then
         echo "  -> Process found, attempting reload..."
-        pm2 reload "$PM2_PROCESS_NAME" --update-env || pm2 restart "$PM2_PROCESS_NAME" --update-env
+        # Both failing is a failing list, which `set -e` treats as fatal — so the
+        # script used to exit right here, skipping the health check and the whole
+        # rollback, in precisely the case they exist for (a wedged pm2). Testing
+        # the list puts it in a condition context, where `set -e` stands down.
+        if ! { pm2 reload "$PM2_PROCESS_NAME" --update-env || pm2 restart "$PM2_PROCESS_NAME" --update-env; }; then
+            echo "  -> pm2 could not reload or restart the process."
+            if [ -n "$PREV_SHA" ]; then
+                rollback_to "$PREV_SHA"
+                exit $?
+            fi
+            echo "Error: no rollback target available (worktree mode). Logs: pm2 logs $PM2_PROCESS_NAME"
+            exit 2
+        fi
     else
         echo "  -> Process not found in PM2, starting new instance..."
         pm2 start index.js --name "$PM2_PROCESS_NAME" --update-env
         pm2 save
     fi
 
-    cd ..
+    cd "$ROOT_DIR"
 
-    # 5. Update MCP (DJ tools server)
+    # 6. Verify the process that came back actually serves traffic. Without this
+    #    a crash-looping deploy still reported success.
+    echo "[6/7] Verifying server health..."
+    if ! wait_for_health; then
+        if [ -n "$PREV_SHA" ]; then
+            # 1 = the deploy failed but the previous version is serving again.
+            # 2 = the rollback failed too and the site is down. Monitoring can
+            #     tell those apart; a single exit 1 for both could not.
+            rollback_to "$PREV_SHA"
+            exit $?
+        fi
+        echo "Error: server is unhealthy and no rollback target is available (worktree mode)."
+        echo "       Logs: pm2 logs ${PM2_PROCESS_NAME}"
+        exit 2
+    fi
+
+    # 7. Update MCP (DJ tools server)
     # Needs its own block: its dist/ is gitignored, so a pull never carries the
     # build, and npm ci must keep devDependencies because the build runs tsc.
-    echo "[5/5] Updating MCP (DJ tools)..."
+    echo "[7/7] Updating MCP (DJ tools)..."
     if [ ! -f "$MCP_DIR/package.json" ]; then
         echo "  -> No $MCP_DIR/package.json found — skipping."
     else
@@ -120,7 +273,7 @@ do_update() {
             pm2 save
         fi
 
-        cd ..
+        cd "$ROOT_DIR"
     fi
 
     echo "==== Update Completed Successfully ===="
@@ -154,7 +307,7 @@ do_start() {
     pm2 start index.js --name "$PM2_PROCESS_NAME" --update-env
     pm2 save
 
-    cd ..
+    cd "$ROOT_DIR"
 
     echo "==== Server Started ===="
     echo "Run 'pm2 logs $PM2_PROCESS_NAME' to see output."

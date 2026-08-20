@@ -15,6 +15,7 @@ import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
 import { channelLanguages, getFlagEmoji } from '../constants/channelLanguages';
 
 import { LoadingScreen } from './LoadingScreen';
+import { displayName, isSignedIn } from '../utils/participation';
 
 function useLocalizedCountries(uiLanguage) {
     return useMemo(() => {
@@ -284,7 +285,7 @@ export function Lobby() {
     const visibleRooms = filteredRooms.slice(roomSliceStart, roomSliceEnd);
 
     const handleCreateRoomClick = () => {
-        if (!user) {
+        if (!isSignedIn(user)) {
             if (!hasConsent) {
                 alert(t('lobby.acceptCookies') + "!");
             } else {
@@ -625,7 +626,7 @@ export function Lobby() {
 
                     {/* Mobile User Profile (Visible only on small screens) */}
                     <div className="sm:hidden">
-                        {user ? (
+                        {isSignedIn(user) ? (
                             <button
                                 onClick={() => setShowProfileModal(true)}
                                 className={`flex items-center gap-2 rounded-full transition-all ${focusedIndex === INDEX_PROFILE ? 'ring-2 ring-orange-500 scale-105' : ''}`}
@@ -634,7 +635,7 @@ export function Lobby() {
                                     <img src={user.picture} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
                                 ) : (
                                     <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
-                                        {user.name?.charAt(0)}
+                                        {displayName(user, t).charAt(0)}
                                     </div>
                                 )}
                             </button>
@@ -664,7 +665,7 @@ export function Lobby() {
 
                 {/* Desktop User Profile */}
                 <div className="hidden sm:block" id="lobby-profile-section">
-                    {user ? (
+                    {isSignedIn(user) ? (
                         <button
                             id="lobby-auth-button"
                             onClick={() => setShowProfileModal(true)}
@@ -676,10 +677,10 @@ export function Lobby() {
                                     <img src={user.picture} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
                                 ) : (
                                     <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
-                                        {user.name?.charAt(0)}
+                                        {displayName(user, t).charAt(0)}
                                     </div>
                                 )}
-                                <span className="text-neutral-300 font-medium group-hover:text-white transition-colors">{t('lobby.welcome')}, {user.name}</span>
+                                <span className="text-neutral-300 font-medium group-hover:text-white transition-colors">{t('lobby.welcome')}, {displayName(user, t)}</span>
                             </div>
                         </button>
                     ) : (
@@ -802,16 +803,16 @@ export function Lobby() {
                                 }}
                                 className={`scroll-mt-56 scroll-mb-24 rounded-2xl border relative transition-all duration-300 w-full aspect-[4/3] order-first ${focusedIndex === 0
                                     ? "border-orange-500 ring-2 ring-orange-500/50 scale-[1.02] bg-neutral-800/50"
-                                    : user
+                                    : isSignedIn(user)
                                         ? "border-neutral-800 text-neutral-500 cursor-pointer"
                                         : "border-neutral-900 text-neutral-700 cursor-not-allowed"
                                     }`}
-                                title={user ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
+                                title={isSignedIn(user) ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
                             >
                                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4 sm:p-6">
                                     <Sparkles size={32} className={focusedIndex === 0 ? "text-orange-500" : ""} />
                                     <span className={`font-medium text-center ${focusedIndex === 0 ? "text-white" : ""}`}>
-                                        {user ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
+                                        {isSignedIn(user) ? t('lobby.createChannel') : (!hasConsent ? t('lobby.acceptCookies') : t('lobby.loginToCreate'))}
                                     </span>
                                 </div>
                             </button>
@@ -1159,10 +1160,10 @@ export function Lobby() {
                                     <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-20 h-20 rounded-full border-2 border-neutral-700 mb-4 shadow-xl" />
                                 ) : (
                                     <div className="w-20 h-20 rounded-full bg-neutral-800 flex items-center justify-center text-3xl font-bold text-neutral-500 mb-4 border-2 border-neutral-700">
-                                        {user?.name?.charAt(0)}
+                                        {displayName(user, t).charAt(0)}
                                     </div>
                                 )}
-                                <h3 className="text-xl font-bold text-white">{user?.name}</h3>
+                                <h3 className="text-xl font-bold text-white">{displayName(user, t)}</h3>
                                 <p className="text-sm text-neutral-400">{user?.email}</p>
                             </div>
 

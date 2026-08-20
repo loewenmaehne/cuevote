@@ -21,8 +21,12 @@ const getWebSocketUrl = () => {
 
 const WEBSOCKET_URL = getWebSocketUrl();
 const SESSION_KEY = "cuevote_session_token";
-const ACKABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "LOGIN", "RESUME_SESSION"];
-const QUEUEABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "PLAY_PAUSE", "NEXT_TRACK", "LOGIN", "RESUME_SESSION"];
+// A guest identity is signed by the server and carries nothing personal, so it
+// lives in localStorage like the session token and survives a reload — that is
+// what keeps a guest's votes theirs when they lock their phone mid-party.
+const GUEST_KEY = "cuevote_guest_token";
+const ACKABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "LOGIN", "RESUME_SESSION", "GUEST_SESSION"];
+const QUEUEABLE_TYPES = ["VOTE", "SUGGEST_SONG", "JOIN_ROOM", "PLAY_PAUSE", "NEXT_TRACK", "LOGIN", "RESUME_SESSION", "GUEST_SESSION"];
 
 export function WebSocketProvider({ children }) {
   const [state, setState] = useState(null);
@@ -36,6 +40,7 @@ export function WebSocketProvider({ children }) {
   const [reconnectAttempt, setReconnectAttempt] = useState(0);
   const [connectionQuality, setConnectionQuality] = useState('good');
   const sessionTokenRef = useRef(localStorage.getItem(SESSION_KEY));
+  const guestTokenRef = useRef(localStorage.getItem(GUEST_KEY));
   const [clientId] = useState(() => {
     let id = localStorage.getItem("cuevote_client_id");
     if (!id) {
@@ -87,6 +92,12 @@ export function WebSocketProvider({ children }) {
       localStorage.removeItem(SESSION_KEY);
     }
     setUser(null);
+    // Signing out drops the account, not the ability to take part: pick the
+    // guest identity back up so voting keeps working in an open room.
+    sendMessage({
+      type: "GUEST_SESSION",
+      payload: guestTokenRef.current ? { token: guestTokenRef.current } : {},
+    });
   }, [sendMessage]);
 
   useEffect(() => {
@@ -127,6 +138,13 @@ export function WebSocketProvider({ children }) {
         const token = sessionTokenRef.current;
         if (token) {
           socket.send(JSON.stringify({ type: "RESUME_SESSION", payload: { token } }));
+        } else {
+          // Nobody is signed in: claim a guest identity right away so the first
+          // tap on a vote button works instead of bouncing off an auth wall.
+          socket.send(JSON.stringify({
+            type: "GUEST_SESSION",
+            payload: guestTokenRef.current ? { token: guestTokenRef.current } : {},
+          }));
         }
         while (messageQueue.current.length > 0) {
           const queued = messageQueue.current.shift();
@@ -210,11 +228,27 @@ export function WebSocketProvider({ children }) {
               sessionTokenRef.current = message.payload.sessionToken;
               localStorage.setItem(SESSION_KEY, message.payload.sessionToken);
             }
+          } else if (message.type === "GUEST_SESSION_OK") {
+            // Same inline handling as LOGIN_SUCCESS, and for the same reason:
+            // routing identity through `lastMessage` loses it to batching.
+            if (message.payload.guestToken) {
+              guestTokenRef.current = message.payload.guestToken;
+              localStorage.setItem(GUEST_KEY, message.payload.guestToken);
+            }
+            setUser(message.payload.user);
           } else if (message.type === "SESSION_INVALID") {
             console.warn("Session Invalid/Expired");
             sessionTokenRef.current = null;
             localStorage.removeItem(SESSION_KEY);
             setUser(null);
+            // An expired session must not drop the participant back to having no
+            // identity at all — fall back to a guest one.
+            if (socket.readyState === WebSocket.OPEN) {
+              socket.send(JSON.stringify({
+                type: "GUEST_SESSION",
+                payload: guestTokenRef.current ? { token: guestTokenRef.current } : {},
+              }));
+            }
           } else {
             setLastMessage(message);
             if (message.type === "error") {

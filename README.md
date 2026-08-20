@@ -14,7 +14,9 @@
 
 **CueVote** is a modern, community-driven social jukebox built for the YouTube era. It democratizes music selection by allowing everyone in the room to suggest videos and vote on the queue in real-time.
 
-Whether you're hosting a house party, running a bar, or just hanging out online, CueVote ensures the best videos play next — decided by the crowd, not an algorithm.
+Whether you're hosting a house party, a dorm pre-drink, or just hanging out online with friends, CueVote ensures the best videos play next — decided by the crowd, not an algorithm.
+
+> **Private use.** CueVote is built for private gatherings. Playing third-party content in a public or commercial setting (bars, clubs, shops, events) generally requires licences that CueVote neither holds nor grants — see the [Terms of Service](https://cuevote.com/legal) and YouTube's own terms.
 
 ---
 
@@ -86,7 +88,8 @@ CueVote is ready to use at **[CueVote.com](https://cuevote.com)**. For developer
 1.  **Clone the repo**
 2.  **Install dependencies:** `npm install` (root), `cd cuevote-server && npm install`, `cd cuevote-client && npm install`
 3.  **Configure `.env`:** Add your `YOUTUBE_API_KEY` and `GOOGLE_CLIENT_ID`.
-4.  **Build & Run:** `npm run build` and `npm start`.
+4.  **Build the client:** `cd cuevote-client && npm run build`.
+5.  **Run the server:** `cd cuevote-server && npm start` (no build step — it runs plain Node).
 
 *See `DEPLOYMENT.md` for full instructions.*
 

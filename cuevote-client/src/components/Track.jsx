@@ -8,6 +8,7 @@ import { Consent } from '../contexts/ConsentContext';
 import { Suggestions } from "./Suggestions";
 import { MarqueeText } from "./MarqueeText";
 import { Skeleton } from "./Skeleton";
+import { suggesterLabel } from "../utils/participation";
 
 const buildWatchUrl = (videoId) => `https://www.youtube.com/watch?v=${videoId}`;
 const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
@@ -108,9 +109,9 @@ export function Track({
         </div>
 
         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-4 flex-shrink-0">
-          {track.suggestedByUsername && (
+          {suggesterLabel(track, t) && (
             <span className="text-xs text-neutral-500 font-medium whitespace-nowrap order-2 sm:order-1 sm:mr-2 max-w-[8rem] truncate">
-              {track.suggestedByUsername}
+              {suggesterLabel(track, t)}
             </span>
           )}
 

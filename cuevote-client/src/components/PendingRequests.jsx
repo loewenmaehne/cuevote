@@ -5,6 +5,7 @@ import React from 'react';
 import { Check, X, Clock, ArrowLeft, Ban, Headphones } from 'lucide-react';
 import { Language } from '../contexts/LanguageContext';
 import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
+import { suggesterLabel } from "../utils/participation";
 
 const buildThumbnailUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
@@ -45,7 +46,7 @@ export const PendingRequestsExports = {
 							<p className="text-sm font-medium text-white line-clamp-2 leading-tight" title={track.title}>{track.title}</p>
 							<p className="text-xs text-neutral-400 line-clamp-1">{track.artist}</p>
 							<p className="text-xs text-neutral-500 mt-0.5 line-clamp-1">
-								{t('pending.by')} <span className="text-neutral-300">{track.suggestedByUsername || t('pending.unknown')}</span>
+								{t('pending.by')} <span className="text-neutral-300">{suggesterLabel(track, t) || t('pending.unknown')}</span>
 							</p>
 						</div>
 
@@ -142,7 +143,7 @@ export const PendingRequestsExports = {
 										<h3 className="text-sm sm:text-lg font-bold text-white line-clamp-2 leading-tight" title={track.title}>{track.title}</h3>
 										<p className="text-xs sm:text-base text-neutral-400 truncate">{track.artist}</p>
 										<p className="text-xs sm:text-sm text-neutral-500 mt-0.5 sm:mt-1 flex items-center gap-1">
-											<span className="hidden sm:inline">{t('pending.suggestedBy')}</span> <span className="text-neutral-300 font-medium truncate">{track.suggestedByUsername || t('pending.unknown')}</span>
+											<span className="hidden sm:inline">{t('pending.suggestedBy')}</span> <span className="text-neutral-300 font-medium truncate">{suggesterLabel(track, t) || t('pending.unknown')}</span>
 										</p>
 									</div>
 								</div>

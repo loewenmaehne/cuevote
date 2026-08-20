@@ -15,6 +15,8 @@ import { PlaylistView } from "./components/PlaylistView";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { AppPromoFooter } from "./components/AppPromoFooter";
 import { SettingsView } from "./components/SettingsView";
+import { canParticipate, participationErrorKey } from "./utils/participation";
+import { useLatestRef } from "./hooks/useLatestRef";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
 import { Skeleton } from "./components/Skeleton";
@@ -174,7 +176,8 @@ function RoomBody() {
     autoApproveKnown = true,
     autoRefill = false,
     bannedVideos = [], // Added this
-    captionsEnabled = false
+    captionsEnabled = false,
+    requireLogin = false
   } = serverState || {};
 
   // Calculate set of ALL videoIds currently in the queue or playing for suggestion "Added" check
@@ -420,8 +423,7 @@ function RoomBody() {
   }, []);
 
   // Fix: Use Ref to track showSuggeststate to suppress global toasts when bar is open
-  const showSuggestRef = useRef(showSuggest);
-  useEffect(() => { showSuggestRef.current = showSuggest; }, [showSuggest]);
+  const showSuggestRef = useLatestRef(showSuggest);
 
   const [toast, setToast] = useState(null);
 
@@ -430,12 +432,16 @@ function RoomBody() {
     if (showSuggestRef.current) return;
 
     if (lastError) {
-      const errorMessage = typeof lastError === 'string'
-        ? lastError
-        : lastError.message || "An error occurred";
+      // The server answers in English. Where it also sends a code, show the
+      // translated string instead — this room has 35 languages and its refusals
+      // should not be the one place that ignores them.
+      const key = participationErrorKey(lastErrorCode);
+      const errorMessage = key
+        ? t(key)
+        : (typeof lastError === 'string' ? lastError : lastError.message || "An error occurred");
       setToast({ message: errorMessage, type: "error" });
     }
-  }, [lastError, lastErrorTimestamp]); // showSuggestRef is stable
+  }, [lastError, lastErrorCode, lastErrorTimestamp, showSuggestRef, t]);
 
   useEffect(() => {
     // If Suggest Bar is open, suppress global toasts
@@ -449,7 +455,7 @@ function RoomBody() {
       }
       else if (lastMessage.type === 'error') setToast({ message: lastMessage.message, type: "error" });
     }
-  }, [lastMessage]);
+  }, [lastMessage, showSuggestRef]);
 
   // Handle VIDEO_STATUS from server (playback error diagnosis)
   useEffect(() => {
@@ -641,31 +647,15 @@ function RoomBody() {
   const playerRef = useRef(null);
   const playerInitIdRef = useRef(0);
   const [isPlayerReady, setIsPlayerReady] = useState(false);
-  const volumeRef = useRef(volume);
-  const isMutedRef = useRef(isMuted);
-  const isPlayingRef = useRef(isPlaying); // Track latest server state for event handlers
-  const isOwnerRef = useRef(isOwner);
-  const tRef = useRef(t);
+  const volumeRef = useLatestRef(volume);
+  const isMutedRef = useLatestRef(isMuted);
+  const isPlayingRef = useLatestRef(isPlaying); // Latest server state, for event handlers bound once
+  const isOwnerRef = useLatestRef(isOwner);
 
-  useEffect(() => {
-    volumeRef.current = volume;
-  }, [volume]);
 
-  useEffect(() => {
-    isMutedRef.current = isMuted;
-  }, [isMuted]);
 
-  useEffect(() => {
-    isPlayingRef.current = isPlaying;
-  }, [isPlaying]);
 
-  useEffect(() => {
-    isOwnerRef.current = isOwner;
-  }, [isOwner]);
 
-  useEffect(() => {
-    tRef.current = t;
-  }, [t]);
 
   const currentTrackRef = useRef(currentTrack);
   // Clear a stale playback error only when the track actually changes.
@@ -875,7 +865,7 @@ function RoomBody() {
         },
       });
     });
-  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled]);
+  }, [loadYouTubeAPI, sendMessage, hasConsent, captionsEnabled, volumeRef, isMutedRef, isPlayingRef, isOwnerRef]);
 
   const playerContainerRef = useCallback(node => {
     if (!hasConsent) return;
@@ -1232,12 +1222,12 @@ function RoomBody() {
 
 
   const handleSongSuggested = useCallback((query) => {
-    if (!user) {
-      setToast({ message: t('suggest.loginRequired'), type: 'error' });
+    if (!canParticipate(user, requireLogin)) {
+      setToast({ message: t(user ? 'errors.loginRequired' : 'errors.sessionNotReady'), type: 'error' });
       return;
     }
     sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
-  }, [user, sendMessage, t]);
+  }, [user, requireLogin, sendMessage, t]);
 
   const handleLibraryAdd = useCallback((videoId) => {
     return handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
@@ -1278,9 +1268,13 @@ function RoomBody() {
 
 
   const handleVote = (trackId, type) => {
-
+    // The server enforces this too; checking here turns a rejected vote into an
+    // explanation of the room's rule.
+    if (!canParticipate(user, requireLogin)) {
+      setToast({ message: t(user ? 'errors.loginRequired' : 'errors.sessionNotReady'), type: 'error' });
+      return;
+    }
     sendMessage({ type: "VOTE", payload: { trackId, voteType: type } });
-
   };
 
 
@@ -1931,6 +1925,7 @@ function RoomBody() {
             duplicateCooldown={duplicateCooldown}
             smartQueue={smartQueue}
             autoRefill={autoRefill}
+            requireLogin={requireLogin}
             playlistViewMode={playlistViewMode}
             allowPrelisten={allowPrelisten}
             votesEnabled={serverState?.votesEnabled ?? true}

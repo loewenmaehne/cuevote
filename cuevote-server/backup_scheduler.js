@@ -71,9 +71,9 @@ function pruneBackups() {
 function start() {
 	logger.info(`[Backup] Scheduler started. Interval: ${BACKUP_INTERVAL / 3600000} hours. Retention: ${KEEP_BACKUPS_DAYS} days.`);
 
-	// Run one immediately on startup (optional, maybe wait?)
-	// Let's run one immediately to be safe, or maybe after a small delay to not block startup
-	setTimeout(runBackup, 10000); // 10 seconds after startup
+	// A backup soon after startup, so a restart is never a gap in coverage —
+	// delayed 10s so it does not compete with the server coming up.
+	setTimeout(runBackup, 10000);
 
 	// Schedule periodic
 	setInterval(runBackup, BACKUP_INTERVAL);

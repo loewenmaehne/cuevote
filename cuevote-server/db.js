@@ -245,10 +245,29 @@ module.exports = {
       values.push(settings.language_flag);
     }
 
+    if (settings.require_login !== undefined) {
+      updates.push("require_login = ?");
+      values.push(settings.require_login ? 1 : 0);
+    }
+
     if (updates.length > 0) {
       values.push(id);
       db.prepare(`UPDATE rooms SET ${updates.join(', ')} WHERE id = ?`).run(...values);
     }
+  },
+
+  // Server config (key/value, migration 009). Used for values that must be
+  // stable across restarts but are not deployment configuration — see guest.js.
+  getConfig: (key) => {
+    const row = db.prepare('SELECT value FROM server_config WHERE key = ?').get(key);
+    return row ? row.value : null;
+  },
+
+  // Insert-if-absent, so two processes racing on first start cannot end up with
+  // different values: the loser's insert is ignored and it reads the winner's.
+  setConfigIfAbsent: (key, value) => {
+    db.prepare('INSERT OR IGNORE INTO server_config (key, value) VALUES (?, ?)').run(key, value);
+    return module.exports.getConfig(key);
   },
 
   // Video Caching
