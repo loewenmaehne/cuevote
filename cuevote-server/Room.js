@@ -5,11 +5,12 @@ const db = require("./db");
 const dbAsync = require("./db-async");
 const logger = require("./logger");
 const schemas = require("./schemas");
+const { sortUpcoming } = require("./queue-order");
 
 // Helper to check ownership
 function isOwner(room, ws) {
     if (!ws.user) return false;
-    // Allow system admin (if we had one) or the specific room owner
+    // Ownership is the room's owner_id and nothing else.
     // For now, strict owner check
     return room.metadata.owner_id === ws.user.id;
 }
@@ -653,10 +654,9 @@ class Room {
                 // Add to Queue
                 const newQueue = [...this.state.queue, ...finalTracks];
 
-                // If queue was empty and we added songs, we should start playing?
-                // The tick logic sets isPlaying = false if queue is empty.
-                // We are async here. Tick might have finished.
-                // We need to wake it up.
+                // tick() stops playback whenever the queue runs dry, and this
+                // refill is async — so by now it has likely already stopped.
+                // Setting isPlaying below is what starts it again.
                 const newState = {
                     queue: newQueue,
                     isRefilling: false
@@ -866,16 +866,9 @@ class Room {
                 }
                 break;
             case "DELETE_ACCOUNT":
-                // Delegate back to main server handler or handle here?
-                // Returning a specific flag or emitting an event would be ideal, 
-                // but since we are in `Room.js`, we can just implement the destruction logic or 
-                // rely on the fact that `index.js` might be checking this message type BEFORE calling room.handleMessage?
-                // ERROR: I suspect index.js logic forwards it blindly.
-                // Let's force a "return false" or similar if we want parent to handle it?
-                // Or simply `return` and ensure index.js handles it?
-                // Let's assume index.js needs to handle it.
-                // If I modify index.js to check for DELETE_ACCOUNT *before* routing to room, that fixes it globally.
-                // I will NOT edit Room.js yet. I will edit index.js.
+                // Unreachable: index.js answers DELETE_ACCOUNT in its own switch
+                // and returns, so it never reaches a room. Kept as an explicit
+                // no-op so the case is not mistaken for an oversight.
                 break;
             case "FETCH_SUGGESTIONS": {
                 const r = schemas.FetchSuggestionsPayload.safeParse(message.payload);
@@ -1009,20 +1002,12 @@ class Room {
 
         const { query } = payload; // Moved up for title check
 
-        // Duplicate Title Check
-        // We need to resolve the video first to get the title, OR we check videoId if we have it?
-        // Proposal says "Duplicate Video Title Prevention".
-        // Titles can slightly vary, but usually videoId is the unique identifier. 
-        // User asked for "same title", but practically "same video" (videoId) is safer and usually what is meant to prevent repetition.
-        // HOWEVER, if they want "same title" specifically to prevent covers or same video different video, that's harder.
-        // Let's stick to strict Title check as requested "repetition of turning in the same title".
-        // But we don't know the title yet until we fetch it!
-        // We will have to fetch the title first.
-        // The current flow fetches title in step 2.
-        // Let's implement the check AFTER fetching details (Step 2) but BEFORE adding to queue.
+        // The duplicate check compares titles, not video ids, so the same song
+        // re-uploaded under a different id still counts as a repeat. It cannot
+        // run here: the title only exists once the video has been resolved, so
+        // it happens after that step and before anything joins the queue.
 
-
-        let indexToRemove = -1; // Declare here to be accessible after video verification
+        let indexToRemove = -1; // Declared here to survive past video verification
 
         // Check Max Queue Size
         if (this.state.maxQueueSize > 0 && !canBypass && this.state.queue.length >= this.state.maxQueueSize) {
@@ -1282,10 +1267,9 @@ class Room {
             }
         }
 
-        // Fallback
+        // A video id that resolved to no metadata: no API key, a quota refusal,
+        // or a video that is gone. Reject rather than queue something unverified.
         if (!track && videoId) {
-            // If we rely on API key, we reject here. For now, fail safe reject or mocked track?
-            // Let's reject to be safe/consistent with previous logic
             ws.send(JSON.stringify({ type: "error", message: "Server could not verify video details." }));
             return;
         }
@@ -1328,26 +1312,8 @@ class Room {
                 newState.isPlaying = true;
                 newState.progress = 0;
             } else {
-                // Trigger auto-sort if we added to a non-empty queue
-                // We need to resort because this new track might be priority
-
-                const current = newQueue[0];
-                let upcoming = newQueue.slice(1);
-
-                upcoming.sort((a, b) => {
-                    // 1. Owner Priority
-                    if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
-                    if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
-
-                    // 2. Score
-                    const scoreDiff = (b.score || 0) - (a.score || 0);
-                    if (scoreDiff !== 0) return scoreDiff;
-
-                    // 3. Time added (implicit by stable sort or index if we had it, but generic sort is fine)
-                    return 0;
-                });
-
-                newState.queue = [current, ...upcoming];
+                // Re-order: the track just added may be a priority pick.
+                newState.queue = sortUpcoming(newQueue);
             }
             this.updateState(newState);
 
@@ -1402,24 +1368,7 @@ class Room {
             track.score = (track.score || 0) + scoreChange;
             queue[trackIndex] = track;
 
-            // Exclude current track (index 0) from sorting?
-            // If trackIndex is 0 (Current Track), we don't want to move it.
-            // But if it's in the queue, we DO sort.
-            // Fix: Only sort queue.slice(1).
-
-            const current = queue[0];
-            const upcoming = queue.slice(1);
-
-            upcoming.sort((a, b) => {
-                if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
-                if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
-
-                const scoreDiff = (b.score || 0) - (a.score || 0);
-                return scoreDiff !== 0 ? scoreDiff : 0;
-            });
-
-            const newQueue = [current, ...upcoming];
-            this.updateState({ queue: newQueue });
+            this.updateState({ queue: sortUpcoming(queue) });
         }
     }
 
@@ -1640,18 +1589,8 @@ class Room {
                 newState.queue = newQueue;
                 newState.isPlaying = true;
                 newState.progress = 0;
-            } else if (newQueue.length > 1) {
-                const current = newQueue[0];
-                const upcoming = newQueue.slice(1);
-                upcoming.sort((a, b) => {
-                    if (a.isOwnerPriority && !b.isOwnerPriority) return -1;
-                    if (!a.isOwnerPriority && b.isOwnerPriority) return 1;
-                    const scoreDiff = (b.score || 0) - (a.score || 0);
-                    return scoreDiff !== 0 ? scoreDiff : 0;
-                });
-                newState.queue = [current, ...upcoming];
             } else {
-                newState.queue = newQueue;
+                newState.queue = sortUpcoming(newQueue);
             }
 
             this.updateState(newState);

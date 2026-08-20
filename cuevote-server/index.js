@@ -464,12 +464,10 @@ wss.on("connection", (ws, req) => {
                         const success = db.deleteUser(userId);
                         logger.info(`[GDPR TRACE] DB Deletion execution success: ${success}`);
 
-                        // Debug: Count after
-                        // If delete worked, this should be empty list (wait, listUserRooms uses user ID)
-                        // But user is deleted! So listUserRooms(userId) might return empty just because user is gone?
-                        // No, listUserRooms queries 'rooms' table by owner_id. It doesn't join 'users' necessarily.
-                        // Let's check listUserRooms implementation.
-                        // "SELECT * FROM rooms WHERE owner_id = ?"
+                        // Post-check that the erasure actually took. listUserRooms
+                        // reads `rooms` by owner_id without joining `users`, so an
+                        // empty result here means the rooms are gone — not merely
+                        // that the user row is.
                         const afterRooms = db.listUserRooms(userId);
                         logger.info(`[GDPR POST-CHECK] User owns ${afterRooms.length} rooms in DB. (Should be 0)`);
 

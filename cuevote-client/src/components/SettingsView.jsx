@@ -65,10 +65,9 @@ export function SettingsView({
 							<button
 								onClick={(e) => {
 									e.stopPropagation();
+									// No onClose() here: the handler in RoomBody opens the
+									// requests page and closes this panel itself.
 									onManageRequests();
-									// onClose(); // Keep settings open or close? User might want to go back to settings. Let's keep it consistent with previous behavior which seemed to close it, but here maybe navigating away replaces the view?
-									// Actually manage requests usually opens a modal or a different view.
-									// For now, let's assume it handles its own navigation/modal.
 								}}
 								className="w-full flex items-center justify-between p-3 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500/20 transition-colors border border-orange-500/20"
 							>
