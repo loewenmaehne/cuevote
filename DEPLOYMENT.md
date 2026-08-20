@@ -461,3 +461,39 @@ hidden, like the apex domain.
 `/.well-known/oauth-authorization-server`, the user signs in on `/connect-ai`,
 and the `cv_*` DJ tools become available. Re-run `pm2 restart cuevote-mcp-dj`
 after each deploy that rebuilds the MCP.
+
+---
+
+## 10. Deploying updates (`update_server.sh`)
+
+Routine deploys run from the checkout on the server:
+
+```bash
+bash update_server.sh
+```
+
+The script is not just "pull and restart" — it refuses to leave a broken
+version serving:
+
+| Step | What it does | On failure |
+|---|---|---|
+| 1 | Records the currently deployed commit, then `git reset --hard origin/main` | aborts before anything is built |
+| 2–3 | `npm ci` + client build, `npm ci` for the server | aborts; running server untouched |
+| 4 | **`npm test` on the server** | aborts **before** the restart — the running server never sees the new code |
+| 5 | `pm2 reload` (falls back to `restart`) | — |
+| 6 | **Polls `/health` for up to 15 s** | **rolls back** to the recorded commit, rebuilds, restarts and re-checks |
+| 7 | Rebuilds and restarts the MCP service | aborts |
+
+Two consequences worth knowing:
+
+* **A failing test blocks the deploy.** That is the point — but it means a red
+  test suite means no deploys until it is fixed. Run `npm test` in
+  `cuevote-server/` locally before pushing.
+* **The rollback needs the commit it recorded in step 1.** In worktree mode the
+  script does not own the checkout, so it skips the git steps and therefore has
+  no rollback target: an unhealthy deploy there stops with an error and leaves
+  the process for you to inspect (`pm2 logs cuevote-server`).
+
+The health check calls `http://127.0.0.1:<PORT>/health` directly (bypassing
+nginx), reading `PORT` from `cuevote-server/.env` and defaulting to `8080`. It
+needs `curl`, which section 1 already installs.

@@ -32,6 +32,72 @@ detect_worktree() {
 
 detect_worktree
 
+# ---- Health check ----
+
+# The server's own /health endpoint, on the port it actually listens on.
+# PORT lives in cuevote-server/.env; 8080 is the server's own default.
+server_port() {
+    local port=""
+    if [ -f "$SERVER_DIR/.env" ]; then
+        port="$(grep -E '^[[:space:]]*PORT=' "$SERVER_DIR/.env" | tail -n1 | cut -d= -f2 | tr -d '[:space:]"'"'"'')"
+    fi
+    echo "${port:-8080}"
+}
+
+# Polls /health until it answers or the budget runs out. pm2 reload returns as
+# soon as it has signalled the process, not when the new one is serving, so a
+# single immediate curl would race the restart.
+wait_for_health() {
+    local port
+    port="$(server_port)"
+    local attempts=15
+    local i=1
+    while [ "$i" -le "$attempts" ]; do
+        if curl -fsS --max-time 2 "http://127.0.0.1:${port}/health" > /dev/null 2>&1; then
+            echo "  -> Health check passed on port ${port} (attempt ${i}/${attempts})."
+            return 0
+        fi
+        sleep 1
+        i=$((i + 1))
+    done
+    echo "  -> Health check FAILED on port ${port} after ${attempts}s."
+    return 1
+}
+
+# Puts the working tree back on the previously deployed commit and restarts from
+# it. Only meaningful outside worktree mode, where this script owns the checkout.
+rollback_to() {
+    local sha="$1"
+    echo ""
+    echo "!!!! Deployment unhealthy — rolling back to ${sha} !!!!"
+
+    if ! git reset --hard "$sha"; then
+        echo "Error: rollback checkout failed. The server is running unverified code."
+        echo "       Recover manually: git reset --hard ${sha} && bash update_server.sh start"
+        return 1
+    fi
+
+    (cd "$CLIENT_DIR" && npm ci --silent && npm run build) || {
+        echo "Error: client rebuild during rollback failed."
+        return 1
+    }
+    (cd "$SERVER_DIR" && npm ci --silent) || {
+        echo "Error: server dependency install during rollback failed."
+        return 1
+    }
+
+    pm2 reload "$PM2_PROCESS_NAME" --update-env || pm2 restart "$PM2_PROCESS_NAME" --update-env
+
+    if wait_for_health; then
+        echo "==== Rolled back to ${sha}. The previous version is serving again. ===="
+        return 0
+    fi
+
+    echo "Error: the rollback target is unhealthy too. Manual intervention required."
+    echo "       Logs: pm2 logs ${PM2_PROCESS_NAME}"
+    return 1
+}
+
 # ---- Subcommands ----
 
 do_update() {
@@ -41,12 +107,21 @@ do_update() {
         echo "Error: pm2 is not installed or not in PATH."
         exit 1
     fi
+    if ! command -v curl &> /dev/null; then
+        echo "Error: curl is not installed or not in PATH (needed for the health check)."
+        exit 1
+    fi
 
     # 1. Sync to latest remote main
+    # PREV_SHA is captured *before* the reset — it is the only handle on the
+    # version that was known to work, and `git reset --hard` destroys the tree.
+    PREV_SHA=""
     if [ "$IS_WORKTREE" = true ]; then
-        echo "[1/5] Skipping git pull (worktree mode — code is managed by the worktree)"
+        echo "[1/7] Skipping git pull (worktree mode — code is managed by the worktree)"
     else
-        echo "[1/5] Updating code from git (reset to origin/main)..."
+        echo "[1/7] Updating code from git (reset to origin/main)..."
+        PREV_SHA="$(git rev-parse HEAD)"
+        echo "  -> Currently deployed: ${PREV_SHA}"
         if ! git fetch origin; then
             echo "Error: git fetch failed."
             exit 1
@@ -55,10 +130,11 @@ do_update() {
             echo "Error: git reset --hard origin/main failed."
             exit 1
         fi
+        echo "  -> Now deploying:      $(git rev-parse HEAD)"
     fi
 
     # 2. Update Client (Frontend)
-    echo "[2/5] Updating Client (Frontend)..."
+    echo "[2/7] Updating Client (Frontend)..."
     cd "$CLIENT_DIR"
 
     echo "  -> Installing client dependencies..."
@@ -74,14 +150,28 @@ do_update() {
     cd ..
 
     # 3. Update Server (Backend)
-    echo "[3/5] Updating Server (Backend)..."
+    echo "[3/7] Updating Server (Backend)..."
     cd "$SERVER_DIR"
 
     echo "  -> Installing server dependencies..."
     npm ci --silent
 
-    # 4. Restart Server Process
-    echo "[4/5] Restarting Server Process..."
+    # 4. Test the new code before it touches the running process. Everything up
+    #    to here is reversible by doing nothing; the reload below is not.
+    echo "[4/7] Running server tests..."
+    if ! npm test; then
+        echo ""
+        echo "Error: server tests failed. Aborting BEFORE restart — the running server is untouched."
+        if [ -n "$PREV_SHA" ]; then
+            echo "       The working tree is on the new code; restore it with:"
+            echo "       git reset --hard ${PREV_SHA}"
+        fi
+        exit 1
+    fi
+    echo "  -> Tests passed."
+
+    # 5. Restart Server Process
+    echo "[5/7] Restarting Server Process..."
     if pm2 describe "$PM2_PROCESS_NAME" > /dev/null 2>&1; then
         echo "  -> Process found, attempting reload..."
         pm2 reload "$PM2_PROCESS_NAME" --update-env || pm2 restart "$PM2_PROCESS_NAME" --update-env
@@ -93,10 +183,23 @@ do_update() {
 
     cd ..
 
-    # 5. Update MCP (DJ tools server)
+    # 6. Verify the process that came back actually serves traffic. Without this
+    #    a crash-looping deploy still reported success.
+    echo "[6/7] Verifying server health..."
+    if ! wait_for_health; then
+        if [ -n "$PREV_SHA" ]; then
+            rollback_to "$PREV_SHA" || exit 1
+            exit 1
+        fi
+        echo "Error: server is unhealthy and no rollback target is available (worktree mode)."
+        echo "       Logs: pm2 logs ${PM2_PROCESS_NAME}"
+        exit 1
+    fi
+
+    # 7. Update MCP (DJ tools server)
     # Needs its own block: its dist/ is gitignored, so a pull never carries the
     # build, and npm ci must keep devDependencies because the build runs tsc.
-    echo "[5/5] Updating MCP (DJ tools)..."
+    echo "[7/7] Updating MCP (DJ tools)..."
     if [ ! -f "$MCP_DIR/package.json" ]; then
         echo "  -> No $MCP_DIR/package.json found — skipping."
     else
