@@ -168,7 +168,7 @@ describe('Room', () => {
       room.handleVote(ws, { trackId: 'track-1', voteType: 'up' });
       const lastMsg = ws._messages[ws._messages.length - 1];
       assert.equal(lastMsg.type, 'error');
-      assert.ok(lastMsg.message.includes('logged in'));
+      assert.equal(lastMsg.code, 'LOGIN_REQUIRED');
       room.destroy();
     });
 
@@ -300,6 +300,137 @@ describe('Room', () => {
 
       room.updateState({ musicOnly: true });
       assert.equal(ws._messages.length, 0);
+      room.destroy();
+    });
+  });
+
+  describe('Guest access', () => {
+    const guestWs = () => mockWs({ id: 'guest:abc123', name: 'Guest 4F2A', guestTag: '4F2A', isGuest: true });
+
+    it('lets a guest vote when the room does not require a login', () => {
+      const room = new Room('guest-open', 'Open Room', null, { owner_id: 'owner-1' });
+      room.state.queue = [
+        { id: 'current', videoId: 'v0', title: 'Current', score: 0, voters: {} },
+        { id: 'track-1', videoId: 'v1', title: 'T1', score: 0, voters: {} },
+      ];
+      const ws = guestWs();
+      room.addClient(ws);
+
+      room.handleVote(ws, { trackId: 'track-1', voteType: 'up' });
+
+      const track = room.state.queue.find(t => t.id === 'track-1');
+      assert.equal(track.score, 1);
+      assert.equal(track.voters['guest:abc123'], 'up');
+      room.destroy();
+    });
+
+    it('defaults requireLogin to off', () => {
+      const room = new Room('guest-default', 'Default Room', null, { owner_id: 'owner-1' });
+      assert.equal(room.state.requireLogin, false);
+      room.destroy();
+    });
+
+    it('honours require_login from the room metadata', () => {
+      const room = new Room('guest-meta', 'Meta Room', null, { owner_id: 'owner-1', require_login: 1 });
+      assert.equal(room.state.requireLogin, true);
+      room.destroy();
+    });
+
+    it('rejects a guest vote when the room requires a login', () => {
+      const room = new Room('guest-closed', 'Closed Room', null, { owner_id: 'owner-1', require_login: 1 });
+      room.state.queue = [
+        { id: 'current', videoId: 'v0', title: 'Current', score: 0, voters: {} },
+        { id: 'track-1', videoId: 'v1', title: 'T1', score: 0, voters: {} },
+      ];
+      const ws = guestWs();
+      room.addClient(ws);
+
+      room.handleVote(ws, { trackId: 'track-1', voteType: 'up' });
+
+      const lastMsg = ws._messages[ws._messages.length - 1];
+      assert.equal(lastMsg.type, 'error');
+      assert.equal(lastMsg.code, 'LOGIN_REQUIRED');
+      const track = room.state.queue.find(t => t.id === 'track-1');
+      assert.equal(track.score, 0);
+      assert.deepEqual(track.voters, {});
+      room.destroy();
+    });
+
+    it('still lets a signed-in user vote when the room requires a login', () => {
+      const room = new Room('guest-closed-user', 'Closed Room', null, { owner_id: 'owner-1', require_login: 1 });
+      room.state.queue = [
+        { id: 'current', videoId: 'v0', title: 'Current', score: 0, voters: {} },
+        { id: 'track-1', videoId: 'v1', title: 'T1', score: 0, voters: {} },
+      ];
+      const ws = mockWs({ id: 'guest-1', name: 'Guest User' });
+      room.addClient(ws);
+
+      room.handleVote(ws, { trackId: 'track-1', voteType: 'up' });
+
+      assert.equal(room.state.queue.find(t => t.id === 'track-1').score, 1);
+      room.destroy();
+    });
+
+    it('rejects a guest suggestion when the room requires a login', async () => {
+      const room = new Room('guest-suggest', 'Suggest Room', null, { owner_id: 'owner-1', require_login: 1 });
+      const ws = guestWs();
+      room.addClient(ws);
+
+      await room.handleSuggestSong(ws, { query: 'anything' });
+
+      const lastMsg = ws._messages[ws._messages.length - 1];
+      assert.equal(lastMsg.type, 'error');
+      assert.equal(lastMsg.code, 'LOGIN_REQUIRED');
+      room.destroy();
+    });
+
+    it('persists the owner toggle so a restart keeps the rule', () => {
+      db.createRoom({
+        id: 'guest-persist',
+        name: 'Persist Room',
+        description: '',
+        owner_id: 'owner-1',
+        color: 'from-gray-700 to-black',
+        is_public: 1,
+        password: null,
+      });
+
+      const room = new Room('guest-persist', 'Persist Room', null, { owner_id: 'owner-1' });
+      room.handleUpdateSettings({ requireLogin: true });
+      assert.equal(room.state.requireLogin, true);
+      room.destroy();
+
+      assert.equal(db.getRoom('guest-persist').require_login, 1);
+
+      // A room rebuilt from the stored row keeps the rule.
+      const reopened = new Room('guest-persist', 'Persist Room', null, db.getRoom('guest-persist'));
+      assert.equal(reopened.state.requireLogin, true);
+      reopened.destroy();
+    });
+
+    it('never sends a guest id to other clients', () => {
+      const room = new Room('guest-projection', 'Projection Room', null, { owner_id: 'owner-1' });
+      room.state.queue = [
+        {
+          id: 'track-1', videoId: 'v1', title: 'T1', score: 1,
+          voters: { 'guest:abc123': 'up' },
+          suggestedBy: 'guest:abc123',
+          suggestedByUsername: 'Guest 4F2A',
+          suggestedByIsGuest: true,
+          suggestedByGuestTag: '4F2A',
+        },
+      ];
+      const observer = mockWs({ id: 'owner-1', name: 'Room Owner' });
+      room.addClient(observer);
+      room.sendStateTo(observer);
+
+      const stateMsg = observer._messages.filter(m => m.type === 'state').pop();
+      const sent = stateMsg.payload.queue[0];
+      assert.equal(sent.voters, undefined);
+      assert.equal(sent.suggestedBy, undefined);
+      assert.equal(sent.suggestedByIsGuest, true);
+      assert.equal(sent.suggestedByGuestTag, '4F2A');
+      assert.ok(!JSON.stringify(stateMsg).includes('guest:abc123'));
       room.destroy();
     });
   });

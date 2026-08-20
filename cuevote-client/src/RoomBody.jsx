@@ -15,6 +15,7 @@ import { PlaylistView } from "./components/PlaylistView";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { AppPromoFooter } from "./components/AppPromoFooter";
 import { SettingsView } from "./components/SettingsView";
+import { canParticipate } from "./utils/participation";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
 import { Skeleton } from "./components/Skeleton";
@@ -174,7 +175,8 @@ function RoomBody() {
     autoApproveKnown = true,
     autoRefill = false,
     bannedVideos = [], // Added this
-    captionsEnabled = false
+    captionsEnabled = false,
+    requireLogin = false
   } = serverState || {};
 
   // Calculate set of ALL videoIds currently in the queue or playing for suggestion "Added" check
@@ -1232,12 +1234,12 @@ function RoomBody() {
 
 
   const handleSongSuggested = useCallback((query) => {
-    if (!user) {
+    if (!canParticipate(user, requireLogin)) {
       setToast({ message: t('suggest.loginRequired'), type: 'error' });
       return;
     }
     sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
-  }, [user, sendMessage, t]);
+  }, [user, requireLogin, sendMessage, t]);
 
   const handleLibraryAdd = useCallback((videoId) => {
     return handleSongSuggested(`https://www.youtube.com/watch?v=${videoId}`);
@@ -1278,9 +1280,13 @@ function RoomBody() {
 
 
   const handleVote = (trackId, type) => {
-
+    // The server enforces this too; checking here turns a rejected vote into an
+    // explanation of the room's rule.
+    if (!canParticipate(user, requireLogin)) {
+      setToast({ message: t('suggest.loginRequired'), type: 'error' });
+      return;
+    }
     sendMessage({ type: "VOTE", payload: { trackId, voteType: type } });
-
   };
 
 
@@ -1931,6 +1937,7 @@ function RoomBody() {
             duplicateCooldown={duplicateCooldown}
             smartQueue={smartQueue}
             autoRefill={autoRefill}
+            requireLogin={requireLogin}
             playlistViewMode={playlistViewMode}
             allowPrelisten={allowPrelisten}
             votesEnabled={serverState?.votesEnabled ?? true}

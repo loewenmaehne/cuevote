@@ -19,6 +19,7 @@ export function SettingsView({
 	duplicateCooldown,
 	smartQueue,
 	autoRefill,
+	requireLogin,
 	playlistViewMode,
 	allowPrelisten,
 	votesEnabled,
@@ -258,6 +259,29 @@ export function SettingsView({
 
 						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
 							<div className="flex items-center gap-2">
+								<label className="text-sm font-medium text-white">{t('header.requireLogin')}</label>
+								<div className="group relative flex items-center">
+									<HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
+									<div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-3 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none">
+										{t('header.requireLoginTooltip')}
+									</div>
+								</div>
+							</div>
+							<button
+								onClick={(e) => {
+									e.stopPropagation();
+									onUpdateSettings({ requireLogin: !requireLogin });
+								}}
+								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${requireLogin ? 'bg-orange-500' : 'bg-neutral-600'}`}
+							>
+								<span
+									className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${requireLogin ? 'translate-x-6' : 'translate-x-1'}`}
+								/>
+							</button>
+						</div>
+
+						<div className="flex items-center justify-between p-3 bg-neutral-900/50 hover:bg-neutral-800/50 rounded-lg transition-colors border border-neutral-800/50">
+							<div className="flex items-center gap-2">
 								<label className="text-sm font-medium text-white">{t('header.venueMode')}</label>
 								<div className="group relative flex items-center">
 									<HelpCircle size={14} className="text-neutral-500 hover:text-neutral-300 cursor-help" />
@@ -482,6 +506,7 @@ SettingsView.propTypes = {
 	duplicateCooldown: PropTypes.number,
 	smartQueue: PropTypes.bool,
 	autoRefill: PropTypes.bool,
+	requireLogin: PropTypes.bool,
 	playlistViewMode: PropTypes.bool,
 	allowPrelisten: PropTypes.bool,
 	votesEnabled: PropTypes.bool,

@@ -34,11 +34,11 @@ function runMigrations(db) {
     const sql = fs.readFileSync(path.join(MIGRATIONS_DIR, file), 'utf-8');
     logger.info(`[Migrator] Applying migration ${version}: ${file}`);
 
+    // exec() runs the whole file as one script. Splitting on ';' used to be the
+    // approach, which silently mangles any statement containing one — a trigger
+    // body, or a default like ';' in a string literal.
     const migrate = db.transaction(() => {
-      const statements = sql.split(';').map(s => s.trim()).filter(Boolean);
-      for (const stmt of statements) {
-        db.exec(stmt);
-      }
+      db.exec(sql);
       db.prepare('INSERT INTO schema_version (version, name) VALUES (?, ?)').run(version, file);
     });
 

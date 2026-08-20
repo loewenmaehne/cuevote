@@ -23,6 +23,7 @@ const { slugify } = require('transliteration');
 const db = require('./db');
 const dbAsync = require('./db-async');
 const gdpr = require('./gdpr');
+const guest = require('./guest');
 const adminApi = require('./admin');
 const backupScheduler = require('./backup_scheduler');
 backupScheduler.start();
@@ -346,6 +347,43 @@ wss.on("connection", (ws, req) => {
                         logger.error("[LOGIN FAILURE] Error Details:", e);
                         ws.send(JSON.stringify({ type: "error", message: "Login failed. Please try again." }));
                     }
+                    return;
+                }
+                case "GUEST_SESSION": {
+                    // A guest identity is what lets someone who scanned the QR
+                    // code vote without an account. It is only ever established
+                    // for a socket that has no real user: a signed-in user
+                    // sending this (a stale client, a reordered reconnect)
+                    // must not be downgraded to a guest.
+                    if (ws.user && !guest.isGuestUser(ws.user)) {
+                        sendAck();
+                        return;
+                    }
+
+                    const guestResult = schemas.GuestSessionPayload.safeParse(parsedMessage.payload);
+                    if (!guestResult.success) {
+                        ws.send(JSON.stringify({ type: "error", message: "Invalid guest session payload." }));
+                        return;
+                    }
+                    sendAck();
+
+                    const presented = guestResult.data?.token;
+                    let guestId = presented ? guest.verifyToken(presented) : null;
+                    let guestToken = presented;
+
+                    if (!guestId) {
+                        guestToken = guest.issueToken();
+                        guestId = guest.verifyToken(guestToken);
+                    }
+
+                    ws.user = guest.userFromId(guestId);
+                    ws.send(JSON.stringify({
+                        type: "GUEST_SESSION_OK",
+                        payload: { user: ws.user, guestToken }
+                    }));
+                    // Same reason as LOGIN: the state this socket already holds
+                    // was projected for nobody, so it carries no myVote.
+                    if (ws.roomId && rooms.has(ws.roomId)) rooms.get(ws.roomId).sendStateTo(ws);
                     return;
                 }
                 case "RESUME_SESSION": {

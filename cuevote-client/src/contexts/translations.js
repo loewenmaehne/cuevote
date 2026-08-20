@@ -129,7 +129,9 @@ export const translations = {
 			leave: "Leave",
 			copyUrl: "Copy URL",
 			close: "Close",
-			changeLanguage: "Change Language"
+			changeLanguage: "Change Language",
+			requireLogin: "Login required",
+			requireLoginTooltip: "Guests must sign in to vote and suggest. Off: anyone in the channel can join in.",
 		},
 		suggest: {
 			placeholder: "Type a video name...",
@@ -185,7 +187,8 @@ export const translations = {
 			confirmDelete: "Confirm Delete",
 			delete: "Delete Video",
 			watch: "Watch on YouTube",
-			recommend: "Get Suggestions"
+			recommend: "Get Suggestions",
+			guest: "Guest",
 		},
 		library: {
 			searchPlaceholder: "Search library...",
@@ -399,7 +402,9 @@ export const translations = {
 			copyUrl: "URL Kopiëren",
 			close: "Sluiten",
 			captionsTooltip: "Toon standaard ondertitels voor alle gebruikers wanneer ze de speler laden.",
-			changeLanguage: "Taal wijzigen"
+			changeLanguage: "Taal wijzigen",
+			requireLogin: "Inloggen vereist",
+			requireLoginTooltip: "Gasten moeten inloggen om te stemmen en voor te stellen. Uit: iedereen in het kanaal kan meedoen.",
 		},
 		suggest: {
 			placeholder: "Typ een titel...",
@@ -455,7 +460,8 @@ export const translations = {
 			confirmDelete: "Bevestig",
 			delete: "Verwijder",
 			watch: "Op YouTube",
-			recommend: "Krijg Suggesties"
+			recommend: "Krijg Suggesties",
+			guest: "Gast",
 		},
 		library: {
 			searchPlaceholder: "Zoek in bibliotheek...",
@@ -669,7 +675,9 @@ export const translations = {
 			copyUrl: "URL Kopieren",
 			close: "Schließen",
 			captionsTooltip: "Untertitel standardmäßig für alle Nutzer anzeigen, wenn sie den Player laden.",
-			changeLanguage: "Sprache ändern"
+			changeLanguage: "Sprache ändern",
+			requireLogin: "Anmeldung erforderlich",
+			requireLoginTooltip: "Gäste müssen sich anmelden, um abzustimmen und vorzuschlagen. Aus: Alle im Kanal können mitmachen.",
 		},
 		suggest: {
 			placeholder: "Videotitel eingeben...",
@@ -725,7 +733,8 @@ export const translations = {
 			confirmDelete: "Bestätigen",
 			delete: "Löschen",
 			watch: "Auf YouTube",
-			recommend: "Vorschläge erhalten"
+			recommend: "Vorschläge erhalten",
+			guest: "Gast",
 		},
 		library: {
 			searchPlaceholder: "Bibliothek durchsuchen...",
@@ -939,7 +948,9 @@ export const translations = {
 			copyUrl: "Copier URL",
 			close: "Fermer",
 			captionsTooltip: "Afficher les sous-titres par défaut pour tous les utilisateurs lorsqu'ils chargent le lecteur.",
-			changeLanguage: "Changer de langue"
+			changeLanguage: "Changer de langue",
+			requireLogin: "Connexion requise",
+			requireLoginTooltip: "Les invités doivent se connecter pour voter et proposer. Désactivé : tout le monde dans le canal peut participer.",
 		},
 		suggest: {
 			placeholder: "Tapez un titre...",
@@ -995,7 +1006,8 @@ export const translations = {
 			confirmDelete: "Confirmer",
 			delete: "Supprimer",
 			watch: "Sur YouTube",
-			recommend: "Obtenir des suggestions"
+			recommend: "Obtenir des suggestions",
+			guest: "Invité",
 		},
 		library: {
 			searchPlaceholder: "Chercher dans la bibliothèque...",
@@ -1211,7 +1223,9 @@ export const translations = {
 			copyUrl: "Copiar URL",
 			close: "Cerrar",
 			captionsTooltip: "Mostrar subtítulos por defecto a todos los usuarios cuando carguen el reproductor.",
-			changeLanguage: "Cambiar idioma"
+			changeLanguage: "Cambiar idioma",
+			requireLogin: "Inicio de sesión obligatorio",
+			requireLoginTooltip: "Los invitados deben iniciar sesión para votar y sugerir. Desactivado: cualquiera en el canal puede participar.",
 		},
 		suggest: {
 			placeholder: "Escribe un título...",
@@ -1267,7 +1281,8 @@ export const translations = {
 			confirmDelete: "Confirmar",
 			delete: "Eliminar",
 			watch: "En YouTube",
-			recommend: "Obtener Sugerencias"
+			recommend: "Obtener Sugerencias",
+			guest: "Invitado",
 		},
 		library: {
 			searchPlaceholder: "Buscar en biblioteca...",
@@ -1483,7 +1498,9 @@ export const translations = {
 			copyUrl: "Copia URL",
 			close: "Chiudi",
 			captionsTooltip: "Mostra i sottotitoli per impostazione predefinita a tutti gli utenti quando caricano il player.",
-			changeLanguage: "Cambia lingua"
+			changeLanguage: "Cambia lingua",
+			requireLogin: "Accesso obbligatorio",
+			requireLoginTooltip: "Gli ospiti devono accedere per votare e proporre. Disattivato: chiunque nel canale può partecipare.",
 		},
 		suggest: {
 			placeholder: "Scrivi un titolo...",
@@ -1532,7 +1549,8 @@ export const translations = {
 			confirmDelete: "Conferma",
 			delete: "Elimina",
 			watch: "Su YouTube",
-			recommend: "Ricevi suggerimenti"
+			recommend: "Ricevi suggerimenti",
+			guest: "Ospite",
 		},
 		library: {
 			searchPlaceholder: "Cerca nella libreria...",
@@ -1755,7 +1773,9 @@ export const translations = {
 			copyUrl: "Copiar URL",
 			close: "Fechar",
 			captionsTooltip: "Mostrar legendas por padrão para todos os usuários quando carregarem o player.",
-			changeLanguage: "Alterar idioma"
+			changeLanguage: "Alterar idioma",
+			requireLogin: "Login obrigatório",
+			requireLoginTooltip: "Os convidados precisam fazer login para votar e sugerir. Desativado: qualquer pessoa no canal pode participar.",
 		},
 		suggest: {
 			placeholder: "Digite um título...",
@@ -1804,7 +1824,8 @@ export const translations = {
 			confirmDelete: "Confirmar",
 			delete: "Excluir",
 			watch: "No YouTube",
-			recommend: "Obter sugestões"
+			recommend: "Obter sugestões",
+			guest: "Convidado",
 		},
 		library: {
 			searchPlaceholder: "Buscar na biblioteca...",
@@ -2027,7 +2048,9 @@ export const translations = {
 			features: "功能",
 			captionsTooltip: "加载播放器时默认为所有用户显示字幕。",
 			ownerTools: "所有者工具",
-			changeLanguage: "切换语言"
+			changeLanguage: "切换语言",
+			requireLogin: "需要登录",
+			requireLoginTooltip: "访客必须登录才能投票和推荐。关闭时，频道内任何人都可以参与。",
 		},
 		suggest: {
 			placeholder: "输入動画名...",
@@ -2076,7 +2099,8 @@ export const translations = {
 			confirmDelete: "确认删除",
 			delete: "删除",
 			watch: "在 YouTube 观看",
-			recommend: "获取推荐"
+			recommend: "获取推荐",
+			guest: "访客",
 		},
 		library: {
 			searchPlaceholder: "搜索媒体库...",
@@ -2295,7 +2319,9 @@ export const translations = {
 			features: "功能",
 			captionsTooltip: "載入播放器時預設為所有使用者顯示字幕。",
 			ownerTools: "擁有者工具",
-			changeLanguage: "切換語言"
+			changeLanguage: "切換語言",
+			requireLogin: "需要登入",
+			requireLoginTooltip: "訪客必須登入才能投票和推薦。關閉時，頻道內任何人都可以參與。",
 		},
 		suggest: {
 			placeholder: "輸入動画名...",
@@ -2344,7 +2370,8 @@ export const translations = {
 			confirmDelete: "確認刪除",
 			delete: "刪除",
 			watch: "在 YouTube 觀看",
-			recommend: "獲取推薦"
+			recommend: "獲取推薦",
+			guest: "訪客",
 		},
 		library: {
 			searchPlaceholder: "搜尋媒體庫...",
@@ -2563,7 +2590,9 @@ export const translations = {
 			features: "機能",
 			captionsTooltip: "プレーヤーを読み込んだ際、すべてのユーザーに字幕をデフォルトで表示します。",
 			ownerTools: "オーナーツール",
-			changeLanguage: "言語を変更"
+			changeLanguage: "言語を変更",
+			requireLogin: "ログインが必要",
+			requireLoginTooltip: "ゲストは投票やリクエストにログインが必要です。オフの場合、チャンネル内の誰でも参加できます。",
 		},
 		suggest: {
 			placeholder: "動画名を入力...",
@@ -2612,7 +2641,8 @@ export const translations = {
 			confirmDelete: "削除確認",
 			delete: "削除",
 			watch: "YouTubeで見る",
-			recommend: "おすすめを取得"
+			recommend: "おすすめを取得",
+			guest: "ゲスト",
 		},
 		library: {
 			searchPlaceholder: "ライブラリを検索...",
@@ -2831,7 +2861,9 @@ export const translations = {
 			features: "기능",
 			captionsTooltip: "플레이어를 로드할 때 모든 사용자에게 자막을 기본적으로 표시합니다.",
 			ownerTools: "소유자 도구",
-			changeLanguage: "언어 변경"
+			changeLanguage: "언어 변경",
+			requireLogin: "로그인 필요",
+			requireLoginTooltip: "게스트가 투표하고 추천하려면 로그인해야 합니다. 끄면 채널의 누구나 참여할 수 있습니다.",
 		},
 		suggest: {
 			placeholder: "제목 입력...",
@@ -2880,7 +2912,8 @@ export const translations = {
 			confirmDelete: "확인",
 			delete: "삭제",
 			watch: "YouTube에서 보기",
-			recommend: "추천 받기"
+			recommend: "추천 받기",
+			guest: "게스트",
 		},
 		library: {
 			searchPlaceholder: "라이브러리 검색...",
@@ -3099,7 +3132,9 @@ export const translations = {
 			features: "विशेषताएं",
 			captionsTooltip: "जब उपयोगकर्ता प्लेयर लोड करें तो सभी के लिए डिफ़ॉल्ट रूप से उपशीर्षक दिखाएं।",
 			ownerTools: "मालिक के टूल",
-			changeLanguage: "भाषा बदलें"
+			changeLanguage: "भाषा बदलें",
+			requireLogin: "लॉगिन आवश्यक",
+			requireLoginTooltip: "वोट करने और सुझाव देने के लिए मेहमानों को लॉग इन करना होगा। बंद: चैनल में कोई भी भाग ले सकता है।",
 		},
 		suggest: {
 			placeholder: "वीडियो का नाम टाइप करें...",
@@ -3148,7 +3183,8 @@ export const translations = {
 			confirmDelete: "पुष्टि करें",
 			delete: "हटाएं",
 			watch: "YouTube पर देखें",
-			recommend: "सुझाव प्राप्त करें"
+			recommend: "सुझाव प्राप्त करें",
+			guest: "मेहमान",
 		},
 		library: {
 			searchPlaceholder: "लाइब्रेरी खोजें...",
@@ -3369,7 +3405,9 @@ export const translations = {
 			features: "คุณสมบัติ",
 			captionsTooltip: "แสดงคำบรรยายเป็นค่าเริ่มต้นสำหรับผู้ใช้ทุกคนเมื่อโหลดเครื่องเล่น",
 			ownerTools: "เครื่องมือเจ้าของ",
-			changeLanguage: "เปลี่ยนภาษา"
+			changeLanguage: "เปลี่ยนภาษา",
+			requireLogin: "ต้องเข้าสู่ระบบ",
+			requireLoginTooltip: "แขกต้องเข้าสู่ระบบเพื่อโหวตและแนะนำ ปิด: ทุกคนในช่องสามารถร่วมได้",
 		},
 		suggest: {
 			placeholder: "พิมพ์ชื่อวิดีโอ...",
@@ -3418,7 +3456,8 @@ export const translations = {
 			confirmDelete: "ยืนยัน",
 			delete: "ลบ",
 			watch: "ดูบน YouTube",
-			recommend: "รับคำแนะนำ"
+			recommend: "รับคำแนะนำ",
+			guest: "แขก",
 		},
 		library: {
 			searchPlaceholder: "ค้นหาคลังวิดีโอ...",
@@ -3637,7 +3676,9 @@ export const translations = {
 			features: "Tính năng",
 			captionsTooltip: "Hiển thị phụ đề mặc định cho tất cả người dùng khi họ tải trình phát.",
 			ownerTools: "Công cụ chủ sở hữu",
-			changeLanguage: "Đổi ngôn ngữ"
+			changeLanguage: "Đổi ngôn ngữ",
+			requireLogin: "Yêu cầu đăng nhập",
+			requireLoginTooltip: "Khách phải đăng nhập để bình chọn và đề xuất. Tắt: bất kỳ ai trong kênh đều có thể tham gia.",
 		},
 		suggest: {
 			placeholder: "Nhập tên bài hát...",
@@ -3686,7 +3727,8 @@ export const translations = {
 			confirmDelete: "Xác nhận",
 			delete: "Xóa",
 			watch: "Xem trên YouTube",
-			recommend: "Nhận gợi ý"
+			recommend: "Nhận gợi ý",
+			guest: "Khách",
 		},
 		library: {
 			searchPlaceholder: "Tìm kiếm thư viện...",
@@ -3905,7 +3947,9 @@ export const translations = {
 			features: "Fitur",
 			captionsTooltip: "Tampilkan subjudul secara default untuk semua pengguna saat memuat pemutar.",
 			ownerTools: "Alat Pemilik",
-			changeLanguage: "Ubah bahasa"
+			changeLanguage: "Ubah bahasa",
+			requireLogin: "Wajib login",
+			requireLoginTooltip: "Tamu harus login untuk memilih dan menyarankan. Nonaktif: siapa pun di kanal dapat ikut serta.",
 		},
 		suggest: {
 			placeholder: "Ketik judul video...",
@@ -3954,7 +3998,8 @@ export const translations = {
 			confirmDelete: "Konfirmasi",
 			delete: "Hapus",
 			watch: "Tonton di YouTube",
-			recommend: "Dapatkan saran"
+			recommend: "Dapatkan saran",
+			guest: "Tamu",
 		},
 		library: {
 			searchPlaceholder: "Cari pustaka...",
@@ -4173,7 +4218,9 @@ export const translations = {
 			features: "Ciri",
 			captionsTooltip: "Tunjukkan sari kata secara lalai untuk semua pengguna apabila mereka memuatkan pemain.",
 			ownerTools: "Alat Pemilik",
-			changeLanguage: "Tukar bahasa"
+			changeLanguage: "Tukar bahasa",
+			requireLogin: "Log masuk diperlukan",
+			requireLoginTooltip: "Tetamu mesti log masuk untuk mengundi dan mencadangkan. Mati: sesiapa dalam saluran boleh menyertai.",
 		},
 		suggest: {
 			placeholder: "Taip tajuk video...",
@@ -4222,7 +4269,8 @@ export const translations = {
 			confirmDelete: "Sahkan",
 			delete: "Padam",
 			watch: "Tonton di YouTube",
-			recommend: "Dapatkan cadangan"
+			recommend: "Dapatkan cadangan",
+			guest: "Tetamu",
 		},
 		library: {
 			searchPlaceholder: "Cari pustaka...",
@@ -4441,7 +4489,9 @@ export const translations = {
 			features: "Mga tampok",
 			captionsTooltip: "Ipakita ang mga subtitle bilang default para sa lahat ng user kapag in-load ang player.",
 			ownerTools: "Mga kasangkapan ng may-ari",
-			changeLanguage: "Baguhin ang wika"
+			changeLanguage: "Baguhin ang wika",
+			requireLogin: "Kailangan mag-log in",
+			requireLoginTooltip: "Kailangang mag-log in ang mga bisita para bumoto at magmungkahi. Naka-off: sinuman sa channel ay puwedeng sumali.",
 		},
 		suggest: {
 			placeholder: "Mag-type ng pamagat...",
@@ -4490,7 +4540,8 @@ export const translations = {
 			confirmDelete: "Kumpirmahin",
 			delete: "Tanggalin",
 			watch: "Panoorin sa YouTube",
-			recommend: "Kumuha ng mga mungkahi"
+			recommend: "Kumuha ng mga mungkahi",
+			guest: "Bisita",
 		},
 		library: {
 			searchPlaceholder: "Maghanap sa library...",
@@ -4711,7 +4762,9 @@ export const translations = {
 			features: "Funkcje",
 			captionsTooltip: "Wyświetlaj napisy domyślnie dla wszystkich użytkowników, gdy ładują odtwarzacz.",
 			ownerTools: "Narzędzia właściciela",
-			changeLanguage: "Zmień język"
+			changeLanguage: "Zmień język",
+			requireLogin: "Wymagane logowanie",
+			requireLoginTooltip: "Goście muszą się zalogować, aby głosować i proponować. Wyłączone: każdy w kanale może dołączyć.",
 		},
 		suggest: {
 			placeholder: "Wpisz tytuł...",
@@ -4760,7 +4813,8 @@ export const translations = {
 			confirmDelete: "Potwierdź",
 			delete: "Usuń",
 			watch: "Oglądaj na YouTube",
-			recommend: "Pobierz propozycje"
+			recommend: "Pobierz propozycje",
+			guest: "Gość",
 		},
 		library: {
 			searchPlaceholder: "Szukaj w bibliotece...",
@@ -4985,7 +5039,9 @@ export const translations = {
 			features: "Funktioner",
 			captionsTooltip: "Visa undertexter som standard för alla användare när de laddar spelaren.",
 			ownerTools: "Ägarverktyg",
-			changeLanguage: "Byt språk"
+			changeLanguage: "Byt språk",
+			requireLogin: "Inloggning krävs",
+			requireLoginTooltip: "Gäster måste logga in för att rösta och föreslå. Av: alla i kanalen kan delta.",
 		},
 		suggest: {
 			placeholder: "Skriv en titel...",
@@ -5034,7 +5090,8 @@ export const translations = {
 			confirmDelete: "Bekräfta",
 			delete: "Ta bort",
 			watch: "Titta på YouTube",
-			recommend: "Hämta förslag"
+			recommend: "Hämta förslag",
+			guest: "Gäst",
 		},
 		library: {
 			searchPlaceholder: "Sök i biblioteket...",
@@ -5255,7 +5312,9 @@ export const translations = {
 			features: "Funktioner",
 			captionsTooltip: "Vis undertekster som standard for alle brugere, når de indlæser afspilleren.",
 			ownerTools: "Ejerværktøjer",
-			changeLanguage: "Skift sprog"
+			changeLanguage: "Skift sprog",
+			requireLogin: "Login påkrævet",
+			requireLoginTooltip: "Gæster skal logge ind for at stemme og foreslå. Fra: alle i kanalen kan deltage.",
 		},
 		suggest: {
 			placeholder: "Skriv en titel...",
@@ -5304,7 +5363,8 @@ export const translations = {
 			confirmDelete: "Bekræft",
 			delete: "Slet",
 			watch: "Se på YouTube",
-			recommend: "Hent forslag"
+			recommend: "Hent forslag",
+			guest: "Gæst",
 		},
 		library: {
 			searchPlaceholder: "Søg i bibliotek...",
@@ -5525,7 +5585,9 @@ export const translations = {
 			features: "Funksjoner",
 			captionsTooltip: "Vis undertekster som standard for alle brukere når de laster spilleren.",
 			ownerTools: "Eierverktøy",
-			changeLanguage: "Bytt språk"
+			changeLanguage: "Bytt språk",
+			requireLogin: "Innlogging kreves",
+			requireLoginTooltip: "Gjester må logge inn for å stemme og foreslå. Av: alle i kanalen kan delta.",
 		},
 		suggest: {
 			placeholder: "Skriv en tittel...",
@@ -5574,7 +5636,8 @@ export const translations = {
 			confirmDelete: "Bekreft",
 			delete: "Slett",
 			watch: "Se på YouTube",
-			recommend: "Hent forslag"
+			recommend: "Hent forslag",
+			guest: "Gjest",
 		},
 		library: {
 			searchPlaceholder: "Søk i bibliotek...",
@@ -5795,7 +5858,9 @@ export const translations = {
 			features: "Ominaisuudet",
 			captionsTooltip: "Näytä tekstitykset oletuksena kaikille käyttäjille, kun he lataavat soittimen.",
 			ownerTools: "Omistajan työkalut",
-			changeLanguage: "Vaihda kieli"
+			changeLanguage: "Vaihda kieli",
+			requireLogin: "Kirjautuminen vaaditaan",
+			requireLoginTooltip: "Vieraiden on kirjauduttava äänestääkseen ja ehdottaakseen. Pois: kuka tahansa kanavalla voi osallistua.",
 		},
 		suggest: {
 			placeholder: "Kirjoita nimi...",
@@ -5844,7 +5909,8 @@ export const translations = {
 			confirmDelete: "Vahvista",
 			delete: "Poista",
 			watch: "Katso YouTubessa",
-			recommend: "Hae ehdotuksia"
+			recommend: "Hae ehdotuksia",
+			guest: "Vieras",
 		},
 		library: {
 			searchPlaceholder: "Etsi kirjastosta...",
@@ -6065,7 +6131,9 @@ export const translations = {
 			features: "Özellikler",
 			captionsTooltip: "Oynatıcıyı yüklediklerinde tüm kullanıcılar için altyazıları varsayılan olarak göster.",
 			ownerTools: "Sahip Araçları",
-			changeLanguage: "Dili değiştir"
+			changeLanguage: "Dili değiştir",
+			requireLogin: "Giriş gerekli",
+			requireLoginTooltip: "Misafirlerin oy vermek ve öneri yapmak için giriş yapması gerekir. Kapalı: kanaldaki herkes katılabilir.",
 		},
 		suggest: {
 			placeholder: "Bir başlık yazın...",
@@ -6114,7 +6182,8 @@ export const translations = {
 			confirmDelete: "Onayla",
 			delete: "Sil",
 			watch: "YouTube'da İzle",
-			recommend: "Önerileri al"
+			recommend: "Önerileri al",
+			guest: "Misafir",
 		},
 		library: {
 			searchPlaceholder: "Kütüphanede ara...",
@@ -6335,7 +6404,9 @@ export const translations = {
 			features: "Λειτουργίες",
 			captionsTooltip: "Εμφάνιση υπότιτλων από προεπιλογή για όλους τους χρήστες όταν φορτώνουν τον αναπαραγωγέα.",
 			ownerTools: "Εργαλεία ιδιοκτήτη",
-			changeLanguage: "Αλλαγή γλώσσας"
+			changeLanguage: "Αλλαγή γλώσσας",
+			requireLogin: "Απαιτείται σύνδεση",
+			requireLoginTooltip: "Οι επισκέπτες πρέπει να συνδεθούν για να ψηφίσουν και να προτείνουν. Ανενεργό: οποιοσδήποτε στο κανάλι μπορεί να συμμετέχει.",
 		},
 		suggest: {
 			placeholder: "Πληκτρολογήστε τίτλο...",
@@ -6384,7 +6455,8 @@ export const translations = {
 			confirmDelete: "Επιβεβαίωση",
 			delete: "Διαγραφή",
 			watch: "Δείτε στο YouTube",
-			recommend: "Λήψη προτάσεων"
+			recommend: "Λήψη προτάσεων",
+			guest: "Επισκέπτης",
 		},
 		library: {
 			searchPlaceholder: "Αναζήτηση βιβλιοθήκης...",
@@ -6605,7 +6677,9 @@ export const translations = {
 			features: "Функции",
 			captionsTooltip: "Показывать субтитры по умолчанию для всех пользователей при загрузке плеера.",
 			ownerTools: "Инструменты владельца",
-			changeLanguage: "Сменить язык"
+			changeLanguage: "Сменить язык",
+			requireLogin: "Требуется вход",
+			requireLoginTooltip: "Гостям нужно войти, чтобы голосовать и предлагать. Выключено: участвовать может любой в канале.",
 		},
 		suggest: {
 			placeholder: "Введите название...",
@@ -6654,7 +6728,8 @@ export const translations = {
 			confirmDelete: "Подтвердить",
 			delete: "Удалить",
 			watch: "Смотреть на YouTube",
-			recommend: "Получить рекомендации"
+			recommend: "Получить рекомендации",
+			guest: "Гость",
 		},
 		library: {
 			searchPlaceholder: "Поиск в библиотеке...",
@@ -6879,7 +6954,9 @@ export const translations = {
 			features: "Функції",
 			captionsTooltip: "Показувати субтитри за замовчуванням для всіх користувачів при завантаженні плеєра.",
 			ownerTools: "Інструменти власника",
-			changeLanguage: "Змінити мову"
+			changeLanguage: "Змінити мову",
+			requireLogin: "Потрібен вхід",
+			requireLoginTooltip: "Гостям потрібно увійти, щоб голосувати та пропонувати. Вимкнено: брати участь може будь-хто в каналі.",
 		},
 		suggest: {
 			placeholder: "Введіть назву...",
@@ -6928,7 +7005,8 @@ export const translations = {
 			confirmDelete: "Підтвердити",
 			delete: "Видалити",
 			watch: "Дивитися на YouTube",
-			recommend: "Отримати рекомендації"
+			recommend: "Отримати рекомендації",
+			guest: "Гість",
 		},
 		library: {
 			searchPlaceholder: "Пошук у бібліотеці...",
@@ -7153,7 +7231,9 @@ export const translations = {
 			features: "Funkce",
 			captionsTooltip: "Zobrazit titulky ve výchozím nastavení všem uživatelům při načtení přehrávače.",
 			ownerTools: "Nástroje vlastníka",
-			changeLanguage: "Změnit jazyk"
+			changeLanguage: "Změnit jazyk",
+			requireLogin: "Vyžaduje přihlášení",
+			requireLoginTooltip: "Hosté se musí přihlásit, aby mohli hlasovat a navrhovat. Vypnuto: zapojit se může kdokoli v kanálu.",
 		},
 		suggest: {
 			placeholder: "Zadejte název...",
@@ -7202,7 +7282,8 @@ export const translations = {
 			confirmDelete: "Potvrdit",
 			delete: "Smazat",
 			watch: "Sledovat na YouTube",
-			recommend: "Získat návrhy"
+			recommend: "Získat návrhy",
+			guest: "Host",
 		},
 		library: {
 			searchPlaceholder: "Hledat v knihovně...",
@@ -7427,7 +7508,9 @@ export const translations = {
 			features: "Funkciók",
 			captionsTooltip: "Feliratok alapértelmezett megjelenítése minden felhasználó számára a lejátszó betöltésekor.",
 			ownerTools: "Tulajdonosi eszközök",
-			changeLanguage: "Nyelv módosítása"
+			changeLanguage: "Nyelv módosítása",
+			requireLogin: "Bejelentkezés szükséges",
+			requireLoginTooltip: "A vendégeknek be kell jelentkezniük a szavazáshoz és a javaslattételhez. Kikapcsolva: a csatornán bárki részt vehet.",
 		},
 		suggest: {
 			placeholder: "Írj be egy címet...",
@@ -7476,7 +7559,8 @@ export const translations = {
 			confirmDelete: "Megerősítés",
 			delete: "Törlés",
 			watch: "Megtekintés YouTube-on",
-			recommend: "Javaslatok kérése"
+			recommend: "Javaslatok kérése",
+			guest: "Vendég",
 		},
 		library: {
 			searchPlaceholder: "Keresés a könyvtárban...",
@@ -7697,7 +7781,9 @@ export const translations = {
 			features: "Funcții",
 			captionsTooltip: "Afișează subtitrările în mod implicit pentru toți utilizatorii când încarcă playerul.",
 			ownerTools: "Instrumente proprietar",
-			changeLanguage: "Schimbă limba"
+			changeLanguage: "Schimbă limba",
+			requireLogin: "Autentificare necesară",
+			requireLoginTooltip: "Invitații trebuie să se autentifice pentru a vota și a sugera. Dezactivat: oricine din canal poate participa.",
 		},
 		suggest: {
 			placeholder: "Scrie un titlu...",
@@ -7746,7 +7832,8 @@ export const translations = {
 			confirmDelete: "Confirmă",
 			delete: "Șterge",
 			watch: "Vezi pe YouTube",
-			recommend: "Obține sugestii"
+			recommend: "Obține sugestii",
+			guest: "Invitat",
 		},
 		library: {
 			searchPlaceholder: "Caută în bibliotecă...",
@@ -7969,7 +8056,9 @@ export const translations = {
 			features: "Функции",
 			captionsTooltip: "Показвай субтитрите по подразбиране за всички потребители при зареждане на плейъра.",
 			ownerTools: "Инструменти на собственика",
-			changeLanguage: "Смяна на език"
+			changeLanguage: "Смяна на език",
+			requireLogin: "Изисква се вход",
+			requireLoginTooltip: "Гостите трябва да влязат, за да гласуват и предлагат. Изключено: всеки в канала може да участва.",
 		},
 		suggest: {
 			placeholder: "Напишете заглавие...",
@@ -8018,7 +8107,8 @@ export const translations = {
 			confirmDelete: "Потвърди",
 			delete: "Изтрий",
 			watch: "Гледай в YouTube",
-			recommend: "Получи препоръки"
+			recommend: "Получи препоръки",
+			guest: "Гост",
 		},
 		library: {
 			searchPlaceholder: "Търсене в библиотеката...",
@@ -8239,7 +8329,9 @@ export const translations = {
 			features: "Značajke",
 			captionsTooltip: "Prikaži titlove kao zadano svim korisnicima kada učitaju player.",
 			ownerTools: "Alati vlasnika",
-			changeLanguage: "Promijeni jezik"
+			changeLanguage: "Promijeni jezik",
+			requireLogin: "Potrebna prijava",
+			requireLoginTooltip: "Gosti se moraju prijaviti za glasanje i predlaganje. Isključeno: svatko u kanalu može sudjelovati.",
 		},
 		suggest: {
 			placeholder: "Upišite naslov...",
@@ -8288,7 +8380,8 @@ export const translations = {
 			confirmDelete: "Potvrdi",
 			delete: "Izbriši",
 			watch: "Gledaj na YouTubeu",
-			recommend: "Dobij prijedloge"
+			recommend: "Dobij prijedloge",
+			guest: "Gost",
 		},
 		library: {
 			searchPlaceholder: "Traži u knjižnici...",
@@ -8511,7 +8604,9 @@ export const translations = {
 			features: "Опције",
 			captionsTooltip: "Прикажи титлове подразумевано свим корисницима када учитају плејер.",
 			ownerTools: "Алати власника",
-			changeLanguage: "Промени језик"
+			changeLanguage: "Промени језик",
+			requireLogin: "Потребна пријава",
+			requireLoginTooltip: "Гости морају да се пријаве да би гласали и предлагали. Искључено: свако у каналу може да учествује.",
 		},
 		suggest: {
 			placeholder: "Upišite naslov...",
@@ -8560,7 +8655,8 @@ export const translations = {
 			confirmDelete: "Potvrdi",
 			delete: "Obriši",
 			watch: "Gledaj na YouTube-u",
-			recommend: "Преузми предлоге"
+			recommend: "Преузми предлоге",
+			guest: "Гост",
 		},
 		library: {
 			searchPlaceholder: "Traži u biblioteci...",
@@ -8783,7 +8879,9 @@ export const translations = {
 			features: "Funkcie",
 			captionsTooltip: "Predvolene zobrazovať titulky všetkým používateľom pri načítaní prehrávača.",
 			ownerTools: "Nástroje vlastníka",
-			changeLanguage: "Zmeniť jazyk"
+			changeLanguage: "Zmeniť jazyk",
+			requireLogin: "Vyžaduje sa prihlásenie",
+			requireLoginTooltip: "Hostia sa musia prihlásiť, aby mohli hlasovať a navrhovať. Vypnuté: zapojiť sa môže ktokoľvek v kanáli.",
 		},
 		suggest: {
 			placeholder: "Zadajte názov...",
@@ -8832,7 +8930,8 @@ export const translations = {
 			confirmDelete: "Potvrdiť",
 			delete: "Zmazať",
 			watch: "Sledovať na YouTube",
-			recommend: "Získať návrhy"
+			recommend: "Získať návrhy",
+			guest: "Hosť",
 		},
 		library: {
 			searchPlaceholder: "Hľadať v knižnici...",
@@ -9057,7 +9156,9 @@ export const translations = {
 			features: "الميزات",
 			captionsTooltip: "إظهار الترجمة افتراضياً لجميع المستخدمين عند تحميل المشغل.",
 			ownerTools: "أدوات المالك",
-			changeLanguage: "تغيير اللغة"
+			changeLanguage: "تغيير اللغة",
+			requireLogin: "تسجيل الدخول مطلوب",
+			requireLoginTooltip: "يجب على الضيوف تسجيل الدخول للتصويت والاقتراح. عند الإيقاف: يمكن لأي شخص في القناة المشاركة.",
 		},
 		suggest: {
 			placeholder: "اكتب عنوانًا...",
@@ -9106,7 +9207,8 @@ export const translations = {
 			confirmDelete: "تأكيد",
 			delete: "حذف",
 			watch: "مشاهدة على YouTube",
-			recommend: "الحصول على اقتراحات"
+			recommend: "الحصول على اقتراحات",
+			guest: "ضيف",
 		},
 		library: {
 			searchPlaceholder: "بحث في المكتبة...",
@@ -9335,7 +9437,9 @@ export const translations = {
 			features: "תכונות",
 			captionsTooltip: "הצג כתוביות כברירת מחדל לכל המשתמשים בעת טעינת הנגן.",
 			ownerTools: "כלי בעלים",
-			changeLanguage: "שנה שפה"
+			changeLanguage: "שנה שפה",
+			requireLogin: "נדרשת התחברות",
+			requireLoginTooltip: "אורחים חייבים להתחבר כדי להצביע ולהציע. כבוי: כל אחד בערוץ יכול להשתתף.",
 		},
 		suggest: {
 			placeholder: "הקלד כותרת...",
@@ -9384,7 +9488,8 @@ export const translations = {
 			confirmDelete: "אשר",
 			delete: "מחק",
 			watch: "צפה ב-YouTube",
-			recommend: "קבל הצעות"
+			recommend: "קבל הצעות",
+			guest: "אורח",
 		},
 		library: {
 			searchPlaceholder: "חפש בספרייה...",

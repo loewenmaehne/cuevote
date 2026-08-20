@@ -72,6 +72,14 @@ ACTIVE_CHANNEL_DAYS=60
 # TRUSTED_PROXY_IPS=127.0.0.1,::1,::ffff:127.0.0.1
 # MAX_SOCKETS_PER_IP=20
 #
+# Signing secret for guest identities (people who vote without an account).
+# Optional: when unset the server generates one on first start and keeps it in
+# the database, which is correct for a single instance. Set it explicitly if you
+# run more than one server process, or you want guest identities to survive a
+# database restore — a changed secret signs every existing guest out. Minimum
+# 32 characters; shorter values are ignored with a warning.
+# GUEST_TOKEN_SECRET=generate_a_long_random_secret
+#
 # Admin API for the cuevote-mcp ops server (Phase 1b). Disabled unless
 # ADMIN_TOKEN is set. Binds to 127.0.0.1 only — do NOT expose this port via
 # nginx or any public reverse proxy.

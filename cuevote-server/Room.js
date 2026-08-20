@@ -27,10 +27,11 @@ function parseISO8601Duration(duration) {
     return hours * 3600 + minutes * 60 + seconds;
 }
 
-// Track fields that name a person: `voters` is a map keyed by Google account id,
-// and `suggestedBy` holds one. Neither has any use on the client — the display
-// name travels separately as `suggestedByUsername`, and a viewer only needs to
-// know its OWN vote, which is folded in as `myVote`.
+// Track fields that name a person: `voters` is a map keyed by account id (a
+// Google subject, or a `guest:` id for someone who never signed in), and
+// `suggestedBy` holds one. Neither has any use on the client — the display name
+// travels separately as `suggestedByUsername`, and a viewer only needs to know
+// its OWN vote, which is folded in as `myVote`.
 //
 // Broadcasting the raw map handed every room member a list of the Google account
 // ids of everyone who had voted, next to their display names. JOIN_ROOM does not
@@ -84,7 +85,8 @@ class Room {
             is_public: metadata.is_public !== undefined ? metadata.is_public : 1,
             password: metadata.password || null,
             captions_enabled: metadata.captions_enabled !== undefined ? metadata.captions_enabled : 0,
-            language_flag: metadata.language_flag || 'international'
+            language_flag: metadata.language_flag || 'international',
+            require_login: metadata.require_login !== undefined ? metadata.require_login : 0
         };
         this.clients = new Set();
         this.knownVideos = new Set(); // Stores videoIds of approved videos
@@ -121,6 +123,10 @@ class Room {
             autoApproveKnown: true, // Default true
             autoRefill: metadata.auto_refill !== undefined ? !!metadata.auto_refill : true,
             captionsEnabled: !!(metadata.captions_enabled), // Initialize from metadata
+            // Off by default: a guest who scanned the QR code can vote and
+            // suggest straight away. Owners who want every participant tied to
+            // an account can turn it on per room.
+            requireLogin: !!(metadata.require_login),
             bannedVideos: [], // List of banned videos { videoId, title, artist, ... }
         };
 
@@ -202,6 +208,22 @@ class Room {
 
     hasViewers() {
         return this.clients.size > 0;
+    }
+
+    /**
+     * Whether this socket may vote or suggest, and why not when it may not.
+     *
+     * A socket always carries an identity by this point — a signed-in user or a
+     * room-scoped guest — because a stable id is what keeps one participant from
+     * voting the same track up repeatedly. `requireLogin` is the owner's choice
+     * to narrow that to real accounts.
+     */
+    canParticipate(ws) {
+        if (!ws.user) return { ok: false, code: "LOGIN_REQUIRED" };
+        if (this.state.requireLogin && ws.user.isGuest) {
+            return { ok: false, code: "LOGIN_REQUIRED" };
+        }
+        return { ok: true };
     }
 
     getSummary() {
@@ -967,8 +989,13 @@ class Room {
     }
 
     async handleSuggestSong(ws, payload) {
-        if (!ws.user) {
-            ws.send(JSON.stringify({ type: "error", message: "You must be logged in to suggest videos." }));
+        const access = this.canParticipate(ws);
+        if (!access.ok) {
+            ws.send(JSON.stringify({
+                type: "error",
+                code: access.code,
+                message: "This channel requires a signed-in account to suggest videos."
+            }));
             return;
         }
 
@@ -1137,6 +1164,8 @@ class Room {
                 voters: {},
                 suggestedBy: userId,
                 suggestedByUsername: ws.user.name,
+                suggestedByIsGuest: !!ws.user.isGuest,
+                suggestedByGuestTag: ws.user.guestTag,
                 language: cachedVideo.language // Restore language from cache
             };
 
@@ -1204,6 +1233,8 @@ class Room {
                         voters: {},
                         suggestedBy: userId,
                         suggestedByUsername: ws.user.name,
+                        suggestedByIsGuest: !!ws.user.isGuest,
+                        suggestedByGuestTag: ws.user.guestTag,
                         language: videoData.snippet.defaultAudioLanguage || videoData.snippet.defaultLanguage
                     };
 
@@ -1327,8 +1358,13 @@ class Room {
     }
 
     handleVote(ws, { trackId, voteType }) {
-        if (!ws.user) {
-            ws.send(JSON.stringify({ type: "error", message: "You must be logged in to vote." }));
+        const access = this.canParticipate(ws);
+        if (!access.ok) {
+            ws.send(JSON.stringify({
+                type: "error",
+                code: access.code,
+                message: "This channel requires a signed-in account to vote."
+            }));
             return;
         }
 
@@ -1529,7 +1565,7 @@ class Room {
         }
     }
 
-    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled }) {
+    handleUpdateSettings({ suggestionsEnabled, musicOnly, maxDuration, allowPrelisten, ownerBypass, maxQueueSize, smartQueue, playlistViewMode, suggestionMode, ownerPopups, duplicateCooldown, ownerQueueBypass, votesEnabled, autoApproveKnown, autoRefill, captionsEnabled, requireLogin }) {
         const updates = {};
         if (typeof suggestionsEnabled === 'boolean') updates.suggestionsEnabled = suggestionsEnabled;
         if (typeof musicOnly === 'boolean') updates.musicOnly = musicOnly;
@@ -1547,6 +1583,7 @@ class Room {
         if (typeof autoApproveKnown === 'boolean') updates.autoApproveKnown = autoApproveKnown;
         if (typeof autoRefill === 'boolean') updates.autoRefill = autoRefill;
         if (typeof captionsEnabled === 'boolean') updates.captionsEnabled = captionsEnabled;
+        if (typeof requireLogin === 'boolean') updates.requireLogin = requireLogin;
 
         if (Object.keys(updates).length > 0) {
             this.updateState(updates);
@@ -1557,6 +1594,15 @@ class Room {
                 try {
                     db.updateRoomSettings(this.id, { captions_enabled: updates.captionsEnabled });
                 } catch (e) { logger.error("Failed to persist room settings", e); }
+            }
+
+            // Persist requireLogin to DB — a room's access rule has to survive
+            // a restart, or a party silently reopens to guests mid-evening.
+            if (updates.requireLogin !== undefined) {
+                this.metadata.require_login = updates.requireLogin ? 1 : 0;
+                try {
+                    db.updateRoomSettings(this.id, { require_login: updates.requireLogin });
+                } catch (e) { logger.error("Failed to persist require_login", e); }
             }
 
             // Persist autoRefill to DB

@@ -70,6 +70,7 @@ const UpdateSettingsPayload = z.object({
   autoApproveKnown: z.boolean().optional(),
   autoRefill: z.boolean().optional(),
   captionsEnabled: z.boolean().optional(),
+  requireLogin: z.boolean().optional(),
 }).refine(obj => Object.keys(obj).length > 0, {
   message: 'At least one setting must be provided',
 });
@@ -103,6 +104,13 @@ const McpAuthorizePayload = z.object({
   handle: z.string().min(1).max(200),
 });
 
+// A returning guest presents the token it was issued earlier; a first-time
+// guest sends none and gets one back. 128 chars covers `<22-char id>.<43-char
+// signature>` with room to spare.
+const GuestSessionPayload = z.object({
+  token: z.string().max(128).optional(),
+}).optional();
+
 const WebSocketMessage = z.object({
   type: z.string().min(1).max(50),
   payload: z.any().optional(),
@@ -126,5 +134,6 @@ module.exports = {
   UpdateDurationPayload,
   PlayPausePayload,
   McpAuthorizePayload,
+  GuestSessionPayload,
   WebSocketMessage,
 };
