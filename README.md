@@ -14,7 +14,9 @@
 
 **CueVote** is a modern, community-driven social jukebox built for the YouTube era. It democratizes music selection by allowing everyone in the room to suggest videos and vote on the queue in real-time.
 
-Whether you're hosting a house party, running a bar, or just hanging out online, CueVote ensures the best videos play next — decided by the crowd, not an algorithm.
+Whether you're hosting a house party, a dorm pre-drink, or just hanging out online with friends, CueVote ensures the best videos play next — decided by the crowd, not an algorithm.
+
+> **Private use.** CueVote is built for private gatherings. Playing third-party content in a public or commercial setting (bars, clubs, shops, events) generally requires licences that CueVote neither holds nor grants — see the [Terms of Service](https://cuevote.com/legal) and YouTube's own terms.
 
 ---
 
