@@ -72,6 +72,15 @@ ACTIVE_CHANNEL_DAYS=60
 # TRUSTED_PROXY_IPS=127.0.0.1,::1,::ffff:127.0.0.1
 # MAX_SOCKETS_PER_IP=20
 #
+# How many NEW guest identities one address may obtain per 10 minutes. A guest
+# identity is what stops one person voting a track up repeatedly, so minting
+# them has to cost something; a socket gets exactly one, and this bounds how
+# many can be had by opening more connections. A device mints once and then
+# re-presents its stored token, so the budget is spent by NEW devices — the
+# default comfortably covers a large party behind a single NAT. Raise it for a
+# venue with heavy turnover; lower it if you see vote manipulation.
+# MAX_GUEST_MINTS_PER_IP=60
+#
 # Signing secret for guest identities (people who vote without an account).
 # Optional: when unset the server generates one on first start and keeps it in
 # the database, which is correct for a single instance. Set it explicitly if you
@@ -493,8 +502,22 @@ version serving:
 | 2–3 | `npm ci` + client build, `npm ci` for the server | aborts; running server untouched |
 | 4 | **`npm test` on the server** | aborts **before** the restart — the running server never sees the new code |
 | 5 | `pm2 reload` (falls back to `restart`) | — |
+| 5 | `pm2 reload` (falls back to `restart`) | rolls back — a wedged pm2 no longer kills the script before the rollback can run |
 | 6 | **Polls `/health` for up to 15 s** | **rolls back** to the recorded commit, rebuilds, restarts and re-checks |
 | 7 | Rebuilds and restarts the MCP service | aborts |
+
+Exit codes distinguish the two bad outcomes, so monitoring can tell a recovered
+deploy from a dead server:
+
+| Code | Meaning |
+|---|---|
+| 0 | Deployed and healthy |
+| 1 | Deploy failed, **rolled back — the previous version is serving** |
+| 2 | Rollback failed too, or there was no rollback target: **the site needs you** |
+
+A rollback restores the server, not the branch: `origin/main` still points at the
+bad commit, and the next run of this script will deploy it again. Revert or fix
+main before re-running.
 
 Two consequences worth knowing:
 
@@ -507,5 +530,10 @@ Two consequences worth knowing:
   the process for you to inspect (`pm2 logs cuevote-server`).
 
 The health check calls `http://127.0.0.1:<PORT>/health` directly (bypassing
-nginx), reading `PORT` from `cuevote-server/.env` and defaulting to `8080`. It
-needs `curl`, which section 1 already installs.
+nginx). It resolves `PORT` the same way the server does — an exported `PORT`
+wins over the file, because `dotenv` does not override an existing variable and
+`pm2 --update-env` passes the deployer's environment through — then falls back
+to `cuevote-server/.env` and finally to `8080`. Inline comments, quotes,
+`export` and spaces around `=` are all handled; anything that is not a plain
+number is ignored rather than polled. It needs `curl`, which section 1 already
+installs.
