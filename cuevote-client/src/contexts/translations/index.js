@@ -31,6 +31,11 @@ const cache = new Map();
  * The strings for one language. Repeated calls share one request, and one
  * parsed object — switching back and forth costs nothing after the first load.
  * Rejects for a code with no locale file; callers should check LANGUAGE_CODES.
+ *
+ * A FAILED load is evicted rather than remembered. Caching the promise itself
+ * is what makes repeat calls cheap, but a rejected promise cached forever means
+ * one dropped request on venue wifi pins that language to an error for the rest
+ * of the session — including a later attempt to switch back to it.
  */
 export function loadLanguage(code) {
 	const cached = cache.get(code);
@@ -39,7 +44,19 @@ export function loadLanguage(code) {
 	const load = loaders[`./locales/${code}.js`];
 	if (!load) return Promise.reject(new Error(`No translations for language "${code}"`));
 
-	const promise = load().then((m) => m.default);
+	const promise = load().then(
+		(m) => {
+			if (!m || typeof m.default !== 'object' || m.default === null) {
+				cache.delete(code);
+				throw new Error(`Locale "${code}" has no default export`);
+			}
+			return m.default;
+		},
+		(err) => {
+			cache.delete(code); // let the next attempt actually try again
+			throw err;
+		},
+	);
 	cache.set(code, promise);
 	return promise;
 }

@@ -30,6 +30,34 @@ import { dirname, join, relative } from 'node:path';
 const ROOT = dirname(fileURLToPath(import.meta.url)) + '/..';
 const SRC_DIR = join(ROOT, 'src');
 const LOCALES_DIR = join(ROOT, 'src/contexts/translations/locales');
+const LOADER_PATH = join(ROOT, 'src/contexts/translations/index.js');
+
+// The loader cannot be imported here — import.meta.glob is a Vite transform, not
+// something Node evaluates — so this checks its source instead. Without it the
+// guardrail validates a directory the app might not be reading: changing the
+// glob by one character used to leave this script printing OK while the build
+// emitted zero locale chunks and the app loaded no strings at all.
+{
+	const loader = readFileSync(LOADER_PATH, 'utf8');
+
+	const globMatch = loader.match(/import\.meta\.glob\(\s*['"]([^'"]+)['"]/);
+	if (!globMatch) {
+		console.error(`i18n FAILED: no import.meta.glob(...) found in ${relative(ROOT, LOADER_PATH)}.`);
+		process.exit(1);
+	}
+	if (globMatch[1] !== './locales/*.js') {
+		console.error(`i18n FAILED: the loader globs '${globMatch[1]}', but this check validates ./locales/*.js. Update both together.`);
+		process.exit(1);
+	}
+
+	// codeFromPath slices a hardcoded prefix length; if it drifts from the glob
+	// every language code comes out mangled and no locale ever resolves.
+	const prefixMatch = loader.match(/slice\(\s*['"]([^'"]+)['"]\.length/);
+	if (!prefixMatch || prefixMatch[1] !== './locales/') {
+		console.error(`i18n FAILED: the loader strips '${prefixMatch ? prefixMatch[1] : '(not found)'}' from module ids, which does not match the glob './locales/*.js'.`);
+		process.exit(1);
+	}
+}
 
 // One module per language (see src/contexts/translations/index.js). Assembled
 // back into a single object here so every check below reads as it did when the

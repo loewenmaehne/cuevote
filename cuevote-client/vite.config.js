@@ -11,8 +11,11 @@ export default defineConfig({
         // Keep large data modules in separate chunks so they are never evaluated at entry init (avoids TDZ).
         // Only single-export modules in app-core (ContextValue, deviceDetection, WebSocketContext).
         // Exclude ConsentContext.jsx / LanguageContext.jsx (two exports each) so they stay in index/App and cannot TDZ inside app-core.
+        // Translations are NOT listed here: they are one dynamically-imported
+        // module per language now, so Rollup already emits a chunk each and a
+        // manual rule would merge them back into the single bundle the split
+        // exists to avoid.
         manualChunks(id) {
-          if (id.includes('translations.js')) return 'translations'
           if (id.includes('legalContent.js')) return 'legalContent'
           if (id.includes('node_modules')) return undefined
           // Context providers in their own chunk so they always run before App chunk (avoids TDZ 'ce' etc).
