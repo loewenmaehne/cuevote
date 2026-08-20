@@ -3,6 +3,12 @@
 // Strings for "sk". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Tento kanál vyžaduje prihlásený účet.",
+		"accountRequired": "Na túto akciu sa prosím prihláste.",
+		"sessionNotReady": "Vaša relácia ešte nie je pripravená. Načítajte stránku znova.",
+		"guestLimit": "Príliš veľa nových hostí v tejto sieti. Pokračujte po prihlásení."
+	},
 	"connectAi": {
 		"willSendTo": "Súhlas sa odošle na",
 		"clientClaimsUnverified": "Označuje sa ako “{client}” — také meno si môže zvoliť ktokoľvek. Pokračuj len vtedy, ak si to spustil(a) sám(a) a poznávaš adresu vyššie.",

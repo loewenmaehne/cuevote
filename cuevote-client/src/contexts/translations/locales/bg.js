@@ -3,6 +3,12 @@
 // Strings for "bg". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Този канал изисква влизане в акаунт.",
+		"accountRequired": "Влезте, за да направите това.",
+		"sessionNotReady": "Сесията ви още не е готова. Презаредете страницата.",
+		"guestLimit": "Твърде много нови гости в тази мрежа. Влезте, за да продължите."
+	},
 	"connectAi": {
 		"willSendTo": "Одобрението ще бъде изпратено до",
 		"clientClaimsUnverified": "Нарича себе си “{client}” — това име може да избере всеки. Продължи само ако ти си започнал(а) това и разпознаваш адреса по-горе.",

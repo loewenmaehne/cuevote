@@ -3,6 +3,12 @@
 // Strings for "vi". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Kênh này yêu cầu tài khoản đã đăng nhập.",
+		"accountRequired": "Vui lòng đăng nhập để làm điều đó.",
+		"sessionNotReady": "Phiên của bạn chưa sẵn sàng. Vui lòng tải lại trang.",
+		"guestLimit": "Quá nhiều khách mới trên mạng này. Vui lòng đăng nhập để tiếp tục."
+	},
 	"connectAi": {
 		"willSendTo": "Phê duyệt sẽ được gửi tới",
 		"clientClaimsUnverified": "Nó tự xưng là “{client}” — cái tên ai cũng đặt được. Chỉ tiếp tục nếu chính bạn đã bắt đầu việc này và nhận ra địa chỉ ở trên.",

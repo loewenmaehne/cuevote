@@ -3,6 +3,12 @@
 // Strings for "ms". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Saluran ini memerlukan akaun yang telah log masuk.",
+		"accountRequired": "Sila log masuk untuk berbuat demikian.",
+		"sessionNotReady": "Sesi anda belum sedia. Sila muat semula halaman.",
+		"guestLimit": "Terlalu ramai tetamu baharu pada rangkaian ini. Sila log masuk untuk meneruskan."
+	},
 	"connectAi": {
 		"willSendTo": "Kebenaran akan dihantar ke",
 		"clientClaimsUnverified": "Ia menamakan dirinya “{client}” — nama yang boleh dipilih sesiapa sahaja. Teruskan hanya jika anda sendiri yang memulakannya dan mengenali alamat di atas.",

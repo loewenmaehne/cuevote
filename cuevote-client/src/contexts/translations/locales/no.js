@@ -3,6 +3,12 @@
 // Strings for "no". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Denne kanalen krever en innlogget konto.",
+		"accountRequired": "Logg inn for å gjøre det.",
+		"sessionNotReady": "Økten din er ikke klar ennå. Last inn siden på nytt.",
+		"guestLimit": "For mange nye gjester på dette nettverket. Logg inn for å fortsette."
+	},
 	"connectAi": {
 		"willSendTo": "Godkjenningen sendes til",
 		"clientClaimsUnverified": "Den kaller seg “{client}” — et navn hvem som helst kan velge. Fortsett bare hvis du selv startet dette og kjenner igjen adressen over.",

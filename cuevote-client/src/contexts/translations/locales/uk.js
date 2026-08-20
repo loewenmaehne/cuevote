@@ -3,6 +3,12 @@
 // Strings for "uk". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Цей канал потребує входу в обліковий запис.",
+		"accountRequired": "Увійдіть, щоб це зробити.",
+		"sessionNotReady": "Ваш сеанс ще не готовий. Оновіть сторінку.",
+		"guestLimit": "Забагато нових гостей у цій мережі. Увійдіть, щоб продовжити."
+	},
 	"connectAi": {
 		"willSendTo": "Підтвердження буде надіслано на",
 		"clientClaimsUnverified": "Воно називає себе “{client}” — це ім'я може обрати будь-хто. Продовжуйте, лише якщо ви почали це самі й упізнаєте адресу вище.",

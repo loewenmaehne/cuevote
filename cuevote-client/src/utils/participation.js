@@ -2,6 +2,32 @@
 // Copyright (c) 2026 Julian Zienert
 
 /**
+ * Whether this viewer is backed by a real account.
+ *
+ * `user` is truthy for guests too, so `user ? … : <sign in>` now means "has any
+ * identity" — which hid the sign-in button from everyone who had not already
+ * signed in. Anything that needs an account (creating a channel, the profile
+ * and delete-account UI, connecting an AI) must ask this instead.
+ */
+export function isSignedIn(user) {
+	return !!(user && !user.isGuest);
+}
+
+/**
+ * A translation key for a refusal the server sent, or null when we have none
+ * and the server's own message should be shown.
+ */
+export function participationErrorKey(code) {
+	switch (code) {
+		case 'LOGIN_REQUIRED': return 'errors.loginRequired';
+		case 'ACCOUNT_REQUIRED': return 'errors.accountRequired';
+		case 'NO_IDENTITY': return 'errors.sessionNotReady';
+		case 'GUEST_LIMIT': return 'errors.guestLimit';
+		default: return null;
+	}
+}
+
+/**
  * Whether this viewer may vote and suggest in this room.
  *
  * Mirrors Room.canParticipate on the server. The server decides — this only

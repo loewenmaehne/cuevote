@@ -3,6 +3,12 @@
 // Strings for "ro". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Acest canal necesită un cont autentificat.",
+		"accountRequired": "Autentifică-te pentru a face asta.",
+		"sessionNotReady": "Sesiunea ta nu este încă gata. Reîncarcă pagina.",
+		"guestLimit": "Prea mulți invitați noi în această rețea. Autentifică-te pentru a continua."
+	},
 	"connectAi": {
 		"willSendTo": "Aprobarea va fi trimisă către",
 		"clientClaimsUnverified": "Se prezintă drept “{client}” — un nume pe care oricine îl poate alege. Continuă doar dacă tu ai început asta și recunoști adresa de mai sus.",

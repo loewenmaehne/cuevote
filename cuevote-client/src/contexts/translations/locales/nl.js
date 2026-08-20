@@ -3,6 +3,12 @@
 // Strings for "nl". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Dit kanaal vereist een ingelogd account.",
+		"accountRequired": "Log in om dat te doen.",
+		"sessionNotReady": "Je sessie is nog niet klaar. Herlaad de pagina.",
+		"guestLimit": "Te veel nieuwe gasten op dit netwerk. Log in om door te gaan."
+	},
 	"connectAi": {
 		"willSendTo": "Goedkeuring wordt gestuurd naar",
 		"clientClaimsUnverified": "Het noemt zichzelf “{client}” — een naam die iedereen kan kiezen. Ga alleen verder als je dit zelf hebt gestart en het adres hierboven herkent.",

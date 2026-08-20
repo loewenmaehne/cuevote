@@ -3,6 +3,12 @@
 // Strings for "sr". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Овај канал захтева пријављен налог.",
+		"accountRequired": "Пријавите се да бисте то урадили.",
+		"sessionNotReady": "Ваша сесија још није спремна. Освежите страницу.",
+		"guestLimit": "Превише нових гостију на овој мрежи. Пријавите се да наставите."
+	},
 	"connectAi": {
 		"willSendTo": "Odobrenje će biti poslato na",
 		"clientClaimsUnverified": "Naziva sebe “{client}” — to ime može da izabere bilo ko. Nastavi samo ako si to sam(a) pokrenuo(la) i prepoznaješ adresu iznad.",

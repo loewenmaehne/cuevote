@@ -3,6 +3,12 @@
 // Strings for "el". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Αυτό το κανάλι απαιτεί συνδεδεμένο λογαριασμό.",
+		"accountRequired": "Συνδεθείτε για να το κάνετε αυτό.",
+		"sessionNotReady": "Η συνεδρία σας δεν είναι ακόμη έτοιμη. Ανανεώστε τη σελίδα.",
+		"guestLimit": "Πάρα πολλοί νέοι επισκέπτες σε αυτό το δίκτυο. Συνδεθείτε για να συνεχίσετε."
+	},
 	"connectAi": {
 		"willSendTo": "Η έγκριση θα σταλεί στο",
 		"clientClaimsUnverified": "Αυτοαποκαλείται “{client}” — όνομα που μπορεί να διαλέξει οποιοσδήποτε. Συνέχισε μόνο αν το ξεκίνησες εσύ και αναγνωρίζεις τη διεύθυνση παραπάνω.",

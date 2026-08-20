@@ -3,6 +3,12 @@
 // Strings for "de". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Dieser Kanal erfordert ein angemeldetes Konto.",
+		"accountRequired": "Bitte melde dich an, um das zu tun.",
+		"sessionNotReady": "Deine Sitzung ist noch nicht bereit. Bitte lade die Seite neu.",
+		"guestLimit": "Zu viele neue Gäste in diesem Netzwerk. Bitte melde dich an."
+	},
 	"connectAi": {
 		"willSendTo": "Bestätigung geht an",
 		"clientClaimsUnverified": "Sie nennt sich selbst „{client}“ — diesen Namen kann jeder frei wählen. Fahre nur fort, wenn du das selbst gestartet hast und die Adresse oben kennst.",

@@ -3,6 +3,12 @@
 // Strings for "pt". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Este canal requer uma conta com sessão iniciada.",
+		"accountRequired": "Faça login para fazer isso.",
+		"sessionNotReady": "A sua sessão ainda não está pronta. Recarregue a página.",
+		"guestLimit": "Demasiados convidados novos nesta rede. Faça login para continuar."
+	},
 	"connectAi": {
 		"willSendTo": "A autorização será enviada para",
 		"clientClaimsUnverified": "Diz chamar-se “{client}” — um nome que qualquer um pode escolher. Continua apenas se foste tu a iniciar isto e reconheces o endereço acima.",

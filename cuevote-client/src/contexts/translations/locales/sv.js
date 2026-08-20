@@ -3,6 +3,12 @@
 // Strings for "sv". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Den här kanalen kräver ett inloggat konto.",
+		"accountRequired": "Logga in för att göra det.",
+		"sessionNotReady": "Din session är inte redo än. Ladda om sidan.",
+		"guestLimit": "För många nya gäster på det här nätverket. Logga in för att fortsätta."
+	},
 	"connectAi": {
 		"willSendTo": "Godkännandet skickas till",
 		"clientClaimsUnverified": "Den kallar sig “{client}” — ett namn vem som helst kan välja. Fortsätt bara om du själv startade detta och känner igen adressen ovan.",

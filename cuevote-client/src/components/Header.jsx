@@ -11,7 +11,7 @@ import { Language } from '../contexts/LanguageContext';
 import { deviceDetection } from '../utils/deviceDetection';
 import { dangerousHtml } from '../utils/sanitizeHtml';
 import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
-import { displayName } from '../utils/participation';
+import { displayName, isSignedIn } from '../utils/participation';
 
 
 export function Header({
@@ -276,7 +276,7 @@ export function Header({
     </button>
   );
 
-  const userIdentity = user ? (
+  const userIdentity = isSignedIn(user) ? (
     <button
       onClick={() => setShowProfileModal(true)}
       className="flex-shrink-0 rounded-full hover:ring-2 hover:ring-orange-500/30 transition-all"

@@ -3,6 +3,12 @@
 // Strings for "ar". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "تتطلب هذه القناة حسابًا مسجّل الدخول.",
+		"accountRequired": "يرجى تسجيل الدخول للقيام بذلك.",
+		"sessionNotReady": "جلستك ليست جاهزة بعد. يرجى إعادة تحميل الصفحة.",
+		"guestLimit": "عدد كبير جدًا من الضيوف الجدد على هذه الشبكة. يرجى تسجيل الدخول للمتابعة."
+	},
 	"connectAi": {
 		"willSendTo": "سيتم إرسال الموافقة إلى",
 		"clientClaimsUnverified": "تسمي نفسها “{client}” — وهو اسم يمكن لأي شخص اختياره. تابع فقط إذا كنت أنت من بدأ ذلك وتعرف العنوان أعلاه.",

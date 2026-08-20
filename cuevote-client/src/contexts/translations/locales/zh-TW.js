@@ -3,6 +3,12 @@
 // Strings for "zh-TW". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "此頻道需要已登入的帳號。",
+		"accountRequired": "請登入後再操作。",
+		"sessionNotReady": "你的工作階段尚未就緒，請重新整理頁面。",
+		"guestLimit": "此網路上的新訪客過多，請登入後繼續。"
+	},
 	"connectAi": {
 		"willSendTo": "授權將傳送至",
 		"clientClaimsUnverified": "它自稱「{client}」——這個名字任何人都能填寫。只有在你自己發起、並且認得上面這個位址時才繼續。",

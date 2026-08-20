@@ -15,7 +15,7 @@ import { PlaylistView } from "./components/PlaylistView";
 import { PrelistenOverlay } from "./components/PrelistenOverlay";
 import { AppPromoFooter } from "./components/AppPromoFooter";
 import { SettingsView } from "./components/SettingsView";
-import { canParticipate } from "./utils/participation";
+import { canParticipate, participationErrorKey } from "./utils/participation";
 import { useLatestRef } from "./hooks/useLatestRef";
 import { BannedVideosPage } from "./components/BannedVideos"; // Added this import
 import { PlaybackControls } from "./components/PlaybackControls";
@@ -432,12 +432,16 @@ function RoomBody() {
     if (showSuggestRef.current) return;
 
     if (lastError) {
-      const errorMessage = typeof lastError === 'string'
-        ? lastError
-        : lastError.message || "An error occurred";
+      // The server answers in English. Where it also sends a code, show the
+      // translated string instead — this room has 35 languages and its refusals
+      // should not be the one place that ignores them.
+      const key = participationErrorKey(lastErrorCode);
+      const errorMessage = key
+        ? t(key)
+        : (typeof lastError === 'string' ? lastError : lastError.message || "An error occurred");
       setToast({ message: errorMessage, type: "error" });
     }
-  }, [lastError, lastErrorTimestamp, showSuggestRef]);
+  }, [lastError, lastErrorCode, lastErrorTimestamp, showSuggestRef, t]);
 
   useEffect(() => {
     // If Suggest Bar is open, suppress global toasts
@@ -1219,7 +1223,7 @@ function RoomBody() {
 
   const handleSongSuggested = useCallback((query) => {
     if (!canParticipate(user, requireLogin)) {
-      setToast({ message: t('suggest.loginRequired'), type: 'error' });
+      setToast({ message: t(user ? 'errors.loginRequired' : 'errors.sessionNotReady'), type: 'error' });
       return;
     }
     sendMessage({ type: "SUGGEST_SONG", payload: { query, userId: user?.id } });
@@ -1267,7 +1271,7 @@ function RoomBody() {
     // The server enforces this too; checking here turns a rejected vote into an
     // explanation of the room's rule.
     if (!canParticipate(user, requireLogin)) {
-      setToast({ message: t('suggest.loginRequired'), type: 'error' });
+      setToast({ message: t(user ? 'errors.loginRequired' : 'errors.sessionNotReady'), type: 'error' });
       return;
     }
     sendMessage({ type: "VOTE", payload: { trackId, voteType: type } });

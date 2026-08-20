@@ -3,6 +3,12 @@
 // Strings for "ko". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "이 채널은 로그인한 계정이 필요합니다.",
+		"accountRequired": "이 작업을 하려면 로그인하세요.",
+		"sessionNotReady": "세션이 아직 준비되지 않았습니다. 페이지를 새로고침하세요.",
+		"guestLimit": "이 네트워크의 새 게스트가 너무 많습니다. 로그인 후 계속하세요."
+	},
 	"connectAi": {
 		"willSendTo": "승인이 전송될 주소",
 		"clientClaimsUnverified": "스스로 “{client}”라고 밝히지만, 이 이름은 누구나 정할 수 있습니다. 직접 시작했고 위 주소가 익숙할 때만 계속하세요.",

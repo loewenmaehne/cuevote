@@ -3,6 +3,12 @@
 // Strings for "fi". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Tämä kanava vaatii kirjautuneen tilin.",
+		"accountRequired": "Kirjaudu sisään tehdäksesi tämän.",
+		"sessionNotReady": "Istuntosi ei ole vielä valmis. Lataa sivu uudelleen.",
+		"guestLimit": "Liian monta uutta vierasta tässä verkossa. Kirjaudu sisään jatkaaksesi."
+	},
 	"connectAi": {
 		"willSendTo": "Hyväksyntä lähetetään osoitteeseen",
 		"clientClaimsUnverified": "Se kutsuu itseään nimellä “{client}” — kuka tahansa voi valita sen nimen. Jatka vain, jos aloitit tämän itse ja tunnistat yllä olevan osoitteen.",

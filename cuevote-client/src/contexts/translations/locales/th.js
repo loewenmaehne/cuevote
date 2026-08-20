@@ -3,6 +3,12 @@
 // Strings for "th". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "ช่องนี้ต้องใช้บัญชีที่เข้าสู่ระบบแล้ว",
+		"accountRequired": "โปรดเข้าสู่ระบบเพื่อทำสิ่งนี้",
+		"sessionNotReady": "เซสชันของคุณยังไม่พร้อม โปรดโหลดหน้าใหม่",
+		"guestLimit": "มีแขกใหม่จากเครือข่ายนี้มากเกินไป โปรดเข้าสู่ระบบเพื่อดำเนินการต่อ"
+	},
 	"connectAi": {
 		"willSendTo": "การอนุญาตจะถูกส่งไปที่",
 		"clientClaimsUnverified": "มันเรียกตัวเองว่า “{client}” — ชื่อนี้ใครก็ตั้งได้ ดำเนินการต่อเฉพาะเมื่อคุณเริ่มเองและจำที่อยู่ด้านบนได้",

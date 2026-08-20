@@ -3,6 +3,12 @@
 // Strings for "ru". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Для этого канала нужен вход в аккаунт.",
+		"accountRequired": "Войдите, чтобы сделать это.",
+		"sessionNotReady": "Ваш сеанс ещё не готов. Обновите страницу.",
+		"guestLimit": "Слишком много новых гостей в этой сети. Войдите, чтобы продолжить."
+	},
 	"connectAi": {
 		"willSendTo": "Подтверждение будет отправлено на",
 		"clientClaimsUnverified": "Оно называет себя “{client}” — это имя может выбрать кто угодно. Продолжайте, только если начали это сами и узнаёте адрес выше.",

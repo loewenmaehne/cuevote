@@ -3,6 +3,12 @@
 // Strings for "en". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "This channel requires a signed-in account.",
+		"accountRequired": "Please sign in to do that.",
+		"sessionNotReady": "Your session is not ready yet. Please reload the page.",
+		"guestLimit": "Too many new guests on this network. Please sign in to continue."
+	},
 	"connectAi": {
 		"willSendTo": "Approval will be sent to",
 		"clientClaimsUnverified": "It calls itself “{client}” — a name anyone can pick. Only continue if you started this yourself and recognise the address above.",

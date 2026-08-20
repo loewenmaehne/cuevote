@@ -3,6 +3,12 @@
 // Strings for "hi". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "इस चैनल के लिए लॉग इन किया हुआ खाता आवश्यक है।",
+		"accountRequired": "ऐसा करने के लिए कृपया लॉग इन करें।",
+		"sessionNotReady": "आपका सत्र अभी तैयार नहीं है। कृपया पेज रीलोड करें।",
+		"guestLimit": "इस नेटवर्क पर बहुत सारे नए मेहमान हैं। जारी रखने के लिए लॉग इन करें।"
+	},
 	"connectAi": {
 		"willSendTo": "अनुमति यहाँ भेजी जाएगी",
 		"clientClaimsUnverified": "यह खुद को “{client}” कहता है — यह नाम कोई भी चुन सकता है। आगे तभी बढ़ें जब आपने खुद यह शुरू किया हो और ऊपर का पता पहचानते हों।",

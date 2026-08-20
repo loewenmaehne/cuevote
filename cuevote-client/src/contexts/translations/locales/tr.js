@@ -3,6 +3,12 @@
 // Strings for "tr". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Bu kanal oturum açmış bir hesap gerektirir.",
+		"accountRequired": "Bunu yapmak için lütfen giriş yapın.",
+		"sessionNotReady": "Oturumunuz henüz hazır değil. Lütfen sayfayı yenileyin.",
+		"guestLimit": "Bu ağda çok fazla yeni misafir var. Devam etmek için giriş yapın."
+	},
 	"connectAi": {
 		"willSendTo": "Onay şu adrese gönderilecek",
 		"clientClaimsUnverified": "Kendini “{client}” olarak tanıtıyor — bu ismi herkes seçebilir. Yalnızca bunu kendin başlattıysan ve yukarıdaki adresi tanıyorsan devam et.",

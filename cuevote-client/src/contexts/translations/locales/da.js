@@ -3,6 +3,12 @@
 // Strings for "da". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Denne kanal kræver en konto, der er logget ind.",
+		"accountRequired": "Log ind for at gøre det.",
+		"sessionNotReady": "Din session er ikke klar endnu. Genindlæs siden.",
+		"guestLimit": "For mange nye gæster på dette netværk. Log ind for at fortsætte."
+	},
 	"connectAi": {
 		"willSendTo": "Godkendelsen sendes til",
 		"clientClaimsUnverified": "Den kalder sig “{client}” — et navn, som hvem som helst kan vælge. Fortsæt kun, hvis du selv startede det, og du genkender adressen ovenfor.",

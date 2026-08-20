@@ -3,6 +3,12 @@
 // Strings for "hu". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Ehhez a csatornához bejelentkezett fiók szükséges.",
+		"accountRequired": "Jelentkezz be, hogy ezt megtedd.",
+		"sessionNotReady": "A munkameneted még nem áll készen. Töltsd újra az oldalt.",
+		"guestLimit": "Túl sok új vendég ezen a hálózaton. A folytatáshoz jelentkezz be."
+	},
 	"connectAi": {
 		"willSendTo": "A jóváhagyás ide megy",
 		"clientClaimsUnverified": "Így nevezi magát: “{client}” — ezt a nevet bárki megadhatja. Csak akkor folytasd, ha te indítottad, és felismered a fenti címet.",

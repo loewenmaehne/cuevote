@@ -3,6 +3,12 @@
 // Strings for "tl". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Kailangan ng channel na ito ng naka-log in na account.",
+		"accountRequired": "Mag-log in para gawin iyon.",
+		"sessionNotReady": "Hindi pa handa ang iyong session. I-reload ang pahina.",
+		"guestLimit": "Masyadong maraming bagong bisita sa network na ito. Mag-log in para magpatuloy."
+	},
 	"connectAi": {
 		"willSendTo": "Ipapadala ang pag-apruba sa",
 		"clientClaimsUnverified": "Tinatawag nito ang sarili na “{client}” — isang pangalang kahit sino ay puwedeng pumili. Magpatuloy lamang kung ikaw mismo ang nagsimula nito at kilala mo ang address sa itaas.",

@@ -3,6 +3,12 @@
 // Strings for "he". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "ערוץ זה מחייב חשבון מחובר.",
+		"accountRequired": "יש להתחבר כדי לעשות זאת.",
+		"sessionNotReady": "הפעלה שלך עדיין לא מוכנה. יש לרענן את הדף.",
+		"guestLimit": "יותר מדי אורחים חדשים ברשת הזו. יש להתחבר כדי להמשיך."
+	},
 	"connectAi": {
 		"willSendTo": "האישור יישלח אל",
 		"clientClaimsUnverified": "היא מכנה את עצמה “{client}” — שם שכל אחד יכול לבחור. המשך רק אם אתה התחלת את זה ואתה מזהה את הכתובת שלמעלה.",

@@ -3,6 +3,12 @@
 // Strings for "ja". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "このチャンネルにはログイン済みのアカウントが必要です。",
+		"accountRequired": "実行するにはログインしてください。",
+		"sessionNotReady": "セッションの準備ができていません。ページを再読み込みしてください。",
+		"guestLimit": "このネットワークからの新規ゲストが多すぎます。ログインして続けてください。"
+	},
 	"connectAi": {
 		"willSendTo": "承認の送信先",
 		"clientClaimsUnverified": "自ら “{client}” と名乗っていますが、この名前は誰でも設定できます。自分で始めた場合で、上のアドレスに心当たりがあるときだけ続けてください。",

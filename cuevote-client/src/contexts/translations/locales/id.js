@@ -3,6 +3,12 @@
 // Strings for "id". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Kanal ini memerlukan akun yang sudah masuk.",
+		"accountRequired": "Silakan masuk untuk melakukannya.",
+		"sessionNotReady": "Sesi Anda belum siap. Silakan muat ulang halaman.",
+		"guestLimit": "Terlalu banyak tamu baru di jaringan ini. Silakan masuk untuk melanjutkan."
+	},
 	"connectAi": {
 		"willSendTo": "Persetujuan akan dikirim ke",
 		"clientClaimsUnverified": "Ia menyebut dirinya “{client}” — nama yang bisa dipilih siapa saja. Lanjutkan hanya jika Anda sendiri yang memulainya dan mengenali alamat di atas.",

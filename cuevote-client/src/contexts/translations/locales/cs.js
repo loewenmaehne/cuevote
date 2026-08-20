@@ -3,6 +3,12 @@
 // Strings for "cs". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Tento kanál vyžaduje přihlášený účet.",
+		"accountRequired": "Pro tuto akci se prosím přihlaste.",
+		"sessionNotReady": "Vaše relace ještě není připravena. Načtěte stránku znovu.",
+		"guestLimit": "Příliš mnoho nových hostů v této síti. Pokračujte po přihlášení."
+	},
 	"connectAi": {
 		"willSendTo": "Souhlas bude odeslán na",
 		"clientClaimsUnverified": "Označuje se jako “{client}” — takové jméno si může zvolit kdokoli. Pokračuj jen tehdy, když jsi to spustil(a) sám(a) a poznáváš adresu výše.",

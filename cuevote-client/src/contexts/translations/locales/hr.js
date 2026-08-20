@@ -3,6 +3,12 @@
 // Strings for "hr". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "Ovaj kanal zahtijeva prijavljeni račun.",
+		"accountRequired": "Prijavite se da biste to učinili.",
+		"sessionNotReady": "Vaša sesija još nije spremna. Ponovno učitajte stranicu.",
+		"guestLimit": "Previše novih gostiju na ovoj mreži. Prijavite se za nastavak."
+	},
 	"connectAi": {
 		"willSendTo": "Odobrenje će biti poslano na",
 		"clientClaimsUnverified": "Naziva se “{client}” — to ime može odabrati bilo tko. Nastavi samo ako si to sam(a) pokrenuo(la) i prepoznaješ adresu iznad.",

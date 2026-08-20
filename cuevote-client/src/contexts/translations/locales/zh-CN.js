@@ -3,6 +3,12 @@
 // Strings for "zh-CN". One file per language so a visitor downloads only
 // their own — see ../index.js.
 export default {
+	"errors": {
+		"loginRequired": "此频道需要已登录的账号。",
+		"accountRequired": "请登录后再操作。",
+		"sessionNotReady": "你的会话尚未就绪，请刷新页面。",
+		"guestLimit": "此网络上的新访客过多，请登录后继续。"
+	},
 	"connectAi": {
 		"willSendTo": "授权将发送至",
 		"clientClaimsUnverified": "它自称“{client}”——这个名字任何人都可以填写。只有在你自己发起、并且认得上面这个地址时才继续。",
