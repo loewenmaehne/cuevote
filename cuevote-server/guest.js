@@ -102,4 +102,18 @@ function isGuestUser(user) {
     return !!(user && user.isGuest);
 }
 
-module.exports = { issueToken, verifyToken, userFromId, isGuestUser };
+/**
+ * Whether this socket is backed by a real account.
+ *
+ * `ws.user` carries two kinds of identity now, and most of the server's gates
+ * were written when it carried one. A bare `!ws.user` check no longer means
+ * "signed in" — it means "has any identity at all", which every guest does.
+ * Anything that needs a row in `users` (owning a room, erasing an account,
+ * granting an AI access in someone's name, spending Search quota) must ask
+ * this instead.
+ */
+function hasAccount(ws) {
+    return !!(ws && ws.user && !ws.user.isGuest);
+}
+
+module.exports = { issueToken, verifyToken, userFromId, isGuestUser, hasAccount };

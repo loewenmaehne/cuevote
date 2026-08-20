@@ -6,6 +6,7 @@ const dbAsync = require("./db-async");
 const logger = require("./logger");
 const schemas = require("./schemas");
 const { sortUpcoming } = require("./queue-order");
+const guest = require("./guest");
 
 // Helper to check ownership
 function isOwner(room, ws) {
@@ -220,9 +221,13 @@ class Room {
      * to narrow that to real accounts.
      */
     canParticipate(ws) {
-        if (!ws.user) return { ok: false, code: "LOGIN_REQUIRED" };
+        // Two different refusals, and they must not be conflated: one says the
+        // owner requires accounts, the other says this socket has no identity
+        // yet. Reporting the first for the second tells people to sign in to a
+        // room that never asked them to.
+        if (!ws.user) return { ok: false, code: "NO_IDENTITY", message: "Your session is not ready yet. Please reload the page." };
         if (this.state.requireLogin && ws.user.isGuest) {
-            return { ok: false, code: "LOGIN_REQUIRED" };
+            return { ok: false, code: "LOGIN_REQUIRED", message: "This channel requires a signed-in account." };
         }
         return { ok: true };
     }
@@ -898,12 +903,12 @@ class Room {
     async handleFetchSuggestions(ws, { videoId }) {
         if (!videoId) return;
 
-        // Every other action that spends YouTube quota requires a login
-        // (handleSuggestSong, handleVote). This one was the exception, and it is
-        // the most expensive of them: a cache miss is a Search call at ~100 of
-        // the 10.000 daily quota units.
-        if (!ws.user) {
-            ws.send(JSON.stringify({ type: "error", message: "You must be logged in to fetch suggestions." }));
+        // The most expensive call in the room: a cache miss is a Search at ~100
+        // of the 10.000 daily quota units. Suggesting and voting were opened to
+        // guests deliberately; this was not, and `!ws.user` stopped meaning
+        // "signed in" the moment guests got an identity.
+        if (!guest.hasAccount(ws)) {
+            ws.send(JSON.stringify({ type: "error", code: "ACCOUNT_REQUIRED", message: "You must be logged in to fetch suggestions." }));
             return;
         }
 
@@ -984,11 +989,7 @@ class Room {
     async handleSuggestSong(ws, payload) {
         const access = this.canParticipate(ws);
         if (!access.ok) {
-            ws.send(JSON.stringify({
-                type: "error",
-                code: access.code,
-                message: "This channel requires a signed-in account to suggest videos."
-            }));
+            ws.send(JSON.stringify({ type: "error", code: access.code, message: access.message }));
             return;
         }
 
@@ -1326,11 +1327,7 @@ class Room {
     handleVote(ws, { trackId, voteType }) {
         const access = this.canParticipate(ws);
         if (!access.ok) {
-            ws.send(JSON.stringify({
-                type: "error",
-                code: access.code,
-                message: "This channel requires a signed-in account to vote."
-            }));
+            ws.send(JSON.stringify({ type: "error", code: access.code, message: access.message }));
             return;
         }
 
@@ -1748,6 +1745,86 @@ class Room {
      * Call this for every active room when a user account is deleted so their
      * id/name are not broadcast in voters or suggestedBy/suggestedByUsername.
      */
+    /**
+     * Re-key one identity's votes and attributions onto another.
+     *
+     * Called when a socket signs in: the person keeps their guest votes instead
+     * of the queue forgetting them. Without this the guest id stays in
+     * `voters` while the new account id is absent, so the client shows the
+     * track as unvoted and the same human can vote on it a second time.
+     *
+     * If the account has already voted on a track (from another device), the
+     * guest's vote is removed and its contribution taken back out of the score,
+     * so one person is counted once.
+     */
+    mergeIdentity(fromId, toId) {
+        if (!fromId || !toId || fromId === toId) return false;
+
+        let changed = false;
+
+        // Returns a re-keyed copy, or the original when this track knows nothing
+        // about `fromId` — so untouched collections keep their identity.
+        const rekey = (track) => {
+            if (!track || typeof track !== 'object') return track;
+            let updated = track;
+
+            const voters = track.voters;
+            if (voters && voters[fromId] !== undefined) {
+                const carried = voters[fromId];
+                const nextVoters = { ...voters };
+                delete nextVoters[fromId];
+
+                let score = updated.score || 0;
+                if (nextVoters[toId] !== undefined) {
+                    // Already counted under the account (another device) — drop
+                    // the duplicate and take its contribution back out.
+                    score -= carried === 'up' ? 1 : -1;
+                } else {
+                    nextVoters[toId] = carried;
+                }
+                updated = { ...updated, voters: nextVoters, score };
+            }
+
+            if (updated.suggestedBy === fromId) {
+                const { suggestedByGuestTag: _tag, ...rest } = updated;
+                updated = { ...rest, suggestedBy: toId, suggestedByIsGuest: false };
+            }
+
+            return updated;
+        };
+
+        for (const key of TRACK_COLLECTIONS) {
+            const collection = this.state[key];
+            if (!Array.isArray(collection)) continue;
+
+            let collectionChanged = false;
+            const next = collection.map((track) => {
+                const updated = rekey(track);
+                if (updated !== track) collectionChanged = true;
+                return updated;
+            });
+
+            if (collectionChanged) {
+                this.state[key] = next;
+                changed = true;
+            }
+        }
+
+        // currentTrack is a separate object from queue[0], so it has to be
+        // re-keyed on its own or the now-playing row keeps the stale identity.
+        const nextCurrent = rekey(this.state.currentTrack);
+        if (nextCurrent !== this.state.currentTrack) {
+            this.state.currentTrack = nextCurrent;
+            changed = true;
+        }
+
+        if (changed) {
+            this.state.queue = sortUpcoming(this.state.queue);
+            this.broadcastState();
+        }
+        return changed;
+    }
+
     scrubDeletedUser(userId) {
         const id = String(userId).trim();
         const scrubTrack = (track) => {

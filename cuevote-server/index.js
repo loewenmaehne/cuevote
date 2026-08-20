@@ -161,6 +161,22 @@ adminApi.start({ rooms });
 
 const clients = new Set();
 
+// A socket that was a guest and has just signed in: hand its votes to the
+// account. Guest ids never appear in `users`, so nothing else would ever
+// reconcile them, and the queue would show the person's own votes as somebody
+// else's while letting them vote again.
+function adoptGuestIdentity(ws, previousIdentity) {
+    if (!guest.isGuestUser(previousIdentity)) return;
+    if (!ws.user || ws.user.id === previousIdentity.id) return;
+    ws.guestToken = undefined;
+    if (!ws.roomId || !rooms.has(ws.roomId)) return;
+    try {
+        rooms.get(ws.roomId).mergeIdentity(previousIdentity.id, ws.user.id);
+    } catch (e) {
+        logger.error({ err: e }, '[Identity] Failed to merge a guest identity into an account');
+    }
+}
+
 // Per-IP socket cap. The existing per-socket message rate limit
 // (60 msg / 10s) is trivially bypassed by opening many sockets;
 // this caps the concurrent footprint. Generous default (20) covers
@@ -169,6 +185,36 @@ const clients = new Set();
 // quota instead of unlimited.
 const MAX_SOCKETS_PER_IP = parseInt(process.env.MAX_SOCKETS_PER_IP || '20', 10);
 const ipSocketCount = new Map(); // ip -> active socket count
+
+// A guest identity is what keeps one person from voting a track up repeatedly,
+// so minting them has to cost something. A socket gets exactly one (see
+// GUEST_SESSION); this caps how many a single address can obtain by churning
+// connections. A device mints once and then re-presents its stored token, so
+// the budget is consumed by NEW devices — 60 per 10 minutes behind one NAT
+// covers a large party while bounding a script.
+const MAX_GUEST_MINTS_PER_IP = parseInt(process.env.MAX_GUEST_MINTS_PER_IP || '60', 10);
+const GUEST_MINT_WINDOW_MS = 10 * 60 * 1000;
+const guestMintsByIp = new Map(); // ip -> { count, windowStart }
+
+function claimGuestMint(ip) {
+    const now = Date.now();
+    const entry = guestMintsByIp.get(ip);
+    if (!entry || now - entry.windowStart > GUEST_MINT_WINDOW_MS) {
+        guestMintsByIp.set(ip, { count: 1, windowStart: now });
+        return true;
+    }
+    if (entry.count >= MAX_GUEST_MINTS_PER_IP) return false;
+    entry.count++;
+    return true;
+}
+
+// The map only grows while an address keeps minting; drop windows that lapsed.
+setInterval(() => {
+    const cutoff = Date.now() - GUEST_MINT_WINDOW_MS;
+    for (const [ip, entry] of guestMintsByIp) {
+        if (entry.windowStart < cutoff) guestMintsByIp.delete(ip);
+    }
+}, GUEST_MINT_WINDOW_MS).unref();
 
 // Peers whose forwarding headers we believe. Everything else is treated as a
 // direct client and identified by its socket address.
@@ -326,6 +372,7 @@ wss.on("connection", (ws, req) => {
 
                         // Atomic: upsert user + create session in one transaction
                         logger.info("[LOGIN TRACE] Creating user and session...");
+                        const previousIdentity = ws.user;
                         try {
                             ws.user = db.loginUser(userData, sessionToken, expiresAt);
                             logger.info("[LOGIN TRACE] Login transaction successful.");
@@ -339,6 +386,10 @@ wss.on("connection", (ws, req) => {
                             type: "LOGIN_SUCCESS",
                             payload: { user: ws.user, sessionToken }
                         }));
+                        // Carry the guest's votes over to the account, so signing
+                        // in mid-party neither loses them nor lets the same person
+                        // vote a second time on a track they already voted on.
+                        adoptGuestIdentity(ws, previousIdentity);
                         // The room state this socket already holds was built for
                         // a guest, so it carries no myVote. Re-send it now that we
                         // know who they are.
@@ -351,11 +402,15 @@ wss.on("connection", (ws, req) => {
                 }
                 case "GUEST_SESSION": {
                     // A guest identity is what lets someone who scanned the QR
-                    // code vote without an account. It is only ever established
-                    // for a socket that has no real user: a signed-in user
-                    // sending this (a stale client, a reordered reconnect)
-                    // must not be downgraded to a guest.
-                    if (ws.user && !guest.isGuestUser(ws.user)) {
+                    // code vote without an account.
+                    //
+                    // A socket gets exactly ONE, for the whole reason the
+                    // identity exists: it keys `track.voters`, so a socket able
+                    // to mint a second one can vote on the same track twice.
+                    // Sending this again is answered with the identity the
+                    // socket already has, never a new one — a signed-in user is
+                    // likewise never downgraded to a guest.
+                    if (guest.hasAccount(ws)) {
                         sendAck();
                         return;
                     }
@@ -367,16 +422,37 @@ wss.on("connection", (ws, req) => {
                     }
                     sendAck();
 
+                    if (guest.isGuestUser(ws.user)) {
+                        // Re-affirm, do not re-mint. The client may send this
+                        // more than once (queued message after a reconnect, a
+                        // logout that races the socket opening).
+                        ws.send(JSON.stringify({
+                            type: "GUEST_SESSION_OK",
+                            payload: { user: ws.user, guestToken: ws.guestToken }
+                        }));
+                        return;
+                    }
+
                     const presented = guestResult.data?.token;
                     let guestId = presented ? guest.verifyToken(presented) : null;
                     let guestToken = presented;
 
                     if (!guestId) {
+                        if (!claimGuestMint(ws.ip)) {
+                            logger.warn(`[RateLimit] IP ${ws.ip} exhausted its guest identity budget (${MAX_GUEST_MINTS_PER_IP} per ${GUEST_MINT_WINDOW_MS / 60000} min).`);
+                            ws.send(JSON.stringify({
+                                type: "error",
+                                code: "GUEST_LIMIT",
+                                message: "Too many new guests from this network. Please sign in to continue."
+                            }));
+                            return;
+                        }
                         guestToken = guest.issueToken();
                         guestId = guest.verifyToken(guestToken);
                     }
 
                     ws.user = guest.userFromId(guestId);
+                    ws.guestToken = guestToken;
                     ws.send(JSON.stringify({
                         type: "GUEST_SESSION_OK",
                         payload: { user: ws.user, guestToken }
@@ -400,7 +476,9 @@ wss.on("connection", (ws, req) => {
                     if (session) {
                         const user = db.getUser(session.user_id);
                         if (user) {
+                            const previousIdentity = ws.user;
                             ws.user = user;
+                            adoptGuestIdentity(ws, previousIdentity);
                             const resumePayload = { user: ws.user, sessionToken: token };
                             if (ws.lastRoomId) resumePayload.lastRoomId = ws.lastRoomId;
                             logger.info(`[Resume Session] OK — user resumed (clientId: ${ws.id})`);
@@ -445,9 +523,12 @@ wss.on("connection", (ws, req) => {
 
                 case "DELETE_ACCOUNT": {
                     logger.info("[SERVER TRACE] DELETE_ACCOUNT received");
-                    if (!ws.user) {
-                        logger.info(`[GDPR] DELETE_ACCOUNT failed: No user attached to socket. WS ID: ${ws.id}`);
-                        ws.send(JSON.stringify({ type: "error", message: "Not logged in." }));
+                    // Guests have no account to erase: no users row, no sessions,
+                    // nothing but a signed random id. Letting one through ran a
+                    // full-table room_state scan plus a WAL checkpoint per message.
+                    if (!guest.hasAccount(ws)) {
+                        logger.info(`[GDPR] DELETE_ACCOUNT refused: socket has no account. WS ID: ${ws.id}`);
+                        ws.send(JSON.stringify({ type: "error", code: "ACCOUNT_REQUIRED", message: "Not logged in." }));
                         return;
                     }
                     const userId = ws.user.id;
@@ -549,8 +630,11 @@ wss.on("connection", (ws, req) => {
                     return;
                 }
                 case "CREATE_ROOM": {
-                    if (!ws.user) {
-                        ws.send(JSON.stringify({ type: "error", message: "You must be logged in to create a room." }));
+                    // rooms.owner_id is a foreign key into users, so a guest id
+                    // cannot own a room — refuse here rather than after bcrypt has
+                    // run and the insert has failed on the constraint.
+                    if (!guest.hasAccount(ws)) {
+                        ws.send(JSON.stringify({ type: "error", code: "ACCOUNT_REQUIRED", message: "You must be logged in to create a room." }));
                         return;
                     }
                     const createResult = schemas.CreateRoomPayload.safeParse(parsedMessage.payload);
@@ -728,7 +812,11 @@ wss.on("connection", (ws, req) => {
                         ws.send(JSON.stringify({ type: "error", message: "Invalid authorization request." }));
                         return;
                     }
-                    if (!ws.user) {
+                    // The grant is meant to let an AI act in a person's name. A
+                    // guest identity is a browser-local random number, so binding
+                    // one here burns the single-use handle and mints a grant whose
+                    // every later tool call fails on a missing users row.
+                    if (!guest.hasAccount(ws)) {
                         ws.send(JSON.stringify({ type: "error", code: "NOT_LOGGED_IN", message: "You must be signed in to connect an AI." }));
                         return;
                     }
