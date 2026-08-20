@@ -15,6 +15,7 @@ import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
 import { channelLanguages, getFlagEmoji } from '../constants/channelLanguages';
 
 import { LoadingScreen } from './LoadingScreen';
+import { displayName } from '../utils/participation';
 
 function useLocalizedCountries(uiLanguage) {
     return useMemo(() => {
@@ -634,7 +635,7 @@ export function Lobby() {
                                     <img src={user.picture} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
                                 ) : (
                                     <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
-                                        {user.name?.charAt(0)}
+                                        {displayName(user, t).charAt(0)}
                                     </div>
                                 )}
                             </button>
@@ -676,10 +677,10 @@ export function Lobby() {
                                     <img src={user.picture} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-neutral-700" alt={user.name} />
                                 ) : (
                                     <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-500 border border-neutral-700">
-                                        {user.name?.charAt(0)}
+                                        {displayName(user, t).charAt(0)}
                                     </div>
                                 )}
-                                <span className="text-neutral-300 font-medium group-hover:text-white transition-colors">{t('lobby.welcome')}, {user.name}</span>
+                                <span className="text-neutral-300 font-medium group-hover:text-white transition-colors">{t('lobby.welcome')}, {displayName(user, t)}</span>
                             </div>
                         </button>
                     ) : (

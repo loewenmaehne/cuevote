@@ -15,6 +15,21 @@ export function canParticipate(user, requireLogin) {
 }
 
 /**
+ * The name to show for a signed-in user or a guest.
+ *
+ * The server names a guest "Guest ABCD" so that clients which know nothing
+ * about guests still show something sensible. Anywhere the name is shown to a
+ * person, translate the word instead — a German UI should greet a "Gast".
+ */
+export function displayName(user, t) {
+	if (!user) return '';
+	if (user.isGuest) {
+		return user.guestTag ? `${t('track.guest')} ${user.guestTag}` : t('track.guest');
+	}
+	return user.name || '';
+}
+
+/**
  * The name to show next to a track for whoever suggested it.
  *
  * Guests have no account name, so the server sends a flag and a short tag and

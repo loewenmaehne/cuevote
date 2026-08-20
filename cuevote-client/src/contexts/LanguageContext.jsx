@@ -2,13 +2,7 @@
 // Copyright (c) 2026 Julian Zienert
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { LanguageContext } from './LanguageContextValue.js';
-
-// Kick off the translations download the moment this (eagerly-loaded) contexts
-// chunk evaluates, so it loads in parallel with the app code instead of waiting
-// for the first effect — this is what closes the window where raw i18n keys flash.
-// Still a dynamic import(), so translations.js is never evaluated during entry
-// init: the TDZ fix from 1b57d50 ("Cannot access 'Ta' before initialization") holds.
-const translationsPromise = import('./translations').then((m) => m.translations);
+import { LANGUAGE_CODES, loadLanguage } from './translations';
 
 const pluralRulesCache = new Map();
 function getPluralRules(lang) {
@@ -39,41 +33,63 @@ function selectPluralString(bag, lang, count) {
 	return null;
 }
 
-function detectInitialLanguage(translations) {
+const AVAILABLE = new Set(LANGUAGE_CODES);
+
+// Detection only needs the list of codes, not the strings, so it settles
+// synchronously — which is what lets the right chunk start downloading in the
+// same tick the app boots instead of after a round trip.
+function detectInitialLanguage() {
 	const saved = localStorage.getItem('cuevote_language');
-	if (saved && translations[saved]) return saved;
+	if (saved && AVAILABLE.has(saved)) return saved;
 	const browserLang = navigator.language || navigator.userLanguage;
 	if (browserLang) {
 		if (browserLang.toLowerCase() === 'zh-cn' || browserLang.toLowerCase() === 'zh-sg') {
-			if (translations['zh-CN']) return 'zh-CN';
+			if (AVAILABLE.has('zh-CN')) return 'zh-CN';
 		}
 		if (browserLang.toLowerCase() === 'zh-tw' || browserLang.toLowerCase() === 'zh-hk') {
-			if (translations['zh-TW']) return 'zh-TW';
+			if (AVAILABLE.has('zh-TW')) return 'zh-TW';
 		}
 		const code = browserLang.split('-')[0];
-		if (translations[code]) return code;
+		if (AVAILABLE.has(code)) return code;
 	}
 	return 'en';
 }
 
+const INITIAL_LANGUAGE = detectInitialLanguage();
+
+// Start both downloads the moment this (eagerly-loaded) contexts chunk
+// evaluates, so they overlap the app code instead of waiting for an effect —
+// this is what closes the window where raw i18n keys could flash. English comes
+// along as the fallback for any key the chosen language is missing; when that
+// IS the chosen language it is a single request.
+const initialBundles = Promise.all([
+	loadLanguage('en'),
+	INITIAL_LANGUAGE === 'en' ? null : loadLanguage(INITIAL_LANGUAGE).catch(() => null),
+]).then(([en, target]) => (target ? { en, [INITIAL_LANGUAGE]: target } : { en }));
+
 // Single export with inline methods so bundler cannot reorder and cause TDZ.
 export const Language = {
 	LanguageProvider({ children }) {
-		const [language, setLanguage] = useState(() => localStorage.getItem('cuevote_language') || 'en');
+		const [language, setLanguage] = useState(INITIAL_LANGUAGE);
+		// Keyed by language code; always holds `en`, plus every language shown so far.
 		const [translations, setTranslations] = useState(null);
 		const initDone = useRef(false);
-		const langReady = useRef(false);
 		useEffect(() => {
 			if (initDone.current) return;
 			initDone.current = true;
-			translationsPromise.then((t) => {
-				setTranslations(t);
-				setLanguage((prev) => detectInitialLanguage(t) || prev);
-				langReady.current = true;
-			});
+			initialBundles.then(setTranslations);
 		}, []);
+		// Switching language pulls in that chunk once and keeps it.
 		useEffect(() => {
-			if (!langReady.current) return;
+			if (!translations || translations[language]) return;
+			let cancelled = false;
+			loadLanguage(language).then(
+				(bag) => { if (!cancelled) setTranslations((prev) => ({ ...prev, [language]: bag })); },
+				() => {}, // A missing locale falls back to English, which is always loaded.
+			);
+			return () => { cancelled = true; };
+		}, [language, translations]);
+		useEffect(() => {
 			localStorage.setItem('cuevote_language', language);
 		}, [language]);
 		const t = (key, params = {}) => {
@@ -105,7 +121,7 @@ export const Language = {
 		};
 		return (
 			<LanguageContext.Provider value={{ language, setLanguage, t }}>
-				{translations ? children : (
+				{translations && (translations[language] || translations.en) ? children : (
 					// Language-neutral splash until translations resolve, so raw i18n
 					// keys never paint. Intentionally text-free — any copy here would
 					// itself be untranslated. Matches the app's dark + orange theme.

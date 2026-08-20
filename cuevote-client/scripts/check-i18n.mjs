@@ -29,9 +29,25 @@ import { dirname, join, relative } from 'node:path';
 
 const ROOT = dirname(fileURLToPath(import.meta.url)) + '/..';
 const SRC_DIR = join(ROOT, 'src');
-const TRANSLATIONS_PATH = join(ROOT, 'src/contexts/translations.js');
+const LOCALES_DIR = join(ROOT, 'src/contexts/translations/locales');
 
-const { translations } = await import(pathToFileURL(TRANSLATIONS_PATH).href);
+// One module per language (see src/contexts/translations/index.js). Assembled
+// back into a single object here so every check below reads as it did when the
+// languages shared one file.
+const translations = {};
+for (const file of readdirSync(LOCALES_DIR).filter((f) => f.endsWith('.js')).sort()) {
+	const code = file.slice(0, -'.js'.length);
+	const mod = await import(pathToFileURL(join(LOCALES_DIR, file)).href);
+	if (!mod.default || typeof mod.default !== 'object') {
+		console.error(`i18n FAILED: ${file} does not default-export an object.`);
+		process.exit(1);
+	}
+	translations[code] = mod.default;
+}
+if (!translations.en) {
+	console.error('i18n FAILED: no en.js in src/contexts/translations/locales — English is the fallback for every key.');
+	process.exit(1);
+}
 
 const errors = [];
 function fail(msg) { errors.push(msg); }

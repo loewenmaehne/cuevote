@@ -11,6 +11,7 @@ import { Language } from '../contexts/LanguageContext';
 import { deviceDetection } from '../utils/deviceDetection';
 import { dangerousHtml } from '../utils/sanitizeHtml';
 import { YouTubeBrandSubtitle } from './YouTubeBrandSubtitle';
+import { displayName } from '../utils/participation';
 
 
 export function Header({
@@ -285,7 +286,7 @@ export function Header({
         <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-7 h-7 rounded-full border border-neutral-700" />
       ) : (
         <div className="w-7 h-7 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-orange-500 border border-neutral-700">
-          {user.name?.charAt(0)}
+          {displayName(user, t).charAt(0)}
         </div>
       )}
     </button>
@@ -475,10 +476,10 @@ export function Header({
                   <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" className="w-20 h-20 rounded-full border-2 border-neutral-700 mb-4 shadow-xl" />
                 ) : (
                   <div className="w-20 h-20 rounded-full bg-neutral-800 flex items-center justify-center text-3xl font-bold text-neutral-500 mb-4 border-2 border-neutral-700">
-                    {user?.name?.charAt(0)}
+                    {displayName(user, t).charAt(0)}
                   </div>
                 )}
-                <h3 className="text-xl font-bold text-white">{user?.name}</h3>
+                <h3 className="text-xl font-bold text-white">{displayName(user, t)}</h3>
                 <p className="text-sm text-neutral-400">{user?.email}</p>
               </div>
 
