@@ -102,8 +102,8 @@ export default {
 		"reviewRequests": "Revisar Pedidos",
 		"allowSuggestions": "Permitir Sugestões",
 		"manualReview": "Revisão Manual",
-		"approveKnown": "Aprovar conhecidas",
-		"approveKnownTooltip": "Aprovar auto vídeos já aprovadas antes",
+		"approveKnown": "Aprovar conhecidos",
+		"approveKnownTooltip": "Aprovar auto vídeos já aprovados antes",
 		"musicOnly": "Apenas Vídeo",
 		"maxLength": "Duração Máx",
 		"noLimit": "Sem Limite",
@@ -198,14 +198,14 @@ export default {
 			"other": "{count} vídeos"
 		},
 		"inLibrary": "na biblioteca",
-		"info1": "Esta biblioteca exibe vídeos únicas tocadas nos últimos <strong>28 dias</strong>.",
+		"info1": "Esta biblioteca exibe vídeos únicos tocados nos últimos <strong>28 dias</strong>.",
 		"info2": "Vídeos mais antigos são ocultados para garantir a atualização dos metadados, mas <strong>nunca são excluídos</strong>. O recurso de <strong>Preenchimento Automático</strong> lembra de todo o seu histórico e trará automaticamente vídeos antigos de volta para a fila (e para esta lista) quando necessário!",
-		"empty": "Nenhuma vídeo encontrada"
+		"empty": "Nenhum vídeo encontrado"
 	},
 	"pending": {
 		"title": "Solicitações pendentes",
 		"pendingReview": "Revisão pendente",
-		"bannedVideos": "Vídeos banidas",
+		"bannedVideos": "Vídeos banidos",
 		"empty": "Nenhuma solicitação pendente",
 		"emptySubtitle": "Novas sugestões aguardando aprovação aparecerão aqui.",
 		"suggestedBy": "Sugerido por",
@@ -238,8 +238,8 @@ export default {
 	},
 	"mobile": {
 		"tagline": "O Jukebox Democrático",
-		"tvDescription": "Transforme esta tela no Jukebox definitivo. Deixe seus convidados votarem na vídeo.",
-		"mobileDescription": "Vote em vídeos, construa a playlist juntos e deixe a melhor vídeo vencer.",
+		"tvDescription": "Transforme esta tela no Jukebox definitivo. Deixe seus convidados votarem no vídeo.",
+		"mobileDescription": "Vote em vídeos, construa a playlist juntos e deixe o melhor vídeo vencer.",
 		"tvFeatureTitle": "Modo Cinema",
 		"mobileFeatureTitle": "Hospedar a Festa",
 		"tvFeatureBody": "Instale o App de TV para a experiência compartilhada perfeita com tela Always-On.",
