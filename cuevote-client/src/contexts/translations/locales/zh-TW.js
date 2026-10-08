@@ -66,9 +66,9 @@ export default {
 		"searchCountries": "搜尋國家..."
 	},
 	"player": {
-		"errorGeneric": "播放此視頻時發生錯誤。",
-		"errorNotFound": "此視頻無法使用。",
-		"errorRestricted": "此視頻在您所在的國家/地區無法使用。",
+		"errorGeneric": "播放此影片時發生錯誤。",
+		"errorNotFound": "此影片無法使用。",
+		"errorRestricted": "此影片在您所在的國家/地區無法使用。",
 		"errorIPBlocked": "YouTube 正在限制此網路上的播放。",
 		"ipBlockTitle": "無法在此網路上播放",
 		"ipBlockMessage": "YouTube 正在限制您目前網路上的影片播放。請嘗試切換到行動數據或其他 Wi-Fi 連線。",
@@ -193,7 +193,7 @@ export default {
 	"library": {
 		"searchPlaceholder": "搜尋媒體庫...",
 		"videos": {
-			"other": "{count} 個視訊"
+			"other": "{count} 個影片"
 		},
 		"inLibrary": "在庫中",
 		"info1": "此庫顯示過去 <strong>28 天</strong> 內播放的唯一影片。",
@@ -225,8 +225,8 @@ export default {
 		"channelSuffix": "頻道",
 		"upNext": "即將播放",
 		"queueEmpty": "佇列為空",
-		"errorNotFound": "找不到視頻",
-		"errorRestricted": "視頻在您所在地區不可用",
+		"errorNotFound": "找不到影片",
+		"errorRestricted": "影片在您所在地區不可用",
 		"skippedRestricted": "已跳過'{title}'（不可用）",
 		"skippedIPBlocked": "已跳過'{title}' — YouTube 正在限制此網路",
 		"backToNow": "回到目前",
@@ -252,7 +252,7 @@ export default {
 		"colBrowser": "瀏覽器",
 		"colApp": "應用程式",
 		"featVote": "為歌曲投票和推薦",
-		"featVideo": "觀看視頻",
+		"featVideo": "觀看影片",
 		"featPrelisten": "投票前試聽",
 		"featHost": "舉辦自己的派對",
 		"continueBrowser": "仍然在瀏覽器中繼續",
