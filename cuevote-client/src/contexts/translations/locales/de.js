@@ -81,7 +81,7 @@ export default {
 		"description": "Um Musik abzuspielen, müssen wir den YouTube-Player laden. Dies stellt eine Verbindung zu Google-Servern her.",
 		"policy": "Datenschutzerklärung lesen",
 		"accept": "Akzeptieren & Musik abspielen",
-		"youtubeConsent": "Wir benötigen Ihre Zustimmung, um den YouTube-Player zu laden. Bitte akzeptieren Sie unten Cookies."
+		"youtubeConsent": "Wir benötigen deine Zustimmung, um den YouTube-Player zu laden. Bitte akzeptiere unten die Cookies."
 	},
 	"header": {
 		"back": "Zurück",
@@ -164,7 +164,7 @@ export default {
 		"notFoundMessage": "Der gesuchte Kanal ({roomId}) wurde nicht gefunden.",
 		"goToLobby": "Zur Lobby",
 		"privateChannel": "Privater Kanal",
-		"lockedMessage": "Dieser Kanal ist passwortgeschützt. Bitte geben Sie das Passwort ein, um beizutreten.",
+		"lockedMessage": "Dieser Kanal ist passwortgeschützt. Bitte gib das Passwort ein, um beizutreten.",
 		"incorrectPasswordOrNotFound": "Falsches Passwort oder Kanal nicht gefunden.",
 		"unlock": "Entsperren",
 		"listenMusic": "Musik hören",
@@ -178,7 +178,7 @@ export default {
 		"connecting": "Verbinde mit Server...",
 		"connectionIssue": "Verbindungsproblem",
 		"takingTooLong": "Dauert länger als gewöhnlich...",
-		"checkConnection": "Bitte überprüfen Sie Ihre Internetverbindung.",
+		"checkConnection": "Bitte überprüfe deine Internetverbindung.",
 		"networkThrottle": "YouTube hat die IP-Adresse dieses Netzwerks gesperrt. Wiedergabe pausiert. Versuche, zu einem mobilen Hotspot zu wechseln.",
 		"retryPlayback": "Erneut versuchen",
 		"reconnecting": "Verbinde neu",
