@@ -78,9 +78,9 @@ export default {
 	},
 	"cookie": {
 		"title": "Privacidad y Reproducción",
-		"description": "Para reproducir vídeo, necesitamos cargar el reproductor de YouTube. Esto conecta con los servidores de Google.",
+		"description": "Para reproducir música, necesitamos cargar el reproductor de YouTube. Esto conecta con los servidores de Google.",
 		"policy": "Leer política de privacidad",
-		"accept": "Aceptar y Escuchar Vídeo",
+		"accept": "Aceptar y Escuchar Música",
 		"youtubeConsent": "Necesitamos tu consentimiento para cargar el reproductor de YouTube. Por favor acepta las cookies abajo."
 	},
 	"header": {
@@ -104,7 +104,7 @@ export default {
 		"manualReview": "Revisión Manual",
 		"approveKnown": "Aprobar conocidos",
 		"approveKnownTooltip": "Aprobar auto videos ya aprobados antes",
-		"musicOnly": "Solo Vídeo",
+		"musicOnly": "Solo Música",
 		"maxLength": "Longitud Máx",
 		"noLimit": "Sin Límite",
 		"mins": "Min",
@@ -167,7 +167,7 @@ export default {
 		"lockedMessage": "Este canal está protegido con contraseña.",
 		"incorrectPasswordOrNotFound": "Contraseña incorrecta o canal no encontrado.",
 		"unlock": "Desbloquear",
-		"listenMusic": "Escuchar vídeo",
+		"listenMusic": "Escuchar música",
 		"unmuteAndPlay": "Sonido y Reproducir",
 		"noInternet": "Sin conexión a internet",
 		"windowTooSmall": "Window Too Small",
@@ -245,8 +245,8 @@ export default {
 	},
 	"mobile": {
 		"tagline": "La Jukebox Democrática",
-		"tvDescription": "Convierte esta pantalla en la Jukebox definitiva. Deja que tus invitados voten por el vídeo.",
-		"mobileDescription": "Vota por videos, construye la lista juntos y que gane el mejor vídeo.",
+		"tvDescription": "Convierte esta pantalla en la Jukebox definitiva. Deja que tus invitados voten por la música.",
+		"mobileDescription": "Vota por videos, construye la lista juntos y que gane la mejor música.",
 		"tvFeatureTitle": "Modo Cine",
 		"mobileFeatureTitle": "Organiza la Fiesta",
 		"tvFeatureBody": "Instala la App de TV para la experiencia compartida perfecta con pantalla Always-On.",
