@@ -103,7 +103,7 @@ export default {
 		"allowSuggestions": "Permitir Sugerencias",
 		"manualReview": "Revisión Manual",
 		"approveKnown": "Aprobar conocidos",
-		"approveKnownTooltip": "Aprobar auto videos ya aprobadas antes",
+		"approveKnownTooltip": "Aprobar auto videos ya aprobados antes",
 		"musicOnly": "Solo Vídeo",
 		"maxLength": "Longitud Máx",
 		"noLimit": "Sin Límite",
@@ -112,7 +112,7 @@ export default {
 		"videos": "Videos",
 		"preventRepetition": "Evitar Repetición",
 		"smartQueue": "Cola Inteligente",
-		"smartQueueTooltip": "Reemplazar videos mal votadas si está llena",
+		"smartQueueTooltip": "Reemplazar videos mal votados si está llena",
 		"autoRefill": "Auto-DJ",
 		"autoRefillTooltip": "Mantiene tu canal en vivo — reproduce automáticamente pistas mezcladas de tu biblioteca cuando la cola está vacía.",
 		"venueMode": "Modo Fiesta",
@@ -152,7 +152,7 @@ export default {
 		"similarTo": "Similar a"
 	},
 	"suggestions": {
-		"modalTitle": "Videos Relacionadas",
+		"modalTitle": "Videos Relacionados",
 		"basedOn": "Basado en:",
 		"loading": "Buscando videos similares...",
 		"empty": "No se encontraron sugerencias.",
@@ -205,14 +205,14 @@ export default {
 			"other": "{count} videos"
 		},
 		"inLibrary": "en biblioteca",
-		"info1": "Esta biblioteca muestra videos únicas reproducidas en los últimos <strong>28 días</strong>.",
+		"info1": "Esta biblioteca muestra videos únicos reproducidos en los últimos <strong>28 días</strong>.",
 		"info2": "Los videos más antiguos se ocultan para garantizar la frescura de los metadatos, pero <strong>nunca se eliminan</strong>. ¡La función de <strong>Relleno Automático</strong> recuerda todo tu historial y traerá automáticamente los videos antiguos a la cola (y a esta lista) cuando sea necesario!",
 		"empty": "No se encontraron videos"
 	},
 	"pending": {
 		"title": "Solicitudes pendientes",
 		"pendingReview": "Pendiente de revisión",
-		"bannedVideos": "Videos prohibidas",
+		"bannedVideos": "Videos prohibidos",
 		"empty": "No hay solicitudes pendientes",
 		"emptySubtitle": "Las nuevas sugerencias que requieran aprobación aparecerán aquí.",
 		"suggestedBy": "Sugerido por",
@@ -245,8 +245,8 @@ export default {
 	},
 	"mobile": {
 		"tagline": "La Jukebox Democrática",
-		"tvDescription": "Convierte esta pantalla en la Jukebox definitiva. Deja que tus invitados voten por la vídeo.",
-		"mobileDescription": "Vota por videos, construye la lista juntos y que gane la mejor vídeo.",
+		"tvDescription": "Convierte esta pantalla en la Jukebox definitiva. Deja que tus invitados voten por el vídeo.",
+		"mobileDescription": "Vota por videos, construye la lista juntos y que gane el mejor vídeo.",
 		"tvFeatureTitle": "Modo Cine",
 		"mobileFeatureTitle": "Organiza la Fiesta",
 		"tvFeatureBody": "Instala la App de TV para la experiencia compartida perfecta con pantalla Always-On.",
