@@ -188,7 +188,7 @@ export default {
 	"track": {
 		"playing": "Wiedergabe",
 		"now": "Jetzt",
-		"add": "In Warteschlange",
+		"add": "Zur Warteschlange hinzufügen",
 		"preview": "Vorschau",
 		"cancel": "Abbrechen",
 		"confirmDelete": "Bestätigen",
