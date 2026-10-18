@@ -487,6 +487,30 @@ describe('Room', () => {
       room.destroy();
     });
 
+    it('shows the account name on a suggestion made as a guest', () => {
+      const room = new Room('merge-name', 'Merge Name', null, { owner_id: 'owner-1' });
+      room.state.queue = [
+        { id: 'current', videoId: 'v0', title: 'Current', score: 0, voters: {} },
+        {
+          id: 'track-1', videoId: 'v1', title: 'T1', score: 0, voters: {},
+          suggestedBy: 'guest:abc123', suggestedByUsername: 'Guest 4F2A',
+          suggestedByIsGuest: true, suggestedByGuestTag: '4F2A',
+        },
+        {
+          id: 'track-2', videoId: 'v2', title: 'T2', score: 0, voters: {},
+          suggestedBy: 'owner-1', suggestedByUsername: 'Room Owner',
+        },
+      ];
+
+      room.mergeIdentity('guest:abc123', 'guest-1', 'Second User');
+
+      const mine = room.state.queue.find(t => t.id === 'track-1');
+      assert.equal(mine.suggestedByUsername, 'Second User', 'not the English "Guest 4F2A" any more');
+      const theirs = room.state.queue.find(t => t.id === 'track-2');
+      assert.equal(theirs.suggestedByUsername, 'Room Owner', 'other people\'s suggestions keep their names');
+      room.destroy();
+    });
+
     it('leaves a room alone when the identity never took part', () => {
       const room = new Room('merge-noop', 'Merge Noop', null, { owner_id: 'owner-1' });
       const queue = [{ id: 'current', videoId: 'v0', title: 'Current', score: 0, voters: {} }];

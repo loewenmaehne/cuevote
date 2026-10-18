@@ -172,7 +172,7 @@ function adoptGuestIdentity(ws, previousIdentity) {
     ws.guestToken = undefined;
     if (!ws.roomId || !rooms.has(ws.roomId)) return;
     try {
-        rooms.get(ws.roomId).mergeIdentity(previousIdentity.id, ws.user.id);
+        rooms.get(ws.roomId).mergeIdentity(previousIdentity.id, ws.user.id, ws.user.name);
     } catch (e) {
         logger.error({ err: e }, '[Identity] Failed to merge a guest identity into an account');
     }

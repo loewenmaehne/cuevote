@@ -1756,8 +1756,12 @@ class Room {
      * If the account has already voted on a track (from another device), the
      * guest's vote is removed and its contribution taken back out of the score,
      * so one person is counted once.
+     *
+     * `toName` is the account's display name. A re-attributed suggestion takes
+     * it over; otherwise the track kept showing "Guest AB12" in English after
+     * the guest marker that lets clients translate that label was gone.
      */
-    mergeIdentity(fromId, toId) {
+    mergeIdentity(fromId, toId, toName) {
         if (!fromId || !toId || fromId === toId) return false;
 
         let changed = false;
@@ -1788,6 +1792,7 @@ class Room {
             if (updated.suggestedBy === fromId) {
                 const { suggestedByGuestTag: _tag, ...rest } = updated;
                 updated = { ...rest, suggestedBy: toId, suggestedByIsGuest: false };
+                if (toName) updated.suggestedByUsername = toName;
             }
 
             return updated;
